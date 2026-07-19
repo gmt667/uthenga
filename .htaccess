@@ -1,0 +1,16 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block direct access to sensitive files in the repository checkout
+    RewriteRule ^php_app/(?:config|db)\.php$ - [F,L]
+    RewriteRule ^php_app/(?:includes|database|install)/ - [F,L]
+
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    RewriteRule ^$ php_app/index.php [L,QSA]
+    RewriteRule ^(.+)$ php_app/$1 [L,QSA]
+</IfModule>

@@ -1,0 +1,4 @@
+---
+deployment:
+  tasks:
+    - /bin/rsync -a --delete --exclude='.git/' --exclude='.agents/' --exclude='.env' --exclude='database/' --exclude='install/' --exclude='README.md' php_app/ ${HOME}/public_html/
