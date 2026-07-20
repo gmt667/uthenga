@@ -140,6 +140,57 @@ if (uthenga_table_exists('recent_views')) {
     }
 }
 
+$profileUpdateSuccess = '';
+$profileUpdateError = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_dashboard_profile'])) {
+    if (!validateCsrf()) {
+        $profileUpdateError = 'Security error. Please refresh and try again.';
+    } else {
+        $name   = trim((string)($_POST['name'] ?? ''));
+        $email  = strtolower(trim((string)($_POST['email'] ?? '')));
+        $phone  = trim((string)($_POST['phone'] ?? ''));
+        $avatar = trim((string)($_POST['avatar'] ?? ''));
+
+        if (strlen($name) < 2) {
+            $profileUpdateError = 'Name must be at least 2 characters.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $profileUpdateError = 'Please enter a valid email address.';
+        } elseif ($phone === '') {
+            $profileUpdateError = 'Please enter a phone number.';
+        } elseif (!preg_match('/^[0-9+()\-\s]{7,30}$/', $phone)) {
+            $profileUpdateError = 'Please enter a valid phone number.';
+        } else {
+            $existingEmail = dbQueryOne(
+                'SELECT id FROM users WHERE LOWER(email) = ? AND id <> ? LIMIT 1',
+                [$email, $userId]
+            );
+            $existingPhone = dbQueryOne(
+                'SELECT id FROM users WHERE phone = ? AND phone IS NOT NULL AND phone <> "" AND id <> ? LIMIT 1',
+                [$phone, $userId]
+            );
+
+            if ($existingEmail) {
+                $profileUpdateError = 'Another account already uses that email address.';
+            } elseif ($existingPhone) {
+                $profileUpdateError = 'Another account already uses that phone number.';
+            } else {
+                dbExecute(
+                    'UPDATE users SET name = ?, email = ?, phone = ?, avatar = ? WHERE id = ?',
+                    [$name, $email, $phone, $avatar !== '' ? $avatar : ($user['avatar'] ?? null), $userId]
+                );
+                $_SESSION['user_name']  = $name;
+                $_SESSION['user_email'] = $email;
+                if ($avatar !== '') {
+                    $_SESSION['user_avatar'] = $avatar;
+                }
+                $user = dbQueryOne('SELECT * FROM users WHERE id = ?', [$userId]) ?: $user;
+                $profileUpdateSuccess = 'Profile updated successfully.';
+                logAction('Profile Updated', 'Customer updated account details from dashboard.');
+            }
+        }
+    }
+}
+
 function customerBadgeClass(string $status): string {
     $status = strtolower($status);
     if (in_array($status, ['confirmed', 'resolved', 'closed', 'paid', 'success', 'completed'], true)) {
@@ -275,16 +326,41 @@ renderDashboardChromeStart([
         <div class="glass-panel" style="padding:1.5rem;">
           <div class="section-head">
             <div>
-              <h3>Profile snapshot</h3>
-              <p class="text-sm text-muted">Account details and status.</p>
+              <h3>Quick profile edit</h3>
+              <p class="text-sm text-muted">Update your contact details without leaving the dashboard.</p>
             </div>
           </div>
-          <div style="display:grid;gap:0.6rem;">
-            <div class="flex justify-between gap-2"><span class="text-muted">Name</span><strong><?= e($user['name'] ?? '') ?></strong></div>
-            <div class="flex justify-between gap-2"><span class="text-muted">Email</span><strong><?= e($user['email'] ?? '') ?></strong></div>
-            <div class="flex justify-between gap-2"><span class="text-muted">Wallet</span><strong><?= formatMWK((float)($user['balance'] ?? 0)) ?></strong></div>
-            <div class="flex justify-between gap-2"><span class="text-muted">Member since</span><strong><?= e($user['created_at'] ?? $user['joined_date'] ?? 'N/A') ?></strong></div>
-          </div>
+          <?php if ($profileUpdateSuccess): ?>
+            <div class="alert alert-success" style="margin-bottom:1rem;">Success: <?= e($profileUpdateSuccess) ?></div>
+          <?php endif; ?>
+          <?php if ($profileUpdateError): ?>
+            <div class="alert alert-error" style="margin-bottom:1rem;">Error: <?= e($profileUpdateError) ?></div>
+          <?php endif; ?>
+          <form method="POST" action="" style="display:grid;gap:0.85rem;">
+            <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+            <input type="hidden" name="update_dashboard_profile" value="1">
+
+            <div class="form-group">
+              <label class="form-label" for="dashboard-profile-name">Full Name</label>
+              <input type="text" id="dashboard-profile-name" name="name" class="form-control" value="<?= e($user['name'] ?? '') ?>" required minlength="2">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dashboard-profile-email">Email Address</label>
+              <input type="email" id="dashboard-profile-email" name="email" class="form-control" value="<?= e($user['email'] ?? '') ?>" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dashboard-profile-phone">Phone Number</label>
+              <input type="tel" id="dashboard-profile-phone" name="phone" class="form-control" value="<?= e($user['phone'] ?? '') ?>" placeholder="+265 999 123 456" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="dashboard-profile-avatar">Avatar URL <span class="text-muted">(optional)</span></label>
+              <input type="url" id="dashboard-profile-avatar" name="avatar" class="form-control" value="<?= e($user['avatar'] ?? '') ?>" placeholder="https://example.com/photo.jpg">
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;flex-wrap:wrap;">
+              <div class="text-xs text-muted">Wallet <?= formatMWK((float)($user['balance'] ?? 0)) ?></div>
+              <button type="submit" class="btn btn-primary btn-sm">Save Profile</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

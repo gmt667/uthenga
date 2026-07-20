@@ -24,18 +24,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     if (!validateCsrf()) {
         $profileError = 'Security error. Please refresh.';
     } else {
-        $name   = trim($_POST['name'] ?? '');
-        $avatar = trim($_POST['avatar'] ?? '');
+        $name   = trim((string)($_POST['name'] ?? ''));
+        $email  = strtolower(trim((string)($_POST['email'] ?? '')));
+        $phone  = trim((string)($_POST['phone'] ?? ''));
+        $avatar = trim((string)($_POST['avatar'] ?? ''));
 
         if (strlen($name) < 2) {
             $profileError = 'Name must be at least 2 characters.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $profileError = 'Please enter a valid email address.';
+        } elseif ($phone === '') {
+            $profileError = 'Please enter a phone number.';
+        } elseif (!preg_match('/^[0-9+()\-\s]{7,30}$/', $phone)) {
+            $profileError = 'Please enter a valid phone number.';
         } else {
-            dbExecute('UPDATE users SET name = ?, avatar = ? WHERE id = ?', [$name, $avatar, $userId]);
-            $_SESSION['user_name'] = $name;
-            logAction('Profile Updated', "User updated their profile name to: $name");
-            $profileSuccess = 'Profile updated successfully!';
-            $user['name']   = $name;
-            $user['avatar'] = $avatar;
+            $existingEmail = dbQueryOne(
+                'SELECT id FROM users WHERE LOWER(email) = ? AND id <> ? LIMIT 1',
+                [$email, $userId]
+            );
+            $existingPhone = dbQueryOne(
+                'SELECT id FROM users WHERE phone = ? AND phone IS NOT NULL AND phone <> "" AND id <> ? LIMIT 1',
+                [$phone, $userId]
+            );
+
+            if ($existingEmail) {
+                $profileError = 'Another account already uses that email address.';
+            } elseif ($existingPhone) {
+                $profileError = 'Another account already uses that phone number.';
+            } else {
+                dbExecute(
+                    'UPDATE users SET name = ?, email = ?, phone = ?, avatar = ? WHERE id = ?',
+                    [$name, $email, $phone, $avatar !== '' ? $avatar : ($user['avatar'] ?? null), $userId]
+                );
+                $_SESSION['user_name']  = $name;
+                $_SESSION['user_email'] = $email;
+                if ($avatar !== '') {
+                    $_SESSION['user_avatar'] = $avatar;
+                }
+                $user = dbQueryOne('SELECT * FROM users WHERE id = ?', [$userId]);
+                logAction('Profile Updated', 'User updated their profile identity and contact details.');
+                $profileSuccess = 'Profile updated successfully!';
+            }
         }
     }
 }
@@ -284,8 +313,12 @@ $activeSessions = dbQuery("
 
         <div class="form-group">
           <label class="form-label" for="profile-email">Email Address</label>
-          <input type="email" id="profile-email" class="form-control" value="<?= e($user['email']) ?>" disabled style="opacity:0.5;cursor:not-allowed;">
-          <p class="text-xs text-muted" style="margin-top:0.3rem;">Email cannot be changed. Contact support if needed.</p>
+          <input type="email" id="profile-email" name="email" class="form-control" value="<?= e($user['email']) ?>" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="profile-phone">Phone Number</label>
+          <input type="tel" id="profile-phone" name="phone" class="form-control" value="<?= e($user['phone'] ?? '') ?>" placeholder="+265 999 123 456" required>
         </div>
 
         <div class="form-group">

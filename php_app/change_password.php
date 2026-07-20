@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $profileName,
                         strtolower($profileEmail),
                         $profilePhone !== '' ? $profilePhone : null,
-                        $profileAvatar !== '' ? $profileAvatar : null,
+                        $profileAvatar !== '' ? $profileAvatar : ($user['avatar'] ?? null),
                         $hash,
                         $user['id']
                     ]

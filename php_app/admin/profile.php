@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_admin_profile'
             } else {
                 dbExecute(
                     'UPDATE users SET name = ?, email = ?, phone = ?, avatar = ? WHERE id = ?',
-                    [$name, $email, $phone, $avatar !== '' ? $avatar : null, $_SESSION['user_id']]
+                    [$name, $email, $phone, $avatar !== '' ? $avatar : ($user['avatar'] ?? null), $_SESSION['user_id']]
                 );
                 $_SESSION['user_name'] = $name;
                 $_SESSION['user_email'] = $email;
