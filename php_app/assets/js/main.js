@@ -853,31 +853,46 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.card, .stat-card').forEach(el => observer.observe(el));
 
+
 console.log('%cUthenga Marketplace', 'color:#f59e0b;font-size:1.5rem;font-weight:bold;');
 console.log('%cMalawi\'s Premier Marketplace Platform', 'color:#7c7c9a;font-size:0.9rem;');
 
-// â”€â”€â”€ Theme Persistence â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Theme Persistence
 (function () {
-  const button = document.querySelector('[data-theme-toggle]');
   const root = document.documentElement;
+  const buttons = Array.from(document.querySelectorAll('[data-theme-toggle]'));
   const metaTheme = document.querySelector('meta[name="theme-color"]');
-  if (!button || !root) return;
+  if (!buttons.length || !root) return;
 
   const palette = {
-    dark: '#0a0a0f',
-    light: '#f7f9fc',
+    dark: '#0b1120',
+    light: '#f8fafc',
   };
 
-  function applyTheme(theme) {
-    const next = theme === 'light' ? 'light' : 'dark';
-    root.dataset.theme = next;
-    root.style.colorScheme = next;
+  function setThemeCookie(theme) {
+    try {
+      document.cookie = `uthenga-theme=${encodeURIComponent(theme)}; path=/; max-age=31536000; samesite=lax`;
+    } catch (e) {}
+  }
+
+  function updateToggle(button, theme) {
     const label = button.querySelector('.theme-toggle-label');
-    if (label) label.textContent = next === 'dark' ? 'Light' : 'Dark';
-    button.setAttribute('aria-pressed', next === 'light' ? 'true' : 'false');
-    button.setAttribute('aria-label', next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-    button.title = next === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    const icon = button.querySelector('.theme-toggle-icon');
+    const next = theme === 'dark' ? 'light' : 'dark';
+    if (label) label.textContent = next === 'dark' ? 'Dark' : 'Light';
+    if (icon) icon.innerHTML = createInlineSvgIcon(next === 'dark' ? 'moon' : 'sun');
+    button.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    button.setAttribute('aria-label', next === 'dark' ? 'Switch to dark mode' : 'Switch to light mode');
+    button.title = next === 'dark' ? 'Switch to dark mode' : 'Switch to light mode';
+  }
+
+  function applyTheme(theme) {
+    const next = theme === 'dark' ? 'dark' : 'light';
+    root.dataset.theme = next;
+    document.body?.setAttribute('data-theme', next);
+    root.style.colorScheme = next;
     if (metaTheme) metaTheme.setAttribute('content', palette[next]);
+    buttons.forEach((button) => updateToggle(button, next));
   }
 
   let stored = null;
@@ -885,18 +900,27 @@ console.log('%cMalawi\'s Premier Marketplace Platform', 'color:#7c7c9a;font-size
     stored = localStorage.getItem('uthenga-theme');
   } catch (e) {}
 
-  const initial = root.dataset.theme || stored || 'light';
+  const cookieTheme = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('uthenga-theme='))
+    ?.split('=')
+    .slice(1)
+    .join('=') || null;
+
+  const initial = root.dataset.theme || stored || cookieTheme || 'light';
   applyTheme(initial);
 
-  button.addEventListener('click', () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    try {
-      localStorage.setItem('uthenga-theme', next);
-    } catch (e) {}
-    applyTheme(next);
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('uthenga-theme', next);
+      } catch (e) {}
+      setThemeCookie(next);
+      applyTheme(next);
+    });
   });
 })();
-
 // ─── IntersectionObserver for Progressive Image Lazy Loading ─────────────────
 (function () {
   'use strict';

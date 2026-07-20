@@ -36,13 +36,17 @@ if (in_array($userRole, VENDOR_ROLES, true)) {
     (function () {
       try {
         var stored = localStorage.getItem('uthenga-theme');
-        var theme = (stored === 'light' || stored === 'dark') ? stored : 'light';
+        var cookie = document.cookie.match(/(?:^|;\s*)uthenga-theme=(light|dark)(?:;|$)/);
+        var serverTheme = document.documentElement.dataset.theme;
+        var theme = (stored === 'light' || stored === 'dark')
+          ? stored
+          : ((cookie && (cookie[1] === 'light' || cookie[1] === 'dark')) ? cookie[1] : (serverTheme === 'dark' ? 'dark' : 'light'));
         document.documentElement.dataset.theme = theme;
         document.documentElement.style.colorScheme = theme;
 
         var meta = document.querySelector('meta[name="theme-color"]');
         if (meta) {
-          meta.setAttribute('content', theme === 'light' ? '#f7f9fc' : '#0a0a0f');
+          meta.setAttribute('content', theme === 'light' ? '#f8fafc' : '#0b1120');
         }
       } catch (e) {}
     })();

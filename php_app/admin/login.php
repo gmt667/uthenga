@@ -89,29 +89,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Admin Login';
+$themePreference = uthenga_theme_preference();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="<?= e($themePreference) ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
+  <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <title>Admin Login | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
   <style>
     .admin-login-body {
-      background: radial-gradient(ellipse at top, rgba(14,165,233,0.14), transparent 40%), linear-gradient(180deg, #f7f9fc, #eef2f7);
+      background: radial-gradient(ellipse at top, rgba(14,165,233,0.14), transparent 40%), linear-gradient(180deg, #f8fafc, #eef3f8);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 1.5rem;
     }
+    html[data-theme="dark"] .admin-login-body {
+      background: radial-gradient(ellipse at top, rgba(14,165,233,0.14), transparent 40%), linear-gradient(180deg, #0b1120, #111827);
+    }
     .admin-login-card {
-      background: #fff;
+      background: var(--clr-surface);
       border: 1px solid var(--clr-border);
       backdrop-filter: blur(24px);
       border-radius: var(--radius-xl);
@@ -144,6 +149,12 @@ $pageTitle = 'Admin Login';
   </style>
 </head>
 <body class="admin-login-body">
+<div style="position:fixed;top:1rem;right:1rem;z-index:20;">
+  <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">
+    <span class="theme-toggle-icon" aria-hidden="true"></span>
+    <span class="theme-toggle-label">Dark</span>
+  </button>
+</div>
 <div class="admin-login-card animate-in">
   <div class="auth-logo" style="margin-bottom:1rem;">
     <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/../includes/logo.php'; ?>

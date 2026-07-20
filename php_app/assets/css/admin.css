@@ -1048,3 +1048,141 @@
 .category-tab.active-stay      { background: rgba(14,165,233,0.1); border-color: var(--clr-cyan);   color: var(--clr-cyan); }
 .category-tab.active-tour      { background: rgba(16,185,129,0.1); border-color: var(--clr-green);  color: var(--clr-green); }
 .category-tab.active-transport { background: rgba(139,92,246,0.1); border-color: var(--clr-purple); color: var(--clr-purple); }
+
+/* === Uthenga Admin Theme Overrides === */
+.dashboard-topbar,
+.dashboard-footer,
+.admin-sidebar,
+.dashboard-icon-link,
+.dashboard-search,
+.dashboard-sidebar-toggle,
+.profile-dropdown-btn,
+.sidebar-link,
+.stat-card,
+.revenue-kpi-card,
+.ticket-admin-table,
+.table-responsive,
+.table-wrap,
+.glass-panel,
+.dashboard-panel {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-shell {
+  background:
+    radial-gradient(circle at top left, rgba(230,57,70,0.08), transparent 28%),
+    radial-gradient(circle at top right, rgba(14,165,233,0.08), transparent 24%),
+    var(--clr-page-bg);
+}
+
+.dashboard-topbar,
+.dashboard-footer,
+.admin-sidebar {
+  background: var(--clr-navbar-bg);
+  backdrop-filter: blur(20px);
+}
+
+.dashboard-sidebar-toggle,
+.dashboard-icon-link,
+.theme-toggle,
+.profile-dropdown-btn {
+  min-height: 42px;
+}
+
+.theme-toggle {
+  min-width: 5.25rem;
+  gap: 0.45rem;
+}
+
+.theme-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.theme-toggle-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.dashboard-topbar-actions .theme-toggle,
+.dashboard-topbar-actions .dashboard-icon-link,
+.dashboard-topbar-actions .profile-dropdown-btn {
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-topbar-actions .theme-toggle:hover,
+.dashboard-topbar-actions .dashboard-icon-link:hover,
+.dashboard-topbar-actions .profile-dropdown-btn:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.admin-sidebar,
+.dashboard-footer,
+.dashboard-panel,
+.glass-panel,
+.revenue-kpi-card,
+.stat-card,
+.ticket-admin-table,
+.table-responsive,
+.table-wrap {
+  border-color: var(--clr-border);
+}
+
+.admin-sidebar {
+  box-shadow: inset -1px 0 0 var(--clr-border);
+}
+
+.sidebar-link.active {
+  box-shadow: inset 0 0 0 1px rgba(230,57,70,0.14);
+}
+
+.admin-table tr:hover td,
+.ticket-admin-table tbody tr:hover td {
+  background: var(--clr-surface-hover);
+}
+
+.dashboard-search input {
+  font-size: 0.95rem;
+}
+
+.dashboard-search:focus-within,
+.profile-dropdown-btn:focus-within,
+.dashboard-sidebar-toggle:focus-visible,
+.theme-toggle:focus-visible {
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 0 4px var(--clr-accent-glow);
+}
+
+@media (max-width: 768px) {
+  .dashboard-topbar {
+    grid-template-columns: auto auto 1fr;
+    gap: 0.65rem;
+    padding-inline: 0.85rem;
+  }
+
+  .dashboard-search {
+    grid-column: 1 / -1;
+    order: 4;
+    min-height: 42px;
+  }
+
+  .theme-toggle-label {
+    display: none;
+  }
+
+  .dashboard-profile .profile-dropdown-btn > span:nth-child(2) {
+    display: none;
+  }
+
+  .admin-content {
+    padding: 1rem;
+  }
+
+  .dashboard-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
