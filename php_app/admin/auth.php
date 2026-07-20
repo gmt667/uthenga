@@ -66,15 +66,40 @@ function authenticateAdmin(string $email, string $password): array {
         strcasecmp($email, EMBEDDED_SUPER_ADMIN_EMAIL) === 0 &&
         hash_equals(EMBEDDED_SUPER_ADMIN_PASSWORD, $password)
     ) {
-        $embeddedUser = [
-            'id'             => 'u-super-admin',
-            'name'           => 'Super Admin',
-            'email'          => EMBEDDED_SUPER_ADMIN_EMAIL,
-            'role'           => ROLE_SUPER_ADMIN,
-            'balance'        => 0,
-            'must_change_pw' => 0,
-            'is_approved'    => 1,
-        ];
+        $embeddedHash = password_hash(EMBEDDED_SUPER_ADMIN_PASSWORD, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]);
+        $embeddedUser = dbQueryOne('SELECT * FROM users WHERE email = ?', [strtolower(EMBEDDED_SUPER_ADMIN_EMAIL)]);
+
+        if ($embeddedUser) {
+            try {
+                dbExecute(
+                    'UPDATE users SET name = ?, role = ?, is_approved = 1, must_change_pw = 1, password_hash = ? WHERE id = ?',
+                    ['Super Admin', ROLE_SUPER_ADMIN, $embeddedHash, $embeddedUser['id']]
+                );
+                $embeddedUser = dbQueryOne('SELECT * FROM users WHERE id = ?', [$embeddedUser['id']]);
+            } catch (Throwable $e) {
+                error_log('[Uthenga auth] Failed to refresh embedded super admin record: ' . $e->getMessage());
+            }
+        } else {
+            $embeddedUser = [
+                'id'             => 'u-super-admin',
+                'name'           => 'Super Admin',
+                'email'          => EMBEDDED_SUPER_ADMIN_EMAIL,
+                'role'           => ROLE_SUPER_ADMIN,
+                'balance'        => 0,
+                'must_change_pw' => 1,
+                'is_approved'    => 1,
+                'password_hash'  => $embeddedHash,
+            ];
+
+            try {
+                dbExecute(
+                    'INSERT INTO users (id, name, email, password_hash, role, is_approved, must_change_pw, joined_date) VALUES (?, ?, ?, ?, ?, 1, 1, CURDATE())',
+                    [$embeddedUser['id'], $embeddedUser['name'], $embeddedUser['email'], $embeddedHash, $embeddedUser['role']]
+                );
+            } catch (Throwable $e) {
+                error_log('[Uthenga auth] Failed to create embedded super admin record: ' . $e->getMessage());
+            }
+        }
 
         logAdminAuthAttempt($embeddedUser, 'Admin Login (Embedded Fallback)', 'Super admin authenticated via embedded fallback credentials from IP: ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
         return ['success' => true, 'user' => $embeddedUser, 'via' => 'embedded'];

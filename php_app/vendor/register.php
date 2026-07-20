@@ -21,6 +21,11 @@ if (isLoggedIn()) {
 $errors = [];
 $old = [];
 $categories = ['Hotel', 'Lodge', 'Tour Operator', 'Transport Provider', 'Event Organizer', 'Mbanda Seller', 'Other'];
+$socialLoginEnabled = (
+    (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== '') ||
+    (defined('FACEBOOK_APP_ID') && FACEBOOK_APP_ID !== '' && defined('FACEBOOK_APP_SECRET') && FACEBOOK_APP_SECRET !== '') ||
+    (defined('MICROSOFT_CLIENT_ID') && MICROSOFT_CLIENT_ID !== '' && defined('MICROSOFT_CLIENT_SECRET') && MICROSOFT_CLIENT_SECRET !== '')
+);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrf()) {
@@ -161,6 +166,31 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="section-label">Vendor Onboarding</div>
         <h1 style="margin:0.5rem 0 1rem;">Register your business on Uthenga</h1>
         <p class="text-muted" style="max-width:560px;">Create a vendor account, submit your business details, and wait for approval before you can access the vendor dashboard.</p>
+
+        <?php if ($socialLoginEnabled): ?>
+        <div style="display:grid;gap:0.75rem;margin:1.25rem 0 1rem;">
+          <?php if (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== ''): ?>
+            <a href="<?= BASE_URL ?>auth/google.php?role=vendor" class="oauth-btn oauth-google" id="btn-google-vendor-register">
+              <span>Continue with Google</span>
+            </a>
+          <?php endif; ?>
+          <?php if (defined('FACEBOOK_APP_ID') && FACEBOOK_APP_ID !== '' && defined('FACEBOOK_APP_SECRET') && FACEBOOK_APP_SECRET !== ''): ?>
+            <a href="<?= BASE_URL ?>auth/facebook.php?role=vendor" class="oauth-btn oauth-facebook" id="btn-facebook-vendor-register">
+              <span>Continue with Facebook</span>
+            </a>
+          <?php endif; ?>
+          <?php if (defined('MICROSOFT_CLIENT_ID') && MICROSOFT_CLIENT_ID !== '' && defined('MICROSOFT_CLIENT_SECRET') && MICROSOFT_CLIENT_SECRET !== ''): ?>
+            <a href="<?= BASE_URL ?>auth/microsoft.php?role=vendor" class="oauth-btn" id="btn-microsoft-vendor-register" style="background:#fff;color:#111;border:1px solid rgba(0,0,0,.12);">
+              <span>Continue with Microsoft</span>
+            </a>
+          <?php endif; ?>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin:0.25rem 0;">
+            <div style="flex:1;height:1px;background:var(--clr-border);"></div>
+            <span class="text-xs text-muted" style="white-space:nowrap;">or register with business details</span>
+            <div style="flex:1;height:1px;background:var(--clr-border);"></div>
+          </div>
+        </div>
+        <?php endif; ?>
 
         <?php if ($errors): ?>
           <div class="alert alert-error" style="margin-top:1rem;">

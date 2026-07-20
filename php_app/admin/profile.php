@@ -8,6 +8,63 @@ $activeNav = 'admin-profile';
 require_once __DIR__ . '/includes/admin_header.php';
 
 $user = dbQueryOne('SELECT * FROM users WHERE id = ?', [$_SESSION['user_id']]);
+$profileSuccess = '';
+$profileError = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_admin_profile'])) {
+    if (!validateCsrf()) {
+        $profileError = 'Security token mismatch. Please refresh and try again.';
+    } else {
+        $name = trim((string)($_POST['name'] ?? ''));
+        $email = strtolower(trim((string)($_POST['email'] ?? '')));
+        $phone = trim((string)($_POST['phone'] ?? ''));
+        $avatar = trim((string)($_POST['avatar'] ?? ''));
+
+        if ($name === '' || strlen($name) < 2) {
+            $profileError = 'Please enter a valid full name.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $profileError = 'Please enter a valid official email address.';
+        } elseif ($phone === '') {
+            $profileError = 'Please enter a phone number.';
+        } elseif (!preg_match('/^[0-9+()\-\s]{7,30}$/', $phone)) {
+            $profileError = 'Please enter a valid phone number.';
+        } else {
+            $existingEmail = dbQueryOne(
+                'SELECT id FROM users WHERE LOWER(email) = ? AND id <> ? LIMIT 1',
+                [$email, $_SESSION['user_id']]
+            );
+            $existingPhone = dbQueryOne(
+                'SELECT id FROM users WHERE phone = ? AND phone IS NOT NULL AND phone <> "" AND id <> ? LIMIT 1',
+                [$phone, $_SESSION['user_id']]
+            );
+
+            if ($existingEmail) {
+                $profileError = 'Another account already uses that email address.';
+            } elseif ($existingPhone) {
+                $profileError = 'Another account already uses that phone number.';
+            } else {
+                dbExecute(
+                    'UPDATE users SET name = ?, email = ?, phone = ?, avatar = ? WHERE id = ?',
+                    [$name, $email, $phone, $avatar !== '' ? $avatar : null, $_SESSION['user_id']]
+                );
+                $_SESSION['user_name'] = $name;
+                $_SESSION['user_email'] = $email;
+                $user = dbQueryOne('SELECT * FROM users WHERE id = ?', [$_SESSION['user_id']]);
+                $profileSuccess = 'Admin profile updated successfully.';
+
+                try {
+                    dbExecute(
+                        'INSERT INTO audit_logs (user_id, user_name, user_role, action, details) VALUES (?, ?, ?, ?, ?)',
+                        [$_SESSION['user_id'], $name, $_SESSION['user_role'] ?? 'Administrator', 'Admin Profile Updated', 'Administrator updated profile contact information.']
+                    );
+                } catch (Throwable $e) {
+                    // Audit logging should never block profile updates.
+                }
+            }
+        }
+    }
+}
+
 $permissionRow = dbQueryOne('SELECT permissions FROM admin_permissions WHERE user_id = ?', [$_SESSION['user_id']]);
 $permissionMap = [
     'admin_users'    => 'Admin Management',
@@ -75,19 +132,54 @@ $roleLabel = $_SESSION['user_role'] ?? 'Administrator';
         <p class="text-xs text-muted">Identity and contact information used across the admin console.</p>
       </div>
     </div>
-    <div class="table-responsive">
-      <table class="admin-table">
-        <tbody>
-          <tr><th style="width:220px;">Full Name</th><td><?= e($user['name'] ?? $_SESSION['user_name'] ?? '') ?></td></tr>
-          <tr><th>Email Address</th><td><?= e($user['email'] ?? '') ?></td></tr>
-          <tr><th>Phone Number</th><td><?= e($user['phone'] ?? 'Not provided') ?></td></tr>
-          <tr><th>Role</th><td><?= e($roleLabel) ?></td></tr>
-          <tr><th>Status</th><td><span class="badge <?= !empty($user['is_approved']) ? 'badge-approved' : 'badge-cancelled' ?>"><?= e($accountState) ?></span></td></tr>
-          <tr><th>Joined</th><td><?= e(substr((string)($user['created_at'] ?? ''), 0, 16)) ?></td></tr>
-          <tr><th>Must Change Password</th><td><?= !empty($user['must_change_pw']) ? 'Yes' : 'No' ?></td></tr>
-        </tbody>
-      </table>
-    </div>
+    <?php if ($profileError): ?>
+      <div class="alert alert-error" style="margin-bottom:1rem;">Error: <?= e($profileError) ?></div>
+    <?php endif; ?>
+    <?php if ($profileSuccess): ?>
+      <div class="alert alert-success" style="margin-bottom:1rem;">Success: <?= e($profileSuccess) ?></div>
+    <?php endif; ?>
+
+    <form method="POST" action="" style="display:grid;gap:1rem;">
+      <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+      <input type="hidden" name="update_admin_profile" value="1">
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group">
+          <label class="form-label" for="name">Full Name</label>
+          <input type="text" id="name" name="name" class="form-control" value="<?= e($user['name'] ?? $_SESSION['user_name'] ?? '') ?>" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Official Email</label>
+          <input type="email" id="email" name="email" class="form-control" value="<?= e($user['email'] ?? '') ?>" required>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" class="form-control" value="<?= e($user['phone'] ?? '') ?>" placeholder="+265 999 123 456" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="avatar">Profile Photo URL <span class="text-muted">(optional)</span></label>
+          <input type="url" id="avatar" name="avatar" class="form-control" value="<?= e($user['avatar'] ?? '') ?>" placeholder="https://...">
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="admin-table">
+          <tbody>
+            <tr><th style="width:220px;">Role</th><td><?= e($roleLabel) ?></td></tr>
+            <tr><th>Status</th><td><span class="badge <?= !empty($user['is_approved']) ? 'badge-approved' : 'badge-cancelled' ?>"><?= e($accountState) ?></span></td></tr>
+            <tr><th>Joined</th><td><?= e(substr((string)($user['created_at'] ?? ''), 0, 16)) ?></td></tr>
+            <tr><th>Must Change Password</th><td><?= !empty($user['must_change_pw']) ? 'Yes' : 'No' ?></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;">
+        <button type="submit" class="btn btn-primary"><?= admin_icon_svg('settings') ?> Save Profile Changes</button>
+      </div>
+    </form>
   </section>
 
   <aside class="glass-panel dashboard-panel dashboard-panel-side">

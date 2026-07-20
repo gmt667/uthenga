@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php if ($socialLoginEnabled): ?>
     <div style="display:grid;gap:0.75rem;margin:1rem 0 1.5rem;">
       <?php if (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== ''): ?>
-      <a href="<?= BASE_URL ?>auth/google.php" id="btn-google-register" class="oauth-btn oauth-google">
+      <a href="<?= BASE_URL ?>auth/google.php?role=customer" id="btn-google-register" class="oauth-btn oauth-google">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20">
           <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.7 2.2 30.2 0 24 0 14.7 0 6.7 5.5 2.9 13.4l7.9 6.1C12.5 13.1 17.8 9.5 24 9.5z"/>
           <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.9 7.2l7.6 5.9C43.7 37.5 46.5 31.4 46.5 24.5z"/>
@@ -181,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </a>
       <?php endif; ?>
       <?php if (defined('FACEBOOK_APP_ID') && FACEBOOK_APP_ID !== '' && defined('FACEBOOK_APP_SECRET') && FACEBOOK_APP_SECRET !== ''): ?>
-      <a href="<?= BASE_URL ?>auth/facebook.php" id="btn-facebook-register" class="oauth-btn oauth-facebook">
+      <a href="<?= BASE_URL ?>auth/facebook.php?role=customer" id="btn-facebook-register" class="oauth-btn oauth-facebook">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#fff">
           <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.791-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.883v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
         </svg>
@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </a>
       <?php endif; ?>
       <?php if (defined('MICROSOFT_CLIENT_ID') && MICROSOFT_CLIENT_ID !== '' && defined('MICROSOFT_CLIENT_SECRET') && MICROSOFT_CLIENT_SECRET !== ''): ?>
-      <a href="<?= BASE_URL ?>auth/microsoft.php" id="btn-microsoft-register" class="oauth-btn" style="background:#fff;color:#111;border:1px solid rgba(0,0,0,.12);">
+      <a href="<?= BASE_URL ?>auth/microsoft.php?role=customer" id="btn-microsoft-register" class="oauth-btn" style="background:#fff;color:#111;border:1px solid rgba(0,0,0,.12);">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" width="20" height="20" aria-hidden="true">
           <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
           <rect x="12" y="1" width="9" height="9" fill="#7fba00"/>

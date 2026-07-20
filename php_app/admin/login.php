@@ -249,6 +249,10 @@ $themePreference = uthenga_theme_preference();
     <span class="text-xs"><?= $isSuperPortal ? 'Use admin@uthenga.com to enter the super admin command center.' : 'Use a verified Super Administrator account only.' ?></span>
   </div>
 
+  <p style="text-align:center;margin-top:0.9rem;font-size:0.875rem;">
+    <a href="<?= BASE_URL ?>admin/forgot-password.php" style="font-weight:600;">Forgot admin password?</a>
+  </p>
+
   <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;">
     <?php if ($isSuperPortal): ?>
       <a href="<?= BASE_URL ?>admin/login.php" style="font-weight:600;">Standard admin login</a>

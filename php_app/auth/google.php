@@ -18,6 +18,9 @@ if (GOOGLE_CLIENT_ID === '' || GOOGLE_CLIENT_SECRET === '') {
 $state = bin2hex(random_bytes(16));
 $_SESSION['oauth_state']        = $state;
 $_SESSION['oauth_redirect_back'] = $_GET['redirect'] ?? '';
+$_SESSION['oauth_register_role'] = in_array(strtolower(trim((string)($_GET['role'] ?? 'customer'))), ['customer', 'vendor'], true)
+    ? strtolower(trim((string)($_GET['role'] ?? 'customer')))
+    : 'customer';
 
 $params = http_build_query([
     'client_id'     => GOOGLE_CLIENT_ID,

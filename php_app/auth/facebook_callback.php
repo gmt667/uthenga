@@ -92,6 +92,11 @@ if (empty($facebookEmail)) {
 }
 
 // Find or Create User
+$registerRole = strtolower(trim((string)($_SESSION['oauth_register_role'] ?? 'customer')));
+if (!in_array($registerRole, ['customer', 'vendor'], true)) {
+    $registerRole = 'customer';
+}
+$userIsApproved = 1;
 $existingUser = dbQueryOne('SELECT * FROM users WHERE email = ?', [$facebookEmail]);
 
 if ($existingUser) {
@@ -99,9 +104,23 @@ if ($existingUser) {
     if (in_array($existingUser['role'], ADMIN_ROLES, true)) {
         redirect(BASE_URL . 'login.php?oauth_error=admin_not_allowed');
     }
+    if ($registerRole === 'vendor' && $existingUser['role'] !== ROLE_VENDOR) {
+        dbExecute('UPDATE users SET role = ?, is_approved = 0 WHERE id = ?', [ROLE_VENDOR, $existingUser['id']]);
+        $existingUser['role'] = ROLE_VENDOR;
+        $existingUser['is_approved'] = 0;
+    }
     // Block suspended accounts
     if (!$existingUser['is_approved']) {
-        redirect(BASE_URL . 'login.php?suspended=1');
+        if (($existingUser['role'] ?? '') === ROLE_VENDOR) {
+            $userId      = $existingUser['id'];
+            $userName    = $existingUser['name'];
+            $userRole    = ROLE_VENDOR;
+            $userBalance = $existingUser['balance'];
+            $userAvatar  = $existingUser['avatar'] ?: $facebookAvatar;
+            $userIsApproved = 0;
+        } else {
+            redirect(BASE_URL . 'login.php?suspended=1');
+        }
     }
 
     // Backfill avatar if missing
@@ -118,22 +137,35 @@ if ($existingUser) {
 } else {
     // Create new customer — generateId produces a string like "U-ABCD1234"
     $userId      = generateId('U');
-    $userRole    = ROLE_CUSTOMER;
+    $userRole    = $registerRole === 'vendor' ? ROLE_VENDOR : ROLE_CUSTOMER;
     $userName    = $facebookName;
     $userBalance = 0;
     $userAvatar  = $facebookAvatar;
+    $isApproved  = $userRole === ROLE_VENDOR ? 0 : 1;
+    $userIsApproved = $isApproved;
 
     dbExecute(
         'INSERT INTO users (id, name, email, password_hash, role, avatar, is_approved, joined_date)
-         VALUES (?, ?, ?, ?, ?, ?, 1, CURDATE())',
-        [$userId, $facebookName, $facebookEmail, '', ROLE_CUSTOMER, $facebookAvatar]
+         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())',
+        [$userId, $facebookName, $facebookEmail, '', $userRole, $facebookAvatar, $isApproved]
     );
 
     dbExecute(
         'INSERT INTO audit_logs (user_id, user_name, user_role, action, details) VALUES (?, ?, ?, ?, ?)',
-        [$userId, $facebookName, ROLE_CUSTOMER, 'Facebook OAuth Registration',
-         "New customer account via Facebook OAuth: $facebookEmail"]
+        [$userId, $facebookName, $userRole, 'Facebook OAuth Registration',
+         "New " . strtolower($userRole) . " account via Facebook OAuth: $facebookEmail"]
     );
+
+    if ($userRole === ROLE_VENDOR) {
+        try {
+            dbExecute(
+                'INSERT INTO vendor_profiles (vendor_id, business_name, phone, address, city, category, description, approval_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                [$userId, $facebookName, null, null, null, 'Other', 'Vendor account created via Facebook OAuth', 'pending']
+            );
+        } catch (Throwable $e) {
+            error_log('Uthenga OAuth: vendor_profiles insert skipped: ' . $e->getMessage());
+        }
+    }
 }
 
 // Upsert social_accounts Link
@@ -173,9 +205,10 @@ try {
 // Redirect
 $redirectBack = $_SESSION['oauth_redirect_back'] ?? '';
 unset($_SESSION['oauth_redirect_back']);
+unset($_SESSION['oauth_register_role']);
 
 if (in_array($userRole, VENDOR_ROLES, true)) {
-    redirect($redirectBack ?: BASE_URL . 'vendor/dashboard.php');
+    redirect($redirectBack ?: ($userIsApproved ? BASE_URL . 'vendor/dashboard.php' : BASE_URL . 'vendor/pending.php'));
 } else {
     redirect($redirectBack ?: BASE_URL . 'dashboard.php');
 }
