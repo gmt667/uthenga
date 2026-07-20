@@ -123,7 +123,8 @@ p  { color: var(--clr-text-soft); }
   padding: 0 1.5rem;
 }
 .flex   { display: flex; }
-.grid   { display: grid; }
+.grid   { display: grid; align-items: start; }
+.grid > *, .flex > * { min-width: 0; }
 .gap-1  { gap: 0.5rem; }
 .gap-2  { gap: 1rem; }
 .gap-3  { gap: 1.5rem; }
@@ -767,9 +768,9 @@ html[data-theme="dark"] .logo-light { display: none; }
 }
 
 /* ─── Grid Layouts ─────────────────────────────────────────────────────────── */
-.grid-cols-4 { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-.grid-cols-3 { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
-.grid-cols-2 { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
 /* ─── Filter Tabs ─────────────────────────────────────────────────────────────── */
 .filter-tabs {
