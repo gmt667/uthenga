@@ -45,20 +45,6 @@ $popularCategories = [
 ];
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Uthenga marketplace for events, stays, transport, and curated experiences in Malawi.">
-  <meta name="base-url" content="<?= BASE_URL ?>">
-  <meta name="csrf-token" content="<?= e($_SESSION['csrf_token'] ?? '') ?>">
-  <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= APP_VERSION ?>">
-</head>
-<body>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
 <section class="section" style="padding-top:3rem;padding-bottom:2rem;">
@@ -358,8 +344,6 @@ $popularCategories = [
   <?php endif; ?>
 <?php endif; ?>
 
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
-
 <!-- ??? Promotional Popup ??????????????????????????????????????????????????? -->
 <div id="uthenga-popup-overlay" role="dialog" aria-modal="true" aria-label="Promotion" style="display:none;">
   <div id="uthenga-popup-card">
@@ -462,5 +446,5 @@ $popularCategories = [
   });
 })();
 </script>
-</body>
-</html>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

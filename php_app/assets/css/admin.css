@@ -1186,3 +1186,125 @@
     align-items: flex-start;
   }
 }
+
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+  }
+
+  .dashboard-shell {
+    min-height: 100vh;
+  }
+
+  .dashboard-main,
+  .admin-content {
+    min-width: 0;
+  }
+
+  .dashboard-chart-grid,
+  .dashboard-surface-row,
+  .presentation-slide,
+  .revenue-kpi-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-topbar-actions {
+    justify-content: flex-end;
+    gap: 0.45rem;
+  }
+
+  .dashboard-topbar-actions .theme-toggle {
+    min-width: 0;
+    padding-inline: 0.75rem;
+  }
+
+  .dashboard-topbar-actions .profile-dropdown-btn {
+    max-width: 100%;
+  }
+
+  .admin-sidebar {
+    width: min(86vw, 300px);
+  }
+
+  .sidebar-link {
+    min-height: 46px;
+    padding-block: 0.9rem;
+  }
+
+  .dashboard-panel,
+  .glass-panel,
+  .stat-card,
+  .revenue-kpi-card {
+    border-radius: 1rem;
+  }
+
+  .table-toolbar,
+  .pagination,
+  .quick-approval-row,
+  .sidebar-section-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-toolbar .search-wrap,
+  .table-toolbar select,
+  .table-toolbar .export-group,
+  .quick-approval-actions {
+    width: 100%;
+  }
+
+  .table-toolbar .export-group,
+  .quick-approval-actions {
+    justify-content: stretch;
+  }
+
+  .table-toolbar .export-group .btn,
+  .quick-approval-actions .btn,
+  .pagination .page-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-overlay {
+    padding: 0.85rem;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100vh - 1.7rem);
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-topbar {
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .dashboard-sidebar-toggle {
+    min-width: 44px;
+    width: 44px;
+    justify-content: center;
+  }
+
+  .dashboard-topbar-actions .theme-toggle-label,
+  .dashboard-topbar-actions .profile-dropdown-btn span:nth-child(2) {
+    display: none;
+  }
+
+  .dashboard-content,
+  .admin-content {
+    padding: 0.85rem;
+  }
+
+  .dashboard-footer {
+    gap: 0.35rem;
+  }
+}
