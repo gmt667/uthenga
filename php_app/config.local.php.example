@@ -1,0 +1,21 @@
+<?php
+/**
+ * Example local overrides for development or cPanel.
+ *
+ * Copy this file to `config.local.php` and keep the copy out of Git.
+ * Values in this file are loaded after `.env`, so they can override env vars.
+ */
+
+return [
+    'UTHENGA_ENV' => 'production',
+    'UTHENGA_BASE_URL' => 'https://your-domain.com/',
+    'DB_HOST' => 'localhost',
+    'DB_PORT' => '3306',
+    'DB_SOCKET' => '',
+    'DB_NAME' => 'uthenga_db',
+    'DB_USER' => 'uthenga_user',
+    'DB_PASS' => 'your_db_password',
+    'UTHENGA_SUPPORT_EMAIL' => 'support@uthenga.co',
+    'UTHENGA_MAIL_FROM_EMAIL' => 'support@uthenga.co',
+    'UTHENGA_MAIL_FROM_NAME' => 'Uthenga',
+];

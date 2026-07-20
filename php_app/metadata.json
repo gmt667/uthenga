@@ -1,0 +1,6 @@
+{
+  "name": "UTHENGA",
+  "description": "An enterprise-grade digital marketplace and booking platform for event ticketing, hotel reservations, lodge bookings, tourism packages, travel services, transport, and digital payments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

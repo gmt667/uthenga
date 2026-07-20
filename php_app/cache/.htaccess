@@ -1,0 +1,5 @@
+# Block all direct HTTP access to cache files
+<FilesMatch ".*">
+  Order Allow,Deny
+  Deny from all
+</FilesMatch>

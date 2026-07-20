@@ -1,0 +1,183 @@
+<?php
+/**
+ * Uthenga — Google OAuth 2.0 Callback Handler
+ * Called by Google after the user grants or denies access.
+ * Exchanges the auth code for tokens, fetches profile, then creates/updates
+ * the user account and establishes a session.
+ *
+ * Compatible with the live uthenga_db schema (users.id = VARCHAR(30)).
+ */
+require_once dirname(__DIR__) . '/config.php';
+require_once dirname(__DIR__) . '/db.php';
+
+// ─── 1. Validate State (CSRF protection) ────────────────────────────────────
+$state        = $_GET['state']            ?? '';
+$sessionState = $_SESSION['oauth_state']  ?? '';
+$code         = $_GET['code']             ?? '';
+$oauthError   = $_GET['error']            ?? '';
+
+// Consume the state immediately (prevent replay)
+unset($_SESSION['oauth_state']);
+
+if ($oauthError) {
+    // User denied consent or other Google error
+    redirect(BASE_URL . 'login.php?oauth_error=' . urlencode($oauthError));
+}
+
+if (GOOGLE_CLIENT_ID === '' || GOOGLE_CLIENT_SECRET === '') {
+    redirect(BASE_URL . 'login.php');
+}
+
+if (empty($code) || empty($state) || !hash_equals($sessionState, $state)) {
+    redirect(BASE_URL . 'login.php?oauth_error=invalid_state');
+}
+
+// ─── 2. Exchange Authorization Code for Access Token ────────────────────────
+$ch = curl_init('https://oauth2.googleapis.com/token');
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_POSTFIELDS     => http_build_query([
+        'code'          => $code,
+        'client_id'     => GOOGLE_CLIENT_ID,
+        'client_secret' => GOOGLE_CLIENT_SECRET,
+        'redirect_uri'  => GOOGLE_REDIRECT_URI,
+        'grant_type'    => 'authorization_code',
+    ]),
+    CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
+    CURLOPT_TIMEOUT        => 15,
+    CURLOPT_SSL_VERIFYPEER => true,
+]);
+$tokenResponse = curl_exec($ch);
+$httpCode      = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if ($tokenResponse === false || $httpCode !== 200) {
+    redirect(BASE_URL . 'login.php?oauth_error=token_exchange_failed');
+}
+
+$tokenData   = json_decode($tokenResponse, true);
+$accessToken = $tokenData['access_token'] ?? '';
+
+if (empty($accessToken)) {
+    redirect(BASE_URL . 'login.php?oauth_error=no_access_token');
+}
+
+// ─── 3. Fetch Google User Profile ───────────────────────────────────────────
+$ch = curl_init('https://www.googleapis.com/oauth2/v3/userinfo');
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $accessToken],
+    CURLOPT_TIMEOUT        => 15,
+    CURLOPT_SSL_VERIFYPEER => true,
+]);
+$profileResponse = curl_exec($ch);
+$httpCode        = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+curl_close($ch);
+
+if ($profileResponse === false || $httpCode !== 200) {
+    redirect(BASE_URL . 'login.php?oauth_error=profile_fetch_failed');
+}
+
+$profile      = json_decode($profileResponse, true);
+$googleId     = $profile['sub']    ?? '';
+$googleEmail  = strtolower(trim($profile['email'] ?? ''));
+$googleName   = $profile['name']   ?? 'Google User';
+$googleAvatar = $profile['picture'] ?? '';
+
+if (empty($googleId) || empty($googleEmail)) {
+    redirect(BASE_URL . 'login.php?oauth_error=missing_profile_data');
+}
+
+// ─── 4. Find or Create User ──────────────────────────────────────────────────
+// Live DB users table uses: id (VARCHAR30), name, email, password_hash,
+// role, avatar, is_approved, balance, must_change_pw, joined_date
+$existingUser = dbQueryOne('SELECT * FROM users WHERE email = ?', [$googleEmail]);
+
+if ($existingUser) {
+    // Block admins from using public OAuth
+    if (in_array($existingUser['role'], ADMIN_ROLES, true)) {
+        redirect(BASE_URL . 'login.php?oauth_error=admin_not_allowed');
+    }
+    // Block suspended accounts
+    if (!$existingUser['is_approved']) {
+        redirect(BASE_URL . 'login.php?suspended=1');
+    }
+
+    // Backfill avatar if missing
+    if (!empty($googleAvatar) && empty($existingUser['avatar'])) {
+        dbExecute('UPDATE users SET avatar = ? WHERE id = ?', [$googleAvatar, $existingUser['id']]);
+    }
+
+    $userId      = $existingUser['id'];
+    $userName    = $existingUser['name'];
+    $userRole    = $existingUser['role'];
+    $userBalance = $existingUser['balance'];
+    $userAvatar  = $existingUser['avatar'] ?: $googleAvatar;
+
+} else {
+    // Create new customer — generateId produces a string like "U-ABCD1234"
+    $userId      = generateId('U');
+    $userRole    = ROLE_CUSTOMER;
+    $userName    = $googleName;
+    $userBalance = 0;
+    $userAvatar  = $googleAvatar;
+
+    dbExecute(
+        'INSERT INTO users (id, name, email, password_hash, role, avatar, is_approved, joined_date)
+         VALUES (?, ?, ?, ?, ?, ?, 1, CURDATE())',
+        [$userId, $googleName, $googleEmail, '', ROLE_CUSTOMER, $googleAvatar]
+    );
+
+    dbExecute(
+        'INSERT INTO audit_logs (user_id, user_name, user_role, action, details) VALUES (?, ?, ?, ?, ?)',
+        [$userId, $googleName, ROLE_CUSTOMER, 'Google OAuth Registration',
+         "New customer account via Google OAuth: $googleEmail"]
+    );
+}
+
+// ─── 5. Upsert social_accounts Link ─────────────────────────────────────────
+// social_accounts is added by migration 002 — skip gracefully if absent
+try {
+    $link = dbQueryOne(
+        'SELECT id FROM social_accounts WHERE provider = ? AND provider_user_id = ?',
+        ['google', $googleId]
+    );
+    if (!$link) {
+        dbExecute(
+            'INSERT INTO social_accounts (user_id, provider, provider_user_id, provider_email)
+             VALUES (?, ?, ?, ?)',
+            [$userId, 'google', $googleId, $googleEmail]
+        );
+    }
+} catch (Exception $e) {
+    // Table may not exist yet — OAuth still works, just no social link stored
+    error_log('Uthenga OAuth: social_accounts insert skipped: ' . $e->getMessage());
+}
+
+// ─── 6. Create Session ───────────────────────────────────────────────────────
+session_regenerate_id(true);
+$_SESSION['user_id']      = $userId;
+$_SESSION['user_name']    = $userName;
+$_SESSION['user_role']    = $userRole;
+$_SESSION['user_email']   = $googleEmail;
+$_SESSION['user_balance'] = $userBalance;
+$_SESSION['user_avatar']  = $userAvatar;
+
+try {
+    dbExecute(
+        'INSERT INTO audit_logs (user_id, user_name, user_role, action, details) VALUES (?, ?, ?, ?, ?)',
+        [$userId, $userName, $userRole, 'Google OAuth Login',
+         'Signed in via Google OAuth from IP: ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown')]
+    );
+} catch (Exception $e) { /* non-fatal */ }
+
+// ─── 7. Redirect ─────────────────────────────────────────────────────────────
+$redirectBack = $_SESSION['oauth_redirect_back'] ?? '';
+unset($_SESSION['oauth_redirect_back']);
+
+if (in_array($userRole, VENDOR_ROLES, true)) {
+    redirect($redirectBack ?: BASE_URL . 'vendor/dashboard.php');
+} else {
+    redirect($redirectBack ?: BASE_URL . 'dashboard.php');
+}

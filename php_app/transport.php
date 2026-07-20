@@ -1,0 +1,279 @@
+﻿<?php
+/**
+ * Uthenga â€” Transport & Coach Directory
+ */
+require_once __DIR__ . '/config.php';
+
+$pageTitle = 'Explore Transport';
+$activeNav = 'transport';
+
+// Search & filter parameters
+$search = trim($_GET['q'] ?? '');
+$location = trim($_GET['location'] ?? '');
+$rating = trim($_GET['rating'] ?? '');
+
+$listings = marketplace_fetch_transport_routes($search, 0, false);
+if ($location !== '' || $rating !== '') {
+    $listings = array_values(array_filter($listings, function ($item) use ($location, $rating) {
+        if ($location !== '' && stripos((string) ($item['location'] ?? ''), $location) === false) {
+            return false;
+        }
+        if ($rating !== '' && (float) ($item['rating'] ?? 0) < (float) $rating) {
+            return false;
+        }
+        return true;
+    }));
+}
+
+$allLocations = dbQuery("
+    SELECT DISTINCT location
+    FROM listings
+    WHERE listing_type = 'transport' AND is_active = 1 AND location <> ''
+    ORDER BY location ASC
+");
+
+function renderStars(float $rating): string {
+    $full = (int)floor($rating);
+    $half = ($rating - $full) >= 0.5 ? 1 : 0;
+    return str_repeat('â˜…', $full) . str_repeat('Â½', $half) . str_repeat('â˜†', 5 - $full - $half);
+}
+
+function getPrice(array $listing): string {
+    $meta = json_decode($listing['meta'], true);
+    return formatMWK($meta['pricePerSeat'] ?? 0) . '/seat';
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Book inter-city coaches, airport transfers and shuttles in Malawi. Find routes and book seats on Uthenga.">
+  <meta name="base-url" content="<?= BASE_URL ?>">
+  <meta name="csrf-token" content="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+  <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+  <style>
+    .directory-hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%);
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--clr-border);
+      margin-bottom: 2rem;
+    }
+    .filters-wrapper {
+      background: var(--clr-surface);
+      border: 1px solid var(--clr-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: flex-end;
+    }
+    @media (max-width: 768px) {
+      .filter-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<?php require_once __DIR__ . '/includes/header.php'; ?>
+
+<section class="directory-hero">
+  <div class="container">
+    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">ðŸšŒ Coaches & Shuttles</h1>
+    <p style="color: var(--clr-text-soft); margin-bottom: 1.5rem;">Compare inter-city coaches, direct airport transfers, and private rentals in Malawi.</p>
+    
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <a href="transport.php" class="btn btn-sm btn-primary">Coaches & Buses</a>
+      <a href="airport-transfer.php" class="btn btn-sm btn-secondary">âœˆï¸ Airport Transfers</a>
+      <a href="car-rental.php" class="btn btn-sm btn-secondary">ðŸš— Car Rentals</a>
+      <a href="driver-profile.php" class="btn btn-sm btn-secondary">ðŸ›¡ï¸ Drivers Portal</a>
+    </div>
+  </div>
+</section>
+
+<div class="container" style="padding-bottom: 4rem;">
+  
+  <!-- Advanced Filters -->
+  <div class="filters-wrapper">
+    <form method="GET" action="transport.php" class="filter-form">
+      <div class="filter-grid">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Search Keyword</label>
+          <input type="text" name="q" class="form-control" placeholder="Search by route, carrier..." value="<?= e($search) ?>">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Departure / Route</label>
+          <select name="location" class="form-control">
+            <option value="">All Routes</option>
+            <?php foreach ($allLocations as $loc): ?>
+              <option value="<?= e($loc['location']) ?>" <?= $location === $loc['location'] ? 'selected' : '' ?>><?= e($loc['location']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Min Rating</label>
+          <select name="rating" class="form-control">
+            <option value="">Any Rating</option>
+            <option value="4" <?= $rating === '4' ? 'selected' : '' ?>>4.0+ Stars</option>
+            <option value="4.5" <?= $rating === '4.5' ? 'selected' : '' ?>>4.5+ Stars</option>
+          </select>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Filter</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Listings -->
+  <?php if (empty($listings)): ?>
+    <div style="text-align: center; padding: 4rem 0;">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">ðŸ”</div>
+      <h3>No transport services found</h3>
+      <p class="text-muted">Try adjusting your search criteria or clear the filters.</p>
+      <a href="transport.php" class="btn btn-secondary" style="margin-top: 1rem;">Reset Filters</a>
+    </div>
+  <?php else: ?>
+    <div class="grid grid-cols-4 gap-3">
+      <?php foreach ($listings as $listing): 
+        $meta = json_decode($listing['meta'], true);
+      ?>
+      <div class="listing-card-wrap">
+        <div class="card" id="listing-<?= e($listing['id']) ?>">
+          <div class="card-img-wrap">
+            <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="card-img" loading="lazy">
+            <span class="card-badge badge-transport">Transport</span>
+            <?php if ($listing['featured']): ?><span class="card-badge badge-featured" style="left:auto;right:0.75rem;">â­ Featured</span><?php endif; ?>
+          </div>
+          <div class="card-body">
+            <div class="card-title"><?= e($listing['title']) ?></div>
+            <div class="card-loc">ðŸ“ <?= e($listing['location']) ?></div>
+            <div class="flex items-center gap-1" style="margin-bottom: 0.75rem;">
+              <span class="stars"><?= renderStars((float)$listing['rating']) ?></span>
+              <span class="text-xs text-muted"><?= e($listing['rating']) ?></span>
+            </div>
+            <div class="card-price"><?= getPrice($listing) ?></div>
+          </div>
+          <div class="card-footer">
+            <a href="<?= e($listing['detail_url']) ?>" class="btn btn-sm btn-secondary" style="flex:1;">Details</a>
+            <?php if (isLoggedIn()): ?>
+              <button
+                class="btn btn-sm btn-primary"
+                onclick="openBookingModal('<?= e($listing['id']) ?>','transport','<?= addslashes(e($listing['title'])) ?>',<?= (float)($meta['pricePerSeat'] ?? 0) ?>)"
+              >Book Seat</button>
+            <?php else: ?>
+              <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-primary">Book Seat</a>
+            <?php endif; ?>
+          </div>
+        </div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+</div>
+
+<!-- Include standard booking modals and scripts -->
+<?php if (isLoggedIn()): ?>
+<div class="modal-overlay" id="booking-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="bk-modal-title">Book Seat</h3>
+      <button class="modal-close" onclick="closeModal('booking-modal')">âœ•</button>
+    </div>
+    <form method="POST" action="<?= BASE_URL ?>request_api.php" id="booking-form">
+      <div class="modal-body">
+        <input type="hidden" name="action" value="create_booking">
+        <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
+        <input type="hidden" id="bk-listing-id" name="listing_id" value="">
+        <input type="hidden" id="bk-listing-type" name="listing_type" value="">
+        <input type="hidden" id="bk-listing-title" name="listing_title" value="">
+        <input type="hidden" id="bk-base-price" value="0">
+        <input type="hidden" id="bk-total-price" name="total_price" value="0">
+        <input type="hidden" id="bk-discount" name="discount" value="0">
+        <input type="hidden" id="bk-gateway" name="gateway" value="">
+        
+        <div class="form-group">
+          <label class="form-label" for="bk-quantity">Number of Seats</label>
+          <input type="number" id="bk-quantity" name="quantity" class="form-control" value="1" min="1" max="10">
+        </div>
+        
+        <div id="bk-transport-fields" style="display:none;">
+          <!-- Custom travel date for transport -->
+          <div class="form-group">
+            <label class="form-label">Travel Date</label>
+            <input type="date" name="travel_date" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Coupon Code</label>
+          <div style="display:flex;gap:0.5rem;">
+            <input type="text" id="coupon-code" name="coupon_code" class="form-control" placeholder="WELCOME10" style="flex:1;">
+            <button type="button" id="apply-coupon" class="btn btn-secondary btn-sm">Apply</button>
+          </div>
+          <div id="coupon-msg" class="text-xs text-muted" style="margin-top:0.35rem;"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Payment Method</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <?php foreach (['Airtel Money','TNM Mpamba','Bank Card','Direct NBS Transfer','Uthenga Pay'] as $gw): ?>
+            <button type="button" class="gateway-btn btn btn-secondary btn-sm" data-gateway="<?= e($gw) ?>" id="gw-<?= str_replace([' ','/'],'_',$gw) ?>"><?= e($gw) ?></button>
+            <?php endforeach; ?>
+          </div>
+        </div>
+
+        <div class="glass-panel" style="padding:1rem;text-align:center;margin-top:0.5rem;">
+          <div class="text-xs text-muted" style="margin-bottom:0.25rem;">Total Amount</div>
+          <div id="bk-total" style="font-size:1.5rem;font-weight:800;color:var(--clr-accent);">MK 0</div>
+          <div class="text-xs text-muted" style="margin-top:0.25rem;">10% platform commission included</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('booking-modal')">Cancel</button>
+        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment â†’</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="payment-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Confirm Payment</h3>
+      <button class="modal-close" onclick="closeModal('payment-modal')">âœ•</button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <div style="font-size:3rem;margin-bottom:1rem;">ðŸ’³</div>
+      <h4 id="pm-title" style="margin-bottom:0.5rem;"></h4>
+      <div style="font-size:2rem;font-weight:800;color:var(--clr-accent);margin-bottom:0.5rem;" id="pm-total">MK 0</div>
+      <div class="text-sm text-muted">via <strong id="pm-gateway"></strong></div>
+      <div class="alert alert-info" style="margin-top:1.5rem;text-align:left;"><div><strong>Simulation Mode:</strong> No real payment will be charged.</div></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeModal('payment-modal')">Back</button>
+      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary">âœ“ Pay Now</button>
+    </div>
+  </div>
+</div>
+
+<div id="booking-success" style="display:none;position:fixed;bottom:2rem;right:2rem;background:var(--clr-surface);border:1px solid var(--clr-green);border-radius:var(--radius-lg);padding:1.5rem;max-width:340px;box-shadow:var(--shadow-lg);z-index:300;">
+  <div style="font-size:1.5rem;margin-bottom:0.5rem;">ðŸŽ‰</div>
+  <h4 style="color:var(--clr-green);margin-bottom:0.25rem;">Booking Confirmed!</h4>
+  <div class="text-sm text-muted" style="margin-bottom:0.75rem;">ID: <strong id="success-booking-id" class="text-accent"></strong></div>
+  <div class="qr-block"><div class="text-xs text-muted" style="margin-bottom:0.5rem;">Digital Ticket</div><div class="qr-string" id="success-qr-code"></div></div>
+  <div style="margin-top:0.75rem;font-size:0.85rem;">Total: <strong id="success-total" class="text-accent"></strong></div>
+  <button onclick="this.parentElement.style.display='none'" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;">Close</button>
+</div>
+<?php endif; ?>
+
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
+</body>
+</html>
+
