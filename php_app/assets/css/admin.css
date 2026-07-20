@@ -298,6 +298,25 @@
   box-shadow: 0 12px 30px rgba(230, 57, 70, 0.18);
 }
 
+.dashboard-brand-logo,
+.sidebar-hero-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dashboard-brand-logo .logo-partial img,
+.sidebar-hero-mark .logo-partial img {
+  height: 34px;
+  width: auto;
+}
+
+.dashboard-brand-logo .logo-fallback strong,
+.sidebar-hero-mark .logo-fallback strong {
+  font-size: 0.78rem;
+}
+
 .dashboard-brand-mark svg,
 .dashboard-search svg,
 .dashboard-icon-link svg,
@@ -459,14 +478,14 @@
 }
 
 .sidebar-hero-mark {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+  width: auto;
+  height: auto;
+  border-radius: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--clr-accent);
-  background: linear-gradient(135deg, rgba(230,57,70,0.18), rgba(14,165,233,0.12));
+  color: inherit;
+  background: transparent;
   flex-shrink: 0;
 }
 
@@ -575,6 +594,35 @@
   font-weight: 800;
 }
 
+.dashboard-content-frame {
+  width: 100%;
+  min-width: 0;
+}
+
+.dashboard-content-frame .grid,
+.dashboard-content-frame .presentation-grid,
+.dashboard-content-frame .grid > *,
+.dashboard-content-frame .glass-panel,
+.dashboard-content-frame .stat-card,
+.dashboard-content-frame .dashboard-panel {
+  min-width: 0;
+}
+
+.dashboard-content-frame .glass-panel {
+  overflow: hidden;
+}
+
+.dashboard-content-frame canvas {
+  max-width: 100%;
+}
+
+.dashboard-head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 .glass-panel {
   background: var(--clr-surface);
   border: 1px solid var(--clr-border);
@@ -668,6 +716,17 @@
   }
   .admin-content {
     padding: 1rem;
+  }
+
+  .dashboard-content-frame .grid-cols-4,
+  .dashboard-content-frame .grid-cols-3,
+  .dashboard-content-frame .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-content-frame .grid > section[style*="grid-column: span 2"],
+  .dashboard-content-frame .grid > section[style*="grid-column:span 2"] {
+    grid-column: auto;
   }
 }
 

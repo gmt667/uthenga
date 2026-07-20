@@ -153,7 +153,7 @@ if ($hasPopupsTable) {
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">🎉 Promotional Popups</h1>
+    <h1 class="page-title">Promotional Popups</h1>
     <p class="text-muted">Manage homepage marketing popups, schedules, and CTA links.</p>
   </div>
 </div>
@@ -196,7 +196,7 @@ if ($hasPopupsTable) {
                   <div style="font-weight:600;"><?= e($p['title']) ?></div>
                   <?php if ($p['image_url']): ?>
                     <div class="text-xs text-muted" style="margin-top:0.25rem;">
-                      🖼️ <a href="<?= BASE_URL . e($p['image_url']) ?>" target="_blank">View image</a>
+                      <?= admin_icon_svg('file') ?> <a href="<?= BASE_URL . e($p['image_url']) ?>" target="_blank" rel="noopener">View image</a>
                     </div>
                   <?php endif; ?>
                 </td>
@@ -233,7 +233,7 @@ if ($hasPopupsTable) {
   <!-- Right Side: Add / Edit Form -->
   <div class="glass-panel" style="padding:1.5rem;">
     <h2 style="font-size:1.2rem;margin-bottom:1rem;color:var(--clr-text);">
-      <?= $editPopup ? '✍️ Edit Campaign' : '➕ Create Campaign' ?>
+      <?= $editPopup ? 'Edit Campaign' : 'Create Campaign' ?>
     </h2>
     
     <form method="POST" action="popup_manager.php<?= $editPopup ? '?action=edit&id=' . $editPopup['id'] : '' ?>" enctype="multipart/form-data">

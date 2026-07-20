@@ -32,7 +32,7 @@ $themePreference = uthenga_theme_preference();
   <div class="dashboard-shell">
     <header class="dashboard-topbar">
       <a href="<?= BASE_URL . (($_SESSION['user_role'] ?? '') === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') ?>" class="dashboard-brand">
-        <span class="dashboard-brand-mark" aria-hidden="true"><?= admin_icon_svg('brand') ?></span>
+        <span class="dashboard-brand-logo" aria-hidden="true"><?php $logoSize = 'sm'; $logoLink = false; require __DIR__ . '/../../includes/logo.php'; ?></span>
         <span class="dashboard-brand-copy">
           <strong><?= APP_NAME ?></strong>
           <span>Admin Console</span>

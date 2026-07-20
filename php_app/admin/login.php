@@ -34,8 +34,8 @@ if (isset($_GET['logout'])) {
 }
 if (isset($_GET['session_revoked'])) {
     $error = $isSuperPortal
-        ? 'Your super admin session ended. Please sign in again.'
-        : 'Your admin session ended. Please sign in again.';
+        ? 'Your super admin session has expired. Please sign in again.'
+        : 'Your admin session has expired. Please sign in again.';
 }
 if (isset($_GET['pending'])) {
     $success = 'Your vendor account is pending approval. You will be notified once approved.';
@@ -91,8 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = 'Admin Login';
-$pageTitle = $isSuperPortal ? 'Super Admin Login' : $pageTitle;
+$pageTitle = $isSuperPortal ? 'Super Admin Login' : 'Admin Login';
 $themePreference = uthenga_theme_preference();
 ?>
 <!DOCTYPE html>
@@ -103,7 +102,7 @@ $themePreference = uthenga_theme_preference();
   <meta name="base-url" content="<?= BASE_URL ?>">
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
   <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
-  <title>Admin Login | <?= APP_NAME ?></title>
+  <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
@@ -150,6 +149,28 @@ $themePreference = uthenga_theme_preference();
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
+    .login-btn-inner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+    }
+    .login-spinner {
+      width: 0.95rem;
+      height: 0.95rem;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.35);
+      border-top-color: #fff;
+      animation: loginSpin 0.8s linear infinite;
+      display: none;
+    }
+    .btn.is-loading .login-spinner { display: inline-block; }
+    @keyframes loginSpin { to { transform: rotate(360deg); } }
+    @media (max-width: 480px) {
+      .admin-login-body { padding: 1rem; }
+      .admin-login-card { padding: 1.25rem; }
+      .admin-login-title { font-size: 1.35rem; }
+    }
   </style>
 </head>
 <body class="admin-login-body">
@@ -168,13 +189,13 @@ $themePreference = uthenga_theme_preference();
   <p class="text-xs text-muted" style="text-align:center;margin-bottom:2rem;"><?= $isSuperPortal ? 'Sign in with the Super Administrator account.' : 'Sign in with an Administrator or Super Administrator account.' ?></p>
 
   <?php if ($error): ?>
-    <div class="alert alert-error" style="margin-bottom:1.25rem;">&#10006; <?= e($error) ?></div>
+    <div class="alert alert-error" style="margin-bottom:1.25rem;" role="alert"><?= e($error) ?></div>
   <?php endif; ?>
   <?php if ($success): ?>
-    <div class="alert alert-success" style="margin-bottom:1.25rem;">&#10003; <?= e($success) ?></div>
+    <div class="alert alert-success" style="margin-bottom:1.25rem;" role="status"><?= e($success) ?></div>
   <?php endif; ?>
 
-  <form method="POST" action="" id="admin-login-form" novalidate>
+  <form method="POST" action="" id="admin-login-form">
     <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
 
     <div class="form-group">
@@ -189,6 +210,8 @@ $themePreference = uthenga_theme_preference();
         autocomplete="email"
         autofocus
         value="<?= e($_POST['email'] ?? '') ?>"
+        oninvalid="this.setCustomValidity('Please enter your administrator email address.')"
+        oninput="this.setCustomValidity('')"
       >
     </div>
 
@@ -203,6 +226,8 @@ $themePreference = uthenga_theme_preference();
           placeholder="Your password"
           autocomplete="current-password"
           required
+          oninvalid="this.setCustomValidity('Please enter your password.')"
+          oninput="this.setCustomValidity('')"
         >
         <button type="button" class="pw-toggle" onclick="utPwToggle('password',this)" aria-label="Show/hide password">
           <svg class="pw-eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -211,7 +236,12 @@ $themePreference = uthenga_theme_preference();
       </div>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-lg" style="width:100%;margin-top:0.5rem;">Sign In</button>
+    <button type="submit" class="btn btn-primary btn-lg" id="admin-login-submit" style="width:100%;margin-top:0.5rem;">
+      <span class="login-btn-inner">
+        <span class="login-spinner" aria-hidden="true"></span>
+        <span class="login-btn-label">Sign In</span>
+      </span>
+    </button>
   </form>
 
   <div class="alert alert-info" style="margin-top:1.5rem;">
@@ -242,6 +272,23 @@ function utPwToggle(inputId, btn) {
   if (eyeOff) eyeOff.style.display = isText ? '' : 'none';
   if (eyeOn)  eyeOn.style.display  = isText ? 'none' : '';
 }
+
+(function () {
+  var form = document.getElementById('admin-login-form');
+  var submit = document.getElementById('admin-login-submit');
+  if (!form || !submit) return;
+
+  form.addEventListener('submit', function (event) {
+    if (!form.checkValidity()) {
+      return;
+    }
+    submit.classList.add('is-loading');
+    submit.setAttribute('aria-busy', 'true');
+    submit.disabled = true;
+    var label = submit.querySelector('.login-btn-label');
+    if (label) label.textContent = 'Signing In...';
+  });
+})();
 </script>
 </body>
 </html>

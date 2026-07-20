@@ -918,6 +918,42 @@ html[data-theme="light"] .auth-page::before {
   align-items: center;
   line-height: 0;
 }
+
+.logo-visual {
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo-fallback {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.05;
+}
+
+.logo-fallback strong {
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--clr-text);
+}
+
+.logo-fallback span {
+  margin-top: 0.15rem;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clr-text-muted);
+}
+
+.logo-partial.logo-broken .logo-visual {
+  display: none;
+}
+
+.logo-partial.logo-broken .logo-fallback {
+  display: flex;
+}
 .auth-title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -2164,13 +2200,20 @@ select:focus-visible, textarea:focus-visible {
 /* === Uthenga Theme System Overrides === */
 html {
   background: var(--clr-page-bg);
+  scroll-behavior: smooth;
 }
 
 body {
   background-color: var(--clr-page-bg);
   background-image:
     radial-gradient(circle at top left, rgba(230,57,70,0.06), transparent 28%),
-    radial-gradient(circle at top right, rgba(14,165,233,0.07), transparent 22%);
+  radial-gradient(circle at top right, rgba(14,165,233,0.07), transparent 22%);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+body.page-transitioning {
+  opacity: 0.85;
+  transform: translateY(3px);
 }
 
 html[data-theme="dark"] body {

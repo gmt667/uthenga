@@ -201,6 +201,40 @@ function replaceEmojiWithIcons(root) {
   window.addEventListener('pageshow', restore);
 })();
 
+// Gentle page transitions for internal navigation links.
+(function () {
+  const selectors = '.sidebar-link, .dashboard-brand, .dashboard-icon-link, .navbar-links a, .navbar-actions a, .navbar-mobile-actions a';
+  const isSameOrigin = (url) => {
+    try {
+      return new URL(url, window.location.href).origin === window.location.origin;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest(selectors);
+    if (!link || link.tagName !== 'A') return;
+    if (link.target === '_blank' || link.hasAttribute('download')) return;
+    const href = link.getAttribute('href') || '';
+    if (!href || href === '#' || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    if (!isSameOrigin(href)) return;
+
+    const url = new URL(href, window.location.href);
+    if (url.href === window.location.href) return;
+
+    event.preventDefault();
+    document.body.classList.add('page-transitioning');
+    window.setTimeout(() => {
+      window.location.href = url.href;
+    }, 120);
+  }, true);
+
+  window.addEventListener('pageshow', () => {
+    document.body.classList.remove('page-transitioning');
+  });
+})();
+
 // Replace legacy emoji markers with flat inline icons across the rendered UI.
 (function () {
   const run = () => {

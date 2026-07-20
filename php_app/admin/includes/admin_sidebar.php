@@ -84,7 +84,7 @@ $menuGroups = $isSuperAdmin ? [
 ?>
 <aside class="sidebar admin-sidebar" aria-label="Admin navigation">
   <div class="sidebar-hero">
-    <div class="sidebar-hero-mark"><?= admin_icon_svg('shield') ?></div>
+    <div class="sidebar-hero-mark"><?php $logoSize = 'sm'; $logoLink = false; require __DIR__ . '/../../includes/logo.php'; ?></div>
     <div>
       <div class="sidebar-role-title"><?= $isSuperAdmin ? 'Super Admin' : 'Administrator' ?></div>
       <div class="sidebar-role-meta">Secure platform controls</div>
