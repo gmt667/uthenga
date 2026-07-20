@@ -34,7 +34,9 @@ function createInlineSvgIcon(name) {
     plane: '<path d="M2 12l20-7-7 20-4-8-9-5z" fill="currentColor"/>',
     bot: '<path d="M9 3h6v2h4a2 2 0 0 1 2 2v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a2 2 0 0 1 2-2h4zm3 6a4 4 0 1 0 0 8 4 4 0 0 0 0-8z" fill="currentColor"/>',
     wave: '<path d="M5 13c2.2-2.8 4.1-4.2 5.8-4.2 1.4 0 2.2.7 3.2 1.7l1.4 1.4c.7.7 1.3 1 2.1 1 1.1 0 2.2-.8 3.5-2.4l1.5 1.3c-1.8 2.5-3.5 3.7-5 3.7-1.4 0-2.4-.7-3.4-1.7l-1.4-1.4c-.7-.7-1.3-1-2-1-1.3 0-3 1.5-4.8 3.9z" fill="currentColor"/>',
-    compass: '<path d="m12 2 3.8 7.8L22 12l-6.2 2.2L12 22l-3.8-7.8L2 12l6.2-2.2z" fill="currentColor"/>'
+    compass: '<path d="m12 2 3.8 7.8L22 12l-6.2 2.2L12 22l-3.8-7.8L2 12l6.2-2.2z" fill="currentColor"/>',
+    sun: '<path d="M12 4.5a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5.5a1 1 0 0 1 1-1Zm0 10.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM5.2 6.6a1 1 0 0 1 1.4 0l1 1A1 1 0 0 1 6.2 9l-1-1a1 1 0 0 1 0-1.4Zm11.2 1a1 1 0 1 1 1.4 1.4l-1 1A1 1 0 0 1 16.4 8l1-1ZM4.5 11a1 1 0 0 1 1 1 1 1 0 1 1-1 1 1 1 0 0 1 0-2Zm14 0a1 1 0 0 1 1 1 1 1 0 1 1-1 1 1 1 0 0 1 0-2ZM6.6 17.6a1 1 0 0 1 1.4 0l1-1A1 1 0 1 1 7.6 18l-1-1a1 1 0 0 1 0-1.4Zm10.8-1a1 1 0 0 1 1.4 1.4l-1 1a1 1 0 1 1-1.4-1.4l1-1ZM12 16.5a1 1 0 0 1 1 1V19a1 1 0 1 1-2 0v-1.5a1 1 0 0 1 1-1Z" fill="currentColor"/>',
+    moon: '<path d="M15.5 4.5a7.7 7.7 0 1 0 4 14.2A9 9 0 1 1 15.5 4.5Z" fill="currentColor"/>'
   };
   return `<svg class="ui-emoji-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${icons[name] || icons.info}</svg>`;
 }

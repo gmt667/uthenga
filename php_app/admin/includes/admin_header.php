@@ -12,15 +12,16 @@ requireAdmin();
 $pageTitle = $pageTitle ?? 'Admin Control Panel';
 $activeNav = $activeNav ?? 'admin';
 $adminName = $_SESSION['user_name'] ?? 'Admin';
+$themePreference = uthenga_theme_preference();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="<?= e($themePreference) ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token'] ?? '') ?>">
-  <meta name="theme-color" content="#f7f9fc">
+  <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <title><?= e($pageTitle) ?> | <?= APP_NAME ?> Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -49,8 +50,8 @@ $adminName = $_SESSION['user_name'] ?? 'Admin';
 
       <div class="dashboard-topbar-actions">
         <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">
-          <?= admin_icon_svg('sun') ?>
-          <span class="theme-toggle-label">Theme</span>
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+          <span class="theme-toggle-label">Dark</span>
         </button>
         <a class="dashboard-icon-link" href="<?= BASE_URL ?>admin/notifications.php" title="Notifications" aria-label="Notifications">
           <?= admin_icon_svg('bell') ?>

@@ -12,6 +12,7 @@ $isCustomer  = $isLoggedIn && $userRole === ROLE_CUSTOMER;
 $isVendor    = $isLoggedIn && in_array($userRole, VENDOR_ROLES, true);
 $displayName = trim(explode(' ', $userName)[0] ?? '');
 $displayName = $displayName !== '' ? $displayName : 'Account';
+$themePreference = uthenga_theme_preference();
 ?>
 <nav class="navbar" role="navigation" aria-label="Main navigation" id="main-navbar">
   <div class="navbar-inner">
@@ -49,7 +50,10 @@ $displayName = $displayName !== '' ? $displayName : 'Account';
         aria-label="Toggle light and dark mode"
         aria-pressed="false"
         title="Toggle light and dark mode"
-      >Theme</button>
+      >
+        <span class="theme-toggle-icon" aria-hidden="true"></span>
+        <span class="theme-toggle-label">Dark</span>
+      </button>
 
       <?php if ($isLoggedIn): ?>
         <div class="profile-dropdown">
@@ -83,6 +87,26 @@ $displayName = $displayName !== '' ? $displayName : 'Account';
         <a href="<?= BASE_URL ?>register.php" class="btn btn-sm btn-primary" id="nav-register">Register</a>
       <?php endif; ?>
     </div>
+  </div>
+
+  <div class="navbar-mobile-actions" aria-label="Mobile actions">
+    <button
+      type="button"
+      class="btn btn-sm btn-secondary btn-icon theme-toggle"
+      data-theme-toggle
+      aria-label="Toggle light and dark mode"
+      aria-pressed="false"
+      title="Toggle light and dark mode"
+    >
+      <span class="theme-toggle-icon" aria-hidden="true"></span>
+      <span class="theme-toggle-label">Dark</span>
+    </button>
+    <?php if ($isLoggedIn): ?>
+      <a href="<?= BASE_URL . ($userRole === ROLE_CUSTOMER ? 'dashboard.php' : (in_array($userRole, ADMIN_ROLES, true) ? ($userRole === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') : 'vendor/dashboard.php')) ?>" class="btn btn-sm btn-primary">Dashboard</a>
+    <?php else: ?>
+      <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-secondary">Sign In</a>
+      <a href="<?= BASE_URL ?>register.php" class="btn btn-sm btn-primary">Register</a>
+    <?php endif; ?>
   </div>
 
 </nav>

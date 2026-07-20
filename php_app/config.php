@@ -116,6 +116,24 @@ if (!function_exists('uthenga_normalize_base_url')) {
     }
 }
 
+if (!function_exists('uthenga_theme_preference')) {
+    function uthenga_theme_preference(): string {
+        $candidates = [
+            $_COOKIE['uthenga-theme'] ?? null,
+            $_SESSION['theme_preference'] ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            $candidate = is_string($candidate) ? strtolower(trim($candidate)) : '';
+            if (in_array($candidate, ['light', 'dark'], true)) {
+                return $candidate;
+            }
+        }
+
+        return 'light';
+    }
+}
+
 uthenga_load_env_file(dirname(__DIR__) . '/.env');
 uthenga_load_env_file(__DIR__ . '/.env');
 uthenga_load_php_config_file(dirname(__DIR__) . '/config.local.php');

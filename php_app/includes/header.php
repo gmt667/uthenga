@@ -12,6 +12,7 @@ $activeNav  = $activeNav  ?? '';
 $userName   = $_SESSION['user_name'] ?? '';
 $userRole   = $_SESSION['user_role'] ?? '';
 $isLoggedIn = isLoggedIn();
+$themePreference = uthenga_theme_preference();
 
 // Determine role CSS class
 $roleCss = 'role-customer';
@@ -23,12 +24,12 @@ if (in_array($userRole, VENDOR_ROLES, true)) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="<?= e($themePreference) ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Uthenga - Malawi's premier marketplace for events, accommodation, tours & transport bookings.">
-  <meta name="theme-color" content="#f7f9fc">
+  <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <meta name="color-scheme" content="dark light">
   <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
   <script>

@@ -90,15 +90,16 @@ if (!function_exists('renderDashboardChromeStart')) {
         $searchPlaceholder = $options['searchPlaceholder'] ?? 'Search dashboard...';
         $status = $options['status'] ?? 'Active';
         $items = dashboard_sidebar_items($role);
+        $themePreference = uthenga_theme_preference();
         ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="<?= e($themePreference) ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token'] ?? '') ?>">
-  <meta name="theme-color" content="#f7f9fc">
+  <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <title><?= e($title) ?> | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -121,7 +122,10 @@ if (!function_exists('renderDashboardChromeStart')) {
         <button type="button" class="dashboard-sidebar-toggle" data-dashboard-sidebar-toggle aria-label="Toggle sidebar" aria-expanded="true">
           <span></span><span></span><span></span>
         </button>
-        <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">Theme</button>
+        <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">
+          <span class="theme-toggle-icon" aria-hidden="true"></span>
+          <span class="theme-toggle-label">Dark</span>
+        </button>
         <div class="profile-dropdown dashboard-profile">
           <button class="profile-dropdown-btn" id="profile-dropdown-trigger" aria-haspopup="true" aria-expanded="false" type="button">
             <span class="nav-avatar-fallback"><?= e(strtoupper(substr($firstName, 0, 1))) ?></span>
