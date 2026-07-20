@@ -77,6 +77,7 @@ $pageTitle = 'Reset Password';
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
 </head>
 <body>
+<?php require_once __DIR__ . '/includes/page_loader.php'; ?>
 <div class="auth-page">
   <div class="auth-card animate-in">
     <div class="auth-logo">

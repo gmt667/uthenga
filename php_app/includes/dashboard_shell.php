@@ -108,6 +108,7 @@ if (!function_exists('renderDashboardChromeStart')) {
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/admin.css">
 </head>
 <body class="dashboard-page" data-dashboard-role="<?= e($role) ?>">
+  <?php require_once __DIR__ . '/page_loader.php'; ?>
   <div class="dashboard-shell">
     <header class="dashboard-topbar">
       <?php $logoSize = 'sm'; $logoLink = true; require __DIR__ . '/logo.php'; ?>

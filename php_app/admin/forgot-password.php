@@ -134,6 +134,7 @@ $themePreference = uthenga_theme_preference();
   </style>
 </head>
 <body class="admin-login-body">
+<?php require_once __DIR__ . '/../includes/page_loader.php'; ?>
 <div class="admin-login-card animate-in">
   <div class="auth-logo" style="margin-bottom:1.25rem;">
     <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/../includes/logo.php'; ?>

@@ -2563,3 +2563,122 @@ thead th,
     justify-content: center;
   }
 }
+
+/* === Uthenga Branded Page Loader === */
+.uthenga-page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(circle at top, rgba(230,57,70,0.12), transparent 26%),
+    radial-gradient(circle at bottom right, rgba(14,165,233,0.14), transparent 28%),
+    rgba(248,250,252,0.96);
+  backdrop-filter: blur(18px);
+  transition: opacity 0.24s ease, visibility 0.24s ease;
+}
+
+html[data-theme="dark"] .uthenga-page-loader {
+  background:
+    radial-gradient(circle at top, rgba(230,57,70,0.14), transparent 26%),
+    radial-gradient(circle at bottom right, rgba(14,165,233,0.12), transparent 28%),
+    rgba(11,17,32,0.96);
+}
+
+.uthenga-page-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.uthenga-page-loader-card {
+  width: min(92vw, 420px);
+  padding: 1.5rem 1.35rem 1.25rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 1.4rem;
+  background: var(--clr-surface);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.uthenga-page-loader-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.uthenga-page-loader-logo .logo-partial {
+  pointer-events: none;
+}
+
+.uthenga-loader-scan {
+  position: relative;
+  width: min(100%, 260px);
+  height: 56px;
+  border-radius: 999px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(14,165,233,0.08), rgba(230,57,70,0.04)),
+    var(--clr-surface2);
+  border: 1px solid var(--clr-border);
+}
+
+.uthenga-loader-scan::before,
+.uthenga-loader-scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.uthenga-loader-scan::before {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  transform: translateX(-120%);
+  animation: uthenga-scan-shimmer 1.7s ease-in-out infinite;
+}
+
+.uthenga-loader-scan-line {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 0.45rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--clr-accent), var(--clr-cyan), transparent);
+  box-shadow: 0 0 18px rgba(230,57,70,0.35);
+  animation: uthenga-scan-line 1.8s ease-in-out infinite;
+}
+
+.uthenga-loader-copy strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--clr-text);
+}
+
+.uthenga-loader-copy span {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--clr-text-muted);
+}
+
+html.uthenga-app-loading body {
+  overflow: hidden;
+}
+
+@keyframes uthenga-scan-line {
+  0%, 100% { transform: translateY(0); opacity: 0.55; }
+  50% { transform: translateY(38px); opacity: 1; }
+}
+
+@keyframes uthenga-scan-shimmer {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}

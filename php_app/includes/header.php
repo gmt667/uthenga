@@ -58,5 +58,6 @@ if (in_array($userRole, VENDOR_ROLES, true)) {
 </head>
 <body>
 
+<?php require_once __DIR__ . '/page_loader.php'; ?>
 <?php require_once __DIR__ . '/navbar.php'; ?>
 <main>

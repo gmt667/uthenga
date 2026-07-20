@@ -174,6 +174,7 @@ $themePreference = uthenga_theme_preference();
   </style>
 </head>
 <body class="admin-login-body">
+<?php require_once __DIR__ . '/../includes/page_loader.php'; ?>
 <div style="position:fixed;top:1rem;right:1rem;z-index:20;">
   <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">
     <span class="theme-toggle-icon" aria-hidden="true"></span>

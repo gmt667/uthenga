@@ -29,6 +29,7 @@ $themePreference = uthenga_theme_preference();
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/admin.css">
 </head>
 <body class="dashboard-page" data-dashboard-role="admin">
+  <?php require_once __DIR__ . '/../../includes/page_loader.php'; ?>
   <div class="dashboard-shell">
     <header class="dashboard-topbar">
       <a href="<?= BASE_URL . (($_SESSION['user_role'] ?? '') === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') ?>" class="dashboard-brand">

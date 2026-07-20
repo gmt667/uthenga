@@ -153,6 +153,7 @@ $themePreference = uthenga_theme_preference();
   </style>
 </head>
 <body>
+<?php require_once __DIR__ . '/includes/page_loader.php'; ?>
 <div class="auth-shell">
   <div class="auth-card animate-in">
     <div class="auth-logo" style="margin-bottom:1rem;">
