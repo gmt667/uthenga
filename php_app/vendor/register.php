@@ -116,40 +116,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
+$pageTitle = 'Vendor Registration';
+$activeNav = '';
+require_once __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="base-url" content="<?= BASE_URL ?>">
-  <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
-  <title>Vendor Registration | <?= APP_NAME ?></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
-  <style>
-    .auth-grid {
-      display: grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 1rem;
-      align-items: stretch;
-    }
-    .pw-wrapper { position: relative; }
-    .pw-toggle {
-      position: absolute; right: 0.75rem; top: 50%;
-      transform: translateY(-50%);
-      background: none; border: none; cursor: pointer;
-      color: var(--clr-text-soft, #9ca3af); padding: 0.25rem; line-height: 1;
-    }
-    .pw-wrapper .form-control { padding-right: 2.5rem; }
-    @media (max-width: 900px) {
-      .auth-grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-<?php require_once __DIR__ . '/../includes/header.php'; ?>
+<style>
+  .auth-grid {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  .pw-wrapper { position: relative; }
+  .pw-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--clr-text-soft, #9ca3af);
+    padding: 0.25rem;
+    line-height: 1;
+  }
+  .pw-wrapper .form-control { padding-right: 2.5rem; }
+  @media (max-width: 900px) {
+    .auth-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 576px) {
+    .auth-grid { gap: 0.85rem; }
+    .card { padding: 1.25rem !important; }
+    .grid.grid-cols-2 { grid-template-columns: 1fr !important; }
+    .btn { width: 100%; justify-content: center; }
+    .pw-toggle { right: 0.6rem; font-size: 0.85rem; }
+    h1 { font-size: 1.7rem; }
+  }
+</style>
 <section class="section" style="padding:2.5rem 0 4rem;">
   <div class="container" style="max-width:1100px;">
     <div class="auth-grid">
@@ -161,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if ($errors): ?>
           <div class="alert alert-error" style="margin-top:1rem;">
             <?php foreach ($errors as $err): ?>
-              <div>• <?= e($err) ?></div>
+              <div>- <?= e($err) ?></div>
             <?php endforeach; ?>
           </div>
         <?php endif; ?>
@@ -262,5 +266,3 @@ function utPwToggle(inputId, btn) {
 }
 </script>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
-</body>
-</html>

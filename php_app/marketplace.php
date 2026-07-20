@@ -1,8 +1,8 @@
-<?php
+﻿<?php
 /**
- * Uthenga — Local Business Marketplace
+ * Uthenga â€” Local Business Marketplace
  * Directory of restaurants, cafes, tour guides, car hire, photographers,
- * curio shops, boat operators and more — with map view.
+ * curio shops, boat operators and more â€” with map view.
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/malawi_locations.php';
 $pageTitle = 'Local Business Marketplace';
 $activeNav = 'marketplace';
 
-// ── Filter params ────────────────────────────────────────────────────────────
+// â”€â”€ Filter params â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $type   = trim(is_array($_GET['type']   ?? null) ? '' : (string)($_GET['type']   ?? ''));
 $search = trim(is_array($_GET['search'] ?? null) ? '' : (string)($_GET['search'] ?? ''));
 $city   = trim(is_array($_GET['city']   ?? null) ? '' : (string)($_GET['city']   ?? ''));
@@ -21,15 +21,15 @@ $offset  = ($page - 1) * $perPage;
 
 $businessTypes = [
     ''             => 'All Categories',
-    'restaurant'   => '🍽️ Restaurant',
-    'cafe'         => '☕ Café & Bar',
-    'tour_guide'   => '🧭 Tour Guide',
-    'car_hire'     => '🚗 Car Hire',
-    'photographer' => '📷 Photographer',
-    'curio_shop'   => '🛍️ Curio Shop',
-    'boat_operator'=> '⛵ Boat Operator',
-    'spa_wellness' => '💆 Spa & Wellness',
-    'other'        => '🏪 Other',
+    'restaurant'   => 'ðŸ½ï¸ Restaurant',
+    'cafe'         => 'â˜• CafÃ© & Bar',
+    'tour_guide'   => 'ðŸ§­ Tour Guide',
+    'car_hire'     => 'ðŸš— Car Hire',
+    'photographer' => 'ðŸ“· Photographer',
+    'curio_shop'   => 'ðŸ›ï¸ Curio Shop',
+    'boat_operator'=> 'â›µ Boat Operator',
+    'spa_wellness' => 'ðŸ’† Spa & Wellness',
+    'other'        => 'ðŸª Other',
 ];
 
 $featuredCities = uthenga_malawi_featured_cities();
@@ -37,12 +37,12 @@ $featuredCities = uthenga_malawi_featured_cities();
 $hasLocalBusinessListings = uthenga_table_exists('local_business_listings');
 $marketplaceSchemaMissing = !$hasLocalBusinessListings;
 
-// ── Validate filters ─────────────────────────────────────────────────────────
+// â”€â”€ Validate filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if ($type !== '' && !array_key_exists($type, $businessTypes)) {
     $type = '';
 }
 
-// ── Resolve specific business details if view is set ─────────────────────────
+// â”€â”€ Resolve specific business details if view is set â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $viewId = trim($_GET['view'] ?? '');
 $viewListing = null;
 
@@ -150,7 +150,7 @@ $mockListingsList = [
     ],
 ];
 
-// ── Build query ───────────────────────────────────────────────────────────────
+// â”€â”€ Build query â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $conditions = ['lbl.is_active = 1'];
 $params     = [];
 $total      = 0;
@@ -277,7 +277,7 @@ if (empty($cities)) {
     ];
 }
 
-// ── Resolve specific business details if view is set ─────────────────────────
+// â”€â”€ Resolve specific business details if view is set â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 if ($viewId !== '') {
     if ($hasLocalBusinessListings) {
         try {
@@ -308,13 +308,13 @@ if ($viewId !== '') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
-  <meta name="description" content="Discover local businesses in Malawi — restaurants, cafes, tour guides, car hire, photographers, curio shops and boat operators on Uthenga.">
+  <meta name="description" content="Discover local businesses in Malawi â€” restaurants, cafes, tour guides, car hire, photographers, curio shops and boat operators on Uthenga.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    /* ── Marketplace Styles ─────────────────────────────────────── */
+    /* â”€â”€ Marketplace Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .mp-hero { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
                padding: 4rem 0 2.5rem; text-align: center; margin-bottom: 0; }
     .mp-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: .75rem;
@@ -402,6 +402,33 @@ if ($viewId !== '') {
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .biz-card { animation: fadeUp .4s ease both; }
+    @media (max-width: 768px) {
+      .mp-hero { padding: 2.5rem 0 1.5rem; }
+      .mp-hero p { margin-bottom: 1.25rem; }
+      .mp-search-bar { flex-direction: column; max-width: 100%; }
+      .mp-search-bar input,
+      .mp-search-bar button { width: 100%; min-width: 0; }
+      .mp-filters { flex-direction: column; align-items: stretch; }
+      .view-toggle { margin-left: 0; width: 100%; }
+      .view-toggle-btns { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .view-btn { justify-content: center; }
+      .biz-grid { grid-template-columns: 1fr; }
+      .biz-actions { flex-direction: column; }
+      .biz-actions a { width: 100%; }
+      .mp-stats { justify-content: space-between; gap: 1rem; }
+      #mp-map { height: 320px; }
+      .spotlight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 480px) {
+      .mp-search-bar { gap: .75rem; }
+      .spotlight-grid { grid-template-columns: 1fr; }
+      .biz-card-img,
+      .biz-card-img-placeholder { height: 150px; }
+      .biz-card-body { padding: .9rem; }
+      .mp-empty { padding: 3rem 1rem; }
+      .mp-stats { flex-direction: column; align-items: stretch; }
+      .mp-stat { text-align: left; }
+    }
     <?php foreach (range(1, 12) as $i): ?>
     .biz-card:nth-child(<?= $i ?>) { animation-delay: <?= ($i - 1) * 0.05 ?>s; }
     <?php endforeach; ?>
@@ -414,12 +441,12 @@ if ($viewId !== '') {
 <section class="mp-hero">
   <div class="container">
     <span class="section-label">LOCAL MARKETPLACE</span>
-    <h1>🛍️ Discover Local Businesses</h1>
+    <h1>Discover Local Businesses</h1>
     <p>Find the best restaurants, tour guides, photographers, curio shops, and more across Malawi.</p>
     <form method="GET" action="<?= BASE_URL ?>marketplace.php" class="mp-search-bar">
       <?php if ($type): ?><input type="hidden" name="type" value="<?= e($type) ?>"><?php endif; ?>
-      <input type="text" name="search" placeholder="Search businesses, places…" value="<?= e($search) ?>">
-      <button type="submit">🔍 Search</button>
+      <input type="text" name="search" placeholder="Search businesses, placesâ€¦" value="<?= e($search) ?>">
+      <button type="submit">Search</button>
     </form>
   </div>
 </section>
@@ -491,7 +518,7 @@ if ($viewId !== '') {
         <?php if ($type): ?><input type="hidden" name="type" value="<?= e($type) ?>"><?php endif; ?>
         <?php if ($search): ?><input type="hidden" name="search" value="<?= e($search) ?>"><?php endif; ?>
         <select name="city" onchange="this.form.submit()" class="filter-chip" style="cursor:pointer;">
-          <option value="">📍 All Cities</option>
+          <option value="">ðŸ“ All Cities</option>
           <?php foreach ($cities as $c): ?>
             <option value="<?= e($c['city']) ?>" <?= $city === $c['city'] ? 'selected' : '' ?>>
               <?= e($c['city']) ?>
@@ -504,8 +531,8 @@ if ($viewId !== '') {
 
     <!-- View toggle -->
     <div class="view-toggle">
-      <button class="view-btn active" id="grid-btn" onclick="setView('grid')">⊞ Grid</button>
-      <button class="view-btn" id="map-btn" onclick="setView('map')">🗺️ Map</button>
+      <button class="view-btn active" id="grid-btn" onclick="setView('grid')">âŠž Grid</button>
+      <button class="view-btn" id="map-btn" onclick="setView('map')">ðŸ—ºï¸ Map</button>
     </div>
   </div>
 
@@ -515,7 +542,7 @@ if ($viewId !== '') {
   <!-- Listings grid -->
   <?php if (empty($listings)): ?>
     <div class="mp-empty">
-      <div class="mp-empty-icon">🏪</div>
+      <div class="mp-empty-icon">ðŸª</div>
       <h3>No listings found</h3>
       <p>Try adjusting your filters or <a href="<?= BASE_URL ?>marketplace.php" style="color:var(--clr-cyan)">clear all</a>.</p>
       <a href="<?= BASE_URL ?>vendor/register.php" class="btn btn-cyan" style="margin-top:1rem;">
@@ -526,10 +553,10 @@ if ($viewId !== '') {
     <div class="biz-grid">
       <?php foreach ($listings as $biz):
         $bizType    = $biz['business_type'] ?? '';
-        $typeLabel  = $businessTypes[$bizType] ?? '🏪 Other';
+        $typeLabel  = $businessTypes[$bizType] ?? 'ðŸª Other';
         $rating     = (float)($biz['avg_rating'] ?? 0);
         $ratingCount = (int)($biz['review_count'] ?? 0);
-        $stars = str_repeat('★', min(5, max(0, round($rating)))) . str_repeat('☆', 5 - min(5, max(0, round($rating))));
+        $stars = str_repeat('â˜…', min(5, max(0, round($rating)))) . str_repeat('â˜†', 5 - min(5, max(0, round($rating))));
         $coverImg = $biz['cover_image'] ?? '';
         $phone  = $biz['phone']  ?? $biz['vendor_phone'] ?? '';
         $waLink = $phone ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $phone) : '';
@@ -544,12 +571,12 @@ if ($viewId !== '') {
         <div class="biz-card-body">
           <div>
             <?php if (!empty($biz['is_featured'])): ?>
-              <span class="biz-badge featured">⭐ Featured</span>
+              <span class="biz-badge featured">â­ Featured</span>
             <?php endif; ?>
             <span class="biz-badge"><?= $typeLabel ?></span>
           </div>
           <div class="biz-name"><?= e($biz['business_name'] ?? 'Unnamed Business') ?></div>
-          <div class="biz-location">📍 <?= e($biz['city'] ?? 'Malawi') ?></div>
+          <div class="biz-location">ðŸ“ <?= e($biz['city'] ?? 'Malawi') ?></div>
           <?php if (!empty($biz['description'])): ?>
             <div class="biz-description"><?= e($biz['description']) ?></div>
           <?php endif; ?>
@@ -564,8 +591,8 @@ if ($viewId !== '') {
 
           <?php if ($phone || !empty($biz['website'])): ?>
           <div style="font-size:.75rem; color:var(--clr-text-soft); margin-bottom:.65rem;">
-            <?php if ($phone): ?>📞 <?= e($phone) ?><?php endif; ?>
-            <?php if (!empty($biz['website'])): ?> · 🌐 <a href="<?= e($biz['website']) ?>" target="_blank" style="color:var(--clr-cyan);"><?= e(parse_url($biz['website'], PHP_URL_HOST) ?: $biz['website']) ?></a><?php endif; ?>
+            <?php if ($phone): ?>ðŸ“ž <?= e($phone) ?><?php endif; ?>
+            <?php if (!empty($biz['website'])): ?> Â· ðŸŒ <a href="<?= e($biz['website']) ?>" target="_blank" style="color:var(--clr-cyan);"><?= e(parse_url($biz['website'], PHP_URL_HOST) ?: $biz['website']) ?></a><?php endif; ?>
           </div>
           <?php endif; ?>
 
@@ -575,7 +602,7 @@ if ($viewId !== '') {
             ?>
             <a href="<?= BASE_URL ?>marketplace.php?<?= http_build_query($vParams) ?>" class="biz-btn-primary">View Details</a>
             <?php if ($waLink): ?>
-              <a href="<?= $waLink ?>" target="_blank" rel="noopener" class="biz-btn-ghost">💬 WhatsApp</a>
+              <a href="<?= $waLink ?>" target="_blank" rel="noopener" class="biz-btn-ghost">ðŸ’¬ WhatsApp</a>
             <?php elseif (!empty($biz['website'])): ?>
               <a href="<?= e($biz['website']) ?>" target="_blank" rel="noopener" class="biz-btn-ghost">Visit Site</a>
             <?php endif; ?>
@@ -605,18 +632,18 @@ if ($viewId !== '') {
   <!-- CTA to list your business -->
   <div style="margin-top:3rem; text-align:center; padding:2rem; background:var(--clr-surface2);
               border:1px solid var(--clr-border); border-radius:var(--radius-lg);">
-    <h3 style="margin-bottom:.5rem;">🚀 List Your Business on Uthenga</h3>
+    <h3 style="margin-bottom:.5rem;">ðŸš€ List Your Business on Uthenga</h3>
     <p class="text-muted" style="margin-bottom:1.25rem;">Reach thousands of tourists and locals. Register as a vendor and create your listing today.</p>
-    <a href="<?= BASE_URL ?>vendor/register.php" class="btn btn-cyan" style="margin-right:.5rem;">Get Started — Free</a>
+    <a href="<?= BASE_URL ?>vendor/register.php" class="btn btn-cyan" style="margin-right:.5rem;">Get Started â€” Free</a>
     <a href="<?= BASE_URL ?>about.php" class="btn btn-secondary">Learn More</a>
   </div>
 
   <!-- Business details modal if view param present -->
   <?php if ($viewListing): 
-    $vlTypeLabel = $businessTypes[$viewListing['business_type'] ?? ''] ?? '🏪 Other';
+    $vlTypeLabel = $businessTypes[$viewListing['business_type'] ?? ''] ?? 'ðŸª Other';
     $vlRating = (float)($viewListing['avg_rating'] ?? 0);
     $vlRatingCount = (int)($viewListing['review_count'] ?? 0);
-    $vlStars = str_repeat('★', min(5, max(0, round($vlRating)))) . str_repeat('☆', 5 - min(5, max(0, round($vlRating))));
+    $vlStars = str_repeat('â˜…', min(5, max(0, round($vlRating)))) . str_repeat('â˜†', 5 - min(5, max(0, round($vlRating))));
     $vlPhone = $viewListing['phone'] ?? $viewListing['vendor_phone'] ?? '';
     $vlCleanUrl = BASE_URL . 'marketplace.php?' . http_build_query(array_filter(['type' => $type, 'search' => $search, 'city' => $city]));
     $vlWaLink = $vlPhone ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $vlPhone) : '';
@@ -632,17 +659,17 @@ if ($viewId !== '') {
             <span class="biz-badge" style="margin-bottom:0.35rem;"><?= $vlTypeLabel ?></span>
             <h2 style="margin:0;font-size:1.4rem;color:#fff;"><?= e($viewListing['business_name'] ?? 'Unnamed Business') ?></h2>
           </div>
-          <button onclick="location.href='<?= $vlCleanUrl ?>'" style="background:none;border:none;color:var(--clr-text-soft);font-size:1.5rem;cursor:pointer;line-height:1;padding:0.25rem;">✕</button>
+          <button onclick="location.href='<?= $vlCleanUrl ?>'" style="background:none;border:none;color:var(--clr-text-soft);font-size:1.5rem;cursor:pointer;line-height:1;padding:0.25rem;">âœ•</button>
         </div>
         <p style="font-size:0.88rem;color:var(--clr-text-soft);margin-bottom:1rem;line-height:1.5;"><?= e($viewListing['description'] ?? '') ?></p>
         
         <div style="display:grid;gap:0.75rem;margin-bottom:1.5rem;border-top:1px solid var(--clr-border);padding-top:1rem;font-size:0.85rem;">
-          <div>📍 <strong>Location/Address:</strong> <?= e($viewListing['address'] ?? ($viewListing['city'] ?? 'Malawi')) ?></div>
+          <div>ðŸ“ <strong>Location/Address:</strong> <?= e($viewListing['address'] ?? ($viewListing['city'] ?? 'Malawi')) ?></div>
           <?php if (!empty($viewListing['opening_hours'])): ?>
-            <div>🕒 <strong>Opening Hours:</strong> <?= e($viewListing['opening_hours']) ?></div>
+            <div>ðŸ•’ <strong>Opening Hours:</strong> <?= e($viewListing['opening_hours']) ?></div>
           <?php endif; ?>
           <?php if (!empty($viewListing['price_range'])): ?>
-            <div>💰 <strong>Price Range:</strong> <?= e($viewListing['price_range']) ?></div>
+            <div>ðŸ’° <strong>Price Range:</strong> <?= e($viewListing['price_range']) ?></div>
           <?php endif; ?>
           <div style="display:flex;align-items:center;gap:0.5rem;">
             <span style="color:#f59e0b;"><?= $vlStars ?></span>
@@ -652,10 +679,10 @@ if ($viewId !== '') {
 
         <div style="display:flex;gap:0.75rem;">
           <?php if ($vlWaLink): ?>
-            <a href="<?= $vlWaLink ?>" target="_blank" rel="noopener" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">💬 WhatsApp</a>
+            <a href="<?= $vlWaLink ?>" target="_blank" rel="noopener" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">ðŸ’¬ WhatsApp</a>
           <?php endif; ?>
           <?php if (!empty($viewListing['website'])): ?>
-            <a href="<?= e($viewListing['website']) ?>" target="_blank" rel="noopener" class="btn btn-secondary" style="flex:1;text-align:center;text-decoration:none;">🌐 Website</a>
+            <a href="<?= e($viewListing['website']) ?>" target="_blank" rel="noopener" class="btn btn-secondary" style="flex:1;text-align:center;text-decoration:none;">ðŸŒ Website</a>
           <?php endif; ?>
           <button onclick="location.href='<?= $vlCleanUrl ?>'" class="btn btn-secondary" style="flex:1;">Close</button>
         </div>
@@ -668,7 +695,7 @@ if ($viewId !== '') {
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ── Map / Grid View Toggle ────────────────────────────────────────────────
+// â”€â”€ Map / Grid View Toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let mapInitialized = false;
 const mapData = <?= $mapJson ?>;
 
@@ -696,7 +723,7 @@ function initMap() {
   mapInitialized = true;
   const map = L.map('mp-map').setView([-13.9669, 33.7873], 7); // Malawi centre
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors', maxZoom: 18
+    attribution: 'Â© OpenStreetMap contributors', maxZoom: 18
   }).addTo(map);
 
   const categoryColors = {
@@ -713,14 +740,14 @@ function initMap() {
       className: '', iconSize: [12, 12], iconAnchor: [6, 6]
     });
     const marker = L.marker([biz.lat, biz.lng], { icon }).addTo(map);
-    const stars = '★'.repeat(Math.round(biz.avg_rating || 0)) + '☆'.repeat(5 - Math.round(biz.avg_rating || 0));
+    const stars = 'â˜…'.repeat(Math.round(biz.avg_rating || 0)) + 'â˜†'.repeat(5 - Math.round(biz.avg_rating || 0));
     marker.bindPopup(`
       <div style="min-width:160px;">
         ${biz.cover_image ? `<img src="${biz.cover_image}" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:.5rem;">` : ''}
         <strong>${biz.business_name}</strong><br>
         <small style="color:#64748b;">${biz.city || ''}</small><br>
         <span style="color:#f59e0b;">${stars}</span><br>
-        <a href="<?= BASE_URL ?>marketplace.php?view=${biz.id}" style="color:#38bdf8;font-size:.8rem;">View Details →</a>
+        <a href="<?= BASE_URL ?>marketplace.php?view=${biz.id}" style="color:#38bdf8;font-size:.8rem;">View Details â†’</a>
       </div>
     `);
   });

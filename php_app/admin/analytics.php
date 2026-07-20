@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Uthenga — Admin Platform Analytics
+ * Uthenga â€” Admin Platform Analytics
  */
 $pageTitle = 'Platform Analytics';
 $activeNav = 'admin-reports';
@@ -35,11 +35,11 @@ $moduleRevenue = dbQuery("
 $moduleLabels = [];
 $moduleValues = [];
 $moduleTypesMap = [
-    'event_ticket' => 'Events 🎫',
-    'property_room' => 'Stays 🏨',
-    'transport_seat' => 'Transport 🚌',
-    'tour_package' => 'Tours 🧭',
-    'vendor_service' => 'Services 🏪',
+    'event_ticket' => 'Events ðŸŽ«',
+    'property_room' => 'Stays ðŸ¨',
+    'transport_seat' => 'Transport ðŸšŒ',
+    'tour_package' => 'Tours ðŸ§­',
+    'vendor_service' => 'Services ðŸª',
 ];
 foreach ($moduleRevenue as $row) {
     $moduleLabels[] = $moduleTypesMap[$row['item_type']] ?? $row['item_type'];
@@ -91,7 +91,7 @@ $destinations = dbQuery("
 ?>
 <div class="page-header">
   <div>
-    <h1 class="page-title">📈 Platform Analytics</h1>
+    <h1 class="page-title">Platform Analytics</h1>
     <p class="text-muted">High-level sales analysis, conversions, and popular booking channels across Uthenga.</p>
   </div>
 </div>
@@ -191,7 +191,7 @@ $destinations = dbQuery("
           <?php else: ?>
             <?php foreach ($destinations as $d): ?>
               <tr>
-                <td><strong>📍 <?= e($d['city']) ?></strong></td>
+                <td><strong>ðŸ“ <?= e($d['city']) ?></strong></td>
                 <td><?= number_format($d['bookings_count']) ?></td>
               </tr>
             <?php endforeach; ?>

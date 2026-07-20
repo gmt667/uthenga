@@ -246,6 +246,29 @@ $displayAds = !empty($activeAds) ? $activeAds : $placeholderAds;
       .slider-arrow { display: none; }
       .slider-dots { right: 50%; transform: translateX(50%); bottom: 0.5rem; }
       .filter-grid { grid-template-columns: 1fr; }
+      .filters-wrapper { padding: 1.25rem; }
+      .filter-checkboxes { gap: 0.9rem; }
+      .filter-actions { flex-direction: column; }
+      .filter-actions .btn { width: 100%; justify-content: center; }
+      .view-toggle-bar { flex-direction: column; align-items: stretch; }
+      .view-toggle-btns { width: 100%; }
+      .view-toggle-btn { flex: 1 1 50%; justify-content: center; }
+      .map-view-container { height: 360px; }
+      .modal-overlay { padding: 0.85rem; align-items: flex-end; }
+      .modal { width: 100%; max-width: none; max-height: calc(100vh - 1.7rem); border-radius: 1rem 1rem 0.75rem 0.75rem; }
+      .modal-header, .modal-body, .modal-footer { padding-left: 1rem; padding-right: 1rem; }
+      .modal-body .grid.grid-cols-2 { grid-template-columns: 1fr; }
+      #booking-success { left: 0.85rem; right: 0.85rem; bottom: 0.85rem; max-width: none; }
+    }
+    @media (max-width: 480px) {
+      .hero-slider-container { height: 320px; }
+      .slide-meta { gap: 0.5rem; }
+      .slide-btns { flex-direction: column; gap: 0.65rem; }
+      .slide-btns .btn { width: 100%; }
+      .view-toggle-btns { display: grid; grid-template-columns: 1fr 1fr; }
+      .filter-grid .form-control { min-height: 44px; }
+      .filters-wrapper { padding: 1rem; }
+      .map-view-container { height: 300px; }
     }
   </style>
 </head>
