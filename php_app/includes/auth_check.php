@@ -23,7 +23,11 @@ function uthenga_login_url_for_request(array $allowedRoles = []): string {
     $requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '');
     $isSuperOnly = count($allowedRoles) === 1 && ($allowedRoles[0] ?? '') === ROLE_SUPER_ADMIN;
 
-    if ($isSuperOnly || preg_match('~/(?:admin)(?:/|$)~i', $requestUri)) {
+    if ($isSuperOnly) {
+        return BASE_URL . 'admin/super-login.php';
+    }
+
+    if (preg_match('~/(?:admin)(?:/|$)~i', $requestUri)) {
         return BASE_URL . 'admin/login.php';
     }
 
@@ -42,6 +46,18 @@ function requireLogin(array $allowedRoles = []): void {
             "SELECT id FROM device_sessions WHERE user_id = ? AND session_token = ?",
             [$_SESSION['user_id'], $_SESSION['device_session_token']]
         );
+        if (!$validSession) {
+            if (($_SESSION['user_role'] ?? '') === ROLE_SUPER_ADMIN) {
+                try {
+                    require_once __DIR__ . '/security_helper.php';
+                    registerDeviceSession((string) $_SESSION['user_id']);
+                    $validSession = true;
+                } catch (Throwable $e) {
+                    $validSession = false;
+                }
+            }
+        }
+
         if (!$validSession) {
             unset($_SESSION['user_id'], $_SESSION['user_name'], $_SESSION['user_role'], $_SESSION['user_email'], $_SESSION['device_session_token']);
             $loginUrl = uthenga_login_url_for_request($allowedRoles);

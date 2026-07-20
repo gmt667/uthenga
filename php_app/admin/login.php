@@ -21,6 +21,7 @@ if (isLoggedIn()) {
 
 $error = '';
 $success = '';
+$isSuperPortal = (string) ($_GET['super'] ?? '') === '1';
 $safeRedirect = uthenga_safe_redirect_url((string) ($_GET['redirect'] ?? ''), '');
 $socialLoginEnabled = (
     (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== '') ||
@@ -32,7 +33,9 @@ if (isset($_GET['logout'])) {
     $success = 'You have been logged out successfully.';
 }
 if (isset($_GET['session_revoked'])) {
-    $error = 'Your session expired. Please sign in again.';
+    $error = $isSuperPortal
+        ? 'Your super admin session ended. Please sign in again.'
+        : 'Your admin session ended. Please sign in again.';
 }
 if (isset($_GET['pending'])) {
     $success = 'Your vendor account is pending approval. You will be notified once approved.';
@@ -89,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Admin Login';
+$pageTitle = $isSuperPortal ? 'Super Admin Login' : $pageTitle;
 $themePreference = uthenga_theme_preference();
 ?>
 <!DOCTYPE html>
@@ -159,9 +163,9 @@ $themePreference = uthenga_theme_preference();
   <div class="auth-logo" style="margin-bottom:1rem;">
     <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/../includes/logo.php'; ?>
   </div>
-  <div class="portal-badge">Admin Portal</div>
-  <h1 class="admin-login-title"><?= APP_NAME ?> Command Center</h1>
-  <p class="text-xs text-muted" style="text-align:center;margin-bottom:2rem;">Sign in with an Administrator or Super Administrator account.</p>
+  <div class="portal-badge"><?= $isSuperPortal ? 'Super Admin Portal' : 'Admin Portal' ?></div>
+  <h1 class="admin-login-title"><?= $isSuperPortal ? 'Super Admin Command Center' : APP_NAME . ' Command Center' ?></h1>
+  <p class="text-xs text-muted" style="text-align:center;margin-bottom:2rem;"><?= $isSuperPortal ? 'Sign in with the Super Administrator account.' : 'Sign in with an Administrator or Super Administrator account.' ?></p>
 
   <?php if ($error): ?>
     <div class="alert alert-error" style="margin-bottom:1.25rem;">&#10006; <?= e($error) ?></div>
@@ -174,7 +178,7 @@ $themePreference = uthenga_theme_preference();
     <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
 
     <div class="form-group">
-      <label class="form-label" for="email">Admin Email</label>
+      <label class="form-label" for="email"><?= $isSuperPortal ? 'Super Admin Email' : 'Admin Email' ?></label>
       <input
         type="email"
         id="email"
@@ -212,11 +216,15 @@ $themePreference = uthenga_theme_preference();
 
   <div class="alert alert-info" style="margin-top:1.5rem;">
     <strong>Super administrator access</strong><br>
-    <span class="text-xs">Use a verified Super Administrator account only.</span>
+    <span class="text-xs"><?= $isSuperPortal ? 'Use admin@uthenga.com to enter the super admin command center.' : 'Use a verified Super Administrator account only.' ?></span>
   </div>
 
   <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;">
-    <a href="<?= BASE_URL ?>admin/super-login.php" style="font-weight:600;">Super admin login alias</a>
+    <?php if ($isSuperPortal): ?>
+      <a href="<?= BASE_URL ?>admin/login.php" style="font-weight:600;">Standard admin login</a>
+    <?php else: ?>
+      <a href="<?= BASE_URL ?>admin/super-login.php" style="font-weight:600;">Super admin login</a>
+    <?php endif; ?>
   </p>
   <p style="text-align:center;margin-top:0.5rem;font-size:0.875rem;">
     <a href="<?= BASE_URL ?>index.php" style="color:var(--clr-text-muted);">Back to marketplace</a>

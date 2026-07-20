@@ -122,6 +122,42 @@ $healthStatus = [
 ];
 ?>
 
+<style>
+  @media (max-width: 768px) {
+    .dashboard-head-meta {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+    }
+
+    .dashboard-head-meta .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .glass-panel {
+      padding: 1rem !important;
+    }
+
+    .grid.grid-cols-2,
+    .grid.grid-cols-3 {
+      grid-template-columns: 1fr !important;
+    }
+
+    .grid.grid-cols-3 > section,
+    .grid.grid-cols-2 > section {
+      grid-column: auto !important;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+</style>
+
 <div class="container dashboard-content-frame" style="padding-top:2rem;padding-bottom:3rem;">
   <div class="page-header" style="margin-bottom: 2rem;">
     <div>
