@@ -9,6 +9,9 @@
  */
 require_once dirname(__DIR__) . '/config.php';
 require_once dirname(__DIR__) . '/db.php';
+if (!function_exists('curl_init')) {
+    redirect(BASE_URL . 'login.php?oauth_error=extension_missing');
+}
 
 // ─── 1. Validate State (CSRF protection) ────────────────────────────────────
 $state        = $_GET['state']            ?? '';

@@ -2700,3 +2700,183 @@ html.uthenga-app-loading body {
   0% { transform: translateX(-120%); }
   100% { transform: translateX(120%); }
 }
+
+/* === Uthenga UX Polish Layer === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(230, 57, 70, 0.18);
+  color: var(--clr-text);
+}
+
+body {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.container {
+  max-width: 1320px;
+}
+
+.section {
+  padding: clamp(3rem, 5vw, 5.75rem) 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.section-header > :first-child {
+  min-width: 0;
+}
+
+.grid-cols-2,
+.grid-cols-3,
+.grid-cols-4,
+.grid-cols-5 {
+  align-items: stretch;
+}
+
+.card,
+.glass-panel,
+.auth-card,
+.modal,
+.dashboard-panel,
+.list-view-card,
+.feature-card {
+  height: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  isolation: isolate;
+  transform-origin: center bottom;
+}
+
+.card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.card-footer {
+  margin-top: auto;
+  gap: 0.75rem;
+}
+
+.card-footer .btn,
+.card-footer a {
+  width: auto;
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme="dark"] .glass-panel {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+}
+
+.search-bar {
+  box-shadow: var(--shadow-sm);
+}
+
+.search-bar:focus-within {
+  border-color: var(--clr-accent);
+  box-shadow: 0 0 0 4px var(--clr-accent-glow), var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.search-bar input {
+  min-width: 0;
+}
+
+.navbar-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+}
+
+.navbar-hamburger:focus-visible,
+.btn:focus-visible,
+.profile-dropdown-btn:focus-visible {
+  transform: translateY(0);
+}
+
+.page-title,
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+.malawi-bg-card,
+.hero-slider,
+.hero-slider-content,
+.uthenga-page-loader-card,
+.auth-card {
+  border-radius: var(--radius-xl);
+}
+
+body.navbar-menu-open {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .navbar-links {
+    left: 0.5rem;
+    right: 0.5rem;
+    width: auto;
+    top: 58px;
+    border-radius: 22px;
+    max-height: calc(100vh - 82px);
+  }
+
+  .navbar-links a {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .section-header {
+    align-items: flex-start;
+  }
+
+  .section-header .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .btn-sm,
+  .btn-xs {
+    width: auto;
+  }
+
+  .search-bar {
+    gap: 0.65rem;
+  }
+
+  .card-footer {
+    gap: 0.65rem;
+  }
+
+  .section-label {
+    letter-spacing: 0.14em;
+  }
+}

@@ -7,6 +7,13 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
 
 header('Content-Type: application/json; charset=utf-8');
+if (!function_exists('curl_init')) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'The cURL PHP extension is not enabled on this server.',
+    ]);
+    exit;
+}
 
 $city = trim($_GET['city'] ?? '');
 if ($city === '') {

@@ -127,10 +127,12 @@ $themePreference = uthenga_theme_preference();
 
   function openMenu() {
     navbar.classList.add('navbar-mobile-open');
+    document.body.classList.add('navbar-menu-open');
     hamburger.setAttribute('aria-expanded', 'true');
   }
   function closeMenu() {
     navbar.classList.remove('navbar-mobile-open');
+    document.body.classList.remove('navbar-menu-open');
     hamburger.setAttribute('aria-expanded', 'false');
   }
 
@@ -147,6 +149,12 @@ $themePreference = uthenga_theme_preference();
     if (!navbar.contains(e.target)) {
       closeMenu();
     }
+  });
+
+  document.querySelectorAll('#navbar-mobile-menu a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      closeMenu();
+    });
   });
 })();
 </script>

@@ -290,9 +290,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => SESSION_LIFETIME,
         'path' => '/',
-        'secure' => uthenga_is_https() || APP_ENV === 'production',
+        'secure' => uthenga_is_https(),
         'httponly' => true,
-        'samesite' => 'Strict',
+        'samesite' => 'Lax',
     ]);
     session_start();
 }
