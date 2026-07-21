@@ -153,7 +153,7 @@ $hourlyLabels = json_encode(array_map(fn($h) => sprintf('%02d:00', $h), range(0,
   </div>
   <div style="display:flex;gap:.75rem;align-items:center;">
     <a href="<?= BASE_URL ?>admin/transactions.php" class="btn btn-secondary btn-sm">View Ledger</a>
-    <a href="transactions.php?export=csv&date_from=<?= urlencode($dateFrom) ?>&date_to=<?= urlencode($dateTo) ?>" class="btn btn-sm btn-outline">⬇ Export CSV</a>
+    <a href="transactions.php?export=csv&date_from=<?= urlencode($dateFrom) ?>&date_to=<?= urlencode($dateTo) ?>" class="btn btn-sm btn-outline"><?= admin_icon_svg('download') ?> Export CSV</a>
   </div>
 </div>
 
@@ -179,7 +179,7 @@ $hourlyLabels = json_encode(array_map(fn($h) => sprintf('%02d:00', $h), range(0,
   <div class="kpi-card" style="background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:var(--radius-lg);padding:1.5rem;">
     <div style="font-size:.75rem;color:var(--clr-muted);text-transform:uppercase;font-weight:600;letter-spacing:.05em;margin-bottom:.5rem;">Total Transactions</div>
     <div style="font-size:2rem;font-weight:800;"><?= number_format($kpiRow['total_txns']) ?></div>
-    <div style="font-size:.75rem;color:var(--clr-muted);margin-top:.25rem;"><?= e($dateFrom) ?> → <?= e($dateTo) ?></div>
+    <div style="font-size:.75rem;color:var(--clr-muted);margin-top:.25rem;"><?= e($dateFrom) ?> &rarr; <?= e($dateTo) ?></div>
   </div>
 
   <div class="kpi-card" style="background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:var(--radius-lg);padding:1.5rem;">
@@ -290,7 +290,7 @@ $hourlyLabels = json_encode(array_map(fn($h) => sprintf('%02d:00', $h), range(0,
 <!-- Recent Failed Transactions -->
 <?php if (!empty($recentFailed)): ?>
 <div class="glass-panel" style="padding:1.5rem;margin-bottom:2rem;">
-  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--clr-danger);">⚠ Recent Failed Transactions</h3>
+  <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--clr-danger);display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('warning') ?> Recent Failed Transactions</h3>
   <div style="overflow-x:auto;">
     <table class="table">
       <thead>

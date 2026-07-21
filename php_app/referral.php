@@ -59,12 +59,12 @@ $pageTitle = 'Referral Program';
 
 <main class="container ref-wrap">
   <div style="margin-bottom: 2rem; text-align:center;">
-    <h1 style="font-size:2.2rem; font-weight:800; margin-bottom:0.5rem;">🎉 Invite Your Friends</h1>
+    <h1 style="font-size:2.2rem; font-weight:800; margin-bottom:0.5rem;"><?= uthenga_public_icon_svg('sparkles') ?> Invite Your Friends</h1>
     <p class="text-muted">Share the love of travel and earn loyalty points together.</p>
   </div>
 
   <div class="ref-box">
-    <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🎁</div>
+    <div style="font-size: 3.5rem; margin-bottom: 0.5rem;"><?= uthenga_public_icon_svg('wallet') ?></div>
     <h2 style="color: #fff; font-weight:800; font-size:1.5rem;">Your Referral Code</h2>
     <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-top:0.25rem;">Share this code or link with friends. You both get 500 loyalty points when they sign up!</p>
     
@@ -119,7 +119,7 @@ $pageTitle = 'Referral Program';
                 <td class="text-xs text-muted"><?= e(date('M j, Y', strtotime($ref['created_at']))) ?></td>
                 <td>
                   <?php if ($ref['referrer_rewarded']): ?>
-                    <span style="color:#10b981;font-weight:600;">+500 points rewarded ✅</span>
+                    <span style="color:#10b981;font-weight:600;"><?= uthenga_public_icon_svg('check') ?> +500 points rewarded</span>
                   <?php else: ?>
                     <span class="text-muted text-xs">Pending Reward</span>
                   <?php endif; ?>

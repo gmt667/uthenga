@@ -194,14 +194,14 @@ $filterQs = array_filter([
 
 <div class="page-header" style="margin-bottom:2rem;">
   <div>
-    <h1 class="page-title">💳 Transaction Ledger</h1>
+    <h1 class="page-title"><?= admin_icon_svg('credit-card') ?> Transaction Ledger</h1>
     <p class="text-muted">Full audit trail of all platform payment transactions.</p>
   </div>
   <div style="display:flex;gap:0.75rem;align-items:center;">
     <a href="<?= 'transactions.php?' . http_build_query(array_merge($filterQs, ['export' => 'csv'])) ?>" class="btn btn-secondary btn-sm" id="txn-export-csv">
       <?= admin_icon_svg('download') ?> Export CSV
     </a>
-    <a href="payments.php" class="btn btn-ghost btn-sm" id="txn-goto-payments">⚙️ Financial Settings</a>
+    <a href="payments.php" class="btn btn-ghost btn-sm" id="txn-goto-payments"><?= admin_icon_svg('settings') ?> Financial Settings</a>
   </div>
 </div>
 
@@ -288,7 +288,7 @@ $filterQs = array_filter([
 
 <div class="glass-panel animate-in" style="padding:1.5rem;">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-    <h3 style="font-size:1.1rem;margin:0;">🧾 Transaction History</h3>
+    <h3 style="font-size:1.1rem;margin:0;display:flex;align-items:center;gap:0.5rem;"><?= admin_icon_svg('report') ?> Transaction History</h3>
     <span class="text-xs text-muted">Showing <strong><?= number_format(count($txns)) ?></strong> of <strong><?= number_format($totalCount) ?></strong> results</span>
   </div>
 
@@ -301,10 +301,10 @@ $filterQs = array_filter([
       <label class="form-label" style="font-size:0.72rem;margin-bottom:0.3rem;">Status</label>
       <select name="status" id="txn-status" class="form-control" style="height:2.25rem;">
         <option value="all" <?= $filterStatus === 'all' ? 'selected' : '' ?>>All Statuses</option>
-        <option value="success" <?= $filterStatus === 'success' ? 'selected' : '' ?>>✓ Success</option>
-        <option value="pending" <?= $filterStatus === 'pending' ? 'selected' : '' ?>>⏳ Pending</option>
-        <option value="failed" <?= $filterStatus === 'failed' ? 'selected' : '' ?>>✕ Failed</option>
-        <option value="refunded"<?= $filterStatus === 'refunded' ? 'selected' : '' ?>>↩ Refunded</option>
+        <option value="success" <?= $filterStatus === 'success' ? 'selected' : '' ?>><?= admin_icon_svg('check') ?> Success</option>
+        <option value="pending" <?= $filterStatus === 'pending' ? 'selected' : '' ?>><?= admin_icon_svg('clock') ?> Pending</option>
+        <option value="failed" <?= $filterStatus === 'failed' ? 'selected' : '' ?>><?= admin_icon_svg('close') ?> Failed</option>
+        <option value="refunded"<?= $filterStatus === 'refunded' ? 'selected' : '' ?>><?= admin_icon_svg('cash') ?> Refunded</option>
       </select>
     </div>
     <div style="min-width:180px;">
@@ -370,13 +370,13 @@ $filterQs = array_filter([
   <?php if ($totalPages > 1): ?>
   <div class="pagination" style="margin-top: 1.5rem;">
     <?php if ($page > 1): ?>
-      <a href="<?= e(paginationQs($filterQs, $page - 1)) ?>" class="page-btn">← Prev</a>
+      <a href="<?= e(paginationQs($filterQs, $page - 1)) ?>" class="page-btn">&larr; Prev</a>
     <?php endif; ?>
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
       <a href="<?= e(paginationQs($filterQs, $i)) ?>" class="page-btn <?= $i === $page ? 'active' : '' ?>"><?= $i ?></a>
     <?php endfor; ?>
     <?php if ($page < $totalPages): ?>
-      <a href="<?= e(paginationQs($filterQs, $page + 1)) ?>" class="page-btn">Next →</a>
+      <a href="<?= e(paginationQs($filterQs, $page + 1)) ?>" class="page-btn">Next &rarr;</a>
     <?php endif; ?>
   </div>
   <?php endif; ?>

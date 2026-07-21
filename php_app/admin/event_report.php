@@ -152,14 +152,14 @@ if ($selectedId) {
 
 <div class="page-header" style="margin-bottom:1.5rem;">
   <div>
-    <h1 class="page-title">📊 Event Report</h1>
+    <h1 class="page-title"><?= admin_icon_svg('report') ?> Event Report</h1>
     <p class="text-muted">Detailed analytics, ticket breakdown, and attendance reports for events.</p>
   </div>
   <?php if ($event): ?>
     <div style="display:flex;gap:0.5rem;flex-wrap:wrap;" id="report-export-btns">
-      <a href="?event_id=<?= urlencode($selectedId) ?>&export=csv" class="btn btn-sm btn-secondary" id="export-csv-btn">⬇️ Export CSV</a>
-      <a href="?event_id=<?= urlencode($selectedId) ?>&export=excel" class="btn btn-sm btn-secondary" id="export-excel-btn">📊 Export Excel</a>
-      <button class="btn btn-sm btn-secondary" id="export-pdf-btn" onclick="window.print()">🖨️ Print / PDF</button>
+      <a href="?event_id=<?= urlencode($selectedId) ?>&export=csv" class="btn btn-sm btn-secondary" id="export-csv-btn"><?= admin_icon_svg('download') ?> Export CSV</a>
+      <a href="?event_id=<?= urlencode($selectedId) ?>&export=excel" class="btn btn-sm btn-secondary" id="export-excel-btn"><?= admin_icon_svg('file') ?> Export Excel</a>
+      <button class="btn btn-sm btn-secondary" id="export-pdf-btn" onclick="window.print()"><?= admin_icon_svg('report') ?> Print / PDF</button>
     </div>
   <?php endif; ?>
 </div>
@@ -170,11 +170,11 @@ if ($selectedId) {
     <div class="form-group" style="margin:0;flex:1;min-width:240px;">
       <label class="form-label" for="report-event-select">Select Event</label>
       <select name="event_id" class="form-control" id="report-event-select" onchange="this.form.submit()">
-        <option value="">— Choose an Event —</option>
+        <option value="">Choose an Event</option>
         <?php foreach ($events as $ev): ?>
           <?php $em2 = json_decode($ev['meta'], true); ?>
           <option value="<?= e($ev['id']) ?>" <?= $selectedId === $ev['id'] ? 'selected' : '' ?>>
-            <?= e($ev['title']) ?> — <?= e($ev['location']) ?> (<?= e($em2['date'] ?? 'No date') ?>)
+            <?= e($ev['title']) ?> - <?= e($ev['location']) ?> (<?= e($em2['date'] ?? 'No date') ?>)
           </option>
         <?php endforeach; ?>
       </select>
@@ -185,7 +185,7 @@ if ($selectedId) {
 
 <?php if (!$event): ?>
 <div class="glass-panel" style="padding:3rem;text-align:center;">
-  <div style="font-size:3rem;margin-bottom:1rem;">📊</div>
+  <div style="font-size:3rem;margin-bottom:1rem;"><?= admin_icon_svg('report') ?></div>
   <h3>No Event Selected</h3>
   <p class="text-muted">Select an event above to generate a full report.</p>
 </div>
@@ -205,10 +205,10 @@ if ($selectedId) {
   <div style="flex:1;">
     <div style="font-weight:700;font-size:1.05rem;"><?= e($event['title']) ?></div>
     <div class="text-sm text-muted">
-      📍 <?= e($event['location']) ?> &nbsp;·&nbsp;
-      📅 <?= e($em['date'] ?? 'TBC') ?> &nbsp;·&nbsp;
-      ⏰ <?= e($em['time'] ?? 'TBC') ?> &nbsp;·&nbsp;
-      🎟️ Capacity: <?= number_format($totalCapacity) ?>
+      <?= uthenga_public_icon_svg('pin') ?> <?= e($event['location']) ?> &nbsp;·&nbsp;
+      <?= uthenga_public_icon_svg('calendar') ?> <?= e($em['date'] ?? 'TBC') ?> &nbsp;·&nbsp;
+      <?= admin_icon_svg('clock') ?> <?= e($em['time'] ?? 'TBC') ?> &nbsp;·&nbsp;
+      <?= uthenga_public_icon_svg('ticket') ?> Capacity: <?= number_format($totalCapacity) ?>
     </div>
   </div>
 </div>
@@ -217,14 +217,14 @@ if ($selectedId) {
 <div class="report-metric-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;" id="report-summary-metrics">
   <?php
   $metrics = [
-    ['icon' => '🎫', 'val' => number_format($totalSold), 'label' => 'Tickets Sold', 'color' => 'var(--clr-blue)'],
-    ['icon' => '✅', 'val' => number_format($totalScanned), 'label' => 'Scanned / Attended', 'color' => 'var(--clr-green)'],
-    ['icon' => '🚷', 'val' => number_format($noShows), 'label' => 'No Shows', 'color' => 'var(--clr-red)'],
-    ['icon' => '💰', 'val' => formatMWK($revenue), 'label' => 'Total Revenue', 'color' => 'var(--clr-accent)'],
-    ['icon' => '📈', 'val' => $attendancePct . '%', 'label' => 'Attendance Rate', 'color' => 'var(--clr-green)'],
-    ['icon' => '📊', 'val' => $soldPct . '%', 'label' => 'Tickets Sold %', 'color' => 'var(--clr-purple)'],
-    ['icon' => '❌', 'val' => number_format((int)($stats['cancelled_count'] ?? 0)), 'label' => 'Cancellations', 'color' => 'var(--clr-red)'],
-    ['icon' => '📋', 'val' => number_format((int)($stats['total_bookings'] ?? 0)), 'label' => 'Total Bookings', 'color' => 'var(--clr-blue)'],
+    ['icon' => uthenga_public_icon_svg('ticket'), 'val' => number_format($totalSold), 'label' => 'Tickets Sold', 'color' => 'var(--clr-blue)'],
+    ['icon' => uthenga_public_icon_svg('check'), 'val' => number_format($totalScanned), 'label' => 'Scanned / Attended', 'color' => 'var(--clr-green)'],
+    ['icon' => uthenga_public_icon_svg('x'), 'val' => number_format($noShows), 'label' => 'No Shows', 'color' => 'var(--clr-red)'],
+    ['icon' => uthenga_public_icon_svg('wallet'), 'val' => formatMWK($revenue), 'label' => 'Total Revenue', 'color' => 'var(--clr-accent)'],
+    ['icon' => uthenga_public_icon_svg('chart'), 'val' => $attendancePct . '%', 'label' => 'Attendance Rate', 'color' => 'var(--clr-green)'],
+    ['icon' => uthenga_public_icon_svg('news'), 'val' => $soldPct . '%', 'label' => 'Tickets Sold %', 'color' => 'var(--clr-purple)'],
+    ['icon' => uthenga_public_icon_svg('warning'), 'val' => number_format((int)($stats['cancelled_count'] ?? 0)), 'label' => 'Cancellations', 'color' => 'var(--clr-red)'],
+    ['icon' => uthenga_public_icon_svg('calendar'), 'val' => number_format((int)($stats['total_bookings'] ?? 0)), 'label' => 'Total Bookings', 'color' => 'var(--clr-blue)'],
   ];
   foreach ($metrics as $m): ?>
   <div class="glass-panel" style="padding:1.25rem;text-align:center;">

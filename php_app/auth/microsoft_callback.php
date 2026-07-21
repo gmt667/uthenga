@@ -129,12 +129,21 @@ if ($existingUser) {
     $userAvatar  = '';
     $isApproved  = $userRole === ROLE_VENDOR ? 0 : 1;
     $userIsApproved = $isApproved;
+    $hasJoinedDate = uthenga_column_exists('users', 'joined_date');
 
-    dbExecute(
-        'INSERT INTO users (id, name, email, password_hash, role, avatar, is_approved, joined_date)
-         VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())',
-        [$userId, $microsoftName, $microsoftEmail, '', $userRole, null, $isApproved]
-    );
+    if ($hasJoinedDate) {
+        dbExecute(
+            'INSERT INTO users (id, name, email, password_hash, role, avatar, is_approved, joined_date)
+             VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())',
+            [$userId, $microsoftName, $microsoftEmail, '', $userRole, null, $isApproved]
+        );
+    } else {
+        dbExecute(
+            'INSERT INTO users (id, name, email, password_hash, role, avatar, is_approved)
+             VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [$userId, $microsoftName, $microsoftEmail, '', $userRole, null, $isApproved]
+        );
+    }
 
     dbExecute(
         'INSERT INTO audit_logs (user_id, user_name, user_role, action, details) VALUES (?, ?, ?, ?, ?)',

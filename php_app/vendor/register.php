@@ -68,11 +68,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userId = generateId('U');
             $hashPw = password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]);
             $email = strtolower($old['email']);
+            $hasJoinedDate = uthenga_column_exists('users', 'joined_date');
 
-            dbExecute(
-                'INSERT INTO users (id, name, email, phone, password_hash, role, is_approved, joined_date) VALUES (?, ?, ?, ?, ?, ?, 0, CURDATE())',
-                [$userId, $old['name'], $email, $old['phone'], $hashPw, ROLE_VENDOR]
-            );
+            if ($hasJoinedDate) {
+                dbExecute(
+                    'INSERT INTO users (id, name, email, phone, password_hash, role, is_approved, joined_date) VALUES (?, ?, ?, ?, ?, ?, 0, CURDATE())',
+                    [$userId, $old['name'], $email, $old['phone'], $hashPw, ROLE_VENDOR]
+                );
+            } else {
+                dbExecute(
+                    'INSERT INTO users (id, name, email, phone, password_hash, role, is_approved) VALUES (?, ?, ?, ?, ?, ?, 0)',
+                    [$userId, $old['name'], $email, $old['phone'], $hashPw, ROLE_VENDOR]
+                );
+            }
 
             try {
                 dbExecute(

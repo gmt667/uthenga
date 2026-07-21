@@ -176,10 +176,10 @@ require_once __DIR__ . '/includes/admin_header.php';
   <div class="dashboard-content-area">
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap;">
       <div>
-        <h1 style="font-size:1.5rem;font-weight:800;margin:0;">📊 Event Organizer Analytics</h1>
+        <h1 style="font-size:1.5rem;font-weight:800;margin:0;display:flex;align-items:center;gap:0.5rem;"><?= admin_icon_svg('chart') ?> Event Organizer Analytics</h1>
         <div class="text-sm text-muted" style="margin-top:.25rem;">Sales performance · Ticket metrics · Promo tracking</div>
       </div>
-      <a href="<?= BASE_URL ?>admin/event_report.php" class="btn btn-secondary btn-sm" style="margin-left:auto;">← Event Reports</a>
+      <a href="<?= BASE_URL ?>admin/event_report.php" class="btn btn-secondary btn-sm" style="margin-left:auto;">&larr; Event Reports</a>
     </div>
 
     <!-- Filter Bar -->
@@ -249,11 +249,11 @@ require_once __DIR__ . '/includes/admin_header.php';
     <!-- Charts Row -->
     <div class="analytics-chart-grid">
       <div class="chart-card">
-        <div class="section-heading">📈 Revenue Trend</div>
+        <div class="section-heading"><?= admin_icon_svg('chart') ?> Revenue Trend</div>
         <canvas id="revenueTrendChart" height="80"></canvas>
       </div>
       <div class="chart-card">
-        <div class="section-heading">🎫 Ticket Types</div>
+        <div class="section-heading"><?= uthenga_public_icon_svg('ticket') ?> Ticket Types</div>
         <canvas id="ticketDonut" height="200"></canvas>
         <div style="margin-top:1rem;">
           <?php foreach ($ticketTypeStats as $ttype => $tdata): ?>
@@ -273,7 +273,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 
       <!-- Top Events -->
       <div class="chart-card">
-        <div class="section-heading">🏆 Top Events by Revenue</div>
+        <div class="section-heading"><?= uthenga_public_icon_svg('star') ?> Top Events by Revenue</div>
         <?php if (empty($topEvents)): ?>
           <div class="text-sm text-muted" style="padding:1rem;text-align:center;">No event bookings in this period.</div>
         <?php else: ?>
@@ -297,7 +297,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 
       <!-- Promo Code Performance -->
       <div class="chart-card">
-        <div class="section-heading">🏷️ Promo Code Performance</div>
+        <div class="section-heading"><?= uthenga_public_icon_svg('sparkles') ?> Promo Code Performance</div>
         <?php if (empty($promoUsage)): ?>
           <div class="text-sm text-muted" style="padding:1rem;text-align:center;">No promo codes configured yet.</div>
           <a href="<?= BASE_URL ?>admin/settings.php" class="btn btn-sm btn-secondary" style="margin-top:.75rem;">Manage Promo Codes</a>
@@ -335,7 +335,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 
     <!-- Recent Bookings -->
     <div class="chart-card">
-      <div class="section-heading">📋 Recent Event Bookings</div>
+      <div class="section-heading"><?= uthenga_public_icon_svg('calendar') ?> Recent Event Bookings</div>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
           <thead>

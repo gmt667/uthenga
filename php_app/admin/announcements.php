@@ -87,8 +87,8 @@ $announcements = dbQuery('SELECT * FROM system_announcements ORDER BY created_at
   <a href="<?= BASE_URL ?>admin/dashboard.php" class="btn btn-secondary"><?= admin_icon_svg('chart') ?> Back to Dashboard</a>
 </div>
 
-<?php if ($flashSuccess): ?><div class="alert alert-success">✓ <?= e($flashSuccess) ?></div><?php endif; ?>
-<?php if ($flashError): ?><div class="alert alert-error">✕ <?= e($flashError) ?></div><?php endif; ?>
+<?php if ($flashSuccess): ?><div class="alert alert-success"><?= uthenga_public_icon_svg('check') ?> <?= e($flashSuccess) ?></div><?php endif; ?>
+<?php if ($flashError): ?><div class="alert alert-error"><?= uthenga_public_icon_svg('x') ?> <?= e($flashError) ?></div><?php endif; ?>
 
 <div class="grid grid-cols-2 gap-3">
   <div class="glass-panel" style="padding:1.25rem;">

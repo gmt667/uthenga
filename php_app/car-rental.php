@@ -310,7 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isLoggedIn) {
 
 <section class="rental-hero">
   <div class="container">
-    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">🚗 Car Rental System</h1>
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('car') ?> Car Rental System</h1>
     <p>Rent cars, SUVs, and 4x4 off-roaders in Malawi. Driver and Self-Drive options available.</p>
   </div>
 </section>
@@ -367,13 +367,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isLoggedIn) {
   <!-- Listings Grid -->
   <?php if (!$inventoryAvailable): ?>
     <div style="text-align: center; padding: 4rem 0;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🚗</div>
+      <div style="font-size: 3rem; margin-bottom: 1rem;"><?= uthenga_public_icon_svg('car') ?></div>
       <h3>Car rental inventory is not available yet</h3>
       <p class="text-muted">The rental listings table is missing or not configured on this server.</p>
     </div>
   <?php elseif (empty($cars)): ?>
     <div style="text-align: center; padding: 4rem 0;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+      <div style="font-size: 3rem; margin-bottom: 1rem;"><?= uthenga_public_icon_svg('search') ?></div>
       <h3>No vehicles available</h3>
       <p class="text-muted">Try selecting a different location or vehicle class, or check back soon for new inventory.</p>
     </div>
@@ -388,9 +388,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isLoggedIn) {
             <span class="text-xs text-muted" style="text-transform: uppercase; font-weight: bold;"><?= e($car['vehicle_type']) ?></span>
             <h3 class="car-title"><?= e($car['vehicle_name']) ?></h3>
             <div class="car-spec-grid">
-              <div>📍 Location: <strong><?= e($car['location']) ?></strong></div>
-              <div>👤 Capacity: <strong><?= e($car['seats']) ?> Seats</strong></div>
-              <div>⚙️ Gearbox: <strong><?= ucfirst(e($car['transmission'])) ?></strong></div>
+              <div><?= uthenga_public_icon_svg('pin') ?> Location: <strong><?= e($car['location']) ?></strong></div>
+              <div><?= uthenga_public_icon_svg('user') ?> Capacity: <strong><?= e($car['seats']) ?> Seats</strong></div>
+              <div><?= admin_icon_svg('settings') ?> Gearbox: <strong><?= ucfirst(e($car['transmission'])) ?></strong></div>
               <div>⛽ Fuel: <strong><?= ucfirst(e($car['fuel_type'])) ?></strong></div>
             </div>
             
@@ -421,7 +421,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isLoggedIn) {
   <div class="modal" style="background: var(--clr-surface); padding: 2rem; border-radius: var(--radius-lg); max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--clr-border); padding-bottom: 0.5rem;">
       <h3 id="modal-car-title">Rent Vehicle</h3>
-      <button style="background: none; border: none; cursor: pointer; font-size: 1.25rem;" onclick="closeRentalModal()">✕</button>
+      <button style="background: none; border: none; cursor: pointer; font-size: 1.25rem;" onclick="closeRentalModal()"><?= uthenga_public_icon_svg('x') ?></button>
     </div>
     
     <form method="POST" action="car-rental.php">

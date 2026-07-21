@@ -79,17 +79,17 @@ $pageTitle = 'Gift Vouchers';
 
 <main class="container">
   <div style="text-align: center; margin-top: 2rem;">
-    <h1 style="font-size:2.2rem; font-weight:800; margin-bottom:0.5rem;">🎁 Gift Vouchers</h1>
+    <h1 style="font-size:2.2rem; font-weight:800; margin-bottom:0.5rem;"><?= uthenga_public_icon_svg('wallet') ?> Gift Vouchers</h1>
     <p class="text-muted">Purchase travel gift cards for your family or check your voucher balance.</p>
   </div>
 
-  <?php if ($success): ?><div class="alert alert-success" style="max-width:960px; margin: 1.5rem auto 0;">🎉 <?= $success ?></div><?php endif; ?>
-  <?php if ($error): ?><div class="alert alert-error" style="max-width:960px; margin: 1.5rem auto 0;">✕ <?= e($error) ?></div><?php endif; ?>
+  <?php if ($success): ?><div class="alert alert-success" style="max-width:960px; margin: 1.5rem auto 0;"><?= uthenga_public_icon_svg('check') ?> <?= $success ?></div><?php endif; ?>
+  <?php if ($error): ?><div class="alert alert-error" style="max-width:960px; margin: 1.5rem auto 0;"><?= uthenga_public_icon_svg('x') ?> <?= e($error) ?></div><?php endif; ?>
 
   <div class="voucher-container">
     <!-- Purchase Form -->
     <div class="glass-panel" style="padding:2rem;">
-      <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:1.5rem;">➕ Purchase Gift Voucher</h2>
+      <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('ticket') ?> Purchase Gift Voucher</h2>
       <form method="POST" action="">
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
         <input type="hidden" name="buy_voucher" value="1">
@@ -127,7 +127,7 @@ $pageTitle = 'Gift Vouchers';
     <!-- Balance Check & List -->
     <div>
       <div class="glass-panel" style="padding:2rem; margin-bottom:1.5rem;">
-        <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:1.5rem;">🔍 Check Voucher Balance</h2>
+        <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('search') ?> Check Voucher Balance</h2>
         <form method="POST" action="">
           <input type="hidden" name="check_balance" value="1">
           <div class="form-group">
@@ -168,7 +168,7 @@ $pageTitle = 'Gift Vouchers';
       <!-- User's Purchased Vouchers -->
       <?php if ($userId && !empty($purchasedVouchers)): ?>
         <div class="glass-panel" style="padding:2rem;">
-          <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:1.5rem;">📋 Your Gift Cards</h2>
+          <h2 style="font-size:1.35rem; font-weight:800; margin-bottom:1.5rem;display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('wallet') ?> Your Gift Cards</h2>
           <div style="display:grid; gap:0.75rem;">
             <?php foreach ($purchasedVouchers as $gv): ?>
               <div class="card" style="padding:1rem; display:flex; justify-content:space-between; align-items:center;">

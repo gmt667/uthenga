@@ -71,24 +71,24 @@ foreach ($listings as $l) {
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">🏨 Accommodation Management</h1>
+    <h1 class="page-title"><?= admin_icon_svg('store') ?> Accommodation Management</h1>
     <p class="text-muted">Manage hotels, lodges, guesthouses and room type inventory.</p>
   </div>
   <a href="<?= BASE_URL ?>admin/events.php" class="btn btn-secondary btn-sm">All Listings</a>
 </div>
 
-<?php if ($actionMsg): ?><div class="alert alert-success">✓ <?= e($actionMsg) ?></div><?php endif; ?>
-<?php if ($actionErr): ?><div class="alert alert-error">✕ <?= e($actionErr) ?></div><?php endif; ?>
+<?php if ($actionMsg): ?><div class="alert alert-success"><?= uthenga_public_icon_svg('check') ?> <?= e($actionMsg) ?></div><?php endif; ?>
+<?php if ($actionErr): ?><div class="alert alert-error"><?= uthenga_public_icon_svg('x') ?> <?= e($actionErr) ?></div><?php endif; ?>
 
 <!-- Toolbar -->
 <form method="GET" id="stays-filter-form">
   <div class="table-toolbar">
     <div class="search-wrap">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><?= uthenga_public_icon_svg('search') ?></span>
       <input type="text" name="q" placeholder="Search properties, vendors…" value="<?= e($search) ?>" id="stays-search" autocomplete="off">
     </div>
     <div class="export-group">
-      <a href="?q=<?= urlencode($search) ?>&export=csv" class="btn btn-secondary btn-sm">⬇ CSV</a>
+      <a href="?q=<?= urlencode($search) ?>&export=csv" class="btn btn-secondary btn-sm"><?= admin_icon_svg('download') ?> CSV</a>
       <button type="submit" class="btn btn-primary btn-sm">Filter</button>
       <a href="stays.php" class="btn btn-ghost btn-sm">Clear</a>
     </div>
@@ -142,7 +142,7 @@ if (($_GET['export'] ?? '') === 'csv') {
               <?php endif; ?>
             </td>
             <td class="text-xs"><?= e($l['vendor_name']) ?></td>
-            <td class="text-xs text-muted">📍 <?= e($l['location']) ?></td>
+            <td class="text-xs text-muted"><?= uthenga_public_icon_svg('pin') ?> <?= e($l['location']) ?></td>
             <td>
               <?php if (count($rooms) > 0): ?>
                 <div class="text-xs" style="margin-bottom:4px;">
@@ -166,18 +166,18 @@ if (($_GET['export'] ?? '') === 'csv') {
                 <input type="hidden" name="listing_id" value="<?= e($l['id']) ?>">
                 <input type="hidden" name="post_action" value="toggle_active">
                 <button type="submit" class="btn btn-sm <?= $l['is_active'] ? 'btn-cyan' : 'btn-secondary' ?>">
-                  <?= $l['is_active'] ? '✓ Live' : '✕ Hidden' ?>
+                  <?= $l['is_active'] ? uthenga_public_icon_svg('check') . ' Live' : uthenga_public_icon_svg('x') . ' Hidden' ?>
                 </button>
               </form>
             </td>
             <td style="text-align:right;">
-              <button class="btn btn-sm btn-secondary" onclick="toggleRoomManage('<?= e($l['id']) ?>')">🛏 Rooms</button>
+              <button class="btn btn-sm btn-secondary" onclick="toggleRoomManage('<?= e($l['id']) ?>')"><?= admin_icon_svg('store') ?> Rooms</button>
             </td>
           </tr>
           <!-- Room Management Inline Row -->
           <tr id="room-manage-<?= e($l['id']) ?>" style="display:none;">
             <td colspan="8" style="background:var(--clr-surface2);padding:1.25rem;">
-              <h4 style="margin-bottom:0.75rem;color:var(--clr-cyan);">🛏 Room Types — <?= e($l['title']) ?></h4>
+              <h4 style="margin-bottom:0.75rem;color:var(--clr-cyan);"><?= admin_icon_svg('store') ?> Room Types - <?= e($l['title']) ?></h4>
               <?php if (count($rooms) > 0): ?>
                 <table class="ticket-admin-table" style="margin-bottom:1rem;">
                   <thead><tr><th>Room Type</th><th>Price/Night</th><th>Occupancy</th><th>Total</th><th>Available</th><th>Amenities</th><th></th></tr></thead>
@@ -195,7 +195,7 @@ if (($_GET['export'] ?? '') === 'csv') {
                         <?php if (!empty($amenities)): ?>
                           <?= implode(', ', array_slice((array)$amenities, 0, 3)) ?>
                           <?php if (count((array)$amenities) > 3): ?>+<?= count((array)$amenities)-3 ?> more<?php endif; ?>
-                        <?php else: ?>—<?php endif; ?>
+                          <?php else: ?>-<?php endif; ?>
                       </td>
                       <td>
                         <form method="POST" style="margin:0;" onsubmit="return confirm('Delete this room type?');">
@@ -203,7 +203,7 @@ if (($_GET['export'] ?? '') === 'csv') {
                           <input type="hidden" name="post_action" value="delete_room_type">
                           <input type="hidden" name="rt_id" value="<?= $rt['id'] ?>">
                           <input type="hidden" name="listing_id" value="<?= e($l['id']) ?>">
-                          <button type="submit" class="btn btn-danger btn-sm">✕</button>
+                          <button type="submit" class="btn btn-danger btn-sm"><?= uthenga_public_icon_svg('x') ?></button>
                         </form>
                       </td>
                     </tr>
@@ -219,13 +219,13 @@ if (($_GET['export'] ?? '') === 'csv') {
                 <input type="hidden" name="post_action" value="add_room_type">
                 <input type="hidden" name="listing_id" value="<?= e($l['id']) ?>">
                 <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
-                  <div><label class="form-label text-xs">Room Name*</label><input type="text" name="rt_name" class="form-control" placeholder="Standard, Suite, Family…" required></div>
+                  <div><label class="form-label text-xs">Room Name*</label><input type="text" name="rt_name" class="form-control" placeholder="Standard, Suite, Family..." required></div>
                   <div><label class="form-label text-xs">Price/Night (MWK)</label><input type="number" name="rt_price" class="form-control" min="0" step="0.01" placeholder="0"></div>
                   <div><label class="form-label text-xs">Total Rooms</label><input type="number" name="rt_rooms" class="form-control" min="0" placeholder="10"></div>
                   <div><label class="form-label text-xs">Max Guests</label><input type="number" name="rt_occ" class="form-control" min="1" max="20" placeholder="2" value="2"></div>
                 </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
-                  <div><label class="form-label text-xs">Amenities (comma-separated)</label><input type="text" name="rt_amenities" class="form-control" placeholder="WiFi, AC, TV, Breakfast…"></div>
+                  <div><label class="form-label text-xs">Amenities (comma-separated)</label><input type="text" name="rt_amenities" class="form-control" placeholder="WiFi, AC, TV, Breakfast..."></div>
                   <div><label class="form-label text-xs">Description</label><input type="text" name="rt_desc" class="form-control" placeholder="Optional"></div>
                 </div>
                 <button type="submit" class="btn btn-cyan btn-sm">+ Add Room Type</button>

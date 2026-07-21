@@ -299,8 +299,8 @@ $activeSessions = dbQuery("
     <div>
       <h3 style="margin-bottom:1.25rem;">Edit Profile</h3>
 
-      <?php if ($profileSuccess): ?><div class="alert alert-success">✓ <?= e($profileSuccess) ?></div><?php endif; ?>
-      <?php if ($profileError):   ?><div class="alert alert-error">✕ <?= e($profileError) ?></div><?php endif; ?>
+      <?php if ($profileSuccess): ?><div class="alert alert-success"><?= uthenga_public_icon_svg('check') ?> <?= e($profileSuccess) ?></div><?php endif; ?>
+      <?php if ($profileError):   ?><div class="alert alert-error"><?= uthenga_public_icon_svg('x') ?> <?= e($profileError) ?></div><?php endif; ?>
 
       <form method="POST" action="" id="profile-form">
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
@@ -338,8 +338,8 @@ $activeSessions = dbQuery("
       <!-- Change Password -->
       <h3 style="margin-top:2.5rem;margin-bottom:1.25rem;">Change Password</h3>
 
-      <?php if ($pwSuccess): ?><div class="alert alert-success">✓ <?= e($pwSuccess) ?></div><?php endif; ?>
-      <?php if ($pwError):   ?><div class="alert alert-error">✕ <?= e($pwError) ?></div><?php endif; ?>
+      <?php if ($pwSuccess): ?><div class="alert alert-success"><?= uthenga_public_icon_svg('check') ?> <?= e($pwSuccess) ?></div><?php endif; ?>
+      <?php if ($pwError):   ?><div class="alert alert-error"><?= uthenga_public_icon_svg('x') ?> <?= e($pwError) ?></div><?php endif; ?>
 
       <form method="POST" action="" id="pw-form">
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
@@ -365,7 +365,7 @@ $activeSessions = dbQuery("
       <!-- Preferences -->
       <h3 style="margin-top:2.5rem;margin-bottom:1.25rem;">Notification Preferences</h3>
       <?php if ($securitySuccess && isset($_POST['update_preferences'])): ?>
-        <div class="alert alert-success" style="margin-bottom: 1rem;">✓ <?= e($securitySuccess) ?></div>
+        <div class="alert alert-success" style="margin-bottom: 1rem;"><?= uthenga_public_icon_svg('check') ?> <?= e($securitySuccess) ?></div>
       <?php endif; ?>
       <form method="POST" action="" id="pref-form">
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
@@ -399,16 +399,16 @@ $activeSessions = dbQuery("
       <!-- 2FA Setup -->
       <h3 style="margin-bottom:1.25rem;">Two-Factor Authentication</h3>
       <?php if ($securityError): ?>
-        <div class="alert alert-error" style="margin-bottom: 1rem;">✕ <?= e($securityError) ?></div>
+        <div class="alert alert-error" style="margin-bottom: 1rem;"><?= uthenga_public_icon_svg('x') ?> <?= e($securityError) ?></div>
       <?php endif; ?>
       <?php if ($securitySuccess && (isset($_POST['enable_2fa']) || isset($_POST['disable_2fa']))): ?>
-        <div class="alert alert-success" style="margin-bottom: 1rem;">✓ <?= e($securitySuccess) ?></div>
+        <div class="alert alert-success" style="margin-bottom: 1rem;"><?= uthenga_public_icon_svg('check') ?> <?= e($securitySuccess) ?></div>
       <?php endif; ?>
 
       <?php if (!empty($user['two_factor_enabled'])): ?>
         <div class="card" style="padding:1.5rem;border:1px solid var(--clr-green);background:rgba(16,185,129,0.05);margin-bottom:1rem;">
           <div style="display:flex;align-items:center;gap:0.5rem;font-weight:700;color:var(--clr-green);margin-bottom:0.5rem;">
-            <span>🛡️</span> Two-Factor Authentication is Active
+            <span><?= uthenga_public_icon_svg('lock') ?></span> Two-Factor Authentication is Active
           </div>
           <p class="text-xs text-muted" style="margin-bottom:1rem;">Your account is protected by an additional verification step during login.</p>
           
@@ -425,7 +425,7 @@ $activeSessions = dbQuery("
 
         <?php if (!empty($_SESSION['2fa_backup_codes_show'])): ?>
           <div class="card" style="padding:1.5rem;border:1px solid var(--clr-accent);background:rgba(245,158,11,0.05);margin-bottom:1.5rem;">
-            <h4 style="color:var(--clr-accent);margin-bottom:0.5rem;">⚠️ Save Your Backup Codes</h4>
+            <h4 style="color:var(--clr-accent);margin-bottom:0.5rem;display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('warning') ?> Save Your Backup Codes</h4>
             <p class="text-xs text-muted" style="margin-bottom:0.75rem;">If you lose access to your authenticator app, these codes can be used to log in. Each code can only be used once.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-family:monospace;font-size:1.1rem;text-align:center;background:rgba(0,0,0,0.1);padding:0.75rem;border-radius:var(--radius-sm);margin-bottom:0.75rem;">
               <?php foreach ($_SESSION['2fa_backup_codes_show'] as $bcode): ?>
@@ -471,7 +471,7 @@ $activeSessions = dbQuery("
       <!-- Active Devices -->
       <h3 style="margin-top:2rem;margin-bottom:1rem;">Active Devices &amp; Sessions</h3>
       <?php if ($securitySuccess && isset($_POST['revoke_session'])): ?>
-        <div class="alert alert-success" style="margin-bottom: 1rem;">✓ <?= e($securitySuccess) ?></div>
+        <div class="alert alert-success" style="margin-bottom: 1rem;"><?= uthenga_public_icon_svg('check') ?> <?= e($securitySuccess) ?></div>
       <?php endif; ?>
       <div style="display:grid;gap:0.75rem;margin-bottom:2rem;">
         <?php if (empty($activeSessions)): ?>
@@ -480,7 +480,7 @@ $activeSessions = dbQuery("
           <?php foreach ($activeSessions as $sess): ?>
             <div class="card" style="padding:1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;">
               <div style="display:flex;gap:0.75rem;align-items:center;">
-                <span style="font-size:1.5rem;"><?= $sess['device_type'] === 'mobile' ? '📱' : '💻' ?></span>
+                <span style="font-size:1.5rem;"><?= $sess['device_type'] === 'mobile' ? uthenga_public_icon_svg('phone') : uthenga_public_icon_svg('globe') ?></span>
                 <div>
                   <div style="font-size:0.875rem;font-weight:600;">
                     <?= e($sess['device_name']) ?>
@@ -517,12 +517,12 @@ $activeSessions = dbQuery("
             <div style="width:32px;height:32px;border-radius:50%;background:var(--clr-surface2);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">
               <?php
               $icon = match(true) {
-                  str_contains($log['action'], 'Login')    => '🔑',
-                  str_contains($log['action'], 'Booking')  => '🎫',
-                  str_contains($log['action'], 'Password') => '🔐',
-                  str_contains($log['action'], 'Profile')  => '👤',
-                  str_contains($log['action'], 'Ticket')   => '💬',
-                  default                                   => '📋',
+                  str_contains($log['action'], 'Login')    => uthenga_public_icon_svg('lock'),
+                  str_contains($log['action'], 'Booking')  => uthenga_public_icon_svg('ticket'),
+                  str_contains($log['action'], 'Password') => uthenga_public_icon_svg('lock'),
+                  str_contains($log['action'], 'Profile')  => uthenga_public_icon_svg('user'),
+                  str_contains($log['action'], 'Ticket')   => uthenga_public_icon_svg('ticket'),
+                  default                                   => uthenga_public_icon_svg('info'),
               };
               echo $icon;
               ?>
@@ -535,16 +535,16 @@ $activeSessions = dbQuery("
           </div>
           <?php endforeach; ?>
         </div>
-        <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;text-align:center;" id="view-bookings-btn">Go to Dashboard →</a>
+        <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;text-align:center;" id="view-bookings-btn">Go to Dashboard &rarr;</a>
       <?php endif; ?>
 
       <!-- Quick Links -->
       <h3 style="margin-top:2rem;margin-bottom:1rem;">Quick Links</h3>
       <div style="display:grid;gap:0.5rem;">
-        <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary" style="text-align:center;" id="profile-bookings-link">🎫 Customer Dashboard</a>
-        <a href="<?= BASE_URL ?>support.php" class="btn btn-secondary" style="text-align:center;" id="profile-support-link">💬 Support Tickets</a>
-        <a href="<?= BASE_URL ?>index.php" class="btn btn-secondary" style="text-align:center;" id="profile-explore-link">🌍 Explore Listings</a>
-        <a href="<?= BASE_URL ?>logout.php" class="btn btn-danger" style="text-align:center;" id="profile-logout-link">🚪 Logout</a>
+        <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary" style="text-align:center;" id="profile-bookings-link"><?= uthenga_public_icon_svg('home') ?> Customer Dashboard</a>
+        <a href="<?= BASE_URL ?>support.php" class="btn btn-secondary" style="text-align:center;" id="profile-support-link"><?= uthenga_public_icon_svg('mail') ?> Support Tickets</a>
+        <a href="<?= BASE_URL ?>index.php" class="btn btn-secondary" style="text-align:center;" id="profile-explore-link"><?= uthenga_public_icon_svg('globe') ?> Explore Listings</a>
+        <a href="<?= BASE_URL ?>logout.php" class="btn btn-danger" style="text-align:center;" id="profile-logout-link"><?= uthenga_public_icon_svg('x') ?> Logout</a>
       </div>
     </div>
   </div>
@@ -557,10 +557,10 @@ const ind    = document.getElementById('pw-match-indicator');
 function checkMatch() {
   if (!confPw || !confPw.value) { if(ind) ind.textContent=''; return; }
   if (newPw.value === confPw.value) {
-    ind.textContent = '✓ Passwords match';
+    ind.innerHTML = '<?= uthenga_public_icon_svg('check') ?> Passwords match';
     ind.style.color = 'var(--clr-green)';
   } else {
-    ind.textContent = '✕ Passwords do not match';
+    ind.innerHTML = '<?= uthenga_public_icon_svg('x') ?> Passwords do not match';
     ind.style.color = '#ef4444';
   }
 }

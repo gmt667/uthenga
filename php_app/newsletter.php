@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     SET full_name = ?, preferences = ?, status = 'subscribed', unsubscribed_at = NULL 
                     WHERE email = ?
                 ", [$name, $jsonPrefs, $email]);
-                $success = "Your newsletter preferences have been updated successfully! 📧";
+                $success = "Your newsletter preferences have been updated successfully!";
             } else {
                 // Create new subscription
                 dbExecute("
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     (user_id, email, full_name, preferences, status, token, created_at)
                     VALUES (?, ?, ?, ?, 'subscribed', ?, NOW())
                 ", [$userId, $email, $name, $jsonPrefs, $token]);
-                $success = "Thank you for subscribing to our newsletter! Stay tuned for travel deals. 🎉";
+                $success = "Thank you for subscribing to our newsletter! Stay tuned for travel deals.";
             }
         }
     }
@@ -96,16 +96,16 @@ $pageTitle = 'Newsletter Subscription';
 <main class="container">
   <div class="newsletter-card">
     <div style="text-align: center; margin-bottom: 2rem;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">📧</div>
+      <div style="font-size: 3rem; margin-bottom: 1rem;"><?= uthenga_public_icon_svg('mail') ?></div>
       <h2 style="font-weight: 800;">Uthenga Newsletter</h2>
       <p class="text-muted" style="font-size: 0.875rem;">Get exclusive Malawi tourism deals, events updates, and transport guides.</p>
     </div>
 
     <?php if ($success): ?>
-      <div class="alert alert-success" style="margin-bottom: 1.5rem;">✓ <?= $success ?></div>
+      <div class="alert alert-success" style="margin-bottom: 1.5rem;"><?= uthenga_public_icon_svg('check') ?> <?= $success ?></div>
     <?php endif; ?>
     <?php if ($error): ?>
-      <div class="alert alert-error" style="margin-bottom: 1.5rem;">✕ <?= e($error) ?></div>
+      <div class="alert alert-error" style="margin-bottom: 1.5rem;"><?= uthenga_public_icon_svg('x') ?> <?= e($error) ?></div>
     <?php endif; ?>
 
     <?php if (!isset($_GET['unsubscribe']) || $error): ?>
@@ -127,19 +127,19 @@ $pageTitle = 'Newsletter Subscription';
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
               <input type="checkbox" name="prefs[]" value="events" checked>
-              <span>Events Updates 🎫</span>
+              <span><?= uthenga_public_icon_svg('news') ?> Events Updates</span>
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
               <input type="checkbox" name="prefs[]" value="travel" checked>
-              <span>Travel &amp; Stays 🏨</span>
+              <span><?= uthenga_public_icon_svg('hotel') ?> Travel &amp; Stays</span>
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
               <input type="checkbox" name="prefs[]" value="transport" checked>
-              <span>Transport Guides 🚌</span>
+              <span><?= uthenga_public_icon_svg('bus') ?> Transport Guides</span>
             </label>
             <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
               <input type="checkbox" name="prefs[]" value="deals" checked>
-              <span>Exclusive Deals 🏷️</span>
+              <span><?= uthenga_public_icon_svg('sparkles') ?> Exclusive Deals</span>
             </label>
           </div>
         </div>
@@ -151,7 +151,7 @@ $pageTitle = 'Newsletter Subscription';
     <?php endif; ?>
 
     <div style="text-align: center; margin-top: 1.5rem;">
-      <a href="<?= BASE_URL ?>index.php" class="text-muted" style="font-size: 0.875rem;">← Return to Homepage</a>
+      <a href="<?= BASE_URL ?>index.php" class="text-muted" style="font-size: 0.875rem;"><?= uthenga_public_icon_svg('home') ?> Return to Homepage</a>
     </div>
   </div>
 </main>

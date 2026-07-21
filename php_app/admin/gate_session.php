@@ -38,13 +38,13 @@ if ($selectedEventId) {
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">🚪 Gate Session Manager</h1>
+    <h1 class="page-title"><?= admin_icon_svg('activity') ?> Gate Session Manager</h1>
     <p class="text-muted">Scan QR codes, validate tickets, and monitor entry in real time.</p>
   </div>
   <?php if ($selectedEvent && $activeSession): ?>
     <div style="display:flex;gap:0.75rem;align-items:center;">
       <span class="badge" style="background:<?= $activeSession['status'] === 'active' ? 'var(--clr-green)' : 'var(--clr-accent)' ?>;color:#000;padding:0.4rem 1rem;border-radius:20px;font-weight:700;font-size:0.82rem;">
-        <?= $activeSession['status'] === 'active' ? '🟢 SESSION ACTIVE' : '⏸️ SESSION PAUSED' ?>
+        <?= $activeSession['status'] === 'active' ? uthenga_public_icon_svg('check') . ' SESSION ACTIVE' : admin_icon_svg('clock') . ' SESSION PAUSED' ?>
       </span>
     </div>
   <?php endif; ?>
@@ -56,11 +56,11 @@ if ($selectedEventId) {
     <div class="form-group" style="margin:0;flex:1;min-width:240px;">
       <label class="form-label" for="gate-event-select">Select Event</label>
       <select name="event_id" class="form-control" id="gate-event-select" onchange="this.form.submit()">
-        <option value="">— Choose an Event —</option>
+        <option value="">Choose an Event</option>
         <?php foreach ($events as $ev): ?>
           <?php $em = json_decode($ev['meta'], true); ?>
           <option value="<?= e($ev['id']) ?>" <?= $selectedEventId === $ev['id'] ? 'selected' : '' ?>>
-            <?= e($ev['title']) ?> — <?= e($ev['location']) ?> (<?= e($em['date'] ?? 'No date') ?>)
+            <?= e($ev['title']) ?> - <?= e($ev['location']) ?> (<?= e($em['date'] ?? 'No date') ?>)
           </option>
         <?php endforeach; ?>
       </select>
@@ -71,7 +71,7 @@ if ($selectedEventId) {
 
 <?php if (!$selectedEvent): ?>
 <div class="glass-panel" style="padding:3rem;text-align:center;">
-  <div style="font-size:3rem;margin-bottom:1rem;">🎫</div>
+  <div style="font-size:3rem;margin-bottom:1rem;"><?= uthenga_public_icon_svg('ticket') ?></div>
   <h3>No Event Selected</h3>
   <p class="text-muted">Select an event from the dropdown above to start a gate session.</p>
 </div>
@@ -85,7 +85,11 @@ if ($selectedEventId) {
   <img src="<?= e($selectedEvent['image']) ?>" alt="" style="width:64px;height:64px;border-radius:var(--radius-md);object-fit:cover;">
   <div style="flex:1;">
     <div style="font-weight:700;font-size:1rem;"><?= e($selectedEvent['title']) ?></div>
-    <div class="text-sm text-muted">📍 <?= e($selectedEvent['location']) ?> &nbsp;·&nbsp; 📅 <?= e($em['date'] ?? 'TBC') ?> &nbsp;·&nbsp; ⏰ <?= e($em['time'] ?? 'TBC') ?></div>
+    <div class="text-sm text-muted" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+      <span><?= uthenga_public_icon_svg('pin') ?> <?= e($selectedEvent['location']) ?></span>
+      <span><?= uthenga_public_icon_svg('calendar') ?> <?= e($em['date'] ?? 'TBC') ?></span>
+      <span><?= admin_icon_svg('clock') ?> <?= e($em['time'] ?? 'TBC') ?></span>
+    </div>
   </div>
   <a href="<?= BASE_URL ?>event-details.php?id=<?= e($selectedEvent['id']) ?>" target="_blank" class="btn btn-sm btn-secondary">View Event</a>
 </div>
@@ -97,7 +101,7 @@ if ($selectedEventId) {
       <h4 style="margin-bottom:0.25rem;">Session Controls</h4>
       <p class="text-muted text-sm" style="margin:0;">
         <?php if ($activeSession): ?>
-          Session ID: <code style="font-size:0.82rem;"><?= e($activeSession['id']) ?></code> — started <?= date('d M Y H:i', strtotime($activeSession['started_at'])) ?>
+          Session ID: <code style="font-size:0.82rem;"><?= e($activeSession['id']) ?></code> - started <?= date('d M Y H:i', strtotime($activeSession['started_at'])) ?>
         <?php else: ?>
           No active session for this event.
         <?php endif; ?>
@@ -105,13 +109,13 @@ if ($selectedEventId) {
     </div>
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
       <?php if (!$activeSession): ?>
-        <button class="btn btn-primary" id="btn-start-session" onclick="startSession()">▶️ Start Gate Session</button>
+        <button class="btn btn-primary" id="btn-start-session" onclick="startSession()"><?= admin_icon_svg('activity') ?> Start Gate Session</button>
       <?php elseif ($activeSession['status'] === 'active'): ?>
-        <button class="btn btn-secondary" id="btn-pause-session" onclick="pauseSession()">⏸️ Pause Session</button>
-        <button class="btn btn-danger" id="btn-stop-session" onclick="stopSession()">⏹️ Stop Session</button>
+        <button class="btn btn-secondary" id="btn-pause-session" onclick="pauseSession()"><?= admin_icon_svg('clock') ?> Pause Session</button>
+        <button class="btn btn-danger" id="btn-stop-session" onclick="stopSession()"><?= admin_icon_svg('close') ?> Stop Session</button>
       <?php else: ?>
-        <button class="btn btn-primary" id="btn-resume-session" onclick="resumeSession()">▶️ Resume Session</button>
-        <button class="btn btn-danger" id="btn-stop-session" onclick="stopSession()">⏹️ Stop Session</button>
+        <button class="btn btn-primary" id="btn-resume-session" onclick="resumeSession()"><?= admin_icon_svg('activity') ?> Resume Session</button>
+        <button class="btn btn-danger" id="btn-stop-session" onclick="stopSession()"><?= admin_icon_svg('close') ?> Stop Session</button>
       <?php endif; ?>
     </div>
   </div>
@@ -123,35 +127,35 @@ if ($selectedEventId) {
 
   <!-- Live Stats -->
   <div class="glass-panel" style="padding:1.5rem;">
-    <h4 style="margin-bottom:1.25rem;">📊 Live Dashboard</h4>
+    <h4 style="margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem;"><?= admin_icon_svg('chart') ?> Live Dashboard</h4>
     <div class="gate-stat-grid" id="gate-stat-grid">
       <div class="gate-stat-card">
-        <div class="gate-stat-icon" style="background:rgba(59,130,246,0.1);color:var(--clr-blue);">🎫</div>
+        <div class="gate-stat-icon" style="background:rgba(59,130,246,0.1);color:var(--clr-blue);"><?= uthenga_public_icon_svg('ticket') ?></div>
         <div class="gate-stat-value" id="stat-sold">—</div>
         <div class="gate-stat-label">Tickets Sold</div>
       </div>
       <div class="gate-stat-card">
-        <div class="gate-stat-icon" style="background:rgba(16,185,129,0.1);color:var(--clr-green);">✅</div>
+        <div class="gate-stat-icon" style="background:rgba(16,185,129,0.1);color:var(--clr-green);"><?= uthenga_public_icon_svg('check') ?></div>
         <div class="gate-stat-value" id="stat-scanned">—</div>
         <div class="gate-stat-label">Scanned In</div>
       </div>
       <div class="gate-stat-card">
-        <div class="gate-stat-icon" style="background:rgba(245,158,11,0.1);color:var(--clr-accent);">👥</div>
+        <div class="gate-stat-icon" style="background:rgba(245,158,11,0.1);color:var(--clr-accent);"><?= uthenga_public_icon_svg('user') ?></div>
         <div class="gate-stat-value" id="stat-remaining">—</div>
         <div class="gate-stat-label">Still to Arrive</div>
       </div>
       <div class="gate-stat-card">
-        <div class="gate-stat-icon" style="background:rgba(139,92,246,0.1);color:var(--clr-purple);">💰</div>
+        <div class="gate-stat-icon" style="background:rgba(139,92,246,0.1);color:var(--clr-purple);"><?= uthenga_public_icon_svg('wallet') ?></div>
         <div class="gate-stat-value" id="stat-revenue">—</div>
         <div class="gate-stat-label">Revenue</div>
       </div>
       <div class="gate-stat-card">
-        <div class="gate-stat-icon" style="background:rgba(239,68,68,0.1);color:var(--clr-red);">❌</div>
+        <div class="gate-stat-icon" style="background:rgba(239,68,68,0.1);color:var(--clr-red);"><?= uthenga_public_icon_svg('x') ?></div>
         <div class="gate-stat-value" id="stat-invalid">—</div>
         <div class="gate-stat-label">Invalid Scans</div>
       </div>
       <div class="gate-stat-card">
-        <div class="gate-stat-icon" style="background:rgba(245,158,11,0.1);color:var(--clr-accent);">⚠️</div>
+        <div class="gate-stat-icon" style="background:rgba(245,158,11,0.1);color:var(--clr-accent);"><?= uthenga_public_icon_svg('warning') ?></div>
         <div class="gate-stat-value" id="stat-duplicate">—</div>
         <div class="gate-stat-label">Duplicates</div>
       </div>
@@ -160,7 +164,7 @@ if ($selectedEventId) {
 
   <!-- QR Scanner -->
   <div class="glass-panel" style="padding:1.5rem;">
-    <h4 style="margin-bottom:1.25rem;">📱 QR Code Scanner</h4>
+    <h4 style="margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('camera') ?> QR Code Scanner</h4>
 
     <!-- Text/hardware scanner input -->
     <div class="form-group">
@@ -175,7 +179,7 @@ if ($selectedEventId) {
 
     <!-- Camera scanner toggle -->
     <div style="margin-bottom:1rem;">
-      <button class="btn btn-sm btn-secondary" id="btn-camera-toggle" onclick="toggleCamera()" <?= (!$activeSession || $activeSession['status'] !== 'active') ? 'disabled' : '' ?>>📷 Use Camera</button>
+      <button class="btn btn-sm btn-secondary" id="btn-camera-toggle" onclick="toggleCamera()" <?= (!$activeSession || $activeSession['status'] !== 'active') ? 'disabled' : '' ?>><?= uthenga_public_icon_svg('camera') ?> Use Camera</button>
     </div>
     <div id="camera-container" style="display:none;border-radius:var(--radius-md);overflow:hidden;background:#000;aspect-ratio:4/3;position:relative;">
       <video id="camera-video" style="width:100%;height:100%;object-fit:cover;" autoplay muted playsinline></video>
@@ -195,7 +199,7 @@ if ($selectedEventId) {
 <!-- Scan Activity Log -->
 <div class="glass-panel" style="padding:1.5rem;">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
-    <h4 style="margin:0;">🕒 Scan Activity Log</h4>
+    <h4 style="margin:0;display:flex;align-items:center;gap:0.5rem;"><?= admin_icon_svg('activity') ?> Scan Activity Log</h4>
     <button class="btn btn-sm btn-secondary" onclick="loadActivity()" id="btn-refresh-log">↺ Refresh</button>
   </div>
   <div id="scan-activity-log" style="max-height:320px;overflow-y:auto;">
@@ -263,10 +267,10 @@ function startSession() {
   postApi({ action: 'start_session', listing_id: EVENT_ID }, function(res) {
     if (res.success) {
       SESSION_ID = res.session_id;
-      showToast(res.resumed ? '▶️ Session resumed!' : '▶️ Gate session started!', 'success');
+      showToast(res.resumed ? 'Session resumed!' : 'Gate session started!', 'success');
       setTimeout(function(){ location.reload(); }, 1200);
     } else {
-      showToast('❌ ' + res.message, 'error');
+      showToast(res.message, 'error');
       if (btn) btn.disabled = false;
     }
   });
@@ -275,16 +279,16 @@ function startSession() {
 function pauseSession() {
   if (!SESSION_ID) return;
   postApi({ action: 'pause_session', session_id: SESSION_ID }, function(res) {
-    if (res.success) { showToast('⏸️ Session paused.', 'success'); setTimeout(function(){ location.reload(); }, 1000); }
-    else showToast('❌ ' + res.message, 'error');
+    if (res.success) { showToast('Session paused.', 'success'); setTimeout(function(){ location.reload(); }, 1000); }
+    else showToast(res.message, 'error');
   });
 }
 
 function resumeSession() {
   if (!SESSION_ID) return;
   postApi({ action: 'start_session', listing_id: EVENT_ID }, function(res) {
-    if (res.success) { SESSION_ID = res.session_id; showToast('▶️ Session resumed!', 'success'); setTimeout(function(){ location.reload(); }, 1000); }
-    else showToast('❌ ' + res.message, 'error');
+    if (res.success) { SESSION_ID = res.session_id; showToast('Session resumed!', 'success'); setTimeout(function(){ location.reload(); }, 1000); }
+    else showToast(res.message, 'error');
   });
 }
 
@@ -292,8 +296,8 @@ function stopSession() {
   if (!SESSION_ID) return;
   if (!confirm('Are you sure you want to STOP this gate session? This cannot be undone.')) return;
   postApi({ action: 'stop_session', session_id: SESSION_ID }, function(res) {
-    if (res.success) { showToast('⏹️ Session stopped.', 'success'); setTimeout(function(){ location.reload(); }, 1000); }
-    else showToast('❌ ' + res.message, 'error');
+    if (res.success) { showToast('Session stopped.', 'success'); setTimeout(function(){ location.reload(); }, 1000); }
+    else showToast(res.message, 'error');
   });
 }
 
@@ -315,7 +319,7 @@ function doScan() {
       loadStats();
       loadActivity();
     } else {
-      showToast('❌ ' + res.message, 'error');
+      showToast(res.message, 'error');
     }
   });
 }
@@ -384,7 +388,7 @@ function startCamera() {
       cameraActive = true;
       video.srcObject = stream;
       container.style.display = 'block';
-      document.getElementById('btn-camera-toggle').textContent = '📷 Stop Camera';
+      document.getElementById('btn-camera-toggle').innerHTML = '<?= uthenga_public_icon_svg('camera') ?> Stop Camera';
       scanCameraLoop();
     })
     .catch(function(e) {
@@ -398,7 +402,7 @@ function stopCamera() {
   var container = document.getElementById('camera-container');
   if (container) container.style.display = 'none';
   var btn = document.getElementById('btn-camera-toggle');
-  if (btn) btn.textContent = '📷 Use Camera';
+  if (btn) btn.innerHTML = '<?= uthenga_public_icon_svg('camera') ?> Use Camera';
 }
 
 function scanCameraLoop() {

@@ -54,11 +54,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($errors)) {
             $userId = generateId('U');
             $hashPw = password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]);
+            $hasJoinedDate = uthenga_column_exists('users', 'joined_date');
 
-            dbExecute(
-                'INSERT INTO users (id, name, email, phone, password_hash, role, is_approved, joined_date) VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())',
-                [$userId, $old['name'], strtolower($old['email']), $old['phone'], $hashPw, ROLE_CUSTOMER, 1]
-            );
+            if ($hasJoinedDate) {
+                dbExecute(
+                    'INSERT INTO users (id, name, email, phone, password_hash, role, is_approved, joined_date) VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())',
+                    [$userId, $old['name'], strtolower($old['email']), $old['phone'], $hashPw, ROLE_CUSTOMER, 1]
+                );
+            } else {
+                dbExecute(
+                    'INSERT INTO users (id, name, email, phone, password_hash, role, is_approved) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    [$userId, $old['name'], strtolower($old['email']), $old['phone'], $hashPw, ROLE_CUSTOMER, 1]
+                );
+            }
 
             dbExecute(
                 'INSERT INTO audit_logs (user_id, user_name, user_role, action, details) VALUES (?, ?, ?, ?, ?)',

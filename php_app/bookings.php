@@ -49,7 +49,7 @@ function statusClass(string $status): string {
   <!-- Page Header -->
   <div class="page-header">
     <div>
-      <h1 class="page-title">🎫 My Bookings</h1>
+      <h1 class="page-title"><?= uthenga_public_icon_svg('ticket') ?> My Bookings</h1>
       <p class="text-muted">Welcome, <strong style="color:var(--clr-text);"><?= e($user['name']) ?></strong>. Here is your reservation history.</p>
     </div>
     <div style="text-align:right;">
@@ -61,7 +61,7 @@ function statusClass(string $status): string {
   <!-- Bookings Section -->
   <?php if (empty($bookings)): ?>
     <div class="glass-panel animate-in" style="text-align:center;padding:4rem 2rem; margin-top: 1rem;">
-      <div style="font-size:3.5rem;margin-bottom:1rem;">🎫</div>
+      <div style="font-size:3.5rem;margin-bottom:1rem;"><?= uthenga_public_icon_svg('ticket') ?></div>
       <h3>No bookings found</h3>
       <p class="text-muted" style="margin:0.5rem 0 1.5rem;">You haven't made any bookings yet. Start exploring Malawi today!</p>
       <a href="<?= BASE_URL ?>index.php" class="btn btn-primary btn-lg" id="explore-btn">Explore Listings</a>
@@ -128,7 +128,7 @@ function statusClass(string $status): string {
                 onclick="toggleQR('qr-<?= e($bk['id']) ?>')"
                 id="view-qr-<?= e($bk['id']) ?>"
                 style="margin-bottom:0.4rem;width:100%;"
-              >🎟 Digital Ticket</button>
+              ><?= uthenga_public_icon_svg('ticket') ?> Digital Ticket</button>
               <?php if ($bk['payment_status'] !== 'Refunded'): ?>
                 <button
                   class="btn btn-sm btn-danger btn-cancel-booking"
@@ -147,7 +147,7 @@ function statusClass(string $status): string {
             <img src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=<?= urlencode($bk['qr_code']) ?>&choe=UTF-8" alt="QR Code" style="margin: 0.5rem auto; display: block; border: 1px solid var(--clr-border); border-radius: 4px; padding: 0.5rem; background: #fff;">
             <div class="qr-string" style="font-family: monospace; font-size: 0.85rem; font-weight: bold; color: var(--clr-text-soft); margin-top: 0.5rem;"><?= e($bk['qr_code']) ?></div>
             <div class="text-xs text-muted" style="margin-top:0.5rem;">Keep this ticket open or return later. It will stay ready to be scanned.</div>
-            <a href="ticket.php?id=<?= e($bk['id']) ?>" target="_blank" class="btn btn-secondary btn-sm" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.25rem;">📄 Open Ticket / Print / Share</a>
+            <a href="ticket.php?id=<?= e($bk['id']) ?>" target="_blank" class="btn btn-secondary btn-sm" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.25rem;"><?= uthenga_public_icon_svg('share') ?> Open Ticket / Print / Share</a>
           </div>
           <?php if ($bk['transaction_id']): ?>
             <p class="text-xs text-muted" style="text-align:center;margin-top:0.75rem;">

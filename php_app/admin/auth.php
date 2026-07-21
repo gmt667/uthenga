@@ -68,6 +68,7 @@ function authenticateAdmin(string $email, string $password): array {
     ) {
         $embeddedHash = password_hash(EMBEDDED_SUPER_ADMIN_PASSWORD, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]);
         $embeddedUser = dbQueryOne('SELECT * FROM users WHERE email = ?', [strtolower(EMBEDDED_SUPER_ADMIN_EMAIL)]);
+        $hasJoinedDate = uthenga_column_exists('users', 'joined_date');
 
         if ($embeddedUser) {
             try {
@@ -92,10 +93,17 @@ function authenticateAdmin(string $email, string $password): array {
             ];
 
             try {
-                dbExecute(
-                    'INSERT INTO users (id, name, email, password_hash, role, is_approved, must_change_pw, joined_date) VALUES (?, ?, ?, ?, ?, 1, 1, CURDATE())',
-                    [$embeddedUser['id'], $embeddedUser['name'], $embeddedUser['email'], $embeddedHash, $embeddedUser['role']]
-                );
+                if ($hasJoinedDate) {
+                    dbExecute(
+                        'INSERT INTO users (id, name, email, password_hash, role, is_approved, must_change_pw, joined_date) VALUES (?, ?, ?, ?, ?, 1, 1, CURDATE())',
+                        [$embeddedUser['id'], $embeddedUser['name'], $embeddedUser['email'], $embeddedHash, $embeddedUser['role']]
+                    );
+                } else {
+                    dbExecute(
+                        'INSERT INTO users (id, name, email, password_hash, role, is_approved, must_change_pw) VALUES (?, ?, ?, ?, ?, 1, 1)',
+                        [$embeddedUser['id'], $embeddedUser['name'], $embeddedUser['email'], $embeddedHash, $embeddedUser['role']]
+                    );
+                }
             } catch (Throwable $e) {
                 error_log('[Uthenga auth] Failed to create embedded super admin record: ' . $e->getMessage());
             }

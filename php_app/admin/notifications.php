@@ -17,22 +17,22 @@ $pendingVendorApprovals = dbCount("SELECT COUNT(*) FROM users WHERE role IN ('Ev
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">🔔 Notifications</h1>
+    <h1 class="page-title"><?= admin_icon_svg('bell') ?><span>Notifications</span></h1>
     <p class="text-muted">Monitor platform alerts, pending approvals, and recent system activity.</p>
   </div>
 </div>
 
 <div class="grid grid-cols-3 gap-2" style="margin-bottom:2rem;">
   <div class="stat-card">
-    <div class="stat-icon stat-icon-yellow">🔔</div>
+    <div class="stat-icon stat-icon-yellow"><?= admin_icon_svg('bell') ?></div>
     <div><div class="stat-value"><?= number_format(count($recentLogs)) ?></div><div class="stat-label">Recent Alerts</div></div>
   </div>
   <div class="stat-card">
-    <div class="stat-icon stat-icon-blue">💬</div>
+    <div class="stat-icon stat-icon-blue"><?= admin_icon_svg('support') ?></div>
     <div><div class="stat-value"><?= number_format(count($openTickets)) ?></div><div class="stat-label">Open Support Items</div></div>
   </div>
   <div class="stat-card">
-    <div class="stat-icon stat-icon-green">🏢</div>
+    <div class="stat-icon stat-icon-green"><?= admin_icon_svg('store') ?></div>
     <div><div class="stat-value"><?= number_format($pendingVendorApprovals) ?></div><div class="stat-label">Pending Vendors</div></div>
   </div>
 </div>

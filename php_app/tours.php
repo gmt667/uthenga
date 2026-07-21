@@ -131,7 +131,7 @@ function getPrice(array $listing): string {
 
 <section class="directory-hero">
   <div class="container">
-    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">🌿 Tours & Adventures</h1>
+    <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;display:flex;align-items:center;gap:0.5rem;"><?= uthenga_public_icon_svg('tour') ?> Tours & Adventures</h1>
     <p style="color: var(--clr-text-soft);">Discover safaris, hiking trails, national parks, and lakeshore experiences in Malawi.</p>
   </div>
 </section>
@@ -173,7 +173,7 @@ function getPrice(array $listing): string {
   <!-- Listings -->
   <?php if (empty($listings)): ?>
     <div style="text-align: center; padding: 4rem 0;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+      <div style="font-size: 3rem; margin-bottom: 1rem;"><?= uthenga_public_icon_svg('search') ?></div>
       <h3>No tours found</h3>
       <p class="text-muted">Try adjusting your search criteria or clear the filters.</p>
       <a href="tours.php" class="btn btn-secondary" style="margin-top: 1rem;">Reset Filters</a>
@@ -188,11 +188,11 @@ function getPrice(array $listing): string {
           <div class="card-img-wrap">
             <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="card-img" loading="lazy">
             <span class="card-badge badge-tour">Tour</span>
-            <?php if ($listing['featured']): ?><span class="card-badge badge-featured" style="left:auto;right:0.75rem;">⭐ Featured</span><?php endif; ?>
+            <?php if ($listing['featured']): ?><span class="card-badge badge-featured" style="left:auto;right:0.75rem;display:inline-flex;align-items:center;gap:0.25rem;"><?= uthenga_public_icon_svg('star') ?> Featured</span><?php endif; ?>
           </div>
           <div class="card-body">
             <div class="card-title"><?= e($listing['title']) ?></div>
-            <div class="card-loc">📍 <?= e($listing['location']) ?></div>
+            <div class="card-loc"><?= uthenga_public_icon_svg('pin') ?> <?= e($listing['location']) ?></div>
             <div class="flex items-center gap-1" style="margin-bottom: 0.75rem;">
               <span class="stars"><?= renderStars((float)$listing['rating']) ?></span>
               <span class="text-xs text-muted"><?= e($listing['rating']) ?></span>
@@ -223,7 +223,7 @@ function getPrice(array $listing): string {
   <div class="modal">
     <div class="modal-header">
       <h3 id="bk-modal-title">Book Tour</h3>
-      <button class="modal-close" onclick="closeModal('booking-modal')">✕</button>
+      <button class="modal-close" onclick="closeModal('booking-modal')"><?= uthenga_public_icon_svg('x') ?></button>
     </div>
     <form method="POST" action="<?= BASE_URL ?>request_api.php" id="booking-form">
       <div class="modal-body">
@@ -275,7 +275,7 @@ function getPrice(array $listing): string {
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('booking-modal')">Cancel</button>
-        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment →</button>
+        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment &rarr;</button>
       </div>
     </form>
   </div>
@@ -285,10 +285,10 @@ function getPrice(array $listing): string {
   <div class="modal">
     <div class="modal-header">
       <h3>Confirm Payment</h3>
-      <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
+      <button class="modal-close" onclick="closeModal('payment-modal')"><?= uthenga_public_icon_svg('x') ?></button>
     </div>
     <div class="modal-body" style="text-align:center;">
-      <div style="font-size:3rem;margin-bottom:1rem;">💳</div>
+      <div style="font-size:3rem;margin-bottom:1rem;"><?= uthenga_public_icon_svg('wallet') ?></div>
       <h4 id="pm-title" style="margin-bottom:0.5rem;"></h4>
       <div style="font-size:2rem;font-weight:800;color:var(--clr-accent);margin-bottom:0.5rem;" id="pm-total">MK 0</div>
       <div class="text-sm text-muted">via <strong id="pm-gateway"></strong></div>
@@ -296,13 +296,13 @@ function getPrice(array $listing): string {
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" onclick="closeModal('payment-modal')">Back</button>
-      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary">✓ Pay Now</button>
+      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary"><?= uthenga_public_icon_svg('check') ?> Pay Now</button>
     </div>
   </div>
 </div>
 
 <div id="booking-success" style="display:none;position:fixed;bottom:2rem;right:2rem;background:var(--clr-surface);border:1px solid var(--clr-green);border-radius:var(--radius-lg);padding:1.5rem;max-width:340px;box-shadow:var(--shadow-lg);z-index:300;">
-  <div style="font-size:1.5rem;margin-bottom:0.5rem;">🎉</div>
+  <div style="font-size:1.5rem;margin-bottom:0.5rem;"><?= uthenga_public_icon_svg('sparkles') ?></div>
   <h4 style="color:var(--clr-green);margin-bottom:0.25rem;">Booking Confirmed!</h4>
   <div class="text-sm text-muted" style="margin-bottom:0.75rem;">ID: <strong id="success-booking-id" class="text-accent"></strong></div>
   <div class="qr-block"><div class="text-xs text-muted" style="margin-bottom:0.5rem;">Digital Ticket</div><div class="qr-string" id="success-qr-code"></div></div>

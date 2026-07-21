@@ -38,7 +38,7 @@ $profile = dbQueryOne('SELECT * FROM vendor_profiles WHERE vendor_id = ?', [$_SE
       <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/../includes/logo.php'; ?>
     </div>
 
-    <div style="font-size:3.5rem;margin-bottom:0.5rem;">⏳</div>
+    <div style="font-size:3.5rem;margin-bottom:0.5rem;"><?= uthenga_public_icon_svg('info') ?></div>
 
     <h1 class="auth-title" style="font-size:1.6rem;">Application Under Review</h1>
 
@@ -83,13 +83,13 @@ $profile = dbQueryOne('SELECT * FROM vendor_profiles WHERE vendor_id = ?', [$_SE
 
     <div style="display:grid;gap:0.75rem;margin-top:1.75rem;">
       <a href="<?= BASE_URL ?>support.php?tab=new" class="btn btn-secondary">
-        💬 Contact Support
+        <?= uthenga_public_icon_svg('mail') ?> Contact Support
       </a>
       <a href="<?= BASE_URL ?>logout.php" class="btn btn-ghost" style="opacity:0.7;">
         Sign Out
       </a>
       <a href="<?= BASE_URL ?>index.php" class="btn btn-ghost" style="opacity:0.6;font-size:0.875rem;">
-        ← Browse Marketplace
+        &larr; Browse Marketplace
       </a>
     </div>
   </div>

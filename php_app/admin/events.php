@@ -80,7 +80,7 @@ $stats = [
   </div>
 </div>
 
-<?php if ($actionMsg): ?><div class="alert alert-success" style="margin-bottom:1.5rem;">✓ <?= e($actionMsg) ?></div><?php endif; ?>
+<?php if ($actionMsg): ?><div class="alert alert-success" style="margin-bottom:1.5rem;"><?= uthenga_public_icon_svg('check') ?> <?= e($actionMsg) ?></div><?php endif; ?>
 <?php if ($actionErr): ?><div class="alert alert-error" style="margin-bottom:1.5rem;">✗ <?= e($actionErr) ?></div><?php endif; ?>
 
 <div class="grid grid-cols-3 gap-2" style="margin-bottom:1.5rem;">
@@ -101,7 +101,7 @@ $stats = [
 <form method="GET" action="events.php">
   <div class="table-toolbar">
     <div class="search-wrap">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><?= uthenga_public_icon_svg('search') ?></span>
       <input type="text" name="q" placeholder="Search events, locations, vendors..." value="<?= e($search) ?>" autocomplete="off">
     </div>
     <div class="export-group">

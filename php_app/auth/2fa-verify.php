@@ -134,7 +134,7 @@ function completeLogin(string $userId): void {
 <main class="container">
   <div class="auth-card">
     <div style="text-align: center; margin-bottom: 2rem;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+      <div style="font-size: 3rem; margin-bottom: 1rem;"><?= uthenga_public_icon_svg('lock') ?></div>
       <h2 style="font-weight: 800;">Two-Factor Authentication</h2>
       <p class="text-muted" style="font-size: 0.875rem; margin-top: 0.25rem;">
         <?= $useBackup ? 'Enter one of your emergency backup codes.' : 'Open your authenticator app to get the verification code.' ?>
@@ -142,7 +142,7 @@ function completeLogin(string $userId): void {
     </div>
 
     <?php if ($error): ?>
-      <div class="alert alert-error" style="margin-bottom: 1.5rem;">✕ <?= e($error) ?></div>
+      <div class="alert alert-error" style="margin-bottom: 1.5rem;"><?= uthenga_public_icon_svg('x') ?> <?= e($error) ?></div>
     <?php endif; ?>
 
     <form method="POST" action="">

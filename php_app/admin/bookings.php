@@ -152,7 +152,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 <form method="GET" action="bookings.php" id="filter-form">
   <div class="table-toolbar">
     <div class="search-wrap">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><?= uthenga_public_icon_svg('search') ?></span>
       <input type="text" name="q" placeholder="Search ID, customer, reference..." value="<?= e($search) ?>" autocomplete="off" id="bookings-search-input">
     </div>
     <select name="status" onchange="this.form.submit()">
@@ -177,7 +177,7 @@ require_once __DIR__ . '/includes/admin_header.php';
       <option value="transport" <?= $filterType === 'transport' ? 'selected' : '' ?>>Transport</option>
     </select>
     <div class="export-group">
-      <a href="?<?= http_build_query(array_merge($_GET, ['export' => 'csv'])) ?>" class="btn btn-secondary btn-sm">⬇ CSV</a>
+      <a href="?<?= http_build_query(array_merge($_GET, ['export' => 'csv'])) ?>" class="btn btn-secondary btn-sm"><?= admin_icon_svg('download') ?> CSV</a>
       <button type="submit" class="btn btn-primary btn-sm">Filter</button>
       <a href="bookings.php" class="btn btn-ghost btn-sm">Clear</a>
     </div>
