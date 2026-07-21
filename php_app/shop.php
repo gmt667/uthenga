@@ -274,6 +274,7 @@ $activeNav = 'shop';
             <?= e($product['brand'] ?? 'Uthenga Direct') ?> &middot; <?= e($product['unit_label'] ?? 'Item') ?> &middot; SKU <?= e($product['sku']) ?>
           </div>
           <form method="post" action="<?= BASE_URL ?>shop-cart.php" class="grid" style="gap:.75rem;">
+            <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
             <input type="hidden" name="action" value="add">
             <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
             <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop.php') ?>">
@@ -396,6 +397,7 @@ $activeNav = 'shop';
                   <div class="product-footer">
                     <strong class="product-price"><?= uthenga_shop_money((float) $item['price']) ?></strong>
                     <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin:0;">
+                      <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
                       <input type="hidden" name="action" value="add">
                       <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
                       <input type="hidden" name="quantity" value="1">
@@ -440,6 +442,7 @@ $activeNav = 'shop';
                     <div class="product-actions">
                       <a class="btn btn-sm btn-secondary" href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>">View</a>
                       <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin:0;">
+                        <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
                         <input type="hidden" name="action" value="add">
                         <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
                         <input type="hidden" name="quantity" value="1">

@@ -446,7 +446,7 @@ if (!empty($admins)) {
     <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('users') ?><span>Admin Management</span></h1>
     <p class="text-muted">Create, review, edit, suspend, reset, and remove administrator accounts from a single secure workspace.</p>
   </div>
-  <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+  <div class="dashboard-head-meta">
     <button class="btn btn-primary" type="button" onclick="openModal('create-admin-modal')" id="create-admin-btn">
       <?= admin_icon_svg('plus') ?>
       Create Admin
@@ -464,7 +464,7 @@ if (!empty($admins)) {
   <div class="stat-card"><div class="stat-icon stat-icon-yellow"><?= admin_icon_svg('lock') ?></div><div><div class="stat-value"><?= number_format($totals['inactive']) ?></div><div class="stat-label">Inactive</div></div></div>
 </div>
 
-<form method="GET" class="glass-panel" style="padding:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem;">
+<form method="GET" class="glass-panel table-toolbar" style="padding:1rem;margin-bottom:1.5rem;">
   <input type="text" name="q" placeholder="Search admins by name, email, or phone" class="form-control" style="min-width:240px;flex:1;" value="<?= e($search) ?>">
   <select name="role" class="form-control" style="min-width:180px;">
     <option value="all" <?= $roleFilter === 'all' ? 'selected' : '' ?>>All Roles</option>
@@ -481,7 +481,7 @@ if (!empty($admins)) {
 </form>
 
 <div class="glass-panel" style="padding:1rem;margin-bottom:1rem;">
-  <form method="POST" id="bulk-admin-form" style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+  <form method="POST" id="bulk-admin-form" class="table-toolbar" style="margin:0;">
     <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
     <input type="hidden" name="admin_action" value="bulk">
     <input type="hidden" name="bulk_ids" id="bulk-admin-ids" value="">

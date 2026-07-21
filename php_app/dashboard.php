@@ -218,7 +218,7 @@ renderDashboardChromeStart([
       <h1 class="page-title">Welcome back, <?= e(explode(' ', (string)($user['name'] ?? ''))[0] ?: 'Customer') ?></h1>
       <p class="text-muted">Keep your bookings, tickets, favorites, payments, and profile in one place.</p>
     </div>
-    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+    <div class="dashboard-head-meta">
       <a href="<?= BASE_URL ?>events.php" class="btn btn-primary">Browse Events</a>
       <a href="<?= BASE_URL ?>profile.php" class="btn btn-secondary">Edit Profile</a>
     </div>

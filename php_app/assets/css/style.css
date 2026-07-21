@@ -404,6 +404,19 @@ html[data-theme="dark"] .receipt-card {
   }
 }
 
+@media (max-width: 480px) {
+  .shop-hero-actions,
+  .product-actions {
+    width: 100%;
+  }
+
+  .shop-hero-actions .btn,
+  .product-actions .btn {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+}
+
 /* ─── Trending Badge ──────────────────────────────────────────────────────── */
 .badge-trending {
   position: absolute;
@@ -2598,6 +2611,29 @@ thead th,
   .dashboard-surface-row,
   .presentation-slide {
     grid-template-columns: 1fr !important;
+  }
+
+  .grid,
+  .dashboard-chart-grid,
+  .dashboard-surface-row,
+  .presentation-slide,
+  .revenue-kpi-row {
+    gap: 0.75rem;
+  }
+
+  .grid > *,
+  .dashboard-chart-grid > *,
+  .dashboard-surface-row > *,
+  .presentation-slide > *,
+  .revenue-kpi-row > * {
+    min-width: 0;
+  }
+
+  .grid[style*="align-items:center"],
+  .grid[style*="align-items: center"],
+  .grid[style*="align-items:stretch"],
+  .grid[style*="align-items: stretch"] {
+    align-items: stretch !important;
   }
 
   .section-header,

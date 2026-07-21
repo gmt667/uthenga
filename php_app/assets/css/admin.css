@@ -1670,6 +1670,14 @@
   .presentation-slide,
   .revenue-kpi-row {
     grid-template-columns: 1fr !important;
+    gap: 0.75rem;
+  }
+
+  .dashboard-chart-grid > *,
+  .dashboard-surface-row > *,
+  .presentation-slide > *,
+  .revenue-kpi-row > * {
+    min-width: 0;
   }
 
   .dashboard-topbar-actions {
@@ -1793,6 +1801,13 @@
   .dashboard-content,
   .admin-content {
     padding: 0.85rem;
+  }
+
+  .grid[style*="align-items:center"],
+  .grid[style*="align-items: center"],
+  .grid[style*="align-items:stretch"],
+  .grid[style*="align-items: stretch"] {
+    align-items: stretch !important;
   }
 
   .page-header {

@@ -68,18 +68,18 @@ $recentTickets = $hasSupportTickets ? dbQuery("
 
 ?>
 <div class="container dashboard-content-frame" style="padding-top:2rem;padding-bottom:3rem;">
-  <div class="page-header">
-    <div>
-      <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('grid') ?><span>Admin Dashboard</span></h1>
-      <p class="text-muted">Live counts for the modular marketplace tables.</p>
-    </div>
-    <div class="dashboard-head-meta">
-      <a href="<?= BASE_URL ?>admin/bookings.php" class="btn btn-secondary btn-sm">Bookings</a>
-      <a href="<?= BASE_URL ?>admin/support.php" class="btn btn-secondary btn-sm">Support</a>
-      <a href="<?= BASE_URL ?>admin/analytics.php" class="btn btn-primary btn-sm">Analytics</a>
-      <a href="<?= BASE_URL ?>admin/shop.php" class="btn btn-secondary btn-sm">Shop Management</a>
-    </div>
+<div class="page-header">
+  <div>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('grid') ?><span>Admin Dashboard</span></h1>
+    <p class="text-muted">Live counts for the modular marketplace tables.</p>
   </div>
+  <div class="dashboard-head-meta">
+    <a href="<?= BASE_URL ?>admin/bookings.php" class="btn btn-secondary btn-sm">Bookings</a>
+    <a href="<?= BASE_URL ?>admin/support.php" class="btn btn-secondary btn-sm">Support</a>
+    <a href="<?= BASE_URL ?>admin/analytics.php" class="btn btn-primary btn-sm">Analytics</a>
+    <a href="<?= BASE_URL ?>admin/shop.php" class="btn btn-secondary btn-sm">Shop Management</a>
+  </div>
+</div>
 
   <div class="glass-panel" style="padding:1.25rem;margin-bottom:1rem;">
     <div class="presentation-grid">

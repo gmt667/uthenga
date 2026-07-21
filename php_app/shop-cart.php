@@ -119,6 +119,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
             <div class="cart-actions">
               <form method="post" action="<?= BASE_URL ?>shop-cart.php" class="grid" style="gap:.5rem;min-width:160px;">
+                <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
                 <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop-cart.php') ?>">
@@ -131,6 +132,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
               </form>
               <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin-top:.5rem;">
+                <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
                 <input type="hidden" name="action" value="remove">
                 <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
                 <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop-cart.php') ?>">
@@ -153,6 +155,7 @@ require_once __DIR__ . '/includes/header.php';
       <div style="display:grid;gap:.65rem;margin-top:1rem;">
         <a href="<?= BASE_URL ?>shop-checkout.php" class="btn btn-primary" <?= empty($cartItems) ? 'aria-disabled="true" tabindex="-1"' : '' ?>>Proceed to Checkout</a>
         <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin:0;">
+          <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
           <input type="hidden" name="action" value="clear">
           <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop-cart.php') ?>">
           <button type="submit" class="btn btn-secondary" style="width:100%;" <?= empty($cartItems) ? 'disabled' : '' ?>>Clear Cart</button>
