@@ -205,6 +205,11 @@ $activeNav = 'shop';
         <span class="shop-hero-kicker"><?= uthenga_public_icon_svg('shop') ?> <?= e($settings['shop_name']) ?></span>
         <h1 style="margin-top:1rem;"><?= e($settings['shop_tagline']) ?></h1>
         <p class="text-muted" style="max-width:56ch;">Shop fresh essentials, drinks, groceries, and household staples from Uthenga. Browse curated collections, add items to your cart, and checkout with delivery for Malawi-wide convenience.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.35rem;">
+          <span style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .7rem;border:1px solid var(--clr-border);border-radius:999px;background:var(--clr-surface);font-size:.78rem;font-weight:600;"><?= uthenga_public_icon_svg('check') ?> Fast delivery</span>
+          <span style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .7rem;border:1px solid var(--clr-border);border-radius:999px;background:var(--clr-surface);font-size:.78rem;font-weight:600;"><?= uthenga_public_icon_svg('cart') ?> Secure checkout</span>
+          <span style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .7rem;border:1px solid var(--clr-border);border-radius:999px;background:var(--clr-surface);font-size:.78rem;font-weight:600;"><?= uthenga_public_icon_svg('wallet') ?> Flexible payment</span>
+        </div>
         <div class="shop-hero-actions">
           <a href="#catalog" class="btn btn-primary"><?= uthenga_public_icon_svg('cart') ?> Browse Products</a>
           <a href="<?= BASE_URL ?>shop-cart.php" class="btn btn-secondary">View Cart <?= count($cartItems) > 0 ? '(' . count($cartItems) . ')' : '' ?></a>
@@ -226,7 +231,7 @@ $activeNav = 'shop';
               <img src="<?= e($thumb[0] ?? $item['primary_image_url'] ?? '') ?>" alt="<?= e($item['name']) ?>">
               <div>
                 <strong><?= e($item['name']) ?></strong>
-                <span><?= e($item['category_name'] ?? 'Shop') ?> · <?= uthenga_shop_money((float) $item['price']) ?></span>
+                <span><?= e($item['category_name'] ?? 'Shop') ?> &middot; <?= uthenga_shop_money((float) $item['price']) ?></span>
               </div>
             </a>
           <?php endforeach; ?>
@@ -266,7 +271,7 @@ $activeNav = 'shop';
             <?php if (!empty($product['compare_at_price'])): ?><span class="text-muted" style="text-decoration:line-through;"><?= uthenga_shop_money((float) $product['compare_at_price']) ?></span><?php endif; ?>
           </div>
           <div class="text-sm text-muted" style="margin-bottom:1rem;">
-            <?= e($product['brand'] ?? 'Uthenga Direct') ?> · <?= e($product['unit_label'] ?? 'Item') ?> · SKU <?= e($product['sku']) ?>
+            <?= e($product['brand'] ?? 'Uthenga Direct') ?> &middot; <?= e($product['unit_label'] ?? 'Item') ?> &middot; SKU <?= e($product['sku']) ?>
           </div>
           <form method="post" action="<?= BASE_URL ?>shop-cart.php" class="grid" style="gap:.75rem;">
             <input type="hidden" name="action" value="add">

@@ -255,6 +255,95 @@ html[data-theme="dark"] .logo-light { display: none; }
   transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 }
 
+.shop-hero-card {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top right, rgba(14,165,233,.12), transparent 30%),
+    linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.84));
+}
+
+html[data-theme="dark"] .shop-hero-card {
+  background:
+    radial-gradient(circle at top right, rgba(14,165,233,.16), transparent 30%),
+    linear-gradient(180deg, rgba(17,24,39,.98), rgba(17,24,39,.88));
+}
+
+.shop-hero-card::before {
+  content: '';
+  position: absolute;
+  inset: -40px -80px auto auto;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230,57,70,.18), transparent 68%);
+  pointer-events: none;
+}
+
+.shop-hero-actions .btn,
+.product-actions .btn {
+  min-height: 44px;
+}
+
+.shop-toolbar {
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.shop-toolbar .form-control {
+  min-height: 46px;
+}
+
+.shop-filters {
+  scrollbar-width: thin;
+}
+
+.shop-mini-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--clr-border2);
+  box-shadow: var(--shadow-sm);
+}
+
+.product-card {
+  background: linear-gradient(180deg, var(--clr-surface) 0%, color-mix(in srgb, var(--clr-surface) 96%, var(--clr-accent) 4%) 100%);
+}
+
+.product-image {
+  overflow: hidden;
+}
+
+.product-image img {
+  transition: transform .35s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.04);
+}
+
+.product-body {
+  gap: .65rem;
+}
+
+.product-desc {
+  min-height: 3.15em;
+}
+
+.detail-panel,
+.cart-summary,
+.checkout-panel,
+.checkout-summary,
+.receipt-card {
+  background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.9));
+}
+
+html[data-theme="dark"] .detail-panel,
+html[data-theme="dark"] .cart-summary,
+html[data-theme="dark"] .checkout-panel,
+html[data-theme="dark"] .checkout-summary,
+html[data-theme="dark"] .receipt-card {
+  background: linear-gradient(180deg, rgba(17,24,39,.98), rgba(17,24,39,.9));
+}
+
 .product-card:hover,
 .cart-item:hover {
   transform: translateY(-3px);
@@ -290,6 +379,28 @@ html[data-theme="dark"] .logo-light { display: none; }
   .checkout-layout,
   .receipt-grid {
     grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .shop-toolbar {
+    padding: .85rem;
+    border-radius: 20px;
+  }
+
+  .shop-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: .15rem;
+  }
+
+  .shop-filters a {
+    flex: 0 0 auto;
+  }
+
+  .product-grid,
+  .related-grid {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   }
 }
 

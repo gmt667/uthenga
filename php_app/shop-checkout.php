@@ -31,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $deliveryInstructions = trim((string) ($_POST['delivery_instructions'] ?? ''));
         $preferredDeliveryTime = trim((string) ($_POST['preferred_delivery_time'] ?? ''));
         $paymentMethod = trim((string) ($_POST['payment_method'] ?? 'cash_on_delivery'));
+        $paymentReference = uthenga_shop_payment_reference();
 
         if (strlen($customerName) < 2) {
             $error = 'Please enter your full name.';
@@ -40,6 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Please enter a valid phone number.';
         } elseif (strlen($deliveryAddress) < 6) {
             $error = 'Please enter a full delivery address.';
+        } elseif ($paymentMethod === 'paychangu' && !uthenga_shop_paychangu_ready()) {
+            $error = 'PayChangu is not configured yet. Please choose another payment method.';
         } elseif (!in_array($paymentMethod, array_keys(uthenga_shop_payment_methods_map()), true)) {
             $error = 'Please choose a valid payment method.';
         } else {
@@ -109,31 +112,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     [
                         $orderId,
                         $paymentMethod,
-                        $paymentMethod === 'paychangu' ? 'PayChangu' : null,
-                        $paymentMethod === 'bank_transfer' ? 'BANK-' . strtoupper(bin2hex(random_bytes(3))) : null,
+                        $paymentMethod === 'paychangu'
+                            ? 'PayChangu'
+                            : ($paymentMethod === 'bank_transfer'
+                                ? 'Bank Transfer'
+                                : ($paymentMethod === 'tnm_mpamba'
+                                    ? 'TNM Mpamba'
+                                    : ($paymentMethod === 'airtel_money'
+                                        ? 'Airtel Money'
+                                        : 'Cash on Delivery'))),
+                        $paymentMethod === 'paychangu' ? $paymentReference : ($paymentMethod === 'bank_transfer' ? 'BANK-' . strtoupper(bin2hex(random_bytes(3))) : null),
                         $totals['total'],
                         APP_CURRENCY,
-                        $paymentMethod === 'cash_on_delivery' ? 'pending' : 'pending',
+                        $paymentMethod === 'paychangu' ? 'processing' : 'pending',
                         null,
                         null,
                     ]
                 );
+                $paymentId = (int) dbLastId();
 
                 uthenga_shop_notify_user($userId !== '' ? $userId : (string) $_SESSION['user_id'], 'shop', 'Order Placed', 'Your order ' . $orderNumber . ' has been placed successfully.');
                 uthenga_shop_notify_admins('New Shop Order', 'Order ' . $orderNumber . ' has been placed by ' . $customerName . '.');
+
+                if ($paymentMethod === 'paychangu') {
+                    $orderPayload = [
+                        'id' => $orderId,
+                        'order_number' => $orderNumber,
+                        'total_amount' => $totals['total'],
+                        'currency' => APP_CURRENCY,
+                        'user_id' => $userId !== '' ? $userId : null,
+                    ];
+                    $paymentPayload = [
+                        'id' => $paymentId,
+                        'payment_reference' => $paymentReference,
+                        'amount' => $totals['total'],
+                        'currency' => APP_CURRENCY,
+                    ];
+                    $initResult = uthenga_shop_paychangu_initialize($orderPayload, $paymentPayload, $customerEmail, $customerName, $customerPhone);
+                    if (!$initResult['success']) {
+                        throw new RuntimeException((string) ($initResult['message'] ?? 'PayChangu payment could not be started.'));
+                    }
+
+                    $paymentReference = (string) ($initResult['reference'] ?? $paymentReference);
+                    dbExecute(
+                        'UPDATE shop_payments SET payment_reference = ?, payment_status = ?, gateway_payload = ?, updated_at = NOW() WHERE order_id = ?',
+                        [
+                            $paymentReference,
+                            'processing',
+                            json_encode([
+                                'init' => $initResult['response'] ?? [],
+                                'payload' => $initResult['payload'] ?? [],
+                            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                            $orderId,
+                        ]
+                    );
+                }
 
                 if (uthenga_db_is_available() && !empty($GLOBALS['pdo']) && $GLOBALS['pdo'] instanceof PDO && $GLOBALS['pdo']->inTransaction()) {
                     $GLOBALS['pdo']->commit();
                 }
 
                 uthenga_shop_cart_clear();
+                if ($paymentMethod === 'paychangu') {
+                    $redirectUrl = (string) ($initResult['checkout_url'] ?? '');
+                    if ($redirectUrl === '') {
+                        $redirectUrl = BASE_URL . 'shop-order.php?order=' . urlencode($orderNumber);
+                    }
+                    redirect($redirectUrl);
+                }
+
                 $_SESSION['shop_order_success'] = $orderNumber;
                 redirect(BASE_URL . 'shop-order.php?order=' . urlencode($orderNumber));
             } catch (Throwable $e) {
                 if (uthenga_db_is_available() && !empty($GLOBALS['pdo']) && $GLOBALS['pdo'] instanceof PDO && $GLOBALS['pdo']->inTransaction()) {
                     $GLOBALS['pdo']->rollBack();
                 }
-                $error = 'Unable to place the order right now. Please try again.';
+                $error = $paymentMethod === 'paychangu'
+                    ? ($e->getMessage() !== '' ? $e->getMessage() : 'PayChangu payment could not be started.')
+                    : 'Unable to place the order right now. Please try again.';
             }
         }
     }

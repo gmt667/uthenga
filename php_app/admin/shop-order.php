@@ -64,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
 }
 
 $items = uthenga_shop_order_items($orderId);
+$payment = uthenga_shop_payment_by_order_id($orderId);
 $delivery = uthenga_table_exists('shop_deliveries') ? dbQueryOne('SELECT * FROM shop_deliveries WHERE order_id = ? LIMIT 1', [$orderId]) : null;
 $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_riders WHERE id = ? LIMIT 1', [(int) $delivery['rider_id']]) : null;
 ?>
@@ -101,6 +102,16 @@ $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_ride
         <div class="shop-admin-stat"><span>Total</span><strong><?= uthenga_shop_money((float) $order['total_amount']) ?></strong></div>
         <div class="shop-admin-stat"><span>Placed</span><strong><?= e($order['placed_at']) ?></strong></div>
       </div>
+      <?php if ($payment): ?>
+        <div class="glass-panel" style="padding:0.9rem;margin-top:1rem;">
+          <div class="section-label">Gateway Record</div>
+          <div class="receipt-lines" style="margin-top:.65rem;">
+            <div class="receipt-line"><span>Provider</span><strong><?= e($payment['provider'] ?? $payment['payment_method'] ?? 'N/A') ?></strong></div>
+            <div class="receipt-line"><span>Reference</span><strong><?= e($payment['payment_reference'] ?? 'N/A') ?></strong></div>
+            <div class="receipt-line"><span>Gateway Status</span><strong><?= e($payment['payment_status'] ?? 'pending') ?></strong></div>
+          </div>
+        </div>
+      <?php endif; ?>
     </section>
 
     <section class="shop-card">

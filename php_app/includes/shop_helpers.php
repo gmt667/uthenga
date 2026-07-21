@@ -432,15 +432,37 @@ if (!function_exists('uthenga_shop_order_number')) {
     }
 }
 
+if (!function_exists('uthenga_shop_payment_reference')) {
+    function uthenga_shop_payment_reference(): string {
+        return 'SOP-' . strtoupper(bin2hex(random_bytes(5)));
+    }
+}
+
+if (!function_exists('uthenga_shop_split_name')) {
+    function uthenga_shop_split_name(string $fullName): array {
+        $parts = preg_split('/\s+/', trim($fullName)) ?: [];
+        $first = $parts[0] ?? 'Uthenga';
+        $last = count($parts) > 1 ? implode(' ', array_slice($parts, 1)) : 'Customer';
+        return [$first, $last];
+    }
+}
+
+if (!function_exists('uthenga_shop_paychangu_ready')) {
+    function uthenga_shop_paychangu_ready(): bool {
+        return (PAYCHANGU_PUBLIC_KEY !== '' || PAYCHANGU_SECRET_KEY !== '');
+    }
+}
+
 if (!function_exists('uthenga_shop_payment_methods')) {
     function uthenga_shop_payment_methods(): array {
         $settings = uthenga_shop_settings();
+        $paychanguReady = !empty($settings['paychangu_enabled']) && uthenga_shop_paychangu_ready();
         return array_values(array_filter([
             'cash_on_delivery' => !empty($settings['cod_enabled']) ? 'Cash on Delivery' : null,
             'bank_transfer' => !empty($settings['bank_transfer_enabled']) ? 'Bank Transfer' : null,
             'tnm_mpamba' => !empty($settings['tnm_mpamba_enabled']) ? 'TNM Mpamba' : null,
             'airtel_money' => !empty($settings['airtel_money_enabled']) ? 'Airtel Money' : null,
-            'paychangu' => !empty($settings['paychangu_enabled']) ? 'PayChangu' : null,
+            'paychangu' => $paychanguReady ? 'PayChangu' : null,
         ]));
     }
 }
@@ -448,13 +470,190 @@ if (!function_exists('uthenga_shop_payment_methods')) {
 if (!function_exists('uthenga_shop_payment_methods_map')) {
     function uthenga_shop_payment_methods_map(): array {
         $settings = uthenga_shop_settings();
+        $paychanguReady = !empty($settings['paychangu_enabled']) && uthenga_shop_paychangu_ready();
         return array_filter([
             'cash_on_delivery' => !empty($settings['cod_enabled']) ? 'Cash on Delivery' : null,
             'bank_transfer' => !empty($settings['bank_transfer_enabled']) ? 'Bank Transfer' : null,
             'tnm_mpamba' => !empty($settings['tnm_mpamba_enabled']) ? 'TNM Mpamba' : null,
             'airtel_money' => !empty($settings['airtel_money_enabled']) ? 'Airtel Money' : null,
-            'paychangu' => !empty($settings['paychangu_enabled']) ? 'PayChangu' : null,
+            'paychangu' => $paychanguReady ? 'PayChangu' : null,
         ]);
+    }
+}
+
+if (!function_exists('uthenga_shop_payment_by_reference')) {
+    function uthenga_shop_payment_by_reference(string $reference): ?array {
+        if (!uthenga_table_exists('shop_payments') || trim($reference) === '') {
+            return null;
+        }
+
+        $payment = dbQueryOne(
+            "SELECT p.*, o.order_number, o.user_id, o.customer_name, o.customer_email, o.customer_phone, o.total_amount, o.currency, o.order_status, o.payment_status AS order_payment_status
+             FROM shop_payments p
+             INNER JOIN shop_orders o ON o.id = p.order_id
+             WHERE p.payment_reference = ? OR p.id = ? LIMIT 1",
+            [$reference, $reference]
+        );
+
+        return $payment ?: null;
+    }
+}
+
+if (!function_exists('uthenga_shop_payment_by_order_id')) {
+    function uthenga_shop_payment_by_order_id(int $orderId): ?array {
+        if (!uthenga_table_exists('shop_payments') || $orderId <= 0) {
+            return null;
+        }
+
+        $payment = dbQueryOne(
+            "SELECT * FROM shop_payments WHERE order_id = ? ORDER BY id DESC LIMIT 1",
+            [$orderId]
+        );
+
+        return $payment ?: null;
+    }
+}
+
+if (!function_exists('uthenga_shop_paychangu_initialize')) {
+    function uthenga_shop_paychangu_initialize(array $order, array $payment, string $customerEmail, string $customerName, string $phone): array {
+        $apiKey = PAYCHANGU_PUBLIC_KEY !== '' ? PAYCHANGU_PUBLIC_KEY : PAYCHANGU_SECRET_KEY;
+        if ($apiKey === '') {
+            return ['success' => false, 'message' => 'PayChangu credentials are not configured.'];
+        }
+
+        if (!function_exists('curl_init')) {
+            return ['success' => false, 'message' => 'cURL is not available on this server.'];
+        }
+
+        $reference = trim((string) ($payment['payment_reference'] ?? ''));
+        if ($reference === '') {
+            $reference = uthenga_shop_payment_reference();
+        }
+
+        $amount = (float) ($payment['amount'] ?? $order['total_amount'] ?? 0);
+        if ($amount <= 0) {
+            return ['success' => false, 'message' => 'Invalid payment amount.'];
+        }
+
+        [$firstName, $lastName] = uthenga_shop_split_name($customerName);
+        $payload = [
+            'amount' => $amount,
+            'currency' => $payment['currency'] ?? $order['currency'] ?? APP_CURRENCY,
+            'email' => $customerEmail,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'tx_ref' => $reference,
+            'callback_url' => BASE_URL . 'payments/shop-paychangu-callback.php',
+            'return_url' => BASE_URL . 'shop-order.php?order=' . urlencode((string) ($order['order_number'] ?? '')) . '&payment=paychangu&reference=' . urlencode($reference),
+            'description' => 'Uthenga Shop order ' . ($order['order_number'] ?? $reference),
+            'customization' => [
+                'title' => APP_NAME . ' Shop',
+                'description' => 'Secure checkout for physical product delivery',
+            ],
+            'metadata' => [
+                'order_id' => (int) ($order['id'] ?? 0),
+                'order_number' => (string) ($order['order_number'] ?? ''),
+                'payment_id' => (int) ($payment['id'] ?? 0),
+                'payment_reference' => $reference,
+                'payment_method' => 'paychangu',
+                'phone' => $phone !== '' ? $phone : null,
+            ],
+        ];
+
+        $ch = curl_init(rtrim(PAYCHANGU_API_BASE_URL, '/') . PAYCHANGU_INIT_PATH);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Accept: application/json',
+                'Authorization: Bearer ' . $apiKey,
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            CURLOPT_TIMEOUT => 30,
+        ]);
+
+        $responseBody = curl_exec($ch);
+        $curlErr = curl_error($ch);
+        $curlCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        curl_close($ch);
+
+        if ($responseBody === false || $responseBody === null) {
+            return ['success' => false, 'message' => $curlErr ?: 'Unable to initialize PayChangu payment.'];
+        }
+
+        $decoded = json_decode($responseBody, true);
+        if (!is_array($decoded)) {
+            return ['success' => false, 'message' => 'PayChangu returned an invalid response.'];
+        }
+
+        $gatewayRef = trim((string) ($decoded['reference'] ?? $decoded['data']['reference'] ?? $decoded['data']['tx_ref'] ?? $reference));
+        $checkoutUrl = trim((string) ($decoded['checkout_url'] ?? $decoded['data']['checkout_url'] ?? $decoded['data']['link'] ?? $decoded['payment_url'] ?? $decoded['url'] ?? ''));
+        $success = $curlCode >= 200 && $curlCode < 300 && ($checkoutUrl !== '' || !empty($decoded['success']));
+        $message = (string) ($decoded['message'] ?? $decoded['data']['message'] ?? ($success ? 'PayChangu checkout ready.' : 'PayChangu could not start the payment.'));
+
+        return [
+            'success' => $success,
+            'checkout_url' => $checkoutUrl,
+            'reference' => $gatewayRef !== '' ? $gatewayRef : $reference,
+            'message' => $message,
+            'response' => $decoded,
+            'payload' => $payload,
+        ];
+    }
+}
+
+if (!function_exists('uthenga_shop_confirm_payment')) {
+    function uthenga_shop_confirm_payment(array $order, array $payment = [], array $gatewayPayload = [], string $status = 'paid'): void {
+        $orderId = (int) ($order['id'] ?? 0);
+        if ($orderId <= 0) {
+            return;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        dbExecute(
+            "UPDATE shop_orders
+             SET payment_status = 'paid',
+                 order_status = CASE WHEN order_status IN ('cancelled', 'delivered') THEN order_status ELSE 'confirmed' END,
+                 fulfillment_status = CASE WHEN fulfillment_status IN ('cancelled', 'delivered') THEN fulfillment_status ELSE 'confirmed' END,
+                 confirmed_at = COALESCE(confirmed_at, NOW()),
+                 updated_at = NOW()
+             WHERE id = ?",
+            [$orderId]
+        );
+
+        if (!empty($payment)) {
+            $paymentId = (int) ($payment['id'] ?? 0);
+            $paymentReference = (string) ($payment['payment_reference'] ?? '');
+            $payloadJson = !empty($gatewayPayload) ? json_encode($gatewayPayload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : null;
+
+            if ($paymentId > 0) {
+                dbExecute(
+                    "UPDATE shop_payments
+                     SET payment_status = ?,
+                         paid_at = COALESCE(paid_at, ?),
+                         gateway_payload = COALESCE(?, gateway_payload),
+                         updated_at = NOW()
+                     WHERE id = ?",
+                    [$status === 'paid' ? 'paid' : $status, $now, $payloadJson, $paymentId]
+                );
+            } elseif ($paymentReference !== '') {
+                dbExecute(
+                    "UPDATE shop_payments
+                     SET payment_status = ?,
+                         paid_at = COALESCE(paid_at, ?),
+                         gateway_payload = COALESCE(?, gateway_payload),
+                         updated_at = NOW()
+                     WHERE payment_reference = ?",
+                    [$status === 'paid' ? 'paid' : $status, $now, $payloadJson, $paymentReference]
+                );
+            }
+        }
+
+        if (!empty($order['user_id'])) {
+            uthenga_shop_notify_user((string) $order['user_id'], 'shop', 'Payment Confirmed', 'Your order ' . ($order['order_number'] ?? '') . ' has been paid successfully.');
+        }
+        uthenga_shop_notify_admins('Shop Payment Confirmed', 'Payment for order ' . ($order['order_number'] ?? '') . ' has been confirmed.');
     }
 }
 

@@ -17,6 +17,7 @@ if (!$order || (string) ($order['user_id'] ?? '') !== $userId) {
 }
 
 $items = uthenga_shop_order_items((int) $order['id']);
+$payment = uthenga_shop_payment_by_order_id((int) $order['id']);
 $deliveryStatus = dbQueryOne('SELECT * FROM shop_deliveries WHERE order_id = ? LIMIT 1', [(int) $order['id']]);
 $rider = null;
 if (!empty($deliveryStatus['rider_id'])) {
@@ -86,6 +87,16 @@ renderDashboardChromeStart([
         <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e($order['order_status']) ?></span>
         <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e($order['payment_status']) ?></span>
       </div>
+      <?php if ($payment): ?>
+        <div class="glass-panel" style="padding:0.9rem;margin-top:1rem;">
+          <div class="section-label">Payment Details</div>
+          <div class="receipt-lines" style="margin-top:.65rem;">
+            <div class="receipt-line"><span>Provider</span><strong><?= e($payment['provider'] ?? $payment['payment_method'] ?? 'N/A') ?></strong></div>
+            <div class="receipt-line"><span>Reference</span><strong><?= e($payment['payment_reference'] ?? 'N/A') ?></strong></div>
+            <div class="receipt-line"><span>Status</span><strong><?= e($payment['payment_status'] ?? 'pending') ?></strong></div>
+          </div>
+        </div>
+      <?php endif; ?>
       <div style="margin-top:1rem;" class="receipt-lines">
         <?php foreach ($items as $item): ?>
           <div class="receipt-line">
