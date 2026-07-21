@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga - Password Reset Completion
  */
@@ -62,8 +62,9 @@ $pageTitle = 'Set New Password';
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
   <title>Reset Password | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
   <style>
   .pw-wrapper { position: relative; }
   .pw-toggle {
@@ -89,10 +90,10 @@ $pageTitle = 'Set New Password';
     <p class="auth-subtitle">Choose a secure password for your Uthenga account.</p>
 
     <?php if ($error): ?>
-      <div class="alert alert-error">✖ <?= e($error) ?></div>
+      <div class="alert alert-error">âœ– <?= e($error) ?></div>
     <?php endif; ?>
     <?php if ($success): ?>
-      <div class="alert alert-success">✓ <?= e($success) ?></div>
+      <div class="alert alert-success">âœ“ <?= e($success) ?></div>
     <?php endif; ?>
 
     <?php if (!$success): ?>

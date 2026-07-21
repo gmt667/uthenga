@@ -24,9 +24,10 @@ $themePreference = uthenga_theme_preference();
   <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <title><?= e($pageTitle) ?> | <?= APP_NAME ?> Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/admin.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/admin.css?v=<?= rawurlencode(APP_VERSION) ?>">
 </head>
 <body class="dashboard-page" data-dashboard-role="admin">
   <?php require_once __DIR__ . '/../../includes/page_loader.php'; ?>

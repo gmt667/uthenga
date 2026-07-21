@@ -1,6 +1,6 @@
-/**
- * Uthenga Marketplace — Main JavaScript
- * Vanilla JS — no frameworks, no dependencies
+﻿/**
+ * Uthenga Marketplace â€” Main JavaScript
+ * Vanilla JS â€” no frameworks, no dependencies
  */
 
 'use strict';
@@ -45,74 +45,74 @@ function replaceEmojiWithIcons(root) {
   if (!root || !root.ownerDocument) return;
 
   const replacements = [
+    ['Ã°Å¸Â¤â€“', 'bot'],
     ['ðŸ¤–', 'bot'],
-    ['🤖', 'bot'],
+    ['Ã°Å¸â€˜â€¹', 'wave'],
     ['ðŸ‘‹', 'wave'],
-    ['👋', 'wave'],
+    ['Ã°Å¸Å’Å ', 'compass'],
     ['ðŸŒŠ', 'compass'],
-    ['🌊', 'compass'],
+    ['Ã°Å¸Å½Â«', 'ticket'],
     ['ðŸŽ«', 'ticket'],
-    ['🎫', 'ticket'],
+    ['Ã°Å¸Ââ€ºÃ¯Â¸Â', 'map'],
     ['ðŸ›ï¸', 'map'],
-    ['🏛️', 'map'],
+    ['Ã°Å¸Å½Â¤', 'ticket'],
     ['ðŸŽ¤', 'ticket'],
-    ['🎤', 'ticket'],
+    ['Ã°Å¸â€™Â°', 'wallet'],
     ['ðŸ’°', 'wallet'],
-    ['💰', 'wallet'],
+    ['Ã°Å¸â€œâ€¦', 'calendar'],
     ['ðŸ“…', 'calendar'],
-    ['📅', 'calendar'],
+    ['Ã°Å¸ÂÂ¨', 'hotel'],
     ['ðŸ¨', 'hotel'],
-    ['🏨', 'hotel'],
+    ['Ã°Å¸Å¡Å’', 'bus'],
     ['ðŸšŒ', 'bus'],
-    ['🚌', 'bus'],
+    ['Ã°Å¸Å¡â€”', 'car'],
     ['ðŸš—', 'car'],
-    ['🚗', 'car'],
+    ['Ã°Å¸â€Â', 'search'],
     ['ðŸ”', 'search'],
-    ['🔍', 'search'],
+    ['Ã°Å¸Å½â€°', 'sparkles'],
     ['ðŸŽ‰', 'sparkles'],
-    ['🎉', 'sparkles'],
+    ['Ã°Å¸â€™Â³', 'wallet'],
     ['ðŸ’³', 'wallet'],
-    ['💳', 'wallet'],
-    ['ðŸ“…', 'calendar'],
+    ['Ã°Å¸â€œâ€¦', 'calendar'],
+    ['Ã°Å¸â€œÂ', 'pin'],
     ['ðŸ“', 'pin'],
-    ['📍', 'pin'],
+    ['Ã°Å¸â€â€”', 'link'],
     ['ðŸ”—', 'link'],
-    ['🔗', 'link'],
+    ['Ã°Å¸â€™Â¬', 'chat'],
     ['ðŸ’¬', 'chat'],
-    ['💬', 'chat'],
-    ['ðŸ”—', 'link'],
+    ['Ã°Å¸â€â€”', 'link'],
+    ['Ã°Å¸â€â€™', 'shield'],
     ['ðŸ”’', 'shield'],
-    ['🔒', 'shield'],
+    ['Ã°Å¸Å¸Â¦', 'check'],
     ['ðŸŸ¦', 'check'],
-    ['🟦', 'check'],
+    ['Ã°Å¸Å¸Â¥', 'x'],
     ['ðŸŸ¥', 'x'],
-    ['🟥', 'x'],
+    ['Ã°Å¸Å¸Â©', 'check'],
     ['ðŸŸ©', 'check'],
-    ['🟩', 'check'],
+    ['Ã°Å¸â€™Â¡', 'info'],
     ['ðŸ’¡', 'info'],
-    ['💡', 'info'],
-    ['ðŸš', 'car'],
-    ['🚍', 'bus'],
-    ['ðŸšº', 'bus'],
-    ['🛺', 'car'],
+    ['Ã°Å¸Å¡Â', 'car'],
+    ['ðŸš', 'bus'],
+    ['Ã°Å¸Å¡Âº', 'bus'],
     ['ðŸ›º', 'car'],
-    ['🛡️', 'shield'],
+    ['Ã°Å¸â€ºÂº', 'car'],
     ['ðŸ›¡ï¸', 'shield'],
-    ['🛍️', 'cart'],
+    ['Ã°Å¸â€ºÂ¡Ã¯Â¸Â', 'shield'],
     ['ðŸ›ï¸', 'cart'],
-    ['⭐', 'star'],
-    ['✨', 'sparkles'],
-    ['📣', 'megaphone'],
-    ['📧', 'mail'],
-    ['📞', 'phone'],
-    ['⚠️', 'warning'],
-    ['⚠', 'warning'],
-    ['❌', 'x'],
-    ['✕', 'x'],
-    ['✓', 'check'],
-    ['✅', 'check'],
-    ['🚶', 'wave'],
-    ['✈️', 'plane']
+    ['Ã°Å¸â€ºÂÃ¯Â¸Â', 'cart'],
+    ['â­', 'star'],
+    ['âœ¨', 'sparkles'],
+    ['ðŸ“£', 'megaphone'],
+    ['ðŸ“§', 'mail'],
+    ['ðŸ“ž', 'phone'],
+    ['âš ï¸', 'warning'],
+    ['âš ', 'warning'],
+    ['âŒ', 'x'],
+    ['âœ•', 'x'],
+    ['âœ“', 'check'],
+    ['âœ…', 'check'],
+    ['ðŸš¶', 'wave'],
+    ['âœˆï¸', 'plane']
   ];
 
   const skipTags = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'SELECT', 'OPTION', 'CODE', 'PRE', 'NOSCRIPT', 'SVG']);
@@ -397,7 +397,7 @@ function replaceEmojiWithIcons(root) {
   window.addEventListener('resize', syncSidebarMode);
 })();
 
-// ─── Active nav link auto-detect ──────────────────────────────────────────────
+// â”€â”€â”€ Active nav link auto-detect â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function () {
   const path = window.location.pathname;
   document.querySelectorAll('.navbar-links a').forEach(a => {
@@ -468,7 +468,7 @@ document.addEventListener('click', (e) => {
   trackEventMetric(trigger.dataset.trackEventClick, trigger.dataset.trackEventMetric || 'click');
 });
 
-// ─── Alert Utility ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Alert Utility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showAlert(container, message, type = 'error') {
   const icons = { error: createInlineSvgIcon('x'), success: createInlineSvgIcon('check'), info: createInlineSvgIcon('info'), warning: createInlineSvgIcon('warning') };
   const el = document.createElement('div');
@@ -478,7 +478,7 @@ function showAlert(container, message, type = 'error') {
   setTimeout(() => el.remove(), 5000);
 }
 
-// ─── Modal Control ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Modal Control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openModal(id) {
   const overlay = document.getElementById(id);
   if (!overlay) return;
@@ -512,7 +512,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// ─── Filter Tabs ─────────────────────────────────────────────────────────────
+// â”€â”€â”€ Filter Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.filter-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const group = tab.closest('.filter-tabs');
@@ -529,7 +529,7 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
   });
 });
 
-// ─── Search Bar ───────────────────────────────────────────────────────────────
+// â”€â”€â”€ Search Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const searchInput = document.getElementById('listing-search');
 if (searchInput) {
   searchInput.addEventListener('input', () => {
@@ -542,7 +542,7 @@ if (searchInput) {
   });
 }
 
-// ─── Booking Modal ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Booking Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function openBookingModal(listingId, listingType, listingTitle, price, vipPrice = 0) {
   document.getElementById('bk-listing-id').value     = listingId;
   document.getElementById('bk-listing-type').value   = listingType;
@@ -559,11 +559,11 @@ function openBookingModal(listingId, listingType, listingTitle, price, vipPrice 
 
     const stdOption = ticketTypeSelect.querySelector('option[value="Standard"]');
     const vipOption = ticketTypeSelect.querySelector('option[value="VIP"]');
-    if (stdOption) stdOption.textContent = `Standard — MK ${parseFloat(price).toLocaleString('en-MW')}`;
+    if (stdOption) stdOption.textContent = `Standard â€” MK ${parseFloat(price).toLocaleString('en-MW')}`;
     if (vipOption) {
       if (parseFloat(vipPrice) > 0) {
         vipOption.style.display = '';
-        vipOption.textContent = `VIP — MK ${parseFloat(vipPrice).toLocaleString('en-MW')}`;
+        vipOption.textContent = `VIP â€” MK ${parseFloat(vipPrice).toLocaleString('en-MW')}`;
       } else {
         vipOption.style.display = 'none';
       }
@@ -600,14 +600,14 @@ function updateBookingTotal() {
   if (hiddenTotal) hiddenTotal.value = total;
 }
 
-// ─── Booking Form Submit ──────────────────────────────────────────────────────
+// â”€â”€â”€ Booking Form Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const bookingForm = document.getElementById('booking-form');
 if (bookingForm) {
   bookingForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = bookingForm.querySelector('[type=submit]');
     btn.disabled = true;
-    btn.textContent = 'Processing…';
+    btn.textContent = 'Processingâ€¦';
 
     const formData = new FormData(bookingForm);
     formData.append('action', 'create_booking');
@@ -636,7 +636,7 @@ if (bookingForm) {
   });
 }
 
-// ─── Booking Success Flash ────────────────────────────────────────────────────
+// â”€â”€â”€ Booking Success Flash â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function showSuccessBooking(booking) {
   const el = document.getElementById('booking-success');
   if (!el) return;
@@ -729,7 +729,7 @@ function showSuccessBooking(booking) {
   el.scrollIntoView({ behavior: 'smooth' });
 }
 
-// ─── Cancel Booking ───────────────────────────────────────────────────────────
+// â”€â”€â”€ Cancel Booking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.btn-cancel-booking').forEach(btn => {
   btn.addEventListener('click', async () => {
     const id = btn.dataset.bookingId;
@@ -744,7 +744,7 @@ document.querySelectorAll('.btn-cancel-booking').forEach(btn => {
   });
 });
 
-// ─── Admin: Status Update ─────────────────────────────────────────────────────
+// â”€â”€â”€ Admin: Status Update â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.admin-status-select').forEach(sel => {
   sel.addEventListener('change', async () => {
     const { bookingId, field } = sel.dataset;
@@ -760,7 +760,7 @@ document.querySelectorAll('.admin-status-select').forEach(sel => {
   });
 });
 
-// ─── Admin: Toggle User Status ────────────────────────────────────────────────
+// â”€â”€â”€ Admin: Toggle User Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.btn-toggle-user').forEach(btn => {
   btn.addEventListener('click', async () => {
     const userId = btn.dataset.userId;
@@ -773,7 +773,7 @@ document.querySelectorAll('.btn-toggle-user').forEach(btn => {
   });
 });
 
-// ─── Admin: Refund ────────────────────────────────────────────────────────────
+// â”€â”€â”€ Admin: Refund â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.btn-refund').forEach(btn => {
   btn.addEventListener('click', async () => {
     const id = btn.dataset.bookingId;
@@ -787,7 +787,7 @@ document.querySelectorAll('.btn-refund').forEach(btn => {
   });
 });
 
-// ─── Coupon Validation ────────────────────────────────────────────────────────
+// â”€â”€â”€ Coupon Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const couponInput = document.getElementById('coupon-code');
 const couponBtn   = document.getElementById('apply-coupon');
 if (couponBtn && couponInput) {
@@ -797,7 +797,7 @@ if (couponBtn && couponInput) {
     const data = await api('validate_coupon', { code, spend: document.getElementById('bk-total-price')?.value || 0 });
     const msg = document.getElementById('coupon-msg');
     if (data.valid) {
-      if (msg) { msg.textContent = `✓ Coupon applied! ${data.description}`; msg.className = 'text-sm text-green'; }
+      if (msg) { msg.textContent = `âœ“ Coupon applied! ${data.description}`; msg.className = 'text-sm text-green'; }
       const el = document.getElementById('bk-discount');
       if (el) el.value = data.discount;
       updateBookingTotal();
@@ -807,11 +807,11 @@ if (couponBtn && couponInput) {
   });
 }
 
-// ─── Quantity change ──────────────────────────────────────────────────────────
+// â”€â”€â”€ Quantity change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const qtyInput = document.getElementById('bk-quantity');
 if (qtyInput) qtyInput.addEventListener('input', updateBookingTotal);
 
-// ─── Ticket Type change (Standard vs VIP) ──────────────────────────────────────
+// â”€â”€â”€ Ticket Type change (Standard vs VIP) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const ticketTypeSelect = document.getElementById('bk-ticket-type');
 if (ticketTypeSelect) {
   ticketTypeSelect.addEventListener('change', () => {
@@ -826,7 +826,7 @@ if (ticketTypeSelect) {
   });
 }
 
-// ─── Gateway Selection ────────────────────────────────────────────────────────
+// â”€â”€â”€ Gateway Selection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('.gateway-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.gateway-btn').forEach(b => b.classList.remove('selected'));
@@ -836,7 +836,7 @@ document.querySelectorAll('.gateway-btn').forEach(btn => {
   });
 });
 
-// ─── Confirm Payment Step ─────────────────────────────────────────────────────
+// â”€â”€â”€ Confirm Payment Step â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const proceedPayBtn = document.getElementById('proceed-to-payment');
 if (proceedPayBtn) {
   proceedPayBtn.addEventListener('click', () => {
@@ -856,7 +856,7 @@ if (proceedPayBtn) {
   });
 }
 
-// ─── Table sort (basic) ───────────────────────────────────────────────────────
+// â”€â”€â”€ Table sort (basic) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 document.querySelectorAll('th[data-sort]').forEach(th => {
   th.style.cursor = 'pointer';
   th.addEventListener('click', () => {
@@ -875,7 +875,7 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
   });
 });
 
-// ─── Animate cards on scroll ──────────────────────────────────────────────────
+// â”€â”€â”€ Animate cards on scroll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -955,7 +955,38 @@ console.log('%cMalawi\'s Premier Marketplace Platform', 'color:#7c7c9a;font-size
     });
   });
 })();
-// ─── IntersectionObserver for Progressive Image Lazy Loading ─────────────────
+// Mark non-critical in-content images for lazy loading and async decoding.
+(function () {
+  const criticalRoots = [
+    '.logo-partial',
+    '.dashboard-brand',
+    '.uthenga-page-loader-logo',
+    '.navbar-brand',
+    '.hero',
+    '.hero-section',
+    '.banner',
+    '.banner-hero',
+    '[data-no-lazy]'
+  ].join(',');
+
+  function optimizeImages() {
+    document.querySelectorAll('img').forEach((img) => {
+      if (img.hasAttribute('loading') || img.dataset.src) return;
+      if (img.closest(criticalRoots)) return;
+      if (!img.closest('main')) return;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', optimizeImages, { once: true });
+  } else {
+    optimizeImages();
+  }
+})();
+
+// â”€â”€â”€ IntersectionObserver for Progressive Image Lazy Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 (function () {
   'use strict';
   const lazyImages = document.querySelectorAll('img[data-src]');

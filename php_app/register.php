@@ -142,8 +142,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
   <title>Create Account | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
 <style>
 .pw-wrapper { position: relative; }
 .pw-toggle {
@@ -339,7 +340,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </p>
   </div>
 </div>
-<script src="<?= BASE_URL ?>assets/js/main.js"></script>
+<script src="<?= BASE_URL ?>assets/js/main.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
 <script>
 function utPwToggle(inputId, btn) {
   var inp = document.getElementById(inputId);

@@ -14,7 +14,7 @@
   </div>
 </footer>
 
-<script src="<?= BASE_URL ?>assets/js/main.js"></script>
+<script src="<?= BASE_URL ?>assets/js/main.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
 
 <!-- Floating AI Chat Widget (Amai) -->
 <?php if (!defined('SKIP_AI_WIDGET')): ?>

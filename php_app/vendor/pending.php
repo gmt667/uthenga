@@ -26,8 +26,9 @@ $profile = dbQueryOne('SELECT * FROM vendor_profiles WHERE vendor_id = ?', [$_SE
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Account Pending Approval | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
 </head>
 <body>
 <div class="auth-page" style="min-height:100vh;">
@@ -93,6 +94,6 @@ $profile = dbQueryOne('SELECT * FROM vendor_profiles WHERE vendor_id = ?', [$_SE
     </div>
   </div>
 </div>
-<script src="<?= BASE_URL ?>assets/js/main.js"></script>
+<script src="<?= BASE_URL ?>assets/js/main.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
 </body>
 </html>

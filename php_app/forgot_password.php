@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga - Password Reset Request
  */
@@ -73,8 +73,9 @@ $pageTitle = 'Reset Password';
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
   <title>Reset Password | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
 </head>
 <body>
 <?php require_once __DIR__ . '/includes/page_loader.php'; ?>
@@ -88,10 +89,10 @@ $pageTitle = 'Reset Password';
     <p class="auth-subtitle">We will send a secure reset link to the official email address on file.</p>
 
     <?php if ($error): ?>
-      <div class="alert alert-error">✖ <?= e($error) ?></div>
+      <div class="alert alert-error">âœ– <?= e($error) ?></div>
     <?php endif; ?>
     <?php if ($message): ?>
-      <div class="alert alert-success">✓ <?= e($message) ?></div>
+      <div class="alert alert-success">âœ“ <?= e($message) ?></div>
     <?php endif; ?>
 
     <?php if ($devResetLink): ?>

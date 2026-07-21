@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga - Admin Forgot Password
  * Sends a reset link after verifying the admin identity fields.
@@ -90,8 +90,9 @@ $themePreference = uthenga_theme_preference();
   <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <title>Forgot Password | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
   <style>
     .admin-login-body {
       background: radial-gradient(ellipse at top, rgba(14,165,233,0.14), transparent 40%), linear-gradient(180deg, #f8fafc, #eef3f8);
