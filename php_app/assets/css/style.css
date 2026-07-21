@@ -707,6 +707,12 @@ html[data-theme="dark"] .logo-light { display: none; }
   text-decoration: none;
   border: none;
 }
+.oauth-btn .oauth-brand-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  display: block;
+}
 .oauth-google {
   background: #ffffff;
   color: #1a1a1a;
@@ -728,6 +734,18 @@ html[data-theme="dark"] .logo-light { display: none; }
   color: #fff;
   transform: translateY(-1px);
   box-shadow: 0 4px 14px rgba(24,119,242,0.35);
+}
+.oauth-microsoft {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid rgba(0,0,0,.12);
+  box-shadow: 0 1px 4px rgba(0,0,0,.10);
+}
+.oauth-microsoft:hover {
+  background: #f8fafc;
+  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(15,23,42,.12);
 }
 
 

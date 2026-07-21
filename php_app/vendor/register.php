@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../includes/brand_icons.php';
 
 if (isLoggedIn()) {
     $role = $_SESSION['user_role'] ?? '';
@@ -171,16 +172,19 @@ require_once __DIR__ . '/../includes/header.php';
         <div style="display:grid;gap:0.75rem;margin:1.25rem 0 1rem;">
           <?php if (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== ''): ?>
             <a href="<?= BASE_URL ?>auth/google.php?role=vendor" class="oauth-btn oauth-google" id="btn-google-vendor-register">
+              <?= uthenga_brand_icon_svg('google') ?>
               <span>Continue with Google</span>
             </a>
           <?php endif; ?>
           <?php if (defined('FACEBOOK_APP_ID') && FACEBOOK_APP_ID !== '' && defined('FACEBOOK_APP_SECRET') && FACEBOOK_APP_SECRET !== ''): ?>
             <a href="<?= BASE_URL ?>auth/facebook.php?role=vendor" class="oauth-btn oauth-facebook" id="btn-facebook-vendor-register">
+              <?= uthenga_brand_icon_svg('facebook') ?>
               <span>Continue with Facebook</span>
             </a>
           <?php endif; ?>
           <?php if (defined('MICROSOFT_CLIENT_ID') && MICROSOFT_CLIENT_ID !== '' && defined('MICROSOFT_CLIENT_SECRET') && MICROSOFT_CLIENT_SECRET !== ''): ?>
-            <a href="<?= BASE_URL ?>auth/microsoft.php?role=vendor" class="oauth-btn" id="btn-microsoft-vendor-register" style="background:#fff;color:#111;border:1px solid rgba(0,0,0,.12);">
+            <a href="<?= BASE_URL ?>auth/microsoft.php?role=vendor" class="oauth-btn oauth-microsoft" id="btn-microsoft-vendor-register">
+              <?= uthenga_brand_icon_svg('microsoft') ?>
               <span>Continue with Microsoft</span>
             </a>
           <?php endif; ?>

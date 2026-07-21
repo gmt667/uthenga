@@ -138,6 +138,7 @@ uthenga_load_env_file(dirname(__DIR__) . '/.env');
 uthenga_load_env_file(__DIR__ . '/.env');
 uthenga_load_php_config_file(dirname(__DIR__) . '/config.local.php');
 uthenga_load_php_config_file(__DIR__ . '/config.local.php');
+require_once __DIR__ . '/includes/public_icons.php';
 
 $appEnv = uthenga_env('UTHENGA_ENV', uthenga_env('APP_ENV', ''));
 if ($appEnv === '') {

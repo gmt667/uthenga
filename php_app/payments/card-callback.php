@@ -44,6 +44,7 @@ if ($isDemoMode || !$cardEnabled) {
         $txn = uthenga_card_find_transaction($txnRef);
         if ($txn) {
             uthenga_card_confirm_booking($txn);
+            uthenga_finance_record_sale(uthenga_finance_context_from_booking($txn));
             uthenga_record_transaction_analytics([
                 'transaction_reference' => $txn['transaction_reference'] ?? $txnRef,
                 'booking_id' => $txn['booking_id'] ?? null,
@@ -73,6 +74,7 @@ if (!empty($paRes)) {
     $txn = uthenga_card_find_transaction($txnReference);
     if ($txn) {
         uthenga_card_confirm_booking($txn);
+        uthenga_finance_record_sale(uthenga_finance_context_from_booking($txn));
         uthenga_record_transaction_analytics([
             'transaction_reference' => $txn['transaction_reference'] ?? $txnReference,
             'booking_id' => $txn['booking_id'] ?? null,

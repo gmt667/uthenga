@@ -44,6 +44,7 @@ if ($isDemoMode || !$airtelKey) {
         $txn = uthenga_airtel_find_transaction($txnRef);
         if ($txn) {
             uthenga_airtel_confirm_booking($txn);
+            uthenga_finance_record_sale(uthenga_finance_context_from_booking($txn));
             uthenga_record_transaction_analytics([
                 'transaction_reference' => $txn['transaction_reference'] ?? $txnRef,
                 'booking_id' => $txn['booking_id'] ?? null,
@@ -84,6 +85,7 @@ if ($status === 'ts' || $status === 'successful' || $status === 'success') {
     $txn = uthenga_airtel_find_transaction($lookupRef);
     if ($txn) {
         uthenga_airtel_confirm_booking($txn);
+        uthenga_finance_record_sale(uthenga_finance_context_from_booking($txn));
         uthenga_record_transaction_analytics([
             'transaction_reference' => $txn['transaction_reference'] ?? $lookupRef,
             'booking_id' => $txn['booking_id'] ?? null,

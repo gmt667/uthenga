@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga — Travel Guides & Blog
  */
@@ -102,7 +102,7 @@ $posts = dbQuery("SELECT * FROM blog_posts ORDER BY post_date DESC, created_at D
 
 <section class="blog-hero">
   <div class="container text-center" style="text-align: center;">
-    <h1 style="font-size: 2.5rem; margin-bottom: 0.75rem;">📰 Uthenga Travel Blog</h1>
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.75rem;"><?= uthenga_public_icon_svg('news') ?> Uthenga Travel Blog</h1>
     <p style="color: var(--clr-text-soft); max-width: 600px; margin: 0 auto;">Your ultimate guide to exploring Malawi. Discover hidden attractions, local festivals, packing lists, and cultural travel tips.</p>
   </div>
 </section>
@@ -110,7 +110,7 @@ $posts = dbQuery("SELECT * FROM blog_posts ORDER BY post_date DESC, created_at D
 <div class="container" style="padding-bottom: 5rem;">
   <?php if (empty($posts)): ?>
     <div class="glass-panel text-center" style="padding: 4rem 2rem; text-align: center;">
-      <div style="font-size:3rem;margin-bottom:1rem;">📰</div>
+      <div style="font-size:3rem;margin-bottom:1rem;"><?= uthenga_public_icon_svg('news') ?></div>
       <h3>No blog posts published yet</h3>
       <p class="text-muted" style="margin-top:0.5rem;">Check back later for exciting travel articles.</p>
       <a href="<?= BASE_URL ?>index.php" class="btn btn-secondary" style="margin-top:1rem;">Back Home</a>
@@ -126,7 +126,7 @@ $posts = dbQuery("SELECT * FROM blog_posts ORDER BY post_date DESC, created_at D
             <p class="blog-excerpt"><?= e($post['excerpt']) ?></p>
             <div class="blog-meta">
               <span>By <?= e($post['author']) ?></span>
-              <span>📅 <?= e($post['post_date']) ?></span>
+              <span style="display:inline-flex; align-items:center; gap:0.35rem;"><?= uthenga_public_icon_svg('calendar') ?> <?= e($post['post_date']) ?></span>
             </div>
             <a href="blog-post.php?id=<?= e($post['id']) ?>" class="btn btn-sm btn-secondary" style="margin-top: 1.25rem; text-align: center;">Read Article</a>
           </div>

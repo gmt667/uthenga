@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga — About Us Page
  */

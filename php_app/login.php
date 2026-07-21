@@ -3,12 +3,18 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/restoration_helpers.php';
 require_once __DIR__ . '/includes/security_helper.php';
+require_once __DIR__ . '/includes/brand_icons.php';
 
 $pageTitle = 'Sign In';
 $activeNav = '';
 $error = '';
 $success = '';
 $redirect = uthenga_safe_redirect_url((string)($_GET['redirect'] ?? ''), '');
+$socialLoginEnabled = (
+    (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== '') ||
+    (defined('FACEBOOK_APP_ID') && FACEBOOK_APP_ID !== '' && defined('FACEBOOK_APP_SECRET') && FACEBOOK_APP_SECRET !== '') ||
+    (defined('MICROSOFT_CLIENT_ID') && MICROSOFT_CLIENT_ID !== '' && defined('MICROSOFT_CLIENT_SECRET') && MICROSOFT_CLIENT_SECRET !== '')
+);
 
 if (isLoggedIn()) {
     redirectByRole(currentRole());
@@ -69,6 +75,33 @@ require_once __DIR__ . '/includes/header.php';
         <p class="text-muted" style="max-width:520px;">Access bookings, vendor tools, dashboards, and support from one account.</p>
         <?php if ($error): ?><div class="alert alert-error" style="margin-top:1rem;"><?= e($error) ?></div><?php endif; ?>
         <?php if ($success): ?><div class="alert alert-success" style="margin-top:1rem;"><?= e($success) ?></div><?php endif; ?>
+        <?php if ($socialLoginEnabled): ?>
+        <div style="display:grid;gap:0.75rem;margin-top:1.25rem;margin-bottom:1rem;">
+          <?php if (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== ''): ?>
+            <a href="<?= BASE_URL ?>auth/google.php?role=customer" class="oauth-btn oauth-google" id="btn-google-login">
+              <?= uthenga_brand_icon_svg('google') ?>
+              <span>Continue with Google</span>
+            </a>
+          <?php endif; ?>
+          <?php if (defined('FACEBOOK_APP_ID') && FACEBOOK_APP_ID !== '' && defined('FACEBOOK_APP_SECRET') && FACEBOOK_APP_SECRET !== ''): ?>
+            <a href="<?= BASE_URL ?>auth/facebook.php?role=customer" class="oauth-btn oauth-facebook" id="btn-facebook-login">
+              <?= uthenga_brand_icon_svg('facebook') ?>
+              <span>Continue with Facebook</span>
+            </a>
+          <?php endif; ?>
+          <?php if (defined('MICROSOFT_CLIENT_ID') && MICROSOFT_CLIENT_ID !== '' && defined('MICROSOFT_CLIENT_SECRET') && MICROSOFT_CLIENT_SECRET !== ''): ?>
+            <a href="<?= BASE_URL ?>auth/microsoft.php?role=customer" class="oauth-btn oauth-microsoft" id="btn-microsoft-login">
+              <?= uthenga_brand_icon_svg('microsoft') ?>
+              <span>Continue with Microsoft</span>
+            </a>
+          <?php endif; ?>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin:0.25rem 0 0.5rem;">
+            <div style="flex:1;height:1px;background:var(--clr-border);"></div>
+            <span class="text-xs text-muted" style="white-space:nowrap;">or sign in with email</span>
+            <div style="flex:1;height:1px;background:var(--clr-border);"></div>
+          </div>
+        </div>
+        <?php endif; ?>
         <form method="post" style="margin-top:1.25rem;display:grid;gap:1rem;">
           <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
           <input type="hidden" name="redirect" value="<?= e($redirect) ?>">

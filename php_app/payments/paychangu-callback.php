@@ -51,6 +51,7 @@ if ($isDemoMode || $paychanguSecret === '') {
         $txn = uthenga_paychangu_find_transaction($txnRef);
         if ($txn) {
             uthenga_paychangu_confirm_booking($txn);
+            uthenga_finance_record_sale(uthenga_finance_context_from_booking($txn));
             uthenga_paychangu_record_analytics($txn, 'success');
         }
     }
@@ -117,6 +118,7 @@ if ($normalizedStatus === 'success') {
     if ($txn) {
         $txn['status'] = 'success';
         uthenga_paychangu_confirm_booking($txn);
+        uthenga_finance_record_sale(uthenga_finance_context_from_booking($txn));
         uthenga_paychangu_record_analytics($txn, 'success');
     }
 } elseif ($normalizedStatus === 'failed') {

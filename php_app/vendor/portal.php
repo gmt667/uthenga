@@ -64,6 +64,17 @@ $bookingStats = $hasBookingItems ? dbQueryOne("
     WHERE bi.vendor_id = ?
 ", [$vendorId]) : ['total_bookings' => 0, 'total_revenue' => 0];
 
+$vendorRecord = dbQueryOne('SELECT * FROM vendors WHERE user_id = ? LIMIT 1', [$vendorId]) ?: [];
+$vendorWallet = !empty($vendorRecord['id']) && uthenga_table_exists('vendor_wallets')
+    ? (dbQueryOne('SELECT * FROM vendor_wallets WHERE vendor_id = ? LIMIT 1', [(int)$vendorRecord['id']]) ?: ['balance' => 0, 'pending_balance' => 0])
+    : ['balance' => 0, 'pending_balance' => 0];
+$vendorCommissionTotals = !empty($vendorRecord['id']) && uthenga_table_exists('commissions')
+    ? (dbQueryOne('SELECT COALESCE(SUM(commission_amount), 0) AS commission_total, COALESCE(SUM(net_vendor_amount), 0) AS vendor_total FROM commissions WHERE vendor_id = ?', [(int)$vendorRecord['id']]) ?: ['commission_total' => 0, 'vendor_total' => 0])
+    : ['commission_total' => 0, 'vendor_total' => 0];
+$vendorPayoutTotals = !empty($vendorRecord['id']) && uthenga_table_exists('vendor_payouts')
+    ? (dbQueryOne("SELECT COALESCE(SUM(amount), 0) AS payout_total FROM vendor_payouts WHERE vendor_id = ? AND status = 'processed'", [(int)$vendorRecord['id']]) ?: ['payout_total' => 0])
+    : ['payout_total' => 0];
+
 $typeCounts = ['event' => 0, 'property' => 0, 'tour' => 0, 'transport' => 0];
 foreach ($allItems as $row) {
     $type = $row['type'] ?? 'event';
@@ -141,17 +152,23 @@ renderDashboardChromeStart([
       <p class="text-muted"><?= e($vendor['full_name'] ?? '') ?> - manage your events, stays, tours, and transport from one place.</p>
     </div>
     <div style="text-align:right;">
-      <div class="text-xs text-muted">Wallet balance</div>
-      <div style="font-size:1.4rem;font-weight:800;color:var(--clr-accent);"><?= formatMWK((float) ($vendor['balance'] ?? 0)) ?></div>
+      <div class="text-xs text-muted">Available wallet</div>
+      <div style="font-size:1.4rem;font-weight:800;color:var(--clr-accent);"><?= formatMWK((float) ($vendorWallet['balance'] ?? 0)) ?></div>
     </div>
   </div>
 
   <div class="glass-panel" style="padding:1.25rem;margin-bottom:1rem;">
-    <div class="presentation-grid">
+    <div class="grid grid-cols-4 gap-2">
+      <div class="presentation-stat"><span>Available Balance</span><strong><?= formatMWK((float) ($vendorWallet['balance'] ?? 0)) ?></strong></div>
+      <div class="presentation-stat"><span>Pending Balance</span><strong><?= formatMWK((float) ($vendorWallet['pending_balance'] ?? 0)) ?></strong></div>
+      <div class="presentation-stat"><span>Total Sales</span><strong><?= formatMWK((float) ($vendorCommissionTotals['vendor_total'] ?? 0)) ?></strong></div>
+      <div class="presentation-stat"><span>Commission Paid</span><strong><?= formatMWK((float) ($vendorCommissionTotals['commission_total'] ?? 0)) ?></strong></div>
+    </div>
+    <div class="presentation-grid" style="margin-top:1rem;">
       <div class="presentation-stat"><span>Items</span><strong><?= number_format(count($allItems)) ?></strong></div>
       <div class="presentation-stat"><span>Bookings</span><strong><?= number_format((int) ($bookingStats['total_bookings'] ?? 0)) ?></strong></div>
       <div class="presentation-stat"><span>Gross revenue</span><strong><?= formatMWK((float) ($bookingStats['total_revenue'] ?? 0)) ?></strong></div>
-      <div class="presentation-stat"><span>Events / Stays / Tours / Transport</span><strong><?= number_format(array_sum($typeCounts)) ?></strong></div>
+      <div class="presentation-stat"><span>Withdrawn</span><strong><?= formatMWK((float) ($vendorPayoutTotals['payout_total'] ?? 0)) ?></strong></div>
     </div>
   </div>
 

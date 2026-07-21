@@ -192,7 +192,6 @@ try {
             }
 
             $grossTotal = round($unitPrice * $qty, 2);
-            $totalPrice = $grossTotal;
             $listingMeta = json_decode((string)($listing['meta'] ?? '{}'), true);
             $listingMeta = is_array($listingMeta) ? $listingMeta : [];
             $isModernSchema = uthenga_column_exists('bookings', 'booking_channel');
@@ -203,15 +202,19 @@ try {
                 $coupon = dbQueryOne('SELECT * FROM coupons WHERE code = ? AND is_active = 1 AND expiry_date >= CURDATE()', [$couponCode]);
                 if ($coupon) {
                     if ($coupon['discount_type'] === 'percentage') {
-                        $discount = ($totalPrice * $coupon['value']) / 100;
+                        $discount = ($grossTotal * $coupon['value']) / 100;
                     } else {
                         $discount = (float)$coupon['value'];
                     }
-                    $totalPrice = max(0, $grossTotal - $discount);
                 }
             }
 
-            $commission   = round(($totalPrice * COMMISSION_RATE) / 100, 2);
+            $netAmount = max(0, round($grossTotal - $discount, 2));
+            $split = uthenga_finance_split_amounts($netAmount, $listingType);
+            $commission = (float)($split['commission_amount'] ?? 0);
+            $serviceFee = (float)($split['service_fee'] ?? 0);
+            $vendorNet = (float)($split['vendor_net_amount'] ?? 0);
+            $totalPrice = (float)($split['customer_total'] ?? $netAmount);
             $bookingRef   = 'BKG-' . strtoupper(bin2hex(random_bytes(3)));
             $txnRef       = 'TXN-' . strtoupper(bin2hex(random_bytes(4)));
             $receiptNum   = 'REC-CT-' . rand(1000000, 9999999);
@@ -322,6 +325,7 @@ try {
             $details = array_filter($details, function($v) { return $v !== null && $v !== ''; });
 
             $bookingInsertId = $bookingRef;
+            $bookingNumericId = 0;
             if ($isModernSchema) {
                 $bookingCode = 'BK-' . strtoupper(bin2hex(random_bytes(4)));
                 dbExecute(
@@ -337,9 +341,9 @@ try {
                         'confirmed',
                         'paid',
                         APP_CURRENCY,
-                        $totalPrice,
+                        $netAmount,
                         $discount,
-                        0,
+                        $serviceFee,
                         $commission,
                         $totalPrice,
                         $listing['title'],
@@ -348,6 +352,7 @@ try {
                     ]
                 );
                 $bookingInsertId = (string)dbLastId();
+                $bookingNumericId = (int) $bookingInsertId;
             } else {
                 $ttIdParam = $ticketTypeId ?: null;
                 $scIdParam = $seatClassId  ?: null;
@@ -383,6 +388,40 @@ try {
 
             $transactionReference = $isModernSchema ? $txnRef : $txnRef;
             if ($isModernSchema) {
+                if ($bookingNumericId > 0 && uthenga_table_exists('booking_items')) {
+                    $serviceDate = $details['check_in_date'] ?? ($details['travel_date'] ?? ($details['tour_date'] ?? null));
+                    $itemTypeMap = [
+                        'event' => 'event_ticket',
+                        'accommodation' => 'property_room',
+                        'property' => 'property_room',
+                        'tour' => 'tour_package',
+                        'transport' => 'transport_seat',
+                    ];
+                    $itemType = $itemTypeMap[$listingType] ?? 'vendor_service';
+                    dbExecute(
+                        'INSERT INTO booking_items (booking_id, vendor_id, item_type, reference_id, item_name, quantity, unit_price, subtotal, service_date, metadata)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [
+                            $bookingNumericId,
+                            (int)($listing['vendor_id'] ?? 0) ?: null,
+                            $itemType,
+                            $listingId,
+                            $listing['title'],
+                            $qty,
+                            $unitPrice,
+                            $netAmount,
+                            $serviceDate,
+                            json_encode([
+                                'discount_amount' => $discount,
+                                'service_fee' => $serviceFee,
+                                'commission_amount' => $commission,
+                                'vendor_net_amount' => $vendorNet,
+                                'transaction_reference' => $txnRef,
+                            ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                        ]
+                    );
+                }
+
                 dbExecute(
                     'INSERT INTO transactions (
                         transaction_reference, booking_id, user_id, vendor_id, amount, currency,
@@ -390,9 +429,9 @@ try {
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())',
                     [
                         $transactionReference,
-                        $bookingInsertId,
+                        $bookingNumericId,
                         $customerId,
-                        null,
+                        (int)($listing['vendor_id'] ?? 0) ?: null,
                         $totalPrice,
                         APP_CURRENCY,
                         $gatewayLabel,
@@ -400,16 +439,36 @@ try {
                         'success',
                         json_encode([
                             'source' => 'booking',
-                            'booking_id' => $bookingInsertId,
+                            'booking_id' => $bookingNumericId,
                             'booking_reference' => $bookingRef,
                             'receipt_number' => $receiptNum,
                             'listing_id' => $listingId,
                             'listing_type' => $listingType,
+                            'gross_amount' => $grossTotal,
+                            'discount_amount' => $discount,
+                            'service_fee' => $serviceFee,
+                            'commission_rate' => $split['commission_rate'],
+                            'commission_amount' => $commission,
+                            'vendor_net_amount' => $vendorNet,
+                            'platform_revenue' => $split['platform_revenue'],
+                            'customer_total' => $totalPrice,
                             'gateway' => $gatewayLabel,
                             'details' => $details,
                         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
                     ]
                 );
+                uthenga_finance_record_sale([
+                    'booking_id' => $bookingNumericId,
+                    'vendor_id' => (int)($listing['vendor_id'] ?? 0),
+                    'listing_type' => $listingType,
+                    'currency' => APP_CURRENCY,
+                    'gross_amount' => $grossTotal,
+                    'discount_amount' => $discount,
+                    'transaction_reference' => $txnRef,
+                    'transaction_id' => $txnRef,
+                    'status' => 'success',
+                    'wallet_bucket' => 'pending',
+                ]);
             } else {
                 dbExecute(
                     'INSERT INTO transactions (id, booking_id, customer_id, customer_name, amount, gateway, status, receipt_number)
@@ -417,10 +476,6 @@ try {
                     [$txnRef, $bookingRef, $customerId, $customerName, $totalPrice, $gatewayLabel, 'Success', $receiptNum]
                 );
             }
-
-            // Deduct customer balance & credit vendor
-            dbExecute('UPDATE users SET balance = GREATEST(0, balance - ?) WHERE id = ?', [$totalPrice, $customerId]);
-            dbExecute('UPDATE users SET balance = balance + ? WHERE id = ?', [$totalPrice - $commission, $listing['vendor_id']]);
 
             // Audit log
             logAction('Authorized Payment', "Paid " . formatMWK($totalPrice) . " via $gatewayLabel for {$listing['title']}. Ref: $bookingRef");
@@ -473,8 +528,7 @@ try {
             $pdo->beginTransaction();
             dbExecute("UPDATE bookings SET booking_status='cancelled', payment_status='refunded' WHERE id=?", [$bookingId]);
             uthenga_restore_booking_inventory($booking);
-            // Refund customer
-            dbExecute('UPDATE users SET balance = balance + ? WHERE id = ?', [$booking['total_price'], $booking['customer_id']]);
+            uthenga_finance_reverse_sale($booking);
             logAction('Cancelled Booking', "Booking $bookingId cancelled. Refund: " . formatMWK($booking['total_price']));
             $pdo->commit();
             uthenga_cache_invalidate();
@@ -512,7 +566,7 @@ try {
             $pdo->beginTransaction();
             dbExecute("UPDATE bookings SET payment_status='refunded', booking_status='cancelled' WHERE id=?", [$bookingId]);
             uthenga_restore_booking_inventory($booking);
-            dbExecute('UPDATE users SET balance = balance + ? WHERE id = ?', [$booking['total_price'], $booking['customer_id']]);
+            uthenga_finance_reverse_sale($booking);
             logAction('Refund Authorization', "Refunded " . formatMWK($booking['total_price']) . " for booking $bookingId to {$booking['customer_name']}.");
             $pdo->commit();
             uthenga_cache_invalidate();
