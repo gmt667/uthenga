@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 /**
- * Uthenga â€” Customer Support Ticket Center
+ * Uthenga - Customer Support Ticket Center
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
@@ -13,25 +13,26 @@ $activeNav = 'support';
 $activeTab = $_GET['tab'] ?? 'tickets';
 
 $userId = $_SESSION['user_id'];
-$user   = dbQueryOne('SELECT * FROM users WHERE id = ?', [$userId]);
+$user = dbQueryOne('SELECT * FROM users WHERE id = ?', [$userId]);
 $userName = $user['name'] ?? ($_SESSION['user_name'] ?? 'Customer');
 $hasSupportTickets = uthenga_table_exists('support_tickets');
 $hasTicketResponses = uthenga_table_exists('ticket_responses');
 
-// â”€â”€â”€ Handle Ticket Submission â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $ticketSuccess = '';
-$ticketError   = '';
+$ticketError = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_ticket'])) {
     if (!validateCsrf()) {
         $ticketError = 'Security validation failed. Please reload.';
     } elseif (!$hasSupportTickets) {
         $ticketError = 'Support ticket storage is not available yet. Please contact support directly.';
     } else {
-        $subject  = trim($_POST['subject']  ?? '');
-        $message  = trim($_POST['ticket_message'] ?? '');
+        $subject = trim($_POST['subject'] ?? '');
+        $message = trim($_POST['ticket_message'] ?? '');
         $category = trim($_POST['category'] ?? '');
-        $validCats = ['Billing','Booking issue','Vendor help','Technical'];
-        if (empty($subject) || empty($message) || !in_array($category, $validCats)) {
+        $validCats = ['Billing', 'Booking issue', 'Vendor help', 'Technical'];
+
+        if ($subject === '' || $message === '' || !in_array($category, $validCats, true)) {
             $ticketError = 'All fields are required. Please select a valid category.';
         } else {
             $ticketId = 'TCK-' . rand(1000, 9999);
@@ -40,13 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_ticket'])) {
                 [$ticketId, $userId, $userName, $subject, $message, $category]
             );
             logAction('Created Support Ticket', "Customer submitted ticket: \"$subject\" (Category: $category)");
-            $ticketSuccess = 'Support ticket #' . $ticketId . ' submitted! Our team will respond shortly.';
+            $ticketSuccess = 'Support ticket #' . $ticketId . ' submitted. Our team will respond shortly.';
             $activeTab = 'tickets';
         }
     }
 }
 
-// â”€â”€â”€ Fetch Support Tickets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $tickets = [];
 if ($hasSupportTickets) {
     if ($hasTicketResponses) {
@@ -70,11 +70,12 @@ if ($hasSupportTickets) {
     }
 }
 
-function statusClass(string $status): string {
-    return match(strtolower($status)) {
-        'resolved'    => 'status-confirmed',
+function statusClass(string $status): string
+{
+    return match (strtolower($status)) {
+        'resolved' => 'status-confirmed',
         'open', 'in progress' => 'status-pending',
-        default       => 'status-pending'
+        default => 'status-pending',
     };
 }
 ?>
@@ -90,21 +91,55 @@ function statusClass(string $status): string {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/admin.css">
+  <style>
+    .support-shell { padding: 2.5rem 0 4rem; }
+    .support-hero {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:1rem;
+      flex-wrap:wrap;
+      margin-bottom:1.5rem;
+    }
+    .support-tabs {
+      display:flex;
+      gap:.75rem;
+      flex-wrap:wrap;
+      margin-bottom:1.5rem;
+    }
+    .support-card { padding:1.25rem; }
+    .support-card + .support-card { margin-top:1rem; }
+    .support-thread { display:grid; gap:.85rem; }
+    .support-empty {
+      padding:3rem 1.5rem;
+      text-align:center;
+    }
+    .support-note {
+      padding:1rem;
+      border:1px solid var(--clr-border);
+      background:var(--clr-surface2);
+      border-radius:14px;
+    }
+    @media (max-width: 640px) {
+      .support-shell { padding-top: 2rem; }
+      .support-card { padding:1rem; }
+      .support-tabs .filter-tab,
+      .support-tabs .btn { width:100%; justify-content:center; }
+    }
+  </style>
 </head>
 <body>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
-<div class="container" style="padding-top:2.5rem;padding-bottom:4rem;">
-  
-  <!-- Page Header -->
-  <div class="page-header">
+<div class="container support-shell">
+  <div class="support-hero">
     <div>
-      <h1 class="page-title">ðŸ’¬ Support Tickets</h1>
+      <h1 class="page-title"><?= admin_icon_svg('support') ?> <span>Support Tickets</span></h1>
       <p class="text-muted">Need assistance? Check ticket replies or open a new support request.</p>
     </div>
   </div>
 
-  <div class="glass-panel" style="padding:1rem 1.25rem;margin-bottom:1.5rem;">
+  <div class="glass-panel support-note" style="margin-bottom:1.5rem;">
     <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;align-items:center;">
       <div>
         <strong>Need direct help?</strong>
@@ -114,66 +149,57 @@ function statusClass(string $status): string {
     </div>
   </div>
 
-  <!-- Support Tabs -->
-  <div class="filter-tabs" style="margin-bottom:2rem;">
-    <a href="?tab=tickets" class="filter-tab <?= $activeTab === 'tickets' ? 'active' : '' ?>">
-      ðŸ’¬ My Tickets (<?= count($tickets) ?>)
-    </a>
-    <a href="?tab=new" class="filter-tab <?= $activeTab === 'new' ? 'active' : '' ?>">
-      + Open New Ticket
-    </a>
+  <div class="support-tabs">
+    <a href="?tab=tickets" class="filter-tab <?= $activeTab === 'tickets' ? 'active' : '' ?>">My Tickets (<?= count($tickets) ?>)</a>
+    <a href="?tab=new" class="filter-tab <?= $activeTab === 'new' ? 'active' : '' ?>">Open New Ticket</a>
   </div>
 
-  <!-- Tickets List -->
   <?php if ($activeTab === 'tickets'): ?>
     <?php if (empty($tickets)): ?>
-      <div class="glass-panel text-center" style="padding:4rem 2rem; text-align: center;">
-        <div style="font-size:3rem;margin-bottom:1rem;">ðŸ’¬</div>
+      <div class="glass-panel support-empty">
+        <div style="font-size:2.5rem;margin-bottom:1rem;"><?= admin_icon_svg('help') ?></div>
         <h3>No support tickets</h3>
-        <p class="text-muted" style="margin-top:0.5rem;">If you have questions or encounter issues, open a ticket.</p>
+        <p class="text-muted" style="margin-top:.5rem;">If you have questions or encounter issues, open a ticket.</p>
         <a href="?tab=new" class="btn btn-primary" style="margin-top:1rem;">Open Ticket</a>
       </div>
     <?php else: ?>
-      <div style="display:grid;gap:1.25rem;">
-        <?php foreach ($tickets as $t): ?>
-        <div class="card animate-in" style="padding:1.5rem;" id="ticket-<?= e($t['id']) ?>">
-          <div class="flex items-center justify-between" style="margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem;">
-            <div>
-              <span class="text-xs text-muted font-mono">#<?= e($t['id']) ?></span>
-              <h3 style="margin-top:0.25rem; font-size:1.15rem; font-weight:700;"><?= e($t['subject']) ?></h3>
-            </div>
-            <div style="display:flex;gap:0.5rem;align-items:center;">
-              <span class="badge badge-pending" style="font-size:0.7rem;"><?= e($t['category']) ?></span>
-              <span class="status-badge <?= statusClass($t['status']) ?>"><?= e($t['status']) ?></span>
-            </div>
-          </div>
-          <p class="text-sm" style="color:var(--clr-text-soft); line-height:1.6; margin-bottom:1rem;"><?= nl2br(e($t['message'])) ?></p>
-          
-          <?php if (!empty($t['last_reply'])): ?>
-            <div style="background:rgba(255,255,255,0.02); border-left:3px solid var(--clr-accent); border-radius:var(--radius-sm); padding:1rem; margin-top:0.5rem;">
-              <div class="text-xs text-muted" style="margin-bottom:0.25rem; font-weight:600;">
-                Reply from <?= e($t['reply_from'] ?? 'Support Representative') ?> Â· <?= e($t['reply_time']) ?>
+      <div style="display:grid;gap:1rem;">
+        <?php foreach ($tickets as $ticket): ?>
+          <div class="glass-panel support-card" id="ticket-<?= e($ticket['id']) ?>">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;margin-bottom:0.85rem;">
+              <div>
+                <span class="text-xs text-muted font-mono">#<?= e($ticket['id']) ?></span>
+                <h3 style="margin-top:0.25rem;font-size:1.1rem;font-weight:800;"><?= e($ticket['subject']) ?></h3>
+                <div class="text-xs text-muted" style="margin-top:0.2rem;display:flex;gap:.6rem;flex-wrap:wrap;">
+                  <span>Category: <?= e($ticket['category']) ?></span>
+                  <span><?= e(substr($ticket['created_at'], 0, 16)) ?></span>
+                </div>
               </div>
-              <p class="text-sm" style="margin:0; font-style:italic;"><?= e($t['last_reply']) ?></p>
+              <span class="status-badge <?= statusClass($ticket['status']) ?>"><?= e($ticket['status']) ?></span>
             </div>
-          <?php endif; ?>
-          <div class="text-xs text-muted" style="margin-top:0.75rem;">Submitted on: <?= e($t['created_at']) ?></div>
-        </div>
+
+            <p class="text-sm" style="color:var(--clr-text-soft);line-height:1.6;margin-bottom:1rem;"><?= nl2br(e($ticket['message'])) ?></p>
+
+            <?php if (!empty($ticket['last_reply'])): ?>
+              <div style="background:rgba(255,255,255,0.02);border-left:3px solid var(--clr-accent);border-radius:var(--radius-sm);padding:1rem;margin-top:0.5rem;">
+                <div class="text-xs text-muted" style="margin-bottom:0.25rem;font-weight:600;">
+                  Reply from <?= e($ticket['reply_from'] ?? 'Support Representative') ?> - <?= e($ticket['reply_time']) ?>
+                </div>
+                <p class="text-sm" style="margin:0;font-style:italic;"><?= e($ticket['last_reply']) ?></p>
+              </div>
+            <?php endif; ?>
+
+            <div class="text-xs text-muted" style="margin-top:0.75rem;">Submitted on: <?= e($ticket['created_at']) ?></div>
+          </div>
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
-
-  <!-- Open Ticket Form -->
   <?php elseif ($activeTab === 'new'): ?>
-    <div class="glass-panel" style="max-width:600px; padding:2rem;">
-      <h2 style="margin-bottom:1.5rem; font-size:1.4rem;">Open a Support Ticket</h2>
+    <div class="glass-panel support-card" style="max-width:640px;">
+      <h2 style="margin-bottom:1rem;font-size:1.35rem;font-weight:800;">Open a Support Ticket</h2>
 
-      <?php if ($ticketError): ?>
-        <div class="alert alert-error">âœ• <?= e($ticketError) ?></div>
-      <?php endif; ?>
-      <?php if ($ticketSuccess): ?>
-        <div class="alert alert-success">âœ“ <?= e($ticketSuccess) ?></div>
-      <?php endif; ?>
+      <?php if ($ticketError): ?><div class="alert alert-error">Error: <?= e($ticketError) ?></div><?php endif; ?>
+      <?php if ($ticketSuccess): ?><div class="alert alert-success">Success: <?= e($ticketSuccess) ?></div><?php endif; ?>
 
       <form method="POST" action="?tab=new" id="ticket-form">
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
@@ -182,7 +208,7 @@ function statusClass(string $status): string {
         <div class="form-group">
           <label class="form-label" for="ticket-category">Category</label>
           <select id="ticket-category" name="category" class="form-control" required>
-            <option value="">Select ticket categoryâ€¦</option>
+            <option value="">Select ticket category...</option>
             <option value="Billing">Billing & Invoice</option>
             <option value="Booking issue">Booking Issue</option>
             <option value="Vendor help">Vendor Help</option>
@@ -209,4 +235,3 @@ function statusClass(string $status): string {
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>
-

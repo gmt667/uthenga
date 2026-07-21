@@ -1,6 +1,6 @@
 <?php
 /**
- * Uthenga — Unified Checkout Page
+ * Uthenga - Unified Checkout Page
  * Supports: PayChangu, Airtel Money, TNM Mpamba, Visa/Mastercard
  */
 require_once __DIR__ . '/../config.php';
@@ -12,7 +12,7 @@ $userId     = $_SESSION['user_id'];
 $userEmail  = $_SESSION['user_email'] ?? '';
 $userName   = $_SESSION['user_name'] ?? '';
 
-// ── Resolve the booking/order ─────────────────────────────────────────────────
+// Resolve the booking/order
 $bookingId   = $_GET['booking_id'] ?? '';
 $bookingType = $_GET['type'] ?? '';   // event | stay | tour | transport | other
 $amount      = 0;
@@ -45,7 +45,7 @@ if (!$booking && isset($_GET['amount'])) {
     $description = urldecode($_GET['desc'] ?? 'Uthenga Payment');
 }
 
-// ── Gateway config (from .env) ────────────────────────────────────────────────
+// Gateway config (from .env)
 $paychanguKey  = uthenga_env('PAYCHANGU_SECRET_KEY', '');
 $airtelKey     = uthenga_env('AIRTEL_API_KEY', '');
 $tnmKey        = uthenga_env('TNM_API_KEY', '');
@@ -61,7 +61,7 @@ $gateways = [
     'airtel' => [
         'label'   => 'Airtel Money',
         'short'   => 'AM',
-        'desc'    => 'Pay with Airtel Money — fast USSD push',
+        'desc'    => 'Pay with Airtel Money - fast USSD push',
         'enabled' => (bool)$airtelKey,
     ],
     'tnm' => [
@@ -73,7 +73,7 @@ $gateways = [
     'card' => [
         'label'   => 'Visa / Mastercard',
         'short'   => 'CC',
-        'desc'    => 'Pay by card — 3D Secure enabled',
+        'desc'    => 'Pay by card - 3D Secure enabled',
         'enabled' => $cardEnabled,
     ],
 ];
@@ -175,7 +175,7 @@ function uthenga_paychangu_initialize(array $txn, array $booking, string $userEm
     ];
 }
 
-// ── Handle payment initiation ─────────────────────────────────────────────────
+// Handle payment initiation
 $errors  = [];
 $success = '';
 $redirectUrl = '';
@@ -293,7 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
-  <meta name="description" content="Secure checkout for your Uthenga booking — Airtel Money, TNM Mpamba, Visa, Mastercard.">
+  <meta name="description" content="Secure checkout for your Uthenga booking - Airtel Money, TNM Mpamba, Visa, Mastercard.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= APP_VERSION ?>">
   <style>
@@ -445,7 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="checkout-card" style="margin-top:1.25rem;">
-          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.75rem;">📞 Need Help?</h3>
+          <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.75rem;">Need Help?</h3>
           <p class="text-muted" style="font-size:.8rem;margin-bottom:.75rem;">
             Having trouble with payment? Contact our support team.
           </p>
