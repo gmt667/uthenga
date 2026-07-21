@@ -32,6 +32,52 @@ $allLocations = dbQuery("
     ORDER BY location ASC
 ");
 
+if (empty($allLocations)) {
+    $allLocations = [
+        ['location' => 'Lilongwe to Blantyre'],
+        ['location' => 'Blantyre to Zomba'],
+        ['location' => 'Lilongwe Airport'],
+    ];
+}
+
+if (empty($listings) && $search === '' && $location === '' && $rating === '') {
+    $listings = array_map('marketplace_normalize_item', [
+        [
+            'id' => 'transport-mock-1',
+            'listing_type' => 'transport',
+            'type' => 'transport',
+            'title' => 'Swift Coach Express',
+            'location' => 'Lilongwe to Blantyre',
+            'image' => 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=900&fit=crop&q=80',
+            'rating' => 4.7,
+            'featured' => 1,
+            'meta' => json_encode(['pricePerSeat' => 18000]),
+        ],
+        [
+            'id' => 'transport-mock-2',
+            'listing_type' => 'transport',
+            'type' => 'transport',
+            'title' => 'Lake Shuttle Service',
+            'location' => 'Blantyre to Mangochi',
+            'image' => 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&fit=crop&q=80',
+            'rating' => 4.5,
+            'featured' => 0,
+            'meta' => json_encode(['pricePerSeat' => 22000]),
+        ],
+        [
+            'id' => 'transport-mock-3',
+            'listing_type' => 'transport',
+            'type' => 'transport',
+            'title' => 'Airport Transfer Executive',
+            'location' => 'Lilongwe Airport',
+            'image' => 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=900&fit=crop&q=80',
+            'rating' => 4.8,
+            'featured' => 1,
+            'meta' => json_encode(['pricePerSeat' => 35000]),
+        ],
+    ]);
+}
+
 function renderStars(float $rating): string {
     $full = (int)floor($rating);
     $half = ($rating - $full) >= 0.5 ? 1 : 0;

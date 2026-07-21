@@ -193,7 +193,7 @@ if (isset($_SERVER['HTTP_HOST'])) {
 // Database
 define('DB_HOST',    uthenga_env('DB_HOST',   uthenga_env('UTHENGA_DB_HOST',   'localhost')));
 define('DB_PORT',    uthenga_env('DB_PORT',   uthenga_env('UTHENGA_DB_PORT',   '3306')));
-define('DB_NAME',    uthenga_env('DB_NAME',   uthenga_env('UTHENGA_DB_NAME',   'uthenga_app')));
+define('DB_NAME',    uthenga_env('DB_NAME',   uthenga_env('UTHENGA_DB_NAME',   'uthenga_db')));
 define('DB_USER',    uthenga_env('DB_USER',   uthenga_env('UTHENGA_DB_USER',   'root')));
 define('DB_PASS',    uthenga_env('DB_PASS',   uthenga_env('UTHENGA_DB_PASS',   '')));
 define('DB_SOCKET',  uthenga_env('DB_SOCKET', uthenga_env('UTHENGA_DB_SOCKET', '')));

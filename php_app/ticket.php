@@ -256,15 +256,15 @@ $ticketModeLabel = match ($ticketFormat) {
 
   <div class="ticket-body">
     <h1 class="ticket-title"><?= e($bk['listing_title']) ?></h1>
-    <div class="ticket-meta">📍 <?= e($listing['location'] ?? 'Venue Details') ?></div>
+    <div class="ticket-meta">Location: <?= e($listing['location'] ?? 'Venue Details') ?></div>
     <div class="ticket-actions">
-      <button onclick="window.print()" class="ticket-action-btn primary" type="button">🖨️ Print / PDF</button>
-      <button id="share-ticket-btn" class="ticket-action-btn" type="button">📤 Share</button>
-      <button id="copy-ticket-btn" class="ticket-action-btn soft" type="button">📋 Copy Code</button>
+      <button onclick="window.print()" class="ticket-action-btn primary" type="button">Print / PDF</button>
+      <button id="share-ticket-btn" class="ticket-action-btn" type="button">Share</button>
+      <button id="copy-ticket-btn" class="ticket-action-btn soft" type="button">Copy Code</button>
     </div>
 
     <div class="ticket-note">
-      Keep this ticket ready in your bookings. You can print it, share it, or leave it here for scanning at the venue.
+      Keep this ticket ready in your bookings. You can print it, share it, or present it for scanning at the venue.
       <strong style="display:block;color:var(--clr-text);margin-top:0.35rem;"><?= e($ticketModeLabel) ?></strong>
     </div>
 

@@ -5,6 +5,7 @@
 $host = getenv('MYSQL_HOST') ?: 'localhost';
 $root_user = getenv('MYSQL_ROOT_USER') ?: 'root';
 $root_pass = getenv('MYSQL_ROOT_PASS') ?: '';
+$app_db = getenv('UTHENGA_DB_NAME') ?: getenv('DB_NAME') ?: 'uthenga_db';
 $app_user = getenv('UTHENGA_DB_USER') ?: 'uthenga_user';
 $app_pass = getenv('UTHENGA_DB_PASS') ?: '';
 
@@ -20,12 +21,12 @@ try {
 
 try {
     // 1. Create database
-    $conn->exec("CREATE DATABASE IF NOT EXISTS uthenga_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    echo "Database uthenga_app checked/created.\n";
+    $conn->exec("CREATE DATABASE IF NOT EXISTS {$app_db} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    echo "Database {$app_db} checked/created.\n";
 
     // 2. Create users and grant privileges
     $conn->exec("CREATE USER IF NOT EXISTS '{$app_user}'@'localhost' IDENTIFIED BY '{$app_pass}'");
-    $conn->exec("GRANT ALL PRIVILEGES ON uthenga_app.* TO '{$app_user}'@'localhost'");
+    $conn->exec("GRANT ALL PRIVILEGES ON {$app_db}.* TO '{$app_user}'@'localhost'");
     
     // Also support default config pass
     try {
@@ -38,11 +39,11 @@ try {
     echo "Warning during user setup: " . $e->getMessage() . "\n";
 }
 
-// Reconnect to uthenga_app database
+// Reconnect to the Uthenga database
 try {
-    $conn->exec("USE uthenga_app");
+    $conn->exec("USE {$app_db}");
 } catch (PDOException $e) {
-    die("Could not select uthenga_app database: " . $e->getMessage() . "\n");
+    die("Could not select {$app_db} database: " . $e->getMessage() . "\n");
 }
 
 // Helper to execute large SQL script with query splitting

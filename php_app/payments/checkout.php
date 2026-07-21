@@ -54,25 +54,25 @@ $cardEnabled   = (bool)uthenga_env('CARD_PAYMENTS_ENABLED', false);
 $gateways = [
     'paychangu' => [
         'label'   => 'PayChangu',
-        'icon'    => '💳',
+        'short'   => 'PC',
         'desc'    => 'Pay securely via PayChangu (Visa, Mastercard, Mobile Money)',
         'enabled' => (bool)$paychanguKey,
     ],
     'airtel' => [
         'label'   => 'Airtel Money',
-        'icon'    => '📱',
+        'short'   => 'AM',
         'desc'    => 'Pay with Airtel Money — fast USSD push',
         'enabled' => (bool)$airtelKey,
     ],
     'tnm' => [
         'label'   => 'TNM Mpamba',
-        'icon'    => '📲',
+        'short'   => 'TM',
         'desc'    => 'Pay with TNM Mpamba mobile money',
         'enabled' => (bool)$tnmKey,
     ],
     'card' => [
         'label'   => 'Visa / Mastercard',
-        'icon'    => '💳',
+        'short'   => 'CC',
         'desc'    => 'Pay by card — 3D Secure enabled',
         'enabled' => $cardEnabled,
     ],
@@ -305,7 +305,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .gw-option:hover { border-color: var(--clr-cyan, #38bdf8); }
     .gw-option.selected { border-color: var(--clr-cyan, #38bdf8); background: rgba(56,189,248,.07); }
     .gw-option.disabled { opacity: .45; cursor: not-allowed; }
-    .gw-icon { font-size: 1.8rem; min-width: 2.2rem; text-align: center; }
+    .gw-icon {
+      width: 2.2rem;
+      height: 2.2rem;
+      min-width: 2.2rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--clr-text);
+      background: var(--clr-surface2);
+      border: 1px solid var(--clr-border);
+    }
     .gw-label { font-weight: 700; font-size: .95rem; }
     .gw-desc  { font-size: .78rem; color: var(--clr-text-soft); margin-top: .15rem; }
     .gw-coming{ font-size: .68rem; font-weight: 700; padding: .15rem .5rem; border-radius: 100px;
@@ -324,19 +339,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <main class="container" style="padding-top:2rem; padding-bottom:5rem;">
   <div style="margin-bottom:2rem;">
-    <h1 style="font-size:1.8rem; font-weight:800; margin-bottom:.25rem;">🔐 Secure Checkout</h1>
+    <h1 style="font-size:1.8rem; font-weight:800; margin-bottom:.25rem;">Secure Checkout</h1>
     <p class="text-muted">Complete your booking payment safely.</p>
   </div>
 
   <?php if ($errors): ?>
     <div class="alert alert-danger" style="margin-bottom:1.5rem;">
-      <?php foreach ($errors as $err): ?><div>⚠️ <?= e($err) ?></div><?php endforeach; ?>
+      <?php foreach ($errors as $err): ?><div><?= e($err) ?></div><?php endforeach; ?>
     </div>
   <?php endif; ?>
 
   <?php if (!$anyGatewayEnabled): ?>
     <div class="alert" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;padding:1.25rem;border-radius:var(--radius-md);margin-bottom:1.5rem;">
-      ⚠️ <strong>Payment gateways not yet configured.</strong>
+      <strong>Payment gateways not yet configured.</strong>
       To enable payments, add your gateway API keys to the <code>.env</code> file:<br>
       <code>PAYCHANGU_SECRET_KEY=...</code>, <code>AIRTEL_API_KEY=...</code>, <code>TNM_API_KEY=...</code>
     </div>
@@ -350,7 +365,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="checkout-grid">
       <!-- Payment method selection -->
       <div class="checkout-card">
-        <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:1.5rem;">💳 Select Payment Method</h2>
+        <h2 style="font-size:1.1rem; font-weight:700; margin-bottom:1.5rem;">Select Payment Method</h2>
 
         <?php foreach ($gateways as $key => $gw): ?>
         <label class="gw-option <?= !$gw['enabled'] ? 'disabled' : '' ?>"
@@ -359,7 +374,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  <?= !$gw['enabled'] ? 'disabled' : '' ?>
                  onchange="handleGatewayChange('<?= $key ?>')"
                  style="margin-top:.2rem;">
-          <span class="gw-icon"><?= $gw['icon'] ?></span>
+          <span class="gw-icon" aria-hidden="true"><?= e($gw['short']) ?></span>
           <div>
             <div class="gw-label">
               <?= e($gw['label']) ?>
@@ -391,20 +406,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button type="submit" id="pay-btn" class="btn btn-cyan btn-lg" style="width:100%;margin-top:1.25rem;font-size:1.05rem;">
-          🔒 Pay MK <?= number_format($amount) ?>
+          Pay MK <?= number_format($amount) ?>
         </button>
 
         <div class="secure-badges">
-          <span class="secure-badge">🔒 SSL Encrypted</span>
-          <span class="secure-badge">✅ PCI Compliant</span>
-          <span class="secure-badge">🔄 Refunds Available</span>
+          <span class="secure-badge">SSL Encrypted</span>
+          <span class="secure-badge">PCI Compliant</span>
+          <span class="secure-badge">Refunds Available</span>
         </div>
       </div>
 
       <!-- Order summary -->
       <div>
         <div class="checkout-card">
-          <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">🧾 Order Summary</h3>
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">Order Summary</h3>
           <div class="order-row">
             <span class="text-muted">Item</span>
             <strong style="text-align:right;max-width:180px;"><?= e($description ?: 'Booking') ?></strong>

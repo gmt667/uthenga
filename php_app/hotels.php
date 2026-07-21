@@ -32,6 +32,52 @@ $allLocations = dbQuery("
     ORDER BY location ASC
 ");
 
+if (empty($allLocations)) {
+    $allLocations = [
+        ['location' => 'Lilongwe'],
+        ['location' => 'Blantyre'],
+        ['location' => 'Mangochi'],
+    ];
+}
+
+if (empty($listings) && $search === '' && $location === '' && $rating === '') {
+    $listings = array_map('marketplace_normalize_item', [
+        [
+            'id' => 'stay-mock-1',
+            'listing_type' => 'accommodation',
+            'type' => 'property',
+            'title' => 'Sunbird Capital Hotel',
+            'location' => 'Lilongwe',
+            'image' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&fit=crop&q=80',
+            'rating' => 4.8,
+            'featured' => 1,
+            'meta' => json_encode(['rooms' => [['pricePerNight' => 125000]]]),
+        ],
+        [
+            'id' => 'stay-mock-2',
+            'listing_type' => 'accommodation',
+            'type' => 'property',
+            'title' => 'Mango Lodge',
+            'location' => 'Mangochi',
+            'image' => 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=900&fit=crop&q=80',
+            'rating' => 4.6,
+            'featured' => 0,
+            'meta' => json_encode(['rooms' => [['pricePerNight' => 85000]]]),
+        ],
+        [
+            'id' => 'stay-mock-3',
+            'listing_type' => 'accommodation',
+            'type' => 'property',
+            'title' => 'Blantyre Boutique Apartments',
+            'location' => 'Blantyre',
+            'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=900&fit=crop&q=80',
+            'rating' => 4.7,
+            'featured' => 1,
+            'meta' => json_encode(['rooms' => [['pricePerNight' => 99000]]]),
+        ],
+    ]);
+}
+
 function renderStars(float $rating): string {
     $full = (int)floor($rating);
     $half = ($rating - $full) >= 0.5 ? 1 : 0;

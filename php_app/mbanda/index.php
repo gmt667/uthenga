@@ -45,6 +45,53 @@ if ($hasRideSharingTables) {
     $sql .= " ORDER BY departure_datetime ASC";
     $trips = dbQuery($sql, $params);
 }
+
+if (empty($trips) && $pickup === '' && $dest === '') {
+    $trips = [
+        [
+            'id' => 'mbanda-mock-1',
+            'driver_name' => 'Patrick Banda',
+            'pickup_location' => 'Lilongwe',
+            'destination' => 'Blantyre',
+            'departure_datetime' => date('Y-m-d H:i:s', strtotime('+1 day 07:30')),
+            'vehicle_color' => 'Silver',
+            'vehicle_make' => 'Toyota',
+            'vehicle_model' => 'Hiace',
+            'vehicle_reg' => 'LL-1234',
+            'price_per_seat' => 18000,
+            'available_seats' => 14,
+            'booked_seats' => 6,
+        ],
+        [
+            'id' => 'mbanda-mock-2',
+            'driver_name' => 'Madalitso Phiri',
+            'pickup_location' => 'Blantyre',
+            'destination' => 'Mangochi',
+            'departure_datetime' => date('Y-m-d H:i:s', strtotime('+2 days 09:00')),
+            'vehicle_color' => 'White',
+            'vehicle_make' => 'Nissan',
+            'vehicle_model' => 'Urvan',
+            'vehicle_reg' => 'BT-5678',
+            'price_per_seat' => 22000,
+            'available_seats' => 12,
+            'booked_seats' => 4,
+        ],
+        [
+            'id' => 'mbanda-mock-3',
+            'driver_name' => 'Grace Chibwe',
+            'pickup_location' => 'Mzuzu',
+            'destination' => 'Lilongwe',
+            'departure_datetime' => date('Y-m-d H:i:s', strtotime('+3 days 06:45')),
+            'vehicle_color' => 'Blue',
+            'vehicle_make' => 'Toyota',
+            'vehicle_model' => 'Noah',
+            'vehicle_reg' => 'MZ-9012',
+            'price_per_seat' => 25000,
+            'available_seats' => 10,
+            'booked_seats' => 5,
+        ],
+    ];
+}
 ?>
 <?php require_once __DIR__ . '/../includes/header.php'; ?>
 

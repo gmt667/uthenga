@@ -123,13 +123,13 @@ $themePreference = uthenga_theme_preference();
       border: 1px solid var(--clr-border);
       backdrop-filter: blur(24px);
       border-radius: var(--radius-xl);
-      padding: 2.5rem;
+      padding: clamp(1.25rem, 2.5vw, 1.75rem);
       width: 100%;
-      max-width: 460px;
+      max-width: 420px;
       box-shadow: var(--shadow-lg);
     }
     .admin-login-title {
-      font-size: 1.6rem;
+      font-size: 1.35rem;
       font-weight: 800;
       text-align: center;
       margin-bottom: 0.25rem;
@@ -168,8 +168,8 @@ $themePreference = uthenga_theme_preference();
     @keyframes loginSpin { to { transform: rotate(360deg); } }
     @media (max-width: 480px) {
       .admin-login-body { padding: 1rem; }
-      .admin-login-card { padding: 1.25rem; }
-      .admin-login-title { font-size: 1.35rem; }
+      .admin-login-card { padding: 1rem; border-radius: 1rem; }
+      .admin-login-title { font-size: 1.2rem; }
     }
   </style>
 </head>

@@ -202,6 +202,12 @@ if (!function_exists('uthenga_cache_invalidate')) {
  */
 if (!function_exists('_marketplace_fetch_listings')) {
     function _marketplace_fetch_listings(string $typeFilter = '', string $search = '', int $limit = 0, bool $featuredOnly = false): array {
+        $cacheKey = 'listings_' . md5($typeFilter . '|' . $search . '|' . $limit . '|' . (int) $featuredOnly);
+        $cached = uthenga_cache_get($cacheKey, 300);
+        if ($cached !== null) {
+            return $cached;
+        }
+
         $params = [];
         $where  = ["l.is_active = 1"];
 
@@ -250,8 +256,7 @@ if (!function_exists('_marketplace_fetch_listings')) {
         ";
 
         $rows = dbQuery($sql, $params);
-
-        return array_map(function (array $row) {
+        $items = array_map(function (array $row) {
             // Unify type aliases
             if ($row['listing_type'] === 'accommodation') {
                 $row['type'] = 'property';
@@ -259,6 +264,9 @@ if (!function_exists('_marketplace_fetch_listings')) {
             $row['price_amount'] = marketplace_price_from_meta($row);
             return marketplace_normalize_item($row);
         }, $rows);
+
+        uthenga_cache_set($cacheKey, $items);
+        return $items;
     }
 }
 

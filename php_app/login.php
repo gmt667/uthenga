@@ -60,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
 
 require_once __DIR__ . '/includes/header.php';
 ?>
-<?php require_once __DIR__ . '/includes/page_loader.php'; ?>
 <section class="section" style="padding:3rem 0 4rem;">
   <div class="container" style="max-width:920px;">
     <div class="grid grid-cols-2 gap-4" style="align-items:stretch;">

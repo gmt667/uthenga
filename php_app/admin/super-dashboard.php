@@ -11,6 +11,7 @@ require_once __DIR__ . '/../includes/auth_check.php';
 requireLogin([ROLE_SUPER_ADMIN]);
 
 require_once __DIR__ . '/includes/admin_header.php';
+require_once __DIR__ . '/includes/admin_icons.php';
 
 function superDashboardBadgeClass(string $status): string {
     return match (strtolower(trim($status))) {
@@ -161,7 +162,7 @@ $healthStatus = [
 <div class="container dashboard-content-frame" style="padding-top:2rem;padding-bottom:3rem;">
   <div class="page-header" style="margin-bottom: 2rem;">
     <div>
-      <h1 class="page-title">Super Admin Command Center</h1>
+      <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('shield') ?><span>Super Admin Command Center</span></h1>
       <p class="text-muted">High-level operations dashboard and platform administration metrics.</p>
     </div>
     <div class="dashboard-head-meta">

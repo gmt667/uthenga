@@ -616,16 +616,21 @@
 
 .page-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .page-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   font-size: clamp(1.55rem, 2vw, 2rem);
   font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 .dashboard-content-frame {
@@ -662,6 +667,7 @@
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-card {
@@ -1208,15 +1214,15 @@
 .presentation-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .presentation-stat {
-  padding: 1rem;
+  padding: 0.95rem 1rem;
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
   background: linear-gradient(180deg, var(--clr-surface), var(--clr-surface2));
-  min-height: 76px;
+  min-height: 72px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1470,6 +1476,15 @@
     padding: 1rem;
   }
 
+  .presentation-stat {
+    min-height: 68px;
+    padding: 0.85rem 0.9rem;
+  }
+
+  .page-title {
+    gap: 0.45rem;
+  }
+
   .dashboard-footer {
     flex-direction: column;
     align-items: flex-start;
@@ -1547,6 +1562,10 @@
     border-radius: 1rem;
   }
 
+  .presentation-grid {
+    gap: 0.7rem;
+  }
+
   .table-toolbar,
   .pagination,
   .quick-approval-row,
@@ -1615,5 +1634,13 @@
 
   .dashboard-footer {
     gap: 0.35rem;
+  }
+
+  .page-header {
+    margin-bottom: 1.15rem;
+  }
+
+  .glass-panel {
+    border-radius: 1rem;
   }
 }

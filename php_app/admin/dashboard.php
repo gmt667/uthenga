@@ -13,6 +13,7 @@ if (($_SESSION['user_role'] ?? '') === ROLE_SUPER_ADMIN) {
 }
 
 require_once __DIR__ . '/includes/admin_header.php';
+require_once __DIR__ . '/includes/admin_icons.php';
 
 function dashboardBadgeClass(string $status): string {
     return match (strtolower(trim($status))) {
@@ -65,7 +66,7 @@ $recentTickets = $hasSupportTickets ? dbQuery("
 <div class="container dashboard-content-frame" style="padding-top:2rem;padding-bottom:3rem;">
   <div class="page-header">
     <div>
-      <h1 class="page-title">Admin Dashboard</h1>
+      <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('grid') ?><span>Admin Dashboard</span></h1>
       <p class="text-muted">Live counts for the modular marketplace tables.</p>
     </div>
     <div class="dashboard-head-meta">

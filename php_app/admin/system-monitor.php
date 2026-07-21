@@ -8,7 +8,7 @@ $activeNav = 'admin-system-monitor';
 require_once __DIR__ . '/includes/admin_header.php';
 
 // 1. Get Database size
-$dbName = 'uthenga_app';
+$dbName = defined('DB_NAME') ? DB_NAME : (getenv('DB_NAME') ?: 'uthenga_db');
 $dbStats = dbQueryOne("
     SELECT 
         SUM(data_length + index_length) / 1024 / 1024 AS size_mb,

@@ -32,6 +32,52 @@ $allLocations = dbQuery("
     ORDER BY location ASC
 ");
 
+if (empty($allLocations)) {
+    $allLocations = [
+        ['location' => 'Zomba Plateau'],
+        ['location' => 'Cape Maclear'],
+        ['location' => 'Nyika National Park'],
+    ];
+}
+
+if (empty($listings) && $search === '' && $location === '' && $rating === '') {
+    $listings = array_map('marketplace_normalize_item', [
+        [
+            'id' => 'tour-mock-1',
+            'listing_type' => 'tour',
+            'type' => 'tour',
+            'title' => 'Zomba Plateau Sunrise Hike',
+            'location' => 'Zomba Plateau',
+            'image' => 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=900&fit=crop&q=80',
+            'rating' => 4.9,
+            'featured' => 1,
+            'meta' => json_encode(['pricePerPerson' => 28000]),
+        ],
+        [
+            'id' => 'tour-mock-2',
+            'listing_type' => 'tour',
+            'type' => 'tour',
+            'title' => 'Lake Malawi Boat Safari',
+            'location' => 'Cape Maclear',
+            'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&fit=crop&q=80',
+            'rating' => 4.8,
+            'featured' => 1,
+            'meta' => json_encode(['pricePerPerson' => 45000]),
+        ],
+        [
+            'id' => 'tour-mock-3',
+            'listing_type' => 'tour',
+            'type' => 'tour',
+            'title' => 'Nyika Wildlife Day Trip',
+            'location' => 'Nyika National Park',
+            'image' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=900&fit=crop&q=80',
+            'rating' => 4.7,
+            'featured' => 0,
+            'meta' => json_encode(['pricePerPerson' => 52000]),
+        ],
+    ]);
+}
+
 function renderStars(float $rating): string {
     $full = (int)floor($rating);
     $half = ($rating - $full) >= 0.5 ? 1 : 0;

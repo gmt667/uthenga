@@ -35,6 +35,7 @@ function out(string $msg, string $type = 'info'): void {
 }
 
 // ── Attempt DB connection ──────────────────────────────────────────────────────
+$appDb   = getenv('UTHENGA_DB_NAME') ?: getenv('DB_NAME') ?: 'uthenga_db';
 $appUser = getenv('UTHENGA_DB_USER') ?: 'uthenga_user';
 $appPass = getenv('UTHENGA_DB_PASS') ?: '';
 $combos = [
@@ -50,7 +51,7 @@ $connected = false;
 
 foreach ($combos as $c) {
     try {
-        $dsn  = "mysql:host={$c['host']};dbname=uthenga_app;charset=utf8mb4";
+        $dsn  = "mysql:host={$c['host']};dbname={$appDb};charset=utf8mb4";
         $conn = new PDO($dsn, $c['user'], $c['pass'], [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -65,13 +66,13 @@ foreach ($combos as $c) {
 
 // If DB doesn't exist yet, try without dbname to create it
 if (!$connected) {
-    out("⚠ Could not connect to uthenga_app. Trying to create it...", 'warn');
+    out("⚠ Could not connect to {$appDb}. Trying to create it...", 'warn');
     foreach ($combos as $c) {
         try {
             $dsn  = "mysql:host={$c['host']};charset=utf8mb4";
             $conn = new PDO($dsn, $c['user'], $c['pass'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-            $conn->exec("CREATE DATABASE IF NOT EXISTS uthenga_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-            $conn->exec("USE uthenga_app");
+            $conn->exec("CREATE DATABASE IF NOT EXISTS {$appDb} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+            $conn->exec("USE {$appDb}");
             out("✅ Database created and selected: user={$c['user']} @ {$c['host']}", 'ok');
             $connected = true;
             break;

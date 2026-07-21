@@ -124,6 +124,33 @@ $activeNav = 'trip-planner';
 </main>
 
 <script>
+var FALLBACK_SUGGESTIONS = [
+  {
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400&fit=crop&q=80',
+    title: 'Lake Malawi Weekend Escape',
+    type: 'Tour + Stay',
+    location: 'Mangochi',
+    price_label: 'From MK 165,000',
+    url: '<?= BASE_URL ?>tours.php'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1501555088652-021faa106b9b?w=400&fit=crop&q=80',
+    title: 'Zomba Plateau Hiking Day',
+    type: 'Adventure',
+    location: 'Zomba',
+    price_label: 'From MK 28,000',
+    url: '<?= BASE_URL ?>tours.php'
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&fit=crop&q=80',
+    title: 'Lilongwe Business Stay',
+    type: 'Accommodation',
+    location: 'Lilongwe',
+    price_label: 'From MK 95,000',
+    url: '<?= BASE_URL ?>hotels.php'
+  }
+];
+
 document.getElementById('trip-planner-form').addEventListener('submit', function(e) {
   e.preventDefault();
   
@@ -252,7 +279,21 @@ document.getElementById('trip-planner-form').addEventListener('submit', function
       var suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
 
       if (suggestions.length === 0) {
-        suggestionsContainer.innerHTML = '<p class="text-muted" style="font-size: 0.85rem;">No matching listings found.</p>';
+        suggestionsContainer.innerHTML = '';
+        FALLBACK_SUGGESTIONS.forEach(function (s) {
+          suggestionsContainer.innerHTML += `
+            <div class="suggestion-card">
+              <img src="${s.image}" alt="${s.title}" class="suggestion-img">
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--clr-accent);">${s.type}</div>
+                <strong style="display: block; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.title}</strong>
+                <span style="font-size: 0.8rem; color: var(--clr-text-soft);">${s.location}</span>
+                <div style="font-size: 0.85rem; font-weight: bold; margin-top: 0.25rem; color: var(--clr-text);">${s.price_label}</div>
+              </div>
+              <a href="${s.url}" class="btn btn-primary btn-sm" style="padding: 0.4rem;">Book</a>
+            </div>
+          `;
+        });
       } else {
         suggestions.forEach(s => {
           suggestionsContainer.innerHTML += `

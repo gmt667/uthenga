@@ -8,7 +8,7 @@
 if (!isset($pdo)) {
     $dbHost    = defined('DB_HOST')    ? DB_HOST    : (getenv('DB_HOST')    ?: 'localhost');
     $dbPort    = defined('DB_PORT')    ? DB_PORT    : (getenv('DB_PORT')    ?: '3306');
-    $dbName    = defined('DB_NAME')    ? DB_NAME    : (getenv('DB_NAME')    ?: 'uthenga_app');
+    $dbName    = defined('DB_NAME')    ? DB_NAME    : (getenv('DB_NAME')    ?: 'uthenga_db');
     $dbUser    = defined('DB_USER')    ? DB_USER    : (getenv('DB_USER')    ?: 'uthenga_user');
     $dbPass    = defined('DB_PASS')    ? DB_PASS    : (getenv('DB_PASS')    ?: '');
     $dbSocket  = defined('DB_SOCKET')  ? DB_SOCKET  : (getenv('DB_SOCKET')  ?: '');

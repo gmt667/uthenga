@@ -111,12 +111,12 @@ $themePreference = uthenga_theme_preference();
     }
     .auth-card {
       width: 100%;
-      max-width: 760px;
+      max-width: 660px;
       background: var(--clr-surface);
       border: 1px solid var(--clr-border);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow-lg);
-      padding: 2rem;
+      padding: clamp(1.25rem, 2.5vw, 1.75rem);
     }
     .pw-wrapper { position: relative; }
     .pw-toggle {
@@ -136,7 +136,7 @@ $themePreference = uthenga_theme_preference();
     .setup-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
+      gap: 0.9rem;
     }
     .setup-note {
       padding: 1rem 1.1rem;
@@ -147,7 +147,7 @@ $themePreference = uthenga_theme_preference();
     }
     @media (max-width: 720px) {
       .auth-shell { padding: 1rem; }
-      .auth-card { padding: 1.25rem; }
+      .auth-card { padding: 1rem; border-radius: 1rem; }
       .setup-grid { grid-template-columns: 1fr; }
     }
   </style>

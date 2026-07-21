@@ -73,7 +73,7 @@ function txStatusBadge(string $s): string {
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">💳 Payments & Financials</h1>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('credit-card') ?><span>Payments & Financials</span></h1>
     <p class="text-muted">Review transactions, check billing gateways, and configure platform commissions.</p>
   </div>
   <div class="glass-panel" style="padding:0.75rem 1.25rem;text-align:right;">
@@ -87,7 +87,7 @@ function txStatusBadge(string $s): string {
 
 <!-- Settings + Configuration -->
 <div class="glass-panel animate-in" style="padding: 1.5rem; margin-bottom: 2rem;">
-  <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">⚙️ Commission Configuration</h3>
+  <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.45rem;"><?= admin_icon_svg('settings') ?><span>Commission Configuration</span></h3>
   <form method="POST" class="flex items-center gap-3 wrap">
     <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
     <input type="hidden" name="update_commission" value="1">
@@ -105,7 +105,7 @@ function txStatusBadge(string $s): string {
 
 <!-- Ledger Grid -->
 <div class="glass-panel animate-in" style="padding: 1.5rem;">
-  <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">📰 Transaction Ledger</h3>
+  <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.45rem;"><?= admin_icon_svg('report') ?><span>Transaction Ledger</span></h3>
   
   <form method="GET" style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.5rem;" id="txn-filter-form">
     <input type="text" name="q" placeholder="Search transactions…" class="form-control" style="max-width:260px;" value="<?= e($search) ?>">
