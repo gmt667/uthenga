@@ -110,13 +110,17 @@ $themePreference = uthenga_theme_preference();
     .admin-login-body {
       background: radial-gradient(ellipse at top, rgba(14,165,233,0.14), transparent 40%), linear-gradient(180deg, #f8fafc, #eef3f8);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
       padding: 1.5rem;
+      position: relative;
     }
     html[data-theme="dark"] .admin-login-body {
       background: radial-gradient(ellipse at top, rgba(14,165,233,0.14), transparent 40%), linear-gradient(180deg, #0b1120, #111827);
+    }
+    .admin-login-shell {
+      width: 100%;
+      max-width: 440px;
     }
     .admin-login-card {
       background: var(--clr-surface);
@@ -125,13 +129,28 @@ $themePreference = uthenga_theme_preference();
       border-radius: var(--radius-xl);
       padding: clamp(1.25rem, 2.5vw, 1.75rem);
       width: 100%;
-      max-width: 420px;
+      max-width: none;
       box-shadow: var(--shadow-lg);
+    }
+    .admin-login-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .admin-login-brand {
+      min-width: 0;
+      flex: 1;
+    }
+    .admin-login-brand .auth-logo {
+      margin-bottom: .75rem;
+      justify-content: flex-start;
     }
     .admin-login-title {
       font-size: 1.35rem;
       font-weight: 800;
-      text-align: center;
+      text-align: left;
       margin-bottom: 0.25rem;
       color: var(--clr-text);
     }
@@ -139,7 +158,7 @@ $themePreference = uthenga_theme_preference();
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      margin: 0 auto 1rem;
+      margin: 0 0 0.75rem;
       padding: 0.35rem 0.8rem;
       border-radius: 999px;
       background: rgba(14,165,233,.1);
@@ -167,103 +186,112 @@ $themePreference = uthenga_theme_preference();
     .btn.is-loading .login-spinner { display: inline-block; }
     @keyframes loginSpin { to { transform: rotate(360deg); } }
     @media (max-width: 480px) {
-      .admin-login-body { padding: 1rem; }
+      .admin-login-body { padding: 0.75rem; }
       .admin-login-card { padding: 1rem; border-radius: 1rem; }
       .admin-login-title { font-size: 1.2rem; }
+      .admin-login-card-head { flex-direction: column; }
+      .admin-login-card-head .theme-toggle {
+        width: 100%;
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body class="admin-login-body">
 <?php require_once __DIR__ . '/../includes/page_loader.php'; ?>
-<div style="position:fixed;top:1rem;right:1rem;z-index:20;">
-  <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">
-    <span class="theme-toggle-icon" aria-hidden="true"></span>
-    <span class="theme-toggle-label">Dark</span>
-  </button>
-</div>
-<div class="admin-login-card animate-in">
-  <div class="auth-logo" style="margin-bottom:1rem;">
-    <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/../includes/logo.php'; ?>
-  </div>
-  <div class="portal-badge"><?= $isSuperPortal ? 'Super Admin Portal' : 'Admin Portal' ?></div>
-  <h1 class="admin-login-title"><?= $isSuperPortal ? 'Super Admin Command Center' : APP_NAME . ' Command Center' ?></h1>
-  <p class="text-xs text-muted" style="text-align:center;margin-bottom:2rem;"><?= $isSuperPortal ? 'Sign in with the Super Administrator account.' : 'Sign in with an Administrator or Super Administrator account.' ?></p>
-
-  <?php if ($error): ?>
-    <div class="alert alert-error" style="margin-bottom:1.25rem;" role="alert"><?= e($error) ?></div>
-  <?php endif; ?>
-  <?php if ($success): ?>
-    <div class="alert alert-success" style="margin-bottom:1.25rem;" role="status"><?= e($success) ?></div>
-  <?php endif; ?>
-
-  <form method="POST" action="" id="admin-login-form">
-    <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
-
-    <div class="form-group">
-      <label class="form-label" for="email"><?= $isSuperPortal ? 'Super Admin Email' : 'Admin Email' ?></label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        class="form-control"
-        placeholder="admin@uthenga.com"
-        required
-        autocomplete="email"
-        autofocus
-        value="<?= e($_POST['email'] ?? '') ?>"
-        oninvalid="this.setCustomValidity('Please enter your administrator email address.')"
-        oninput="this.setCustomValidity('')"
-      >
+<div class="admin-login-shell">
+  <div class="admin-login-card animate-in">
+    <div class="admin-login-card-head">
+      <div class="admin-login-brand">
+        <div class="auth-logo" style="margin-bottom:0.85rem;">
+          <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/../includes/logo.php'; ?>
+        </div>
+        <div class="portal-badge"><?= $isSuperPortal ? 'Super Admin Portal' : 'Admin Portal' ?></div>
+        <h1 class="admin-login-title"><?= $isSuperPortal ? 'Super Admin Command Center' : APP_NAME . ' Command Center' ?></h1>
+        <p class="text-xs text-muted" style="margin-bottom:0;line-height:1.5;"><?= $isSuperPortal ? 'Sign in with the Super Administrator account.' : 'Sign in with an Administrator or Super Administrator account.' ?></p>
+      </div>
+      <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">
+        <span class="theme-toggle-icon" aria-hidden="true"></span>
+        <span class="theme-toggle-label">Dark</span>
+      </button>
     </div>
 
-    <div class="form-group">
-      <label class="form-label" for="password">Password</label>
-      <div class="pw-wrapper">
+    <?php if ($error): ?>
+      <div class="alert alert-error" style="margin-bottom:1.25rem;" role="alert"><?= e($error) ?></div>
+    <?php endif; ?>
+    <?php if ($success): ?>
+      <div class="alert alert-success" style="margin-bottom:1.25rem;" role="status"><?= e($success) ?></div>
+    <?php endif; ?>
+
+    <form method="POST" action="" id="admin-login-form">
+      <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
+
+      <div class="form-group">
+        <label class="form-label" for="email"><?= $isSuperPortal ? 'Super Admin Email' : 'Admin Email' ?></label>
         <input
-          type="password"
-          id="password"
-          name="password"
+          type="email"
+          id="email"
+          name="email"
           class="form-control"
-          placeholder="Your password"
-          autocomplete="current-password"
+          placeholder="admin@uthenga.com"
           required
-          oninvalid="this.setCustomValidity('Please enter your password.')"
+          autocomplete="email"
+          autofocus
+          value="<?= e($_POST['email'] ?? '') ?>"
+          oninvalid="this.setCustomValidity('Please enter your administrator email address.')"
           oninput="this.setCustomValidity('')"
         >
-        <button type="button" class="pw-toggle" onclick="utPwToggle('password',this)" aria-label="Show/hide password">
-          <svg class="pw-eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          <svg class="pw-eye-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
       </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="pw-wrapper">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            placeholder="Your password"
+            autocomplete="current-password"
+            required
+            oninvalid="this.setCustomValidity('Please enter your password.')"
+            oninput="this.setCustomValidity('')"
+          >
+          <button type="button" class="pw-toggle" onclick="utPwToggle('password',this)" aria-label="Show/hide password">
+            <svg class="pw-eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            <svg class="pw-eye-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" id="admin-login-submit" style="width:100%;margin-top:0.5rem;">
+        <span class="login-btn-inner">
+          <span class="login-spinner" aria-hidden="true"></span>
+          <span class="login-btn-label">Sign In</span>
+        </span>
+      </button>
+    </form>
+
+    <div class="alert alert-info" style="margin-top:1.5rem;">
+      <strong>Super administrator access</strong><br>
+      <span class="text-xs"><?= $isSuperPortal ? 'Use admin@uthenga.com to enter the super admin command center.' : 'Use a verified Super Administrator account only.' ?></span>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-lg" id="admin-login-submit" style="width:100%;margin-top:0.5rem;">
-      <span class="login-btn-inner">
-        <span class="login-spinner" aria-hidden="true"></span>
-        <span class="login-btn-label">Sign In</span>
-      </span>
-    </button>
-  </form>
+    <p style="text-align:center;margin-top:0.9rem;font-size:0.875rem;">
+      <a href="<?= BASE_URL ?>admin/forgot-password.php" style="font-weight:600;">Forgot admin password?</a>
+    </p>
 
-  <div class="alert alert-info" style="margin-top:1.5rem;">
-    <strong>Super administrator access</strong><br>
-    <span class="text-xs"><?= $isSuperPortal ? 'Use admin@uthenga.com to enter the super admin command center.' : 'Use a verified Super Administrator account only.' ?></span>
+    <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;">
+      <?php if ($isSuperPortal): ?>
+        <a href="<?= BASE_URL ?>admin/login.php" style="font-weight:600;">Standard admin login</a>
+      <?php else: ?>
+        <a href="<?= BASE_URL ?>admin/super-login.php" style="font-weight:600;">Super admin login</a>
+      <?php endif; ?>
+    </p>
+    <p style="text-align:center;margin-top:0.5rem;font-size:0.875rem;">
+      <a href="<?= BASE_URL ?>index.php" style="color:var(--clr-text-muted);">Back to marketplace</a>
+    </p>
   </div>
-
-  <p style="text-align:center;margin-top:0.9rem;font-size:0.875rem;">
-    <a href="<?= BASE_URL ?>admin/forgot-password.php" style="font-weight:600;">Forgot admin password?</a>
-  </p>
-
-  <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;">
-    <?php if ($isSuperPortal): ?>
-      <a href="<?= BASE_URL ?>admin/login.php" style="font-weight:600;">Standard admin login</a>
-    <?php else: ?>
-      <a href="<?= BASE_URL ?>admin/super-login.php" style="font-weight:600;">Super admin login</a>
-    <?php endif; ?>
-  </p>
-  <p style="text-align:center;margin-top:0.5rem;font-size:0.875rem;">
-    <a href="<?= BASE_URL ?>index.php" style="color:var(--clr-text-muted);">Back to marketplace</a>
-  </p>
 </div>
 <script src="<?= BASE_URL ?>assets/js/main.js"></script>
 <script>

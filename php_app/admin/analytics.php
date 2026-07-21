@@ -1,6 +1,6 @@
 ﻿<?php
 /**
- * Uthenga â€” Admin Platform Analytics
+ * Uthenga - Admin Platform Analytics
  */
 $pageTitle = 'Platform Analytics';
 $activeNav = 'admin-reports';
@@ -35,11 +35,11 @@ $moduleRevenue = dbQuery("
 $moduleLabels = [];
 $moduleValues = [];
 $moduleTypesMap = [
-    'event_ticket' => 'Events ðŸŽ«',
-    'property_room' => 'Stays ðŸ¨',
-    'transport_seat' => 'Transport ðŸšŒ',
-    'tour_package' => 'Tours ðŸ§­',
-    'vendor_service' => 'Services ðŸª',
+    'event_ticket' => 'Events',
+    'property_room' => 'Stays',
+    'transport_seat' => 'Transport',
+    'tour_package' => 'Tours',
+    'vendor_service' => 'Services',
 ];
 foreach ($moduleRevenue as $row) {
     $moduleLabels[] = $moduleTypesMap[$row['item_type']] ?? $row['item_type'];
@@ -91,7 +91,7 @@ $destinations = dbQuery("
 ?>
 <div class="page-header">
   <div>
-    <h1 class="page-title">Platform Analytics</h1>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('report') ?><span>Platform Analytics</span></h1>
     <p class="text-muted">High-level sales analysis, conversions, and popular booking channels across Uthenga.</p>
   </div>
 </div>
@@ -132,7 +132,7 @@ $destinations = dbQuery("
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Monthly Revenue</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('activity') ?><span>Monthly Revenue</span></h3>
         <p class="text-xs text-muted">Paid revenue over the last 6 months.</p>
       </div>
     </div>
@@ -145,7 +145,7 @@ $destinations = dbQuery("
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Revenue by Module</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('credit-card') ?><span>Revenue by Module</span></h3>
         <p class="text-xs text-muted">Distribution of sales volume across modules.</p>
       </div>
     </div>
@@ -160,7 +160,7 @@ $destinations = dbQuery("
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Booking Channels</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('grid') ?><span>Booking Channels</span></h3>
         <p class="text-xs text-muted">Where do customers initiate bookings?</p>
       </div>
     </div>
@@ -173,7 +173,7 @@ $destinations = dbQuery("
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Popular Destinations</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('map') ?><span>Popular Destinations</span></h3>
         <p class="text-xs text-muted">Top 10 regions/destinations by booking counts.</p>
       </div>
     </div>
@@ -191,7 +191,7 @@ $destinations = dbQuery("
           <?php else: ?>
             <?php foreach ($destinations as $d): ?>
               <tr>
-                <td><strong>ðŸ“ <?= e($d['city']) ?></strong></td>
+                <td><strong>City: <?= e($d['city']) ?></strong></td>
                 <td><?= number_format($d['bookings_count']) ?></td>
               </tr>
             <?php endforeach; ?>

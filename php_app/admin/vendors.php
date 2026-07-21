@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga - Admin Vendor Verification Page
  */
@@ -51,7 +51,7 @@ function vendorStatusBadge(string $status): string {
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">Vendor Verification</h1>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('store') ?><span>Vendor Verification</span></h1>
     <p class="text-muted">Review, approve, or suspend provider accounts.</p>
   </div>
   <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
@@ -125,7 +125,7 @@ function vendorStatusBadge(string $status): string {
   <div class="modal">
     <div class="modal-header">
       <h3 id="modal-vendor-name">Vendor Profile</h3>
-      <button class="modal-close" type="button" onclick="closeModal('vendor-details-modal')">×</button>
+      <button class="modal-close" type="button" onclick="closeModal('vendor-details-modal')">&times;</button>
     </div>
     <div class="modal-body">
       <div style="display:grid;gap:1rem;">
@@ -160,3 +160,4 @@ function viewDetails(vendor) {
 </script>
 
 <?php require_once __DIR__ . '/includes/admin_footer.php'; ?>
+

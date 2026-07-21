@@ -234,6 +234,11 @@ $marketingAdsCount = $hasAds ? dbCount(
       grid-template-columns: 1fr;
     }
 
+    .marketing-section-head,
+    .marketing-section-head > div {
+      width: 100%;
+    }
+
     .grid.grid-cols-3,
     .grid.grid-cols-2 {
       grid-template-columns: 1fr !important;
@@ -248,7 +253,7 @@ $marketingAdsCount = $hasAds ? dbCount(
 
 <div class="page-header">
   <div>
-    <h1 class="page-title">Marketing Control</h1>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('megaphone') ?><span>Marketing Control</span></h1>
     <p class="text-muted">Manage newsletters, referrals, vouchers, and promotional advertising.</p>
   </div>
 </div>
@@ -301,7 +306,7 @@ $marketingAdsCount = $hasAds ? dbCount(
   <section class="glass-panel" style="grid-column:span 2;">
     <div class="section-head">
       <div>
-        <h3>Create and Send Newsletter Campaign</h3>
+        <h3><?= admin_icon_svg('notification') ?> <span>Create and Send Newsletter Campaign</span></h3>
         <p class="text-xs text-muted">Send customized email campaigns to targeted subscriber segments.</p>
       </div>
     </div>
@@ -347,7 +352,7 @@ $marketingAdsCount = $hasAds ? dbCount(
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Top Referrers</h3>
+        <h3><?= admin_icon_svg('users') ?> <span>Top Referrers</span></h3>
         <p class="text-xs text-muted">Users driving the most registrations.</p>
       </div>
     </div>
@@ -383,7 +388,7 @@ $marketingAdsCount = $hasAds ? dbCount(
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Campaign History</h3>
+        <h3><?= admin_icon_svg('activity') ?> <span>Campaign History</span></h3>
         <p class="text-xs text-muted">Recently dispatched newsletters.</p>
       </div>
     </div>
@@ -418,7 +423,7 @@ $marketingAdsCount = $hasAds ? dbCount(
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Active Gift Cards and Vouchers</h3>
+        <h3><?= admin_icon_svg('wallet') ?> <span>Active Gift Cards and Vouchers</span></h3>
         <p class="text-xs text-muted">Auditing issued vouchers and their balances.</p>
       </div>
     </div>
@@ -464,7 +469,7 @@ $marketingAdsCount = $hasAds ? dbCount(
     <section class="glass-panel" style="grid-column:span 1;">
       <div class="section-head">
         <div>
-          <h3>Create New Ad</h3>
+          <h3><?= admin_icon_svg('plus') ?> <span>Create New Ad</span></h3>
           <p class="text-xs text-muted">Fill in the details to publish a business ad.</p>
         </div>
       </div>
@@ -525,7 +530,7 @@ $marketingAdsCount = $hasAds ? dbCount(
     <section class="glass-panel" style="grid-column:span 2;">
       <div class="section-head">
         <div>
-          <h3>Live Business Ads</h3>
+          <h3><?= admin_icon_svg('grid') ?> <span>Live Business Ads</span></h3>
           <p class="text-xs text-muted">Currently published marketing advertisements.</p>
         </div>
       </div>

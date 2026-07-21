@@ -1213,20 +1213,22 @@
 
 .presentation-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
+  align-items: stretch;
 }
 
 .presentation-stat {
-  padding: 0.95rem 1rem;
+  padding: 1rem 1.05rem;
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
   background: linear-gradient(180deg, var(--clr-surface), var(--clr-surface2));
-  min-height: 72px;
+  min-height: 84px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 0.45rem;
+  width: 100%;
 }
 
 .presentation-stat span {
@@ -1251,6 +1253,12 @@
   .dashboard-chart-grid,
   .presentation-slide {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1200px) {
+  .presentation-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1477,8 +1485,8 @@
   }
 
   .presentation-stat {
-    min-height: 68px;
-    padding: 0.85rem 0.9rem;
+    min-height: 72px;
+    padding: 0.9rem 0.95rem;
   }
 
   .page-title {

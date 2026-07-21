@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Uthenga — Admin Payments & Financial ledger
+ * Uthenga - Admin Payments & Financial Ledger
  */
 $pageTitle = 'Payments & Financials';
 $activeNav = 'admin-transactions';
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_commission']) 
 // Load current commission rate from settings
 $commissionRate = (int)getSetting('commission_rate', 10);
 
-// ─── Filters ─────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 $filterStatus  = strtolower($_GET['status']  ?? 'all');
 $filterGateway = $_GET['gateway'] ?? 'all';
 $search        = trim($_GET['q']  ?? '');
@@ -82,8 +82,8 @@ function txStatusBadge(string $s): string {
   </div>
 </div>
 
-<?php if ($message): ?><div class="alert alert-success">✓ <?= e($message) ?></div><?php endif; ?>
-<?php if ($err):     ?><div class="alert alert-error">✕ <?= e($err) ?></div><?php endif; ?>
+<?php if ($message): ?><div class="alert alert-success">Success: <?= e($message) ?></div><?php endif; ?>
+<?php if ($err):     ?><div class="alert alert-error">Error: <?= e($err) ?></div><?php endif; ?>
 
 <!-- Settings + Configuration -->
 <div class="glass-panel animate-in" style="padding: 1.5rem; margin-bottom: 2rem;">
@@ -108,7 +108,7 @@ function txStatusBadge(string $s): string {
   <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.45rem;"><?= admin_icon_svg('report') ?><span>Transaction Ledger</span></h3>
   
   <form method="GET" style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1.5rem;" id="txn-filter-form">
-    <input type="text" name="q" placeholder="Search transactions…" class="form-control" style="max-width:260px;" value="<?= e($search) ?>">
+    <input type="text" name="q" placeholder="Search transactions..." class="form-control" style="max-width:260px;" value="<?= e($search) ?>">
     <select name="status" class="form-control" style="max-width:160px;" onchange="this.form.submit()">
       <option value="all"     <?= $filterStatus === 'all'     ? 'selected' : '' ?>>All Statuses</option>
       <option value="success" <?= $filterStatus === 'success' ? 'selected' : '' ?>>Success</option>
@@ -167,13 +167,13 @@ function txStatusBadge(string $s): string {
   <?php if ($totalPages > 1): ?>
   <div class="pagination" style="margin-top: 1.5rem;">
     <?php if ($page > 1): ?>
-      <a href="?page=<?= $page-1 ?>&status=<?= urlencode($filterStatus) ?>&gateway=<?= urlencode($filterGateway) ?>&q=<?= urlencode($search) ?>" class="page-btn">← Prev</a>
+      <a href="?page=<?= $page-1 ?>&status=<?= urlencode($filterStatus) ?>&gateway=<?= urlencode($filterGateway) ?>&q=<?= urlencode($search) ?>" class="page-btn">Prev</a>
     <?php endif; ?>
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
       <a href="?page=<?= $i ?>&status=<?= urlencode($filterStatus) ?>&gateway=<?= urlencode($filterGateway) ?>&q=<?= urlencode($search) ?>" class="page-btn <?= $i === $page ? 'active' : '' ?>"><?= $i ?></a>
     <?php endfor; ?>
     <?php if ($page < $totalPages): ?>
-      <a href="?page=<?= $page+1 ?>&status=<?= urlencode($filterStatus) ?>&gateway=<?= urlencode($filterGateway) ?>&q=<?= urlencode($search) ?>" class="page-btn">Next →</a>
+      <a href="?page=<?= $page+1 ?>&status=<?= urlencode($filterStatus) ?>&gateway=<?= urlencode($filterGateway) ?>&q=<?= urlencode($search) ?>" class="page-btn">Next</a>
     <?php endif; ?>
   </div>
   <?php endif; ?>

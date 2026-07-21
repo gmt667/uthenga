@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Uthenga — Admin System Monitor
+ * Uthenga - Admin System Monitor
  */
 $pageTitle = 'System Monitor';
 $activeNav = 'admin-system-monitor';
@@ -56,7 +56,7 @@ $tables = dbQuery("
 ?>
 <div class="page-header">
   <div>
-    <h1 class="page-title">🖥️ System Monitor</h1>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('monitor') ?><span>System Monitor</span></h1>
     <p class="text-muted">Monitor database usage, cache size, PHP metrics, and database table statistics.</p>
   </div>
 </div>
@@ -97,7 +97,7 @@ $tables = dbQuery("
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Server &amp; PHP Metrics</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('database') ?><span>Server &amp; PHP Metrics</span></h3>
         <p class="text-xs text-muted">Core server metrics and environment config.</p>
       </div>
     </div>
@@ -115,7 +115,7 @@ $tables = dbQuery("
   <section class="glass-panel">
     <div class="section-head">
       <div>
-        <h3>Database Table Usage</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('report') ?><span>Database Table Usage</span></h3>
         <p class="text-xs text-muted">Top tables ranked by storage usage.</p>
       </div>
     </div>

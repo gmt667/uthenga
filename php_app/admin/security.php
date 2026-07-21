@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga - Security Center
  */
@@ -87,7 +87,7 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
 ?>
 <div class="page-header">
   <div>
-    <h1 class="page-title">Security Center</h1>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('shield') ?><span>Security Center</span></h1>
     <p class="text-muted">Monitor fraud risk alerts, authentication anomalies, service health, and login reports.</p>
   </div>
   <div style="display:flex; gap:0.5rem;">
@@ -95,8 +95,8 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
   </div>
 </div>
 
-<?php if ($success): ?><div class="alert alert-success" style="margin-bottom:1.5rem;">✓ <?= e($success) ?></div><?php endif; ?>
-<?php if ($error): ?><div class="alert alert-error" style="margin-bottom:1.5rem;">✗ <?= e($error) ?></div><?php endif; ?>
+<?php if ($success): ?><div class="alert alert-success" style="margin-bottom:1.5rem;">Success: <?= e($success) ?></div><?php endif; ?>
+<?php if ($error): ?><div class="alert alert-error" style="margin-bottom:1.5rem;">Error: <?= e($error) ?></div><?php endif; ?>
 
 <div class="grid grid-cols-4 gap-2" style="margin-bottom:1.5rem;">
   <div class="stat-card">
@@ -121,7 +121,7 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
   <section class="glass-panel" style="grid-column: span 1;">
     <div class="section-head">
       <div>
-        <h3>Service Status</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('activity') ?><span>Service Status</span></h3>
         <p class="text-xs text-muted">Core operational parameters check.</p>
       </div>
     </div>
@@ -136,7 +136,7 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
 
     <div class="section-head">
       <div>
-        <h3>IP Brute Force Report</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('shield') ?><span>IP Brute Force Report</span></h3>
         <p class="text-xs text-muted">IPs with 3+ failed logins.</p>
       </div>
     </div>
@@ -167,7 +167,7 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
   <section class="glass-panel" style="grid-column: span 2;">
     <div class="section-head">
       <div>
-        <h3>Fraud Risk Alerts</h3>
+        <h3 style="display:flex;align-items:center;gap:0.45rem;"><?= admin_icon_svg('notification') ?><span>Fraud Risk Alerts</span></h3>
         <p class="text-xs text-muted">Suspicious booking and payment velocity triggers.</p>
       </div>
     </div>

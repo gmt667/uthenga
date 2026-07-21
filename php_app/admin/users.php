@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga - Admin Management
  */
@@ -443,7 +443,7 @@ if (!empty($admins)) {
 
 <div class="page-header" id="admin-management">
   <div>
-    <h1 class="page-title">Admin Management</h1>
+    <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('users') ?><span>Admin Management</span></h1>
     <p class="text-muted">Create, review, edit, suspend, reset, and remove administrator accounts from a single secure workspace.</p>
   </div>
   <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
@@ -454,8 +454,8 @@ if (!empty($admins)) {
   </div>
 </div>
 
-<?php if ($flashSuccess): ?><div class="alert alert-success">✓ <?= e($flashSuccess) ?></div><?php endif; ?>
-<?php if ($flashError): ?><div class="alert alert-error">✕ <?= e($flashError) ?></div><?php endif; ?>
+<?php if ($flashSuccess): ?><div class="alert alert-success">Success: <?= e($flashSuccess) ?></div><?php endif; ?>
+<?php if ($flashError): ?><div class="alert alert-error">Error: <?= e($flashError) ?></div><?php endif; ?>
 
 <div class="grid grid-cols-4 gap-2" style="margin-bottom:1.5rem;">
   <div class="stat-card"><div class="stat-icon stat-icon-purple"><?= admin_icon_svg('shield') ?></div><div><div class="stat-value"><?= number_format($totals['all']) ?></div><div class="stat-label">Administrators</div></div></div>
@@ -614,7 +614,7 @@ if (!empty($admins)) {
   <div class="modal" style="max-width:720px;">
     <div class="modal-header">
       <h3>Create Admin Account</h3>
-      <button class="modal-close" type="button" onclick="closeModal('create-admin-modal')">×</button>
+      <button class="modal-close" type="button" onclick="closeModal('create-admin-modal')">&times;</button>
     </div>
     <form method="POST">
       <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
@@ -677,7 +677,7 @@ if (!empty($admins)) {
   <div class="modal" style="max-width:720px;">
     <div class="modal-header">
       <h3>Edit Admin Account</h3>
-      <button class="modal-close" type="button" onclick="closeModal('edit-admin-modal')">×</button>
+      <button class="modal-close" type="button" onclick="closeModal('edit-admin-modal')">&times;</button>
     </div>
     <form method="POST">
       <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
@@ -790,3 +790,4 @@ function openAdminEditModal(button) {
 <?php
 require_once __DIR__ . '/includes/admin_footer.php';
 ?>
+
