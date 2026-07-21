@@ -467,7 +467,7 @@ try {
                     'transaction_reference' => $txnRef,
                     'transaction_id' => $txnRef,
                     'status' => 'success',
-                    'wallet_bucket' => 'pending',
+                    'wallet_bucket' => 'available',
                 ]);
             } else {
                 dbExecute(

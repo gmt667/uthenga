@@ -151,9 +151,12 @@ renderDashboardChromeStart([
       <h1 class="page-title">Vendor Dashboard</h1>
       <p class="text-muted"><?= e($vendor['full_name'] ?? '') ?> - manage your events, stays, tours, and transport from one place.</p>
     </div>
-    <div style="text-align:right;">
-      <div class="text-xs text-muted">Available wallet</div>
-      <div style="font-size:1.4rem;font-weight:800;color:var(--clr-accent);"><?= formatMWK((float) ($vendorWallet['balance'] ?? 0)) ?></div>
+    <div style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap;justify-content:flex-end;">
+      <div style="text-align:right;">
+        <div class="text-xs text-muted">Available wallet</div>
+        <div style="font-size:1.4rem;font-weight:800;color:var(--clr-accent);"><?= formatMWK((float) ($vendorWallet['balance'] ?? 0)) ?></div>
+      </div>
+      <a href="<?= BASE_URL ?>vendor/finance/withdrawals.php" class="btn btn-primary btn-sm">Request Withdrawal</a>
     </div>
   </div>
 

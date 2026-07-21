@@ -413,6 +413,11 @@ if (!function_exists('uthenga_finance_record_sale')) {
         $transactionId = trim((string)($context['transaction_id'] ?? ''));
         $status = strtolower(trim((string)($context['status'] ?? 'pending')));
         $walletBucket = strtolower(trim((string)($context['wallet_bucket'] ?? 'pending')));
+        $isCompleted = in_array($status, ['success', 'paid', 'completed'], true);
+
+        if (!in_array($walletBucket, ['available', 'pending'], true)) {
+            $walletBucket = $isCompleted ? 'available' : 'pending';
+        }
 
         if ($bookingId <= 0 || $vendorId <= 0) {
             return [
@@ -445,7 +450,8 @@ if (!function_exists('uthenga_finance_record_sale')) {
             'commission_rate' => $split['commission_rate'],
             'commission_amount' => $split['commission_amount'],
             'net_vendor_amount' => $split['vendor_net_amount'],
-            'settlement_status' => 'pending',
+            'settlement_status' => $isCompleted ? 'settled' : 'pending',
+            'settled_at' => $isCompleted ? date('Y-m-d H:i:s') : null,
         ]);
 
         uthenga_finance_credit_vendor_wallet($vendorId, (float)$split['vendor_net_amount'], $currency, $walletBucket);
@@ -572,6 +578,261 @@ if (!function_exists('uthenga_finance_reverse_sale')) {
         );
 
         return true;
+    }
+}
+
+if (!function_exists('uthenga_finance_generate_reference')) {
+    function uthenga_finance_generate_reference(string $prefix): string {
+        $prefix = strtoupper(preg_replace('/[^A-Z0-9]/', '', strtoupper($prefix)));
+        if ($prefix === '') {
+            $prefix = 'REF';
+        }
+
+        try {
+            $suffix = strtoupper(bin2hex(random_bytes(4)));
+        } catch (Throwable $e) {
+            $suffix = strtoupper(substr(md5(uniqid((string) mt_rand(), true)), 0, 8));
+        }
+
+        return $prefix . '-' . date('YmdHis') . '-' . $suffix;
+    }
+}
+
+if (!function_exists('uthenga_finance_request_withdrawal')) {
+    function uthenga_finance_request_withdrawal(array $data): array {
+        if (!uthenga_table_exists('vendor_wallets') || !uthenga_table_exists('withdrawal_requests')) {
+            return [
+                'success' => false,
+                'message' => 'Withdrawal tables are not available yet.',
+            ];
+        }
+
+        $vendorId = (int)($data['vendor_id'] ?? 0);
+        $amount = round((float)($data['amount'] ?? 0), 2);
+        $currency = trim((string)($data['currency'] ?? 'MWK')) ?: 'MWK';
+        $requestMethod = trim((string)($data['request_method'] ?? ''));
+        $destination = trim((string)($data['destination'] ?? ''));
+
+        if ($vendorId <= 0) {
+            return ['success' => false, 'message' => 'Missing vendor reference.'];
+        }
+        if ($amount <= 0) {
+            return ['success' => false, 'message' => 'Please enter a withdrawal amount greater than zero.'];
+        }
+        if ($requestMethod === '') {
+            return ['success' => false, 'message' => 'Please choose a withdrawal method.'];
+        }
+
+        uthenga_finance_ensure_vendor_wallet($vendorId, $currency);
+        $wallet = dbQueryOne('SELECT * FROM vendor_wallets WHERE vendor_id = ? LIMIT 1', [$vendorId]);
+        if (!$wallet) {
+            return ['success' => false, 'message' => 'Unable to load the vendor wallet.'];
+        }
+
+        $availableBalance = (float)($wallet['balance'] ?? 0);
+        if ($availableBalance < $amount) {
+            return [
+                'success' => false,
+                'message' => 'Withdrawal amount exceeds the available wallet balance.',
+            ];
+        }
+
+        $pdo = $GLOBALS['pdo'] ?? null;
+        $requestRef = uthenga_finance_generate_reference('WDR');
+        $walletId = (int)($wallet['id'] ?? 0);
+
+        try {
+            if ($pdo instanceof PDO && !$pdo->inTransaction()) {
+                $pdo->beginTransaction();
+            }
+
+            dbExecute(
+                'UPDATE vendor_wallets
+                 SET balance = GREATEST(0, balance - ?), pending_balance = pending_balance + ?, currency = ?, updated_at = NOW()
+                 WHERE vendor_id = ?',
+                [$amount, $amount, $currency, $vendorId]
+            );
+
+            $columns = ['vendor_id', 'wallet_id', 'amount', 'currency', 'request_method', 'destination', 'status', 'created_at', 'updated_at'];
+            $placeholders = ['?', '?', '?', '?', '?', '?', "'pending'", 'NOW()', 'NOW()'];
+            $params = [$vendorId, $walletId ?: null, $amount, $currency, $requestMethod, $destination !== '' ? $destination : null];
+
+            if (uthenga_column_exists('withdrawal_requests', 'request_reference')) {
+                $columns[] = 'request_reference';
+                $placeholders[] = '?';
+                $params[] = $requestRef;
+            }
+
+            if (uthenga_column_exists('withdrawal_requests', 'charges')) {
+                $columns[] = 'charges';
+                $placeholders[] = '?';
+                $params[] = 0.00;
+            }
+
+            dbExecute(
+                'INSERT INTO withdrawal_requests (' . implode(', ', $columns) . ')
+                 VALUES (' . implode(', ', $placeholders) . ')',
+                $params
+            );
+
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                $pdo->commit();
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Withdrawal request submitted for approval.',
+                'request_reference' => $requestRef,
+                'wallet' => dbQueryOne('SELECT * FROM vendor_wallets WHERE vendor_id = ? LIMIT 1', [$vendorId]) ?: $wallet,
+            ];
+        } catch (Throwable $e) {
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            error_log('[Uthenga finance withdrawal request] ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'We could not save the withdrawal request right now.',
+            ];
+        }
+    }
+}
+
+if (!function_exists('uthenga_finance_review_withdrawal_request')) {
+    function uthenga_finance_review_withdrawal_request(int $requestId, int $reviewerId, string $decision = 'approve', array $meta = []): array {
+        if ($requestId <= 0 || $reviewerId <= 0) {
+            return ['success' => false, 'message' => 'Missing review context.'];
+        }
+
+        if (!uthenga_table_exists('withdrawal_requests') || !uthenga_table_exists('vendor_wallets')) {
+            return ['success' => false, 'message' => 'Withdrawal tables are not available yet.'];
+        }
+
+        $request = dbQueryOne(
+            'SELECT wr.*, vw.balance AS wallet_balance, vw.pending_balance AS wallet_pending_balance, vw.currency AS wallet_currency
+             FROM withdrawal_requests wr
+             LEFT JOIN vendor_wallets vw ON vw.id = wr.wallet_id
+             WHERE wr.id = ? LIMIT 1',
+            [$requestId]
+        );
+
+        if (!$request) {
+            return ['success' => false, 'message' => 'Withdrawal request not found.'];
+        }
+
+        $status = strtolower(trim((string)($request['status'] ?? 'pending')));
+        if (!in_array($status, ['pending', 'approved'], true)) {
+            return ['success' => false, 'message' => 'This withdrawal request has already been handled.'];
+        }
+
+        $amount = round((float)($request['amount'] ?? 0), 2);
+        $walletId = (int)($request['wallet_id'] ?? 0);
+        $vendorId = (int)($request['vendor_id'] ?? 0);
+        $currency = trim((string)($request['currency'] ?? 'MWK')) ?: 'MWK';
+        $requestMethod = trim((string)($request['request_method'] ?? ''));
+        $destination = trim((string)($request['destination'] ?? ''));
+        $decision = strtolower(trim($decision));
+        $decision = in_array($decision, ['approve', 'reject'], true) ? $decision : 'approve';
+
+        $pdo = $GLOBALS['pdo'] ?? null;
+        try {
+            if ($pdo instanceof PDO && !$pdo->inTransaction()) {
+                $pdo->beginTransaction();
+            }
+
+            if ($decision === 'reject') {
+                dbExecute(
+                    'UPDATE vendor_wallets
+                     SET balance = balance + ?, pending_balance = GREATEST(0, pending_balance - ?), currency = ?, updated_at = NOW()
+                     WHERE id = ?',
+                    [$amount, $amount, $currency, $walletId]
+                );
+
+                dbExecute(
+                    'UPDATE withdrawal_requests
+                     SET status = ?, reviewed_by = ?, reviewed_at = NOW(), updated_at = NOW()
+                     WHERE id = ?',
+                    ['rejected', $reviewerId, $requestId]
+                );
+
+                if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                    $pdo->commit();
+                }
+
+                return [
+                    'success' => true,
+                    'message' => 'Withdrawal request rejected and funds restored to the wallet.',
+                    'status' => 'rejected',
+                ];
+            }
+
+            $wallet = dbQueryOne('SELECT * FROM vendor_wallets WHERE id = ? LIMIT 1', [$walletId]);
+            if (!$wallet) {
+                throw new RuntimeException('Vendor wallet not found.');
+            }
+
+            $available = (float)($wallet['pending_balance'] ?? 0);
+            if ($available < $amount) {
+                throw new RuntimeException('The wallet no longer has enough reserved funds for this payout.');
+            }
+
+            $payoutReference = uthenga_finance_generate_reference('PAYOUT');
+            $payoutMethod = $requestMethod;
+            $charges = (float)($meta['charges'] ?? 0);
+            $processedAt = date('Y-m-d H:i:s');
+
+            dbExecute(
+                'UPDATE vendor_wallets
+                 SET pending_balance = GREATEST(0, pending_balance - ?), currency = ?, updated_at = NOW()
+                 WHERE id = ?',
+                [$amount, $currency, $walletId]
+            );
+
+            $payoutColumns = ['vendor_id', 'wallet_id', 'amount', 'currency', 'status', 'payout_method', 'transaction_reference', 'processed_at', 'created_at', 'updated_at'];
+            $payoutValues = [$vendorId, $walletId ?: null, $amount, $currency, 'processed', $payoutMethod !== '' ? $payoutMethod : null, $payoutReference, $processedAt];
+            $payoutPlaceholders = ['?', '?', '?', '?', '?', '?', '?', '?', 'NOW()', 'NOW()'];
+
+            if (uthenga_column_exists('vendor_payouts', 'charges')) {
+                $payoutColumns[] = 'charges';
+                $payoutValues[] = $charges;
+                $payoutPlaceholders[] = '?';
+            }
+
+            dbExecute(
+                'INSERT INTO vendor_payouts (' . implode(', ', $payoutColumns) . ')
+                 VALUES (' . implode(', ', $payoutPlaceholders) . ')',
+                $payoutValues
+            );
+
+            dbExecute(
+                'UPDATE withdrawal_requests
+                 SET status = ?, reviewed_by = ?, reviewed_at = NOW(), updated_at = NOW()
+                 WHERE id = ?',
+                ['processed', $reviewerId, $requestId]
+            );
+
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                $pdo->commit();
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Withdrawal approved and payout recorded.',
+                'status' => 'processed',
+                'payout_reference' => $payoutReference,
+            ];
+        } catch (Throwable $e) {
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+
+            error_log('[Uthenga finance withdrawal review] ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'We could not complete that settlement action.',
+            ];
+        }
     }
 }
 

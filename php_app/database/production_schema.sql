@@ -333,6 +333,7 @@ CREATE TABLE vendor_payouts (
   vendor_id       BIGINT UNSIGNED NOT NULL,
   wallet_id       BIGINT UNSIGNED NULL,
   amount          DECIMAL(15,2) NOT NULL,
+  charges         DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   currency        CHAR(3) NOT NULL DEFAULT 'MWK',
   status          ENUM('pending','processed','failed','reversed') NOT NULL DEFAULT 'pending',
   payout_method   VARCHAR(100) NULL,
@@ -348,9 +349,11 @@ CREATE TABLE vendor_payouts (
 
 CREATE TABLE withdrawal_requests (
   id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  request_reference VARCHAR(150) NULL,
   vendor_id       BIGINT UNSIGNED NOT NULL,
   wallet_id       BIGINT UNSIGNED NULL,
   amount          DECIMAL(15,2) NOT NULL,
+  charges         DECIMAL(15,2) NOT NULL DEFAULT 0.00,
   currency        CHAR(3) NOT NULL DEFAULT 'MWK',
   request_method  VARCHAR(100) NOT NULL,
   destination     VARCHAR(255) NULL,

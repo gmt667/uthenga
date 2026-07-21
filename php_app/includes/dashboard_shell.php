@@ -50,6 +50,7 @@ if (!function_exists('dashboard_sidebar_items')) {
                 ['label' => 'Bookings', 'href' => 'vendor/dashboard.php?tab=bookings', 'icon' => 'calendar'],
                 ['label' => 'Revenue', 'href' => 'vendor/dashboard.php?tab=revenue', 'icon' => 'wallet'],
                 ['label' => 'Analytics', 'href' => 'vendor/dashboard.php?tab=analytics', 'icon' => 'chart'],
+                ['label' => 'Withdrawals', 'href' => 'vendor/finance/withdrawals.php', 'icon' => 'wallet'],
                 ['label' => 'Settings', 'href' => 'profile.php', 'icon' => 'settings'],
             ];
         }
