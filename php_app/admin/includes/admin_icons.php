@@ -18,6 +18,7 @@ if (!function_exists('admin_icon_svg')) {
             'calendar' => '<path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zM3 12v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8Z" fill="currentColor"/>',
             'chart' => '<path d="M5 19V9h3v10H5Zm5 0V5h3v14h-3Zm5 0v-7h3v7h-3Z" fill="currentColor"/>',
             'wallet' => '<path d="M4 6a3 3 0 0 1 3-3h12v3H7a1 1 0 0 0 0 2h13v10H7a3 3 0 0 1-3-3zm14 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" fill="currentColor"/>',
+            'cart' => '<path d="M4 4h2l1.5 8h9.8l1.3-5H8.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1.5" fill="currentColor"/><circle cx="17" cy="19" r="1.5" fill="currentColor"/>',
             'shield' => '<path d="M12 2 4 5v6c0 5 3.5 8.8 8 11 4.5-2.2 8-6 8-11V5z" fill="currentColor"/>',
             'file' => '<path d="M7 2h7l5 5v15a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm6 1.7V8h4.3Z" fill="currentColor"/>',
             'link' => '<path d="M10.5 13.5a1 1 0 0 1 0-1.4l2.6-2.6a4 4 0 0 1 5.7 5.7l-1.7 1.7a4 4 0 0 1-5.7 0 1 1 0 1 1 1.4-1.4 2 2 0 0 0 2.8 0l1.7-1.7a2 2 0 1 0-2.8-2.8l-2.6 2.6a1 1 0 0 1-1.4 0Zm-1 1a1 1 0 0 1 0 1.4l-2.6 2.6a4 4 0 1 1-5.7-5.7l1.7-1.7a4 4 0 0 1 5.7 0 1 1 0 0 1-1.4 1.4 2 2 0 0 0-2.8 0L2.7 14.2a2 2 0 1 0 2.8 2.8l2.6-2.6a1 1 0 0 1 1.4 0Z" fill="currentColor"/>',

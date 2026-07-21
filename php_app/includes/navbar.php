@@ -38,6 +38,7 @@ $themePreference = uthenga_theme_preference();
       <li><a href="<?= BASE_URL ?>transport.php" id="nav-transport" class="<?= $activeNav === 'transport' ? 'active' : '' ?>">Transport</a></li>
       <li><a href="<?= BASE_URL ?>mbanda/index.php" id="nav-mbanda" class="<?= $activeNav === 'mbanda' ? 'active' : '' ?>">Mbanda</a></li>
       <li><a href="<?= BASE_URL ?>marketplace.php" id="nav-marketplace" class="<?= $activeNav === 'marketplace' ? 'active' : '' ?>">Marketplace</a></li>
+      <li><a href="<?= BASE_URL ?>shop.php" id="nav-shop" class="<?= $activeNav === 'shop' ? 'active' : '' ?>"><?= uthenga_public_icon_svg('shop') ?> Shop</a></li>
       <li><a href="<?= BASE_URL ?>trip-planner.php" id="nav-planner" class="<?= $activeNav === 'trip-planner' ? 'active' : '' ?>" style="color:var(--clr-cyan);">Trip Planner</a></li>
       <li><a href="<?= BASE_URL ?>tours.php" id="nav-explore" class="<?= $activeNav === 'explore' ? 'active' : '' ?>">Explore</a></li>
     </ul>
@@ -65,6 +66,8 @@ $themePreference = uthenga_theme_preference();
           <div class="profile-dropdown-content" role="menu" aria-label="Account menu">
             <?php if ($isCustomer): ?>
               <a href="<?= BASE_URL ?>dashboard.php" role="menuitem">Dashboard</a>
+              <a href="<?= BASE_URL ?>shop-orders.php" role="menuitem">My Orders</a>
+              <a href="<?= BASE_URL ?>shop.php" role="menuitem">Shop</a>
               <a href="<?= BASE_URL ?>bookings.php" role="menuitem">My Bookings</a>
               <a href="<?= BASE_URL ?>mbanda/my_bookings.php" role="menuitem">My Rides</a>
               <a href="<?= BASE_URL ?>support.php" role="menuitem">My Tickets</a>

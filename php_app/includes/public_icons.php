@@ -13,6 +13,7 @@ if (!function_exists('uthenga_public_icon_svg')) {
             'calendar' => '<path d="M7 2v2H5a2 2 0 0 0-2 2v2h18V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2zM3 12v8a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-8Z" fill="currentColor"/>',
             'ticket' => '<path d="M3 7a2 2 0 0 1 2-2h14v3a2 2 0 1 0 0 4v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2 2 0 1 0 0-4z" fill="currentColor"/>',
             'wallet' => '<path d="M4 6a3 3 0 0 1 3-3h12v3H7a1 1 0 0 0 0 2h13v10H7a3 3 0 0 1-3-3zm14 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" fill="currentColor"/>',
+            'cart' => '<path d="M4 4h2l1.5 8h9.8l1.3-5H8.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1.5" fill="currentColor"/><circle cx="17" cy="19" r="1.5" fill="currentColor"/>',
             'hotel' => '<path d="M4 21V3h10v18h-3v-3H7v3zm3-5h4v-2H7zm0-4h4v-2H7zm0-4h4V6H7zm12-2h-4v18h4V8h1V6a2 2 0 0 0-2-2z" fill="currentColor"/>',
             'bus' => '<path d="M4 16c0 .88.39 1.67 1 2.22V20a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1h8v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1.78A3 3 0 0 0 20 16V6c0-3.5-3.58-4-8-4S4 2.5 4 6v10zm3.5 1a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm9 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM6 10V6h12v4H6z" fill="currentColor"/>',
             'car' => '<path d="M3 12.5 5 8h14l2 4.5V18h-2a2 2 0 1 1-4 0H9a2 2 0 1 1-4 0H3zM7 10 6 12h12l-1-2z" fill="currentColor"/>',

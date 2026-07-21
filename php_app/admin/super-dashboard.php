@@ -7,6 +7,7 @@ $activeNav = 'super-dashboard';
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/shop_helpers.php';
 
 requireLogin([ROLE_SUPER_ADMIN]);
 
@@ -38,6 +39,9 @@ $counts = [
     'bookings'   => dbCount('SELECT COUNT(*) FROM bookings'),
     'revenue'    => dbQueryOne("SELECT COALESCE(SUM(grand_total),0) AS total FROM bookings WHERE LOWER(payment_status) = 'paid'") ?: ['total' => 0],
     'openTickets' => $hasSupportTickets ? dbCount("SELECT COUNT(*) FROM support_tickets WHERE LOWER(status) IN ('open','in_progress','waiting_customer')") : 0,
+    'shopProducts' => uthenga_table_exists('shop_products') ? dbCount("SELECT COUNT(*) FROM shop_products WHERE deleted_at IS NULL") : 0,
+    'shopOrders' => uthenga_table_exists('shop_orders') ? dbCount('SELECT COUNT(*) FROM shop_orders') : 0,
+    'shopRevenue' => uthenga_table_exists('shop_orders') ? (dbQueryOne("SELECT COALESCE(SUM(total_amount),0) AS total FROM shop_orders WHERE LOWER(payment_status) IN ('paid','authorized','partially_paid')") ?: ['total' => 0]) : ['total' => 0],
 ];
 
 $recentBookings = dbQuery("
@@ -169,6 +173,7 @@ $healthStatus = [
       <a href="<?= BASE_URL ?>admin/analytics.php" class="btn btn-primary btn-sm">Platform Analytics</a>
       <a href="<?= BASE_URL ?>admin/system-monitor.php" class="btn btn-secondary btn-sm">System Monitor</a>
       <a href="<?= BASE_URL ?>admin/audit-logs.php" class="btn btn-secondary btn-sm">System Audit Logs</a>
+      <a href="<?= BASE_URL ?>admin/shop.php" class="btn btn-secondary btn-sm">Global Shop Management</a>
     </div>
   </div>
 
@@ -203,6 +208,16 @@ $healthStatus = [
       <div class="presentation-stat"><span style="color:#38bdf8;">Sessions Health</span><strong><?= e($healthStatus['sessions']) ?></strong></div>
       <div class="presentation-stat"><span style="color:#f59e0b;">Cache Size</span><strong><?= e($healthStatus['cache']) ?></strong></div>
       <div class="presentation-stat"><span style="color:#a855f7;">System Core</span><strong><?= e($healthStatus['system']) ?></strong></div>
+    </div>
+  </div>
+
+  <div class="glass-panel" style="padding:1.25rem;margin-bottom:1.5rem;">
+    <h2 class="page-title" style="font-size:1.35rem;margin-bottom:0.75rem;">Global Shop Overview</h2>
+    <div class="presentation-grid">
+      <div class="presentation-stat"><span>Products</span><strong><?= number_format((int) $counts['shopProducts']) ?></strong></div>
+      <div class="presentation-stat"><span>Orders</span><strong><?= number_format((int) $counts['shopOrders']) ?></strong></div>
+      <div class="presentation-stat"><span>Revenue</span><strong><?= formatMWK((float) ($counts['shopRevenue']['total'] ?? 0)) ?></strong></div>
+      <div class="presentation-stat"><span>Delivery Partners</span><strong><?= number_format((int) (uthenga_table_exists('delivery_riders') ? dbCount('SELECT COUNT(*) FROM delivery_riders') : 0)) ?></strong></div>
     </div>
   </div>
 

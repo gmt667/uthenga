@@ -15,6 +15,7 @@ $menuGroups = $isSuperAdmin ? [
             ['key' => 'admin-users', 'label' => 'Admin Management', 'href' => 'admin/users.php', 'icon' => 'users'],
             ['key' => 'admin-security', 'label' => 'System Health', 'href' => 'admin/security.php', 'icon' => 'shield'],
             ['key' => 'admin-system-monitor', 'label' => 'System Monitor', 'href' => 'admin/system-monitor.php', 'icon' => 'activity'],
+            ['key' => 'admin-shop-global', 'label' => 'Global Shop Management', 'href' => 'admin/shop.php', 'icon' => 'cart'],
         ],
     ],
     [
@@ -24,6 +25,7 @@ $menuGroups = $isSuperAdmin ? [
             ['key' => 'admin-vendors', 'label' => 'Vendor Management', 'href' => 'admin/vendors.php', 'icon' => 'store'],
             ['key' => 'admin-bookings', 'label' => 'Bookings', 'href' => 'admin/bookings.php', 'icon' => 'file'],
             ['key' => 'admin-transactions', 'label' => 'Transactions', 'href' => 'admin/transactions.php', 'icon' => 'credit-card'],
+            ['key' => 'admin-shop', 'label' => 'Shop Management', 'href' => 'admin/shop.php', 'icon' => 'cart'],
             ['key' => 'admin-settlements', 'label' => 'Vendor Settlements', 'href' => 'admin/finance/settlements.php', 'icon' => 'wallet'],
             ['key' => 'admin-transaction-stats', 'label' => 'Transaction Stats', 'href' => 'admin/transaction-stats.php', 'icon' => 'chart'],
             ['key' => 'admin-promotions', 'label' => 'Promotional Popups', 'href' => 'admin/popup_manager.php', 'icon' => 'announcement'],
@@ -60,6 +62,7 @@ $menuGroups = $isSuperAdmin ? [
             ['key' => 'admin-stays',     'label' => 'Accommodation',    'href' => 'admin/stays.php',      'icon' => 'home'],
             ['key' => 'admin-transport', 'label' => 'Transport',        'href' => 'admin/transport.php',  'icon' => 'transport'],
             ['key' => 'admin-tours',     'label' => 'Tours',            'href' => 'admin/listings.php?type=tour',    'icon' => 'map'],
+            ['key' => 'admin-shop',      'label' => 'Shop Management',  'href' => 'admin/shop.php',       'icon' => 'cart'],
         ],
     ],
     [

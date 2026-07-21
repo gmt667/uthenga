@@ -252,6 +252,92 @@
   white-space: nowrap;
 }
 
+/* --- Shop Management Module ---------------------------------------------- */
+.shop-card {
+  padding: 1.25rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 24px;
+  background: var(--clr-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.shop-card + .shop-card,
+.shop-card + .grid,
+.grid + .shop-card {
+  margin-top: 1rem;
+}
+
+.shop-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .9rem;
+}
+
+.shop-admin-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: .9rem;
+}
+
+.shop-admin-stat {
+  padding: 1rem;
+  border: 1px solid var(--clr-border);
+  border-radius: 18px;
+  background: var(--clr-surface2);
+}
+
+.shop-admin-stat span {
+  display: block;
+  color: var(--clr-text-muted);
+  font-size: .74rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.shop-admin-stat strong {
+  display: block;
+  margin-top: .2rem;
+  font-size: 1.15rem;
+}
+
+.shop-table-actions {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.receipt-lines {
+  display: grid;
+  gap: .55rem;
+}
+
+.receipt-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .45rem 0;
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.receipt-line:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 960px) {
+  .shop-form-grid,
+  .shop-admin-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .shop-form-grid,
+  .shop-admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* --- Audit Logs Styling --- */
 .log-row {
   border-left: 3px solid var(--clr-border);

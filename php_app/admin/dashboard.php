@@ -7,6 +7,7 @@ $activeNav = 'admin-dashboard';
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/auth_check.php';
+require_once __DIR__ . '/../includes/shop_helpers.php';
 
 if (($_SESSION['user_role'] ?? '') === ROLE_SUPER_ADMIN) {
     redirect(BASE_URL . 'admin/super-dashboard.php');
@@ -39,6 +40,9 @@ $metrics = [
     'bookings'   => dbCount('SELECT COUNT(*) FROM bookings'),
     'revenue'    => dbQueryOne("SELECT COALESCE(SUM(grand_total),0) AS total FROM bookings WHERE LOWER(payment_status) IN ('paid','authorized','partially_paid')") ?: ['total' => 0],
     'openTickets' => $hasSupportTickets ? dbCount("SELECT COUNT(*) FROM support_tickets WHERE LOWER(status) IN ('open','in_progress','waiting_customer')") : 0,
+    'shopProducts' => uthenga_table_exists('shop_products') ? dbCount("SELECT COUNT(*) FROM shop_products WHERE deleted_at IS NULL") : 0,
+    'shopOrders' => uthenga_table_exists('shop_orders') ? dbCount('SELECT COUNT(*) FROM shop_orders') : 0,
+    'shopRevenue' => uthenga_table_exists('shop_orders') ? (dbQueryOne("SELECT COALESCE(SUM(total_amount),0) AS total FROM shop_orders WHERE LOWER(payment_status) IN ('paid','authorized','partially_paid')") ?: ['total' => 0]) : ['total' => 0],
 ];
 
 $recentBookings = dbQuery("
@@ -73,6 +77,7 @@ $recentTickets = $hasSupportTickets ? dbQuery("
       <a href="<?= BASE_URL ?>admin/bookings.php" class="btn btn-secondary btn-sm">Bookings</a>
       <a href="<?= BASE_URL ?>admin/support.php" class="btn btn-secondary btn-sm">Support</a>
       <a href="<?= BASE_URL ?>admin/analytics.php" class="btn btn-primary btn-sm">Analytics</a>
+      <a href="<?= BASE_URL ?>admin/shop.php" class="btn btn-secondary btn-sm">Shop Management</a>
     </div>
   </div>
 
@@ -107,6 +112,16 @@ $recentTickets = $hasSupportTickets ? dbQuery("
       <div class="presentation-stat"><span>Support tickets</span><strong><?= number_format((int) $metrics['openTickets']) ?></strong></div>
       <div class="presentation-stat"><span>Recent users</span><strong><?= number_format(count($recentUsers)) ?></strong></div>
       <div class="presentation-stat"><span>Recent bookings</span><strong><?= number_format(count($recentBookings)) ?></strong></div>
+    </div>
+  </div>
+
+  <div class="glass-panel" style="padding:1.25rem;margin-bottom:1rem;">
+    <h2 class="page-title" style="font-size:1.35rem;margin-bottom:0.75rem;">Shop Snapshot</h2>
+    <div class="presentation-grid">
+      <div class="presentation-stat"><span>Shop products</span><strong><?= number_format((int) $metrics['shopProducts']) ?></strong></div>
+      <div class="presentation-stat"><span>Shop orders</span><strong><?= number_format((int) $metrics['shopOrders']) ?></strong></div>
+      <div class="presentation-stat"><span>Shop revenue</span><strong><?= formatMWK((float) ($metrics['shopRevenue']['total'] ?? 0)) ?></strong></div>
+      <div class="presentation-stat"><span>Management</span><strong>Active</strong></div>
     </div>
   </div>
 

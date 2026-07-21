@@ -33,6 +33,8 @@ if (!function_exists('dashboard_sidebar_items')) {
         if ($isCustomer) {
             return [
                 ['label' => 'Overview',        'href' => 'dashboard.php',                'icon' => 'home'],
+                ['label' => 'Shop',            'href' => 'shop.php',                     'icon' => 'store'],
+                ['label' => 'My Orders',       'href' => 'shop-orders.php',              'icon' => 'list'],
                 ['label' => 'My Bookings',     'href' => 'dashboard.php?tab=bookings',   'icon' => 'calendar'],
                 ['label' => 'My Tickets',      'href' => 'dashboard.php?tab=tickets',    'icon' => 'ticket'],
                 ['label' => 'Favorites',       'href' => 'dashboard.php?tab=favorites',  'icon' => 'heart'],

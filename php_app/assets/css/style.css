@@ -236,6 +236,63 @@ html[data-theme="dark"] .logo-light { display: none; }
 .navbar-mobile-open .hamburger-bar:nth-child(2) { opacity: 0; }
 .navbar-mobile-open .hamburger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
+/* --- Shop Experience ------------------------------------------------------ */
+.shop-hero-card,
+.shop-side-card,
+.detail-panel,
+.cart-summary,
+.checkout-panel,
+.checkout-summary,
+.receipt-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.product-card,
+.cart-item {
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.product-card:hover,
+.cart-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--clr-border2);
+}
+
+.product-badge,
+.detail-badge,
+.shop-hero-kicker {
+  backdrop-filter: blur(10px);
+}
+
+.gallery-main,
+.gallery-thumbs img {
+  border: 1px solid var(--clr-border);
+}
+
+.summary-line,
+.receipt-line {
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.summary-line:last-child,
+.receipt-line:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 960px) {
+  .shop-hero-grid,
+  .shop-detail-grid,
+  .cart-layout,
+  .checkout-layout,
+  .receipt-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* ─── Trending Badge ──────────────────────────────────────────────────────── */
 .badge-trending {
   position: absolute;
