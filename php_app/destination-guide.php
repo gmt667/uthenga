@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Uthenga — Destination Guide Detail Page
+ * Uthenga - Destination Guide Detail Page
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/malawi_locations.php';
@@ -22,8 +22,8 @@ $staticGuides = [
         'best_time' => 'May to October (dry season)',
         'travel_tips' => ['Always carry small change for matola rides','Drink bottled or purified water','Mosquito repellent is essential','Negotiate taxi fares before boarding'],
         'content' => '<p>Blantyre is the commercial heart of Malawi and a vibrant city with colonial history, bustling markets, and easy access to some of the country\'s most spectacular natural attractions.</p>
-<h3>Getting Around</h3><p>Minibuses (matola) are the most common form of transport. Taxis are available but negotiate fares upfront. Ride-sharing through Mbanda is increasingly popular. The city is fairly compact — most central areas are walkable.</p>
-<h3>Attractions</h3><ul><li><strong>St. Michael and All Angels Church</strong> — A beautiful Victorian church built in 1891 with local materials.</li><li><strong>Blantyre Market</strong> — Vibrant central market with crafts, fabrics, and food.</li><li><strong>Mandala House</strong> — One of the oldest buildings in Malawi, now a restaurant.</li><li><strong>Limbe</strong> — Neighboring town with tobacco auction floors and a botanical garden.</li></ul>
+<h3>Getting Around</h3><p>Minibuses (matola) are the most common form of transport. Taxis are available but negotiate fares upfront. Ride-sharing through Mbanda is increasingly popular. The city is fairly compact - most central areas are walkable.</p>
+<h3>Attractions</h3><ul><li><strong>St. Michael and All Angels Church</strong> - A beautiful Victorian church built in 1891 with local materials.</li><li><strong>Blantyre Market</strong> - Vibrant central market with crafts, fabrics, and food.</li><li><strong>Mandala House</strong> - One of the oldest buildings in Malawi, now a restaurant.</li><li><strong>Limbe</strong> - Neighboring town with tobacco auction floors and a botanical garden.</li></ul>
 <h3>Day Trips</h3><p>Zomba Plateau (1 hour), Mount Mulanje (1.5 hours), Majete Wildlife Reserve (2 hours), and Cape Maclear on Lake Malawi (3 hours) are all excellent day trip or weekend destinations from Blantyre.</p>
 <h3>Where to Eat</h3><p>The city offers everything from nsima and chambo at local joints to pizza and sushi at modern restaurants. The Shoprite area, Mandala, and Livingstone Ave have good options for most budgets.</p>',
     ],
@@ -32,19 +32,19 @@ $staticGuides = [
         'cover_image' => 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1400&fit=crop&q=80',
         'summary' => 'Political capital with vibrant Old Town and modern City Centre.',
         'best_time' => 'April to October',
-        'travel_tips' => ['Old Town and City Centre are very spread out — use taxis or Mbanda','Area 47 and Area 10 have good supermarkets','Book accommodation in advance during major events'],
-        'content' => '<p>Lilongwe is Malawi\'s political capital and has a fascinating dual character — the bustling, chaotic Old Town market area contrasts with the planned, spacious City Centre with wide boulevards and government buildings.</p>
-<h3>Must Visit</h3><ul><li><strong>Lilongwe Wildlife Centre</strong> — Rehabilitates primates and other wildlife; excellent guided tours.</li><li><strong>Old Town Market</strong> — Vibrant and authentic, great for curios and fabrics.</li><li><strong>Area 10 Shopping Centre</strong> — Modern mall with restaurants, cinema, and shopping.</li><li><strong>Capital Hill</strong> — Impressive government complex in City Centre.</li></ul>
+        'travel_tips' => ['Old Town and City Centre are very spread out - use taxis or Mbanda','Area 47 and Area 10 have good supermarkets','Book accommodation in advance during major events'],
+        'content' => '<p>Lilongwe is Malawi\'s political capital and has a fascinating dual character - the bustling, chaotic Old Town market area contrasts with the planned, spacious City Centre with wide boulevards and government buildings.</p>
+<h3>Must Visit</h3><ul><li><strong>Lilongwe Wildlife Centre</strong> - Rehabilitates primates and other wildlife; excellent guided tours.</li><li><strong>Old Town Market</strong> - Vibrant and authentic, great for curios and fabrics.</li><li><strong>Area 10 Shopping Centre</strong> - Modern mall with restaurants, cinema, and shopping.</li><li><strong>Capital Hill</strong> - Impressive government complex in City Centre.</li></ul>
 <h3>Nature Escapes</h3><p>Dzalanyama Forest Reserve is just 45 minutes from the city centre and offers excellent hiking and birdwatching. The Lilongwe River Nature Sanctuary in the city itself is a peaceful green retreat.</p>',
     ],
     'lake-malawi-mangochi-guide' => [
         'city' => 'Mangochi / Lake Malawi', 'title' => 'Lake Malawi & Mangochi Guide',
         'cover_image' => 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=1400&fit=crop&q=80',
-        'summary' => 'The Lake of Stars — beaches, water sports, and fresh chambo fish.',
+        'summary' => 'The Lake of Stars - beaches, water sports, and fresh chambo fish.',
         'best_time' => 'May to November',
         'travel_tips' => ['Bilharzia risk is low on sandy beaches but avoid reedy areas','Sunscreen is essential','Fresh chambo fish is a must-try','Book accommodation in advance in December-January'],
         'content' => '<p>Lake Malawi, called the "Lake of Stars", stretches along Malawi\'s eastern border and is one of Africa\'s most spectacular lakes. It\'s a UNESCO World Heritage Site known for its extraordinary diversity of cichlid fish.</p>
-<h3>Activities</h3><ul><li><strong>Snorkeling & Diving</strong> — Crystal clear water with hundreds of colorful cichlid species.</li><li><strong>Kayaking & Sailing</strong> — Explore the lake\'s inlets and rocky shores.</li><li><strong>Island Day Trips</strong> — Many resorts offer boat trips to nearby islands.</li><li><strong>Beach Relaxation</strong> — White sandy beaches with fresh lake water.</li></ul>
+<h3>Activities</h3><ul><li><strong>Snorkeling & Diving</strong> - Crystal clear water with hundreds of colorful cichlid species.</li><li><strong>Kayaking & Sailing</strong> - Explore the lake\'s inlets and rocky shores.</li><li><strong>Island Day Trips</strong> - Many resorts offer boat trips to nearby islands.</li><li><strong>Beach Relaxation</strong> - White sandy beaches with fresh lake water.</li></ul>
 <h3>Getting There</h3><p>Mangochi is about 3.5 hours from Blantyre and 5 hours from Lilongwe. Regular buses and minibuses operate from both cities. Senga Bay (near Salima) is closer to Lilongwe and equally beautiful.</p>',
     ],
 ];
@@ -96,7 +96,7 @@ $activeNav = 'tourism';
     .tips-list { list-style: none; padding: 0; }
     .tips-list li { display: flex; align-items: flex-start; gap: .75rem; padding: .6rem .9rem;
       background: var(--clr-surface); border-radius: .5rem; margin-bottom: .5rem; font-size: .9rem; }
-    .tips-list li::before { content: '✅'; flex-shrink: 0; }
+    .tips-list li .tip-icon { display: inline-flex; flex-shrink: 0; color: var(--clr-primary); margin-top: .05rem; }
     .guide-sidebar { position: sticky; top: 80px; }
     .sidebar-card {
       background: var(--clr-surface); border: 1px solid var(--clr-border);
@@ -122,9 +122,7 @@ $activeNav = 'tourism';
     <div class="section-label" style="color:rgba(255,255,255,.7)">Destination Guide</div>
     <h1><?= e($guide['title']) ?></h1>
     <?php if (!empty($guide['city'])): ?>
-    <div style="display:flex;align-items:center;gap:.5rem;opacity:.85;">
-      📍 <?= e($guide['city']) ?>
-    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;opacity:.85;"><?= uthenga_public_icon_svg('pin') ?> <?= e($guide['city']) ?></div>
     <?php endif; ?>
   </div>
 </div>
@@ -145,16 +143,16 @@ $activeNav = 'tourism';
         <?php endif; ?>
 
         <?php if (!empty($guide['travel_tips'])): ?>
-        <h3 style="margin-top:2rem;">💡 Essential Travel Tips</h3>
+        <h3 style="margin-top:2rem;display:inline-flex;align-items:center;gap:.4rem;"><?= uthenga_public_icon_svg('check') ?> Essential Travel Tips</h3>
         <ul class="tips-list">
           <?php foreach ((array)$guide['travel_tips'] as $tip): ?>
-          <li><?= e($tip) ?></li>
+          <li><span class="tip-icon"><?= uthenga_public_icon_svg('check') ?></span><span><?= e($tip) ?></span></li>
           <?php endforeach; ?>
         </ul>
         <?php endif; ?>
 
         <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.5rem;">
-          <a href="<?= BASE_URL ?>tourism.php" class="btn btn-secondary">← Back to Tourism Hub</a>
+          <a href="<?= BASE_URL ?>tourism.php" class="btn btn-secondary"><?= uthenga_public_icon_svg('chevron-left') ?> Back to Tourism Hub</a>
           <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($guide['city'] ?? '') ?>" class="btn btn-primary">✨ Plan a Trip Here</a>
         </div>
       </div>
@@ -163,24 +161,24 @@ $activeNav = 'tourism';
       <aside class="guide-sidebar">
         <?php if (!empty($guide['best_time'])): ?>
         <div class="sidebar-card">
-          <h4>🌤 Best Time to Visit</h4>
+          <h4 style="display:inline-flex;align-items:center;gap:.35rem;"><?= uthenga_public_icon_svg('calendar') ?> Best Time to Visit</h4>
           <p style="font-size:.875rem;"><?= e($guide['best_time']) ?></p>
         </div>
         <?php endif; ?>
         <div class="sidebar-card">
-          <h4>🔗 Quick Links</h4>
+          <h4 style="display:inline-flex;align-items:center;gap:.35rem;"><?= uthenga_public_icon_svg('map') ?> Quick Links</h4>
           <ul class="guide-index">
-            <li><a href="<?= BASE_URL ?>hotels.php?q=<?= urlencode($guide['city'] ?? '') ?>">🏨 Hotels in <?= e($guide['city'] ?? 'this area') ?></a></li>
-            <li><a href="<?= BASE_URL ?>tours.php?q=<?= urlencode($guide['city'] ?? '') ?>">🏞 Tours & Experiences</a></li>
-            <li><a href="<?= BASE_URL ?>transport.php?destination=<?= urlencode($guide['city'] ?? '') ?>">🚌 Getting There</a></li>
-            <li><a href="<?= BASE_URL ?>events.php?location=<?= urlencode($guide['city'] ?? '') ?>">🎉 Events</a></li>
-            <li><a href="<?= BASE_URL ?>tourism.php">🗺 Interactive Map</a></li>
+            <li><a href="<?= BASE_URL ?>hotels.php?q=<?= urlencode($guide['city'] ?? '') ?>"><?= uthenga_public_icon_svg('hotel') ?> Hotels in <?= e($guide['city'] ?? 'this area') ?></a></li>
+            <li><a href="<?= BASE_URL ?>tours.php?q=<?= urlencode($guide['city'] ?? '') ?>"><?= uthenga_public_icon_svg('tour') ?> Tours & Experiences</a></li>
+            <li><a href="<?= BASE_URL ?>transport.php?destination=<?= urlencode($guide['city'] ?? '') ?>"><?= uthenga_public_icon_svg('bus') ?> Getting There</a></li>
+            <li><a href="<?= BASE_URL ?>events.php?location=<?= urlencode($guide['city'] ?? '') ?>"><?= uthenga_public_icon_svg('calendar') ?> Events</a></li>
+            <li><a href="<?= BASE_URL ?>tourism.php"><?= uthenga_public_icon_svg('map') ?> Interactive Map</a></li>
           </ul>
         </div>
         <div class="sidebar-card">
-          <h4>📋 Plan Your Visit</h4>
-          <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($guide['city'] ?? '') ?>" class="btn btn-primary" style="width:100%;margin-bottom:.5rem;">✨ AI Trip Planner</a>
-          <a href="<?= BASE_URL ?>ai/chat.php" class="btn btn-secondary" style="width:100%;">🤖 Ask AI Assistant</a>
+          <h4 style="display:inline-flex;align-items:center;gap:.35rem;"><?= uthenga_public_icon_svg('calendar') ?> Plan Your Visit</h4>
+          <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($guide['city'] ?? '') ?>" class="btn btn-primary" style="width:100%;margin-bottom:.5rem;"><?= uthenga_public_icon_svg('sparkles') ?> AI Trip Planner</a>
+          <a href="<?= BASE_URL ?>ai/chat.php" class="btn btn-secondary" style="width:100%;"><?= uthenga_public_icon_svg('globe') ?> Ask AI Assistant</a>
         </div>
       </aside>
     </div>
@@ -247,7 +245,7 @@ $activeNav = 'tourism';
         $allGuides = [
             ['title'=>'Blantyre Travel Guide','city'=>'Blantyre','summary'=>'Commercial capital and gateway to southern adventures.','cover_image'=>'https://images.unsplash.com/photo-1612892483236-52d32a0e0ac1?w=600&fit=crop','slug'=>'blantyre-travel-guide'],
             ['title'=>'Lilongwe City Guide','city'=>'Lilongwe','summary'=>'Political capital with vibrant markets and wildlife.','cover_image'=>'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&fit=crop','slug'=>'lilongwe-city-guide'],
-            ['title'=>'Lake Malawi & Mangochi','city'=>'Mangochi','summary'=>'The Lake of Stars — beaches, diving, and cichlid fish.','cover_image'=>'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&fit=crop','slug'=>'lake-malawi-mangochi-guide'],
+            ['title'=>'Lake Malawi & Mangochi','city'=>'Mangochi','summary'=>'The Lake of Stars - beaches, diving, and cichlid fish.','cover_image'=>'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&fit=crop','slug'=>'lake-malawi-mangochi-guide'],
         ];
     }
     ?>
@@ -262,13 +260,13 @@ $activeNav = 'tourism';
           <div style="font-size:.75rem;font-weight:700;color:var(--clr-primary);text-transform:uppercase;"><?= e($g['city'] ?? '') ?></div>
           <h3 style="font-size:1rem;margin:.25rem 0 .5rem;"><?= e($g['title']) ?></h3>
           <p style="font-size:.85rem;color:var(--clr-muted);margin-bottom:1rem;"><?= e($g['summary'] ?? '') ?></p>
-          <a href="?slug=<?= e($g['slug']) ?>" class="btn btn-sm btn-primary" style="width:100%">Read Guide →</a>
+          <a href="?slug=<?= e($g['slug']) ?>" class="btn btn-sm btn-primary" style="width:100%">Read Guide</a>
         </div>
       </div>
       <?php endforeach; ?>
     </div>
     <div style="margin-top:2rem;text-align:center;">
-      <a href="<?= BASE_URL ?>tourism.php" class="btn btn-secondary">← Back to Tourism Hub</a>
+      <a href="<?= BASE_URL ?>tourism.php" class="btn btn-secondary"><?= uthenga_public_icon_svg('chevron-left') ?> Back to Tourism Hub</a>
     </div>
   </div>
 </section>
@@ -277,3 +275,5 @@ $activeNav = 'tourism';
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>
+
+

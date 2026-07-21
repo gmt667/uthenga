@@ -34,6 +34,9 @@ if (!function_exists('uthenga_public_icon_svg')) {
             'lock' => '<path d="M8 10V8a4 4 0 0 1 8 0v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Zm2 0h4V8a2 2 0 0 0-4 0Z" fill="currentColor"/>',
             'star' => '<path d="m12 2.5 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.2 6.2 20.4l1.1-6.5L2.6 9.3l6.5-.9z" fill="currentColor"/>',
             'sparkles' => '<path d="M12 2 13.8 8.2 20 10l-6.2 1.8L12 18l-1.8-6.2L4 10l6.2-1.8z" fill="currentColor"/>',
+            'chevron-down' => '<path d="M6.7 9.2 12 14.5l5.3-5.3 1.4 1.4L12 17.3 5.3 10.6z" fill="currentColor"/>',
+            'chevron-left' => '<path d="M14.5 6.7 9.2 12l5.3 5.3-1.4 1.4L6.4 12l6.7-6.7z" fill="currentColor"/>',
+            'chevron-right' => '<path d="M9.5 6.7 14.8 12l-5.3 5.3 1.4 1.4 6.7-6.7-6.7-6.7z" fill="currentColor"/>',
             'info' => '<path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 4a1.3 1.3 0 1 1 0 2.6A1.3 1.3 0 0 1 12 6zm-1.1 4h2.2v8h-2.2z" fill="currentColor"/>',
             'news' => '<path d="M6 4h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm1 4h10V6H7zm0 4h10v-2H7zm0 4h7v-2H7z" fill="currentColor"/><circle cx="15.5" cy="10" r="1" fill="currentColor"/>',
         ];

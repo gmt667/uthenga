@@ -60,7 +60,7 @@ $themePreference = uthenga_theme_preference();
           <button class="profile-dropdown-btn" id="profile-dropdown-trigger" aria-haspopup="true" aria-expanded="false" type="button">
             <span class="nav-avatar-fallback"><?= e(strtoupper(substr($displayName, 0, 1))) ?></span>
             <span><?= e($displayName) ?></span>
-            <span class="arrow" aria-hidden="true">&#9662;</span>
+            <span class="arrow" aria-hidden="true"><?= uthenga_public_icon_svg('chevron-down') ?></span>
           </button>
           <div class="profile-dropdown-content" role="menu" aria-label="Account menu">
             <?php if ($isCustomer): ?>

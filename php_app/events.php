@@ -180,6 +180,7 @@ $displayAds = !empty($activeAds) ? $activeAds : $placeholderAds;
       border-radius: 50%; background: rgba(18,18,26,0.6); border: 1px solid rgba(255,255,255,0.1);
       color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
       cursor: pointer; z-index: 20; transition: var(--transition); }
+    .slider-arrow svg { width: 1rem; height: 1rem; flex: none; }
     .slider-arrow:hover { background: var(--clr-accent); color: #000; }
     .slider-arrow.prev { left: 1.5rem; } .slider-arrow.next { right: 1.5rem; }
     .slider-dots { position: absolute; bottom: 1.5rem; right: 3rem; display: flex; gap: 0.5rem; z-index: 20; }
@@ -303,17 +304,17 @@ $displayAds = !empty($activeAds) ? $activeAds : $placeholderAds;
           <div class="slide-price"><?= getEventPrice($se) ?></div>
           <div class="slide-btns">
             <?php if (isLoggedIn()): ?>
-              <button class="btn btn-primary" onclick="openBookingModal('<?= e($se['id']) ?>','event','<?= addslashes(e($se['title'])) ?>',<?= (float)($sm['standardTicketPrice'] ?? 0) ?>,<?= (float)($sm['vipTicketPrice'] ?? 0) ?>); if (window.trackEventMetric) { window.trackEventMetric('<?= e($se['id']) ?>', 'click'); }">ðŸŽ« <?= $ctaText ?></button>
+              <button class="btn btn-primary" onclick="openBookingModal('<?= e($se['id']) ?>','event','<?= addslashes(e($se['title'])) ?>',<?= (float)($sm['standardTicketPrice'] ?? 0) ?>,<?= (float)($sm['vipTicketPrice'] ?? 0) ?>); if (window.trackEventMetric) { window.trackEventMetric('<?= e($se['id']) ?>', 'click'); }"><?= uthenga_public_icon_svg('ticket') ?> <?= $ctaText ?></button>
             <?php else: ?>
-              <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary">ðŸŽ« Sign In to Book</a>
+              <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-primary"><?= uthenga_public_icon_svg('ticket') ?> Sign In to Book</a>
             <?php endif; ?>
             <a href="event-details.php?id=<?= e($se['id']) ?>" class="btn btn-secondary" data-track-event-click="<?= e($se['id']) ?>">View Details</a>
           </div>
         </div>
       </div>
       <?php endforeach; ?>
-      <button class="slider-arrow prev" aria-label="Previous slide">â®</button>
-      <button class="slider-arrow next" aria-label="Next slide">â¯</button>
+      <button class="slider-arrow prev" aria-label="Previous slide"><?= uthenga_public_icon_svg('chevron-left') ?></button>
+      <button class="slider-arrow next" aria-label="Next slide"><?= uthenga_public_icon_svg('chevron-right') ?></button>
       <div class="slider-dots">
         <?php foreach ($sliderEvents as $index => $se): ?>
           <span class="slider-dot <?= ($index === 0) ? 'active' : '' ?>" data-index="<?= $index ?>"></span>

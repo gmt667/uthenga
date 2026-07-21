@@ -1,6 +1,6 @@
-<?php
+﻿<?php
 /**
- * Uthenga — Tourism & Travel Hub
+ * Uthenga â€” Tourism & Travel Hub
  * Interactive map, weather, destination guides, and itinerary tools
  */
 require_once __DIR__ . '/config.php';
@@ -50,7 +50,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <style>
-    /* ── Tourism Page Styles ─────────────────────────────────────────── */
+    /* â”€â”€ Tourism Page Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
     .tourism-hero {
       background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
       color: #fff;
@@ -192,27 +192,27 @@ $citySpotlights = uthenga_malawi_featured_cities();
 <body>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
-<!-- ── Hero ─────────────────────────────────────────────────────────── -->
+<!-- â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <section class="tourism-hero">
   <div class="container">
     <div class="section-label">Discover Malawi</div>
-    <h1>🌍 Explore the Warm Heart of Africa</h1>
-    <p>Interactive maps, destination guides, weather info, and AI-powered trip planning — all in one place.</p>
+    <h1><?= uthenga_public_icon_svg('globe') ?> Explore the Warm Heart of Africa</h1>
+    <p>Interactive maps, destination guides, weather info, and AI-powered trip planning - all in one place.</p>
     <div class="tourism-cats">
-      <button class="tourism-cat-btn active" data-filter="all">🗺 All</button>
-      <button class="tourism-cat-btn" data-filter="attraction">🏞 Attractions</button>
-      <button class="tourism-cat-btn" data-filter="hotel">🏨 Hotels</button>
-      <button class="tourism-cat-btn" data-filter="restaurant">🍽 Restaurants</button>
-      <button class="tourism-cat-btn" data-filter="hospital">🏥 Hospitals</button>
-      <button class="tourism-cat-btn" data-filter="fuel_station">⛽ Fuel</button>
-      <button class="tourism-cat-btn" data-filter="atm">🏧 ATMs</button>
-      <button class="tourism-cat-btn" data-filter="transport">🚌 Transport</button>
-      <button class="tourism-cat-btn" data-filter="airport">✈ Airports</button>
+      <button class="tourism-cat-btn active" data-filter="all"><?= uthenga_public_icon_svg('map') ?> All</button>
+      <button class="tourism-cat-btn" data-filter="attraction"><?= uthenga_public_icon_svg('sparkles') ?> Attractions</button>
+      <button class="tourism-cat-btn" data-filter="hotel"><?= uthenga_public_icon_svg('hotel') ?> Hotels</button>
+      <button class="tourism-cat-btn" data-filter="restaurant"><?= uthenga_public_icon_svg('restaurant') ?> Restaurants</button>
+      <button class="tourism-cat-btn" data-filter="hospital"><?= uthenga_public_icon_svg('info') ?> Hospitals</button>
+      <button class="tourism-cat-btn" data-filter="fuel_station"><?= uthenga_public_icon_svg('wallet') ?> Fuel</button>
+      <button class="tourism-cat-btn" data-filter="atm"><?= uthenga_public_icon_svg('wallet') ?> ATMs</button>
+      <button class="tourism-cat-btn" data-filter="transport"><?= uthenga_public_icon_svg('bus') ?> Transport</button>
+      <button class="tourism-cat-btn" data-filter="airport"><?= uthenga_public_icon_svg('plane') ?> Airports</button>
     </div>
   </div>
 </section>
 
-<!-- ── Interactive Map ───────────────────────────────────────────────── -->
+<!-- â”€â”€ Interactive Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <section class="map-section">
   <div class="container">
     <div class="section-label">Interactive Map</div>
@@ -221,21 +221,21 @@ $citySpotlights = uthenga_malawi_featured_cities();
 
     <div class="map-toolbar" id="map-toolbar">
       <button class="map-filter-btn active" data-type="all">All Points</button>
-      <button class="map-filter-btn" data-type="attraction">🏞 Attractions</button>
-      <button class="map-filter-btn" data-type="hotel">🏨 Hotels</button>
-      <button class="map-filter-btn" data-type="restaurant">🍽 Restaurants</button>
-      <button class="map-filter-btn" data-type="hospital">🏥 Hospitals</button>
-      <button class="map-filter-btn" data-type="fuel_station">⛽ Fuel</button>
-      <button class="map-filter-btn" data-type="atm">🏧 ATMs</button>
-      <button class="map-filter-btn" data-type="transport">🚌 Transport</button>
-      <button class="map-filter-btn" data-type="airport">✈ Airport</button>
+      <button class="map-filter-btn" data-type="attraction"><?= uthenga_public_icon_svg('sparkles') ?> Attractions</button>
+      <button class="map-filter-btn" data-type="hotel"><?= uthenga_public_icon_svg('hotel') ?> Hotels</button>
+      <button class="map-filter-btn" data-type="restaurant"><?= uthenga_public_icon_svg('restaurant') ?> Restaurants</button>
+      <button class="map-filter-btn" data-type="hospital"><?= uthenga_public_icon_svg('info') ?> Hospitals</button>
+      <button class="map-filter-btn" data-type="fuel_station"><?= uthenga_public_icon_svg('wallet') ?> Fuel</button>
+      <button class="map-filter-btn" data-type="atm"><?= uthenga_public_icon_svg('wallet') ?> ATMs</button>
+      <button class="map-filter-btn" data-type="transport"><?= uthenga_public_icon_svg('bus') ?> Transport</button>
+      <button class="map-filter-btn" data-type="airport"><?= uthenga_public_icon_svg('plane') ?> Airport</button>
     </div>
 
     <div id="tourism-map"></div>
   </div>
 </section>
 
-<!-- ── Weather ───────────────────────────────────────────────────────── -->
+<!-- â”€â”€ Weather â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <section class="weather-section">
   <div class="container">
     <div class="section-label">Current Weather</div>
@@ -243,7 +243,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
     <div class="weather-grid" id="weather-grid">
       <?php foreach ($weatherCities as $city): ?>
       <div class="weather-card" data-lat="<?= $city['lat'] ?>" data-lon="<?= $city['lon'] ?>" data-city="<?= e($city['name']) ?>">
-        <div class="weather-icon" id="wi-<?= e(strtolower($city['name'])) ?>">⏳</div>
+        <div class="weather-icon" id="wi-<?= e(strtolower($city['name'])) ?>"><?= uthenga_public_icon_svg('globe') ?></div>
         <div class="weather-city"><?= e($city['name']) ?></div>
         <div class="weather-temp" id="wt-<?= e(strtolower($city['name'])) ?>">--°C</div>
         <div class="weather-desc" id="wd-<?= e(strtolower($city['name'])) ?>">Loading...</div>
@@ -253,7 +253,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   </div>
 </section>
 
-<!-- ── Destination Guides ────────────────────────────────────────────── -->
+<!-- â”€â”€ Destination Guides â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <section style="padding:3rem 0;">
   <div class="container">
     <div style="display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
@@ -294,9 +294,9 @@ $citySpotlights = uthenga_malawi_featured_cities();
       <?php $staticGuides = [
         ['city'=>'Blantyre','title'=>'Blantyre Travel Guide','summary'=>'Commercial capital, gateway to Mount Mulanje and Zomba Plateau.','img'=>'https://images.unsplash.com/photo-1612892483236-52d32a0e0ac1?w=600&fit=crop&q=80','slug'=>'blantyre-travel-guide'],
         ['city'=>'Lilongwe','title'=>'Lilongwe City Guide','summary'=>'Political capital with vibrant Old Town markets and wildlife sanctuary.','img'=>'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&fit=crop&q=80','slug'=>'lilongwe-city-guide'],
-        ['city'=>'Mangochi / Lake','title'=>'Lake Malawi Guide','summary'=>'Crystal clear freshwater lake — the Lake of Stars — with beaches and water sports.','img'=>'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&fit=crop&q=80','slug'=>'lake-malawi-mangochi-guide'],
+        ['city'=>'Mangochi / Lake','title'=>'Lake Malawi Guide','summary'=>'Crystal clear freshwater lake â€” the Lake of Stars â€” with beaches and water sports.','img'=>'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&fit=crop&q=80','slug'=>'lake-malawi-mangochi-guide'],
         ['city'=>'Zomba','title'=>'Zomba Plateau','summary'=>'Hiking trails, waterfalls, and breathtaking views over the Great Rift Valley.','img'=>'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&fit=crop&q=80','slug'=>'zomba-plateau-guide'],
-        ['city'=>'Mulanje','title'=>'Mount Mulanje','summary'=>'Highest peak in Central Africa — trekking, camping, and dramatic scenery.','img'=>'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&fit=crop&q=80','slug'=>'mount-mulanje-guide'],
+        ['city'=>'Mulanje','title'=>'Mount Mulanje','summary'=>'Highest peak in Central Africa â€” trekking, camping, and dramatic scenery.','img'=>'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&fit=crop&q=80','slug'=>'mount-mulanje-guide'],
         ['city'=>'Liwonde','title'=>'Liwonde National Park','summary'=>'Prime game reserve with elephants, hippos, crocodiles, and boat safaris.','img'=>'https://images.unsplash.com/photo-1549366021-9f761d450615?w=600&fit=crop&q=80','slug'=>'liwonde-national-park-guide'],
       ]; foreach ($staticGuides as $g): ?>
       <div class="guide-card">
@@ -334,56 +334,56 @@ $citySpotlights = uthenga_malawi_featured_cities();
   </div>
 </section>
 
-<!-- ── AI Trip Planner CTA ───────────────────────────────────────────── -->
+<!-- â”€â”€ AI Trip Planner CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <section style="padding:2rem 0;">
   <div class="container">
     <div class="itinerary-cta">
-      <h2>✨ Plan Your Perfect Malawi Trip</h2>
-      <p>Use our AI-powered trip planner to get a personalized itinerary, budget estimate, and downloadable PDF — in seconds.</p>
+      <h2><?= uthenga_public_icon_svg('sparkles') ?> Plan Your Perfect Malawi Trip</h2>
+      <p>Use our AI-powered trip planner to get a personalized itinerary, budget estimate, and downloadable PDF â€” in seconds.</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <a href="<?= BASE_URL ?>trip-planner.php" class="btn btn-white btn-lg">🗓 Plan My Trip</a>
-        <a href="<?= BASE_URL ?>ai/chat.php" class="btn btn-outline-white btn-lg">🤖 Ask AI Assistant</a>
+        <a href="<?= BASE_URL ?>trip-planner.php" class="btn btn-white btn-lg">ðŸ—“ Plan My Trip</a>
+        <a href="<?= BASE_URL ?>ai/chat.php" class="btn btn-outline-white btn-lg">ðŸ¤– Ask AI Assistant</a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Travel Tips ───────────────────────────────────────────────────── -->
+<!-- â”€â”€ Travel Tips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
 <section style="padding:2rem 0 3rem;">
   <div class="container">
     <div class="section-label">Tips & Advice</div>
     <h2 style="margin-bottom:1.5rem;">Essential Malawi Travel Tips</h2>
     <div class="tips-grid">
       <div class="tip-card">
-        <h4>💰 Currency</h4>
+        <h4><?= uthenga_public_icon_svg('wallet') ?> Currency</h4>
         <p>The Malawi Kwacha (MWK) is the local currency. ATMs are available in major cities. USD and ZAR are sometimes accepted in tourist areas.</p>
       </div>
       <div class="tip-card">
-        <h4>🌡 Best Time to Visit</h4>
-        <p>May to October (dry season) is ideal. The rainy season (November–April) brings lush greenery but some roads become impassable.</p>
+        <h4><?= uthenga_public_icon_svg('calendar') ?> Best Time to Visit</h4>
+        <p>May to October (dry season) is ideal. The rainy season (Novemberâ€“April) brings lush greenery but some roads become impassable.</p>
       </div>
       <div class="tip-card">
-        <h4>🦟 Health</h4>
-        <p>Malaria is present — take prophylaxis and use mosquito repellent. Drink bottled or purified water. Travel insurance is strongly recommended.</p>
+        <h4><?= uthenga_public_icon_svg('warning') ?> Health</h4>
+        <p>Malaria is present â€” take prophylaxis and use mosquito repellent. Drink bottled or purified water. Travel insurance is strongly recommended.</p>
       </div>
       <div class="tip-card">
-        <h4>🚌 Getting Around</h4>
+        <h4><?= uthenga_public_icon_svg('bus') ?> Getting Around</h4>
         <p>Minibuses (matola) are cheapest. Private taxis and Mbanda (ride-share) are available in cities. AXA and Shire buses cover long routes.</p>
       </div>
       <div class="tip-card">
-        <h4>🌊 Lake Safety</h4>
-        <p>Lake Malawi is generally safe for swimming on sandy shores. Avoid reedy areas (bilharzia risk). Lifeguards are rare — swim with care.</p>
+        <h4><?= uthenga_public_icon_svg('globe') ?> Lake Safety</h4>
+        <p>Lake Malawi is generally safe for swimming on sandy shores. Avoid reedy areas (bilharzia risk). Lifeguards are rare â€” swim with care.</p>
       </div>
       <div class="tip-card">
-        <h4>📱 Connectivity</h4>
+        <h4><?= uthenga_public_icon_svg('phone') ?> Connectivity</h4>
         <p>Airtel and TNM provide mobile data. Coverage is good in cities and along major roads. Free WiFi is available at most hotels and cafes.</p>
       </div>
       <div class="tip-card">
-        <h4>🤝 Culture</h4>
-        <p>Malawians are renowned for their warmth and friendliness — "the warm heart of Africa." Dress modestly in rural areas and markets.</p>
+        <h4><?= uthenga_public_icon_svg('heart') ?> Culture</h4>
+        <p>Malawians are renowned for their warmth and friendliness â€” "the warm heart of Africa." Dress modestly in rural areas and markets.</p>
       </div>
       <div class="tip-card">
-        <h4>🐘 Wildlife</h4>
+        <h4><?= uthenga_public_icon_svg('heart') ?> Wildlife</h4>
         <p>Never approach wildlife on foot. Always follow guide instructions. Book reputable licensed tour operators for game drives and boat safaris.</p>
       </div>
     </div>
@@ -396,7 +396,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
 <script>
 const MAP_POINTS = <?= json_encode($mapPoints, JSON_UNESCAPED_UNICODE) ?>;
 
-// ── Leaflet Map ────────────────────────────────────────────────────────
+// â”€â”€ Leaflet Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const map = L.map('tourism-map', {
   center: [-13.5, 33.9],
   zoom: 7,
@@ -404,49 +404,49 @@ const map = L.map('tourism-map', {
 });
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  attribution: '(c) <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 18
 }).addTo(map);
 
 // Icon mapping
 const iconMap = {
-  attraction: '🏞',
-  hotel:      '🏨',
-  restaurant: '🍽',
-  hospital:   '🏥',
-  fuel_station:'⛽',
-  atm:        '🏧',
-  transport:  '🚌',
-  airport:    '✈',
-  marina:     '⛵',
-  curio_shop: '🛍',
-  cafe:       '☕',
-  other:      '📍'
+  attraction: `<?= addslashes(uthenga_public_icon_svg('sparkles')) ?>`,
+  hotel: `<?= addslashes(uthenga_public_icon_svg('hotel')) ?>`,
+  restaurant: `<?= addslashes(uthenga_public_icon_svg('restaurant')) ?>`,
+  hospital: `<?= addslashes(uthenga_public_icon_svg('warning')) ?>`,
+  fuel_station: `<?= addslashes(uthenga_public_icon_svg('wallet')) ?>`,
+  atm: `<?= addslashes(uthenga_public_icon_svg('wallet')) ?>`,
+  transport: `<?= addslashes(uthenga_public_icon_svg('bus')) ?>`,
+  airport: `<?= addslashes(uthenga_public_icon_svg('plane')) ?>`,
+  marina: `<?= addslashes(uthenga_public_icon_svg('map')) ?>`,
+  curio_shop: `<?= addslashes(uthenga_public_icon_svg('shop')) ?>`,
+  cafe: `<?= addslashes(uthenga_public_icon_svg('restaurant')) ?>`,
+  other: `<?= addslashes(uthenga_public_icon_svg('pin')) ?>`
 };
 
 const colorMap = {
   attraction: '#3b82f6',
-  hotel:      '#8b5cf6',
+  hotel: '#8b5cf6',
   restaurant: '#f59e0b',
-  hospital:   '#ef4444',
-  fuel_station:'#10b981',
-  atm:        '#f97316',
-  transport:  '#06b6d4',
-  airport:    '#6366f1',
-  marina:     '#0ea5e9',
-  other:      '#64748b'
+  hospital: '#ef4444',
+  fuel_station: '#10b981',
+  atm: '#f97316',
+  transport: '#06b6d4',
+  airport: '#6366f1',
+  marina: '#0ea5e9',
+  other: '#64748b'
 };
 
 function makeIcon(type) {
-  const emoji = iconMap[type] || '📍';
+  const iconSvg = iconMap[type] || iconMap.other;
   const color = colorMap[type] || '#64748b';
   return L.divIcon({
     html: `<div style="
       width:36px;height:36px;border-radius:50% 50% 50% 0;
       background:${color};display:flex;align-items:center;justify-content:center;
-      font-size:18px;transform:rotate(-45deg);
+      transform:rotate(-45deg);
       box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid #fff;
-    "><span style="transform:rotate(45deg)">${emoji}</span></div>`,
+    "><span style="transform:rotate(45deg);display:inline-flex">${iconSvg}</span></div>`,
     iconSize: [36, 36],
     iconAnchor: [18, 36],
     popupAnchor: [0, -36],
@@ -468,12 +468,12 @@ function renderMarkers(filterType) {
     if (!p.latitude || !p.longitude) return;
     const icon = makeIcon(p.point_type);
     const m = L.marker([p.latitude, p.longitude], {icon}).addTo(map);
-    const phone = p.phone ? `<br>📞 ${p.phone}` : '';
-    const web = p.website ? `<br><a href="${p.website}" target="_blank">🌐 Website</a>` : '';
+    const phone = p.phone ? `<br>Phone: ${p.phone}` : '';
+    const web = p.website ? `<br><a href="${p.website}" target="_blank">Website</a>` : '';
     m.bindPopup(`
       <strong>${p.name}</strong><br>
       <em>${(p.point_type||'').replace('_',' ')}</em>
-      ${p.city ? '<br>📍 ' + p.city : ''}
+      ${p.city ? '<br>Location: ' + p.city : ''}
       ${p.address ? '<br>' + p.address : ''}
       ${phone}${web}
       ${p.description ? '<br><small style="color:#666">' + p.description.substring(0,100) + (p.description.length>100?'...':'') + '</small>' : ''}
@@ -509,17 +509,10 @@ document.querySelectorAll('.tourism-cat-btn').forEach(btn => {
   });
 });
 
-// ── Weather Fetch ──────────────────────────────────────────────────────
+// â”€â”€ Weather Fetch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const weatherCards = document.querySelectorAll('.weather-card');
 
-const weatherCodes = {
-  0:'☀️',1:'🌤',2:'⛅',3:'☁️',
-  45:'🌫',48:'🌫',51:'🌦',53:'🌧',55:'🌧',
-  61:'🌧',63:'🌧',65:'🌧',66:'🌨',67:'🌨',
-  71:'❄️',73:'❄️',75:'❄️',77:'🌨',
-  80:'🌦',81:'🌧',82:'⛈',85:'🌨',86:'❄️',
-  95:'⛈',96:'⛈',99:'⛈'
-};
+const weatherCodes = {};
 const weatherDescs = {
   0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
   45:'Foggy',48:'Foggy',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
@@ -542,16 +535,18 @@ weatherCards.forEach(card => {
     .then(data => {
       const w = data.current_weather;
       const code = w.weathercode;
-      if (iconEl) iconEl.textContent = weatherCodes[code] || '🌡';
+      if (iconEl) iconEl.innerHTML = `<?= addslashes(uthenga_public_icon_svg('globe')) ?>`;
       if (tempEl) tempEl.textContent = Math.round(w.temperature) + '°C';
       if (descEl) descEl.textContent = weatherDescs[code] || 'Weather data';
     })
     .catch(() => {
       if (tempEl) tempEl.textContent = '--°C';
       if (descEl) descEl.textContent = 'Unavailable';
-      if (iconEl) iconEl.textContent = '🌡';
+      if (iconEl) iconEl.innerHTML = `<?= addslashes(uthenga_public_icon_svg('globe')) ?>`;
     });
 });
 </script>
 </body>
 </html>
+
+

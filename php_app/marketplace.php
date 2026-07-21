@@ -1,8 +1,8 @@
 ﻿<?php
 /**
- * Uthenga â€” Local Business Marketplace
+ * Uthenga - Local Business Marketplace
  * Directory of restaurants, cafes, tour guides, car hire, photographers,
- * curio shops, boat operators and more â€” with map view.
+ * curio shops, boat operators and more - with map view.
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
@@ -21,15 +21,28 @@ $offset  = ($page - 1) * $perPage;
 
 $businessTypes = [
     ''             => 'All Categories',
-    'restaurant'   => 'ðŸ½ï¸ Restaurant',
-    'cafe'         => 'â˜• CafÃ© & Bar',
-    'tour_guide'   => 'ðŸ§­ Tour Guide',
-    'car_hire'     => 'ðŸš— Car Hire',
-    'photographer' => 'ðŸ“· Photographer',
-    'curio_shop'   => 'ðŸ›ï¸ Curio Shop',
-    'boat_operator'=> 'â›µ Boat Operator',
-    'spa_wellness' => 'ðŸ’† Spa & Wellness',
-    'other'        => 'ðŸª Other',
+    'restaurant'   => 'Restaurant',
+    'cafe'         => 'Cafe & Bar',
+    'tour_guide'   => 'Tour Guide',
+    'car_hire'     => 'Car Hire',
+    'photographer' => 'Photographer',
+    'curio_shop'   => 'Curio Shop',
+    'boat_operator'=> 'Boat Operator',
+    'spa_wellness' => 'Spa & Wellness',
+    'other'        => 'Other',
+];
+
+$businessTypeIcons = [
+    ''             => 'map',
+    'restaurant'   => 'restaurant',
+    'cafe'         => 'restaurant',
+    'tour_guide'   => 'tour',
+    'car_hire'     => 'car',
+    'photographer' => 'camera',
+    'curio_shop'   => 'shop',
+    'boat_operator'=> 'map',
+    'spa_wellness' => 'spa',
+    'other'        => 'info',
 ];
 
 $featuredCities = uthenga_malawi_featured_cities();
@@ -335,7 +348,7 @@ if ($viewId !== '') {
 
     /* Filter strip */
     .mp-filters { display: flex; gap: .5rem; flex-wrap: wrap; padding: 1.25rem 0; border-bottom: 1px solid var(--clr-border); }
-    .filter-chip { padding: .4rem .9rem; border-radius: 100px; font-size: .78rem; font-weight: 600;
+    .filter-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .4rem .9rem; border-radius: 100px; font-size: .78rem; font-weight: 600;
                    border: 1px solid var(--clr-border); background: var(--clr-surface2);
                    color: var(--clr-text-soft); cursor: pointer; text-decoration: none; transition: all .2s; }
     .filter-chip:hover, .filter-chip.active { background: var(--clr-cyan, #38bdf8); border-color: var(--clr-cyan, #38bdf8);
@@ -362,7 +375,7 @@ if ($viewId !== '') {
     .biz-card-img-placeholder { height: 160px; display: flex; align-items: center; justify-content: center;
                                   font-size: 3rem; background: linear-gradient(135deg, #1e293b, #0f172a); }
     .biz-card-body { padding: 1rem 1.1rem; flex: 1; display: flex; flex-direction: column; }
-    .biz-badge { display: inline-block; font-size: .68rem; font-weight: 700; text-transform: uppercase;
+    .biz-badge { display: inline-flex; align-items: center; gap: .3rem; font-size: .68rem; font-weight: 700; text-transform: uppercase;
                  letter-spacing: .08em; padding: .2rem .6rem; border-radius: 100px;
                  background: rgba(56, 189, 248, .15); color: var(--clr-cyan, #38bdf8); margin-bottom: .5rem; }
     .biz-badge.featured { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; }
@@ -383,7 +396,7 @@ if ($viewId !== '') {
 
     /* Empty state */
     .mp-empty { text-align: center; padding: 4rem 1rem; color: var(--clr-text-soft); }
-    .mp-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .mp-empty-icon { display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; margin-bottom: 1rem; color: var(--clr-cyan, #38bdf8); }
 
     /* Stats bar */
     .mp-stats { display: flex; gap: 2rem; padding: 1rem 0; flex-wrap: wrap; }
@@ -445,7 +458,7 @@ if ($viewId !== '') {
     <p>Find the best restaurants, tour guides, photographers, curio shops, and more across Malawi.</p>
     <form method="GET" action="<?= BASE_URL ?>marketplace.php" class="mp-search-bar">
       <?php if ($type): ?><input type="hidden" name="type" value="<?= e($type) ?>"><?php endif; ?>
-      <input type="text" name="search" placeholder="Search businesses, placesâ€¦" value="<?= e($search) ?>">
+      <input type="text" name="search" placeholder="Search businesses, places..." value="<?= e($search) ?>">
       <button type="submit">Search</button>
     </form>
   </div>
@@ -505,10 +518,10 @@ if ($viewId !== '') {
       $params_chip = array_filter(['type' => $val, 'search' => $search, 'city' => $city]);
       $isActive = ($type === $val) || ($val === '' && $type === '');
     ?>
-      <a href="<?= BASE_URL ?>marketplace.php?<?= http_build_query($params_chip) ?>"
+        <a href="<?= BASE_URL ?>marketplace.php?<?= http_build_query($params_chip) ?>"
          class="filter-chip <?= $isActive ? 'active' : '' ?>">
-        <?= $label ?>
-      </a>
+        <?= uthenga_public_icon_svg($businessTypeIcons[$val] ?? 'map') ?><span><?= e($label) ?></span>
+        </a>
     <?php endforeach; ?>
 
     <!-- City filter -->
@@ -518,7 +531,7 @@ if ($viewId !== '') {
         <?php if ($type): ?><input type="hidden" name="type" value="<?= e($type) ?>"><?php endif; ?>
         <?php if ($search): ?><input type="hidden" name="search" value="<?= e($search) ?>"><?php endif; ?>
         <select name="city" onchange="this.form.submit()" class="filter-chip" style="cursor:pointer;">
-          <option value="">ðŸ“ All Cities</option>
+          <option value="">All Cities</option>
           <?php foreach ($cities as $c): ?>
             <option value="<?= e($c['city']) ?>" <?= $city === $c['city'] ? 'selected' : '' ?>>
               <?= e($c['city']) ?>
@@ -531,8 +544,8 @@ if ($viewId !== '') {
 
     <!-- View toggle -->
     <div class="view-toggle">
-      <button class="view-btn active" id="grid-btn" onclick="setView('grid')">âŠž Grid</button>
-      <button class="view-btn" id="map-btn" onclick="setView('map')">ðŸ—ºï¸ Map</button>
+      <button class="view-btn active" id="grid-btn" onclick="setView('grid')">Grid</button>
+      <button class="view-btn" id="map-btn" onclick="setView('map')">Map</button>
     </div>
   </div>
 
@@ -542,7 +555,7 @@ if ($viewId !== '') {
   <!-- Listings grid -->
   <?php if (empty($listings)): ?>
     <div class="mp-empty">
-      <div class="mp-empty-icon">ðŸª</div>
+      <div class="mp-empty-icon"><?= uthenga_public_icon_svg('shop') ?></div>
       <h3>No listings found</h3>
       <p>Try adjusting your filters or <a href="<?= BASE_URL ?>marketplace.php" style="color:var(--clr-cyan)">clear all</a>.</p>
       <a href="<?= BASE_URL ?>vendor/register.php" class="btn btn-cyan" style="margin-top:1rem;">
@@ -553,10 +566,11 @@ if ($viewId !== '') {
     <div class="biz-grid">
       <?php foreach ($listings as $biz):
         $bizType    = $biz['business_type'] ?? '';
-        $typeLabel  = $businessTypes[$bizType] ?? 'ðŸª Other';
+        $typeLabel  = $businessTypes[$bizType] ?? 'Other';
+        $typeIcon   = $businessTypeIcons[$bizType] ?? 'info';
         $rating     = (float)($biz['avg_rating'] ?? 0);
         $ratingCount = (int)($biz['review_count'] ?? 0);
-        $stars = str_repeat('â˜…', min(5, max(0, round($rating)))) . str_repeat('â˜†', 5 - min(5, max(0, round($rating))));
+        $stars = str_repeat('★', min(5, max(0, round($rating)))) . str_repeat('☆', 5 - min(5, max(0, round($rating))));
         $coverImg = $biz['cover_image'] ?? '';
         $phone  = $biz['phone']  ?? $biz['vendor_phone'] ?? '';
         $waLink = $phone ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $phone) : '';
@@ -571,12 +585,12 @@ if ($viewId !== '') {
         <div class="biz-card-body">
           <div>
             <?php if (!empty($biz['is_featured'])): ?>
-              <span class="biz-badge featured">â­ Featured</span>
+              <span class="biz-badge featured"><?= uthenga_public_icon_svg('star') ?> Featured</span>
             <?php endif; ?>
-            <span class="biz-badge"><?= $typeLabel ?></span>
+            <span class="biz-badge"><?= uthenga_public_icon_svg($typeIcon) ?><?= e($typeLabel) ?></span>
           </div>
           <div class="biz-name"><?= e($biz['business_name'] ?? 'Unnamed Business') ?></div>
-          <div class="biz-location">ðŸ“ <?= e($biz['city'] ?? 'Malawi') ?></div>
+          <div class="biz-location"><?= uthenga_public_icon_svg('pin') ?> <?= e($biz['city'] ?? 'Malawi') ?></div>
           <?php if (!empty($biz['description'])): ?>
             <div class="biz-description"><?= e($biz['description']) ?></div>
           <?php endif; ?>
@@ -591,8 +605,8 @@ if ($viewId !== '') {
 
           <?php if ($phone || !empty($biz['website'])): ?>
           <div style="font-size:.75rem; color:var(--clr-text-soft); margin-bottom:.65rem;">
-            <?php if ($phone): ?>ðŸ“ž <?= e($phone) ?><?php endif; ?>
-            <?php if (!empty($biz['website'])): ?> Â· ðŸŒ <a href="<?= e($biz['website']) ?>" target="_blank" style="color:var(--clr-cyan);"><?= e(parse_url($biz['website'], PHP_URL_HOST) ?: $biz['website']) ?></a><?php endif; ?>
+            <?php if ($phone): ?><?= uthenga_public_icon_svg('phone') ?> <?= e($phone) ?><?php endif; ?>
+            <?php if (!empty($biz['website'])): ?> · <?= uthenga_public_icon_svg('globe') ?> <a href="<?= e($biz['website']) ?>" target="_blank" style="color:var(--clr-cyan);"><?= e(parse_url($biz['website'], PHP_URL_HOST) ?: $biz['website']) ?></a><?php endif; ?>
           </div>
           <?php endif; ?>
 
@@ -602,7 +616,7 @@ if ($viewId !== '') {
             ?>
             <a href="<?= BASE_URL ?>marketplace.php?<?= http_build_query($vParams) ?>" class="biz-btn-primary">View Details</a>
             <?php if ($waLink): ?>
-              <a href="<?= $waLink ?>" target="_blank" rel="noopener" class="biz-btn-ghost">ðŸ’¬ WhatsApp</a>
+              <a href="<?= $waLink ?>" target="_blank" rel="noopener" class="biz-btn-ghost">WhatsApp</a>
             <?php elseif (!empty($biz['website'])): ?>
               <a href="<?= e($biz['website']) ?>" target="_blank" rel="noopener" class="biz-btn-ghost">Visit Site</a>
             <?php endif; ?>
@@ -632,18 +646,19 @@ if ($viewId !== '') {
   <!-- CTA to list your business -->
   <div style="margin-top:3rem; text-align:center; padding:2rem; background:var(--clr-surface2);
               border:1px solid var(--clr-border); border-radius:var(--radius-lg);">
-    <h3 style="margin-bottom:.5rem;">ðŸš€ List Your Business on Uthenga</h3>
+    <h3 style="margin-bottom:.5rem;display:inline-flex;align-items:center;gap:.4rem;justify-content:center;"><?= uthenga_public_icon_svg('megaphone') ?> List Your Business on Uthenga</h3>
     <p class="text-muted" style="margin-bottom:1.25rem;">Reach thousands of tourists and locals. Register as a vendor and create your listing today.</p>
-    <a href="<?= BASE_URL ?>vendor/register.php" class="btn btn-cyan" style="margin-right:.5rem;">Get Started â€” Free</a>
+    <a href="<?= BASE_URL ?>vendor/register.php" class="btn btn-cyan" style="margin-right:.5rem;">Get Started - Free</a>
     <a href="<?= BASE_URL ?>about.php" class="btn btn-secondary">Learn More</a>
   </div>
 
   <!-- Business details modal if view param present -->
   <?php if ($viewListing): 
-    $vlTypeLabel = $businessTypes[$viewListing['business_type'] ?? ''] ?? 'ðŸª Other';
+    $vlTypeLabel = $businessTypes[$viewListing['business_type'] ?? ''] ?? 'Other';
+    $vlTypeIcon  = $businessTypeIcons[$viewListing['business_type'] ?? ''] ?? 'info';
     $vlRating = (float)($viewListing['avg_rating'] ?? 0);
     $vlRatingCount = (int)($viewListing['review_count'] ?? 0);
-    $vlStars = str_repeat('â˜…', min(5, max(0, round($vlRating)))) . str_repeat('â˜†', 5 - min(5, max(0, round($vlRating))));
+    $vlStars = str_repeat('★', min(5, max(0, round($vlRating)))) . str_repeat('☆', 5 - min(5, max(0, round($vlRating))));
     $vlPhone = $viewListing['phone'] ?? $viewListing['vendor_phone'] ?? '';
     $vlCleanUrl = BASE_URL . 'marketplace.php?' . http_build_query(array_filter(['type' => $type, 'search' => $search, 'city' => $city]));
     $vlWaLink = $vlPhone ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $vlPhone) : '';
@@ -656,20 +671,20 @@ if ($viewId !== '') {
       <div style="padding:2rem;">
         <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:0.75rem;">
           <div>
-            <span class="biz-badge" style="margin-bottom:0.35rem;"><?= $vlTypeLabel ?></span>
+            <span class="biz-badge" style="margin-bottom:0.35rem;"><?= uthenga_public_icon_svg($vlTypeIcon) ?><?= e($vlTypeLabel) ?></span>
             <h2 style="margin:0;font-size:1.4rem;color:#fff;"><?= e($viewListing['business_name'] ?? 'Unnamed Business') ?></h2>
           </div>
-          <button onclick="location.href='<?= $vlCleanUrl ?>'" style="background:none;border:none;color:var(--clr-text-soft);font-size:1.5rem;cursor:pointer;line-height:1;padding:0.25rem;">âœ•</button>
+          <button onclick="location.href='<?= $vlCleanUrl ?>'" aria-label="Close details" style="background:none;border:none;color:var(--clr-text-soft);font-size:1.5rem;cursor:pointer;line-height:1;padding:0.25rem;display:inline-flex;align-items:center;justify-content:center;"><?= uthenga_public_icon_svg('x') ?></button>
         </div>
         <p style="font-size:0.88rem;color:var(--clr-text-soft);margin-bottom:1rem;line-height:1.5;"><?= e($viewListing['description'] ?? '') ?></p>
         
         <div style="display:grid;gap:0.75rem;margin-bottom:1.5rem;border-top:1px solid var(--clr-border);padding-top:1rem;font-size:0.85rem;">
-          <div>ðŸ“ <strong>Location/Address:</strong> <?= e($viewListing['address'] ?? ($viewListing['city'] ?? 'Malawi')) ?></div>
+          <div><?= uthenga_public_icon_svg('pin') ?> <strong>Location/Address:</strong> <?= e($viewListing['address'] ?? ($viewListing['city'] ?? 'Malawi')) ?></div>
           <?php if (!empty($viewListing['opening_hours'])): ?>
-            <div>ðŸ•’ <strong>Opening Hours:</strong> <?= e($viewListing['opening_hours']) ?></div>
+            <div><?= uthenga_public_icon_svg('calendar') ?> <strong>Opening Hours:</strong> <?= e($viewListing['opening_hours']) ?></div>
           <?php endif; ?>
           <?php if (!empty($viewListing['price_range'])): ?>
-            <div>ðŸ’° <strong>Price Range:</strong> <?= e($viewListing['price_range']) ?></div>
+            <div><?= uthenga_public_icon_svg('wallet') ?> <strong>Price Range:</strong> <?= e($viewListing['price_range']) ?></div>
           <?php endif; ?>
           <div style="display:flex;align-items:center;gap:0.5rem;">
             <span style="color:#f59e0b;"><?= $vlStars ?></span>
@@ -679,10 +694,10 @@ if ($viewId !== '') {
 
         <div style="display:flex;gap:0.75rem;">
           <?php if ($vlWaLink): ?>
-            <a href="<?= $vlWaLink ?>" target="_blank" rel="noopener" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">ðŸ’¬ WhatsApp</a>
+            <a href="<?= $vlWaLink ?>" target="_blank" rel="noopener" class="btn btn-primary" style="flex:1;text-align:center;text-decoration:none;">WhatsApp</a>
           <?php endif; ?>
           <?php if (!empty($viewListing['website'])): ?>
-            <a href="<?= e($viewListing['website']) ?>" target="_blank" rel="noopener" class="btn btn-secondary" style="flex:1;text-align:center;text-decoration:none;">ðŸŒ Website</a>
+            <a href="<?= e($viewListing['website']) ?>" target="_blank" rel="noopener" class="btn btn-secondary" style="flex:1;text-align:center;text-decoration:none;">Website</a>
           <?php endif; ?>
           <button onclick="location.href='<?= $vlCleanUrl ?>'" class="btn btn-secondary" style="flex:1;">Close</button>
         </div>

@@ -9,8 +9,8 @@ $activeNav = 'home';
 $search = trim($_GET['q'] ?? '');
 $searchResults = marketplace_fetch_home_feed($search, 12);
 
-// ?? Session-based cache for expensive homepage featured queries ???????????????
-// Cache key includes a 10-minute bucket so it auto-expires
+// Session-based cache for expensive homepage featured queries.
+// Cache key includes a 10-minute bucket so it auto-expires.
 $homeCacheKey = 'home_featured_' . floor(time() / 600);
 if (!isset($_SESSION[$homeCacheKey])) {
     // Clear any previous bucket's data
@@ -35,13 +35,197 @@ $featuredMbanda    = function_exists('marketplace_fetch_mbanda') ? marketplace_f
 $totalListings     = $_SESSION[$homeCacheKey]['total_listings'];
 $totalBookings     = $_SESSION[$homeCacheKey]['total_bookings'];
 $totalVendors      = $_SESSION[$homeCacheKey]['total_vendors'];
-// ?????????????????????????????????????????????????????????????????????????????
+$featuredEventsFallback = [
+    [
+        'id' => 'home-event-1',
+        'title' => 'Lake Shore Music Night',
+        'location' => 'Mangochi, Lake Malawi',
+        'price_label' => 'From MK 20,000',
+        'image' => 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-event',
+        'type_label' => 'Event',
+        'detail_url' => BASE_URL . 'events.php',
+        'is_trending' => true,
+    ],
+    [
+        'id' => 'home-event-2',
+        'title' => 'Mzuzu Street Food Festival',
+        'location' => 'Mzuzu City',
+        'price_label' => 'From MK 12,000',
+        'image' => 'https://images.unsplash.com/photo-1541544181051-e46607bc22a4?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-event',
+        'type_label' => 'Event',
+        'detail_url' => BASE_URL . 'events.php',
+        'is_trending' => false,
+    ],
+    [
+        'id' => 'home-event-3',
+        'title' => 'Blantyre Live Showcase',
+        'location' => 'Blantyre',
+        'price_label' => 'From MK 15,000',
+        'image' => 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-event',
+        'type_label' => 'Event',
+        'detail_url' => BASE_URL . 'events.php',
+        'is_trending' => false,
+    ],
+    [
+        'id' => 'home-event-4',
+        'title' => 'Lilongwe Weekend Expo',
+        'location' => 'Lilongwe',
+        'price_label' => 'From MK 10,000',
+        'image' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-event',
+        'type_label' => 'Event',
+        'detail_url' => BASE_URL . 'events.php',
+        'is_trending' => true,
+    ],
+];
+$featuredStaysFallback = [
+    [
+        'id' => 'home-stay-1',
+        'title' => 'Sunbird Waterfront Lodge',
+        'location' => 'Lilongwe',
+        'price_label' => 'From MK 120,000',
+        'image' => 'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-stay',
+        'type_label' => 'Stay',
+        'detail_url' => BASE_URL . 'hotels.php',
+    ],
+    [
+        'id' => 'home-stay-2',
+        'title' => 'Cape Maclear Beach Retreat',
+        'location' => 'Mangochi',
+        'price_label' => 'From MK 95,000',
+        'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-stay',
+        'type_label' => 'Stay',
+        'detail_url' => BASE_URL . 'hotels.php',
+    ],
+    [
+        'id' => 'home-stay-3',
+        'title' => 'Zomba Plateau Guest House',
+        'location' => 'Zomba',
+        'price_label' => 'From MK 70,000',
+        'image' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-stay',
+        'type_label' => 'Stay',
+        'detail_url' => BASE_URL . 'hotels.php',
+    ],
+    [
+        'id' => 'home-stay-4',
+        'title' => 'Mzuzu Executive Suites',
+        'location' => 'Mzuzu',
+        'price_label' => 'From MK 110,000',
+        'image' => 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-stay',
+        'type_label' => 'Stay',
+        'detail_url' => BASE_URL . 'hotels.php',
+    ],
+];
+$featuredTransportFallback = [
+    [
+        'id' => 'home-transport-1',
+        'title' => 'Lake Shuttle Express',
+        'location' => 'Lilongwe - Mangochi',
+        'price_label' => 'From MK 18,500',
+        'image' => 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-transport',
+        'type_label' => 'Transport',
+        'detail_url' => BASE_URL . 'transport.php',
+    ],
+    [
+        'id' => 'home-transport-2',
+        'title' => 'Airport Connect',
+        'location' => 'Blantyre',
+        'price_label' => 'From MK 22,000',
+        'image' => 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-transport',
+        'type_label' => 'Transport',
+        'detail_url' => BASE_URL . 'transport.php',
+    ],
+    [
+        'id' => 'home-transport-3',
+        'title' => 'City Ride Mbanda',
+        'location' => 'Lilongwe',
+        'price_label' => 'From MK 8,000',
+        'image' => 'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-transport',
+        'type_label' => 'Transport',
+        'detail_url' => BASE_URL . 'transport.php',
+    ],
+    [
+        'id' => 'home-transport-4',
+        'title' => 'Southern Route Coaches',
+        'location' => 'Blantyre',
+        'price_label' => 'From MK 14,000',
+        'image' => 'https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-transport',
+        'type_label' => 'Transport',
+        'detail_url' => BASE_URL . 'transport.php',
+    ],
+];
+$featuredMbandaFallback = [
+    [
+        'id' => 'home-mbanda-1',
+        'title' => 'Sunrise Share Ride',
+        'location' => 'Blantyre',
+        'price_label' => 'Split from MK 6,000',
+        'image' => 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-mbanda',
+        'type_label' => 'Mbanda',
+        'detail_url' => BASE_URL . 'mbanda/index.php',
+    ],
+    [
+        'id' => 'home-mbanda-2',
+        'title' => 'Lake Road Pool',
+        'location' => 'Mangochi',
+        'price_label' => 'Split from MK 5,500',
+        'image' => 'https://images.unsplash.com/photo-1493238792000-8113da705763?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-mbanda',
+        'type_label' => 'Mbanda',
+        'detail_url' => BASE_URL . 'mbanda/index.php',
+    ],
+    [
+        'id' => 'home-mbanda-3',
+        'title' => 'City Commute Share',
+        'location' => 'Lilongwe',
+        'price_label' => 'Split from MK 4,000',
+        'image' => 'https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-mbanda',
+        'type_label' => 'Mbanda',
+        'detail_url' => BASE_URL . 'mbanda/index.php',
+    ],
+    [
+        'id' => 'home-mbanda-4',
+        'title' => 'Airport Ride Share',
+        'location' => 'Blantyre Airport',
+        'price_label' => 'Split from MK 7,500',
+        'image' => 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=900&fit=crop&q=80',
+        'badge_class' => 'badge-mbanda',
+        'type_label' => 'Mbanda',
+        'detail_url' => BASE_URL . 'mbanda/index.php',
+    ],
+];
+
+if (empty($featuredEvents)) {
+    $featuredEvents = $featuredEventsFallback;
+}
+if (empty($featuredStays)) {
+    $featuredStays = $featuredStaysFallback;
+}
+if (empty($featuredTransport)) {
+    $featuredTransport = $featuredTransportFallback;
+}
+if (empty($featuredMbanda)) {
+    $featuredMbanda = $featuredMbandaFallback;
+}
 
 $popularCategories = [
-    ['label' => 'Events', 'href' => 'events.php', 'note' => 'Concerts, festivals, and sports'],
-    ['label' => 'Stays', 'href' => 'hotels.php', 'note' => 'Hotels, lodges, and apartments'],
-    ['label' => 'Transport', 'href' => 'transport.php', 'note' => 'Bus, shuttle, and route bookings'],
-    ['label' => 'Explore', 'href' => 'tours.php', 'note' => 'Tours and curated experiences'],
+    ['label' => 'Events', 'href' => 'events.php', 'note' => 'Concerts, festivals, and sports', 'icon' => 'calendar'],
+    ['label' => 'Stays', 'href' => 'hotels.php', 'note' => 'Hotels, lodges, and apartments', 'icon' => 'hotel'],
+    ['label' => 'Transport', 'href' => 'transport.php', 'note' => 'Bus, shuttle, and route bookings', 'icon' => 'bus'],
+    ['label' => 'Explore', 'href' => 'tours.php', 'note' => 'Tours and curated experiences', 'icon' => 'map'],
 ];
 
 ?>
@@ -97,7 +281,7 @@ $popularCategories = [
             <div class="malawi-stat-label">Vendors</div>
           </div>
           <div class="malawi-stat">
-            <div class="malawi-stat-value">?</div>
+            <div class="malawi-stat-value"><?= uthenga_public_icon_svg('sparkles') ?></div>
             <div class="malawi-stat-label">Fast checkout</div>
           </div>
         </div>
@@ -126,6 +310,9 @@ $popularCategories = [
     <div class="grid grid-cols-4 gap-3">
       <?php foreach ($popularCategories as $category): ?>
         <a href="<?= BASE_URL . $category['href'] ?>" class="card" style="padding:1.25rem;text-decoration:none;">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:999px;background:var(--clr-surface);color:var(--clr-primary);margin-bottom:.75rem;">
+            <?= uthenga_public_icon_svg($category['icon']) ?>
+          </div>
           <div class="card-title" style="margin-bottom:0.35rem;"><?= e($category['label']) ?></div>
           <div class="text-sm text-muted"><?= e($category['note']) ?></div>
         </a>
@@ -157,7 +344,7 @@ $popularCategories = [
               <div class="card-img-wrap">
                 <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="card-img" loading="lazy">
                 <span class="card-badge <?= e($listing['badge_class']) ?>"><?= e($listing['type_label']) ?></span>
-                <?php if (!empty($listing['is_trending'])): ?><span class="card-badge badge-trending" style="left:auto;right:0.75rem;">?? Trending</span><?php endif; ?>
+                <?php if (!empty($listing['is_trending'])): ?><span class="card-badge badge-trending" style="left:auto;right:0.75rem;display:inline-flex;align-items:center;gap:.25rem;"><?= uthenga_public_icon_svg('sparkles') ?> Trending</span><?php endif; ?>
               </div>
               <div class="card-body">
                 <div class="card-title"><?= e($listing['title']) ?></div>
@@ -190,7 +377,7 @@ $popularCategories = [
             <div class="card-img-wrap">
               <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="card-img" loading="lazy">
               <span class="card-badge <?= e($listing['badge_class']) ?>"><?= e($listing['type_label']) ?></span>
-              <?php if (!empty($listing['is_trending'])): ?><span class="card-badge badge-trending" style="left:auto;right:0.75rem;">?? Trending</span><?php endif; ?>
+              <?php if (!empty($listing['is_trending'])): ?><span class="card-badge badge-trending" style="left:auto;right:0.75rem;display:inline-flex;align-items:center;gap:.25rem;"><?= uthenga_public_icon_svg('sparkles') ?> Trending</span><?php endif; ?>
             </div>
 
             <div class="card-body">
