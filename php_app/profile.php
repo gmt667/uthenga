@@ -273,7 +273,7 @@ $activeSessions = dbQuery("
   </div>
 
   <div class="glass-panel" style="padding:1.5rem;margin-bottom:2.5rem;">
-    <div class="page-header" style="margin-bottom:1rem;">
+  <div class="page-header">
       <div>
         <h3 class="page-title" style="font-size:1.35rem;">Explore Malawi</h3>
         <p class="text-muted">Mock city cards with images for the profile section and travel inspiration.</p>

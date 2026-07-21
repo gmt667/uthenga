@@ -192,12 +192,12 @@ $filterQs = array_filter([
 ]);
 ?>
 
-<div class="page-header" style="margin-bottom:2rem;">
+<div class="page-header">
   <div>
     <h1 class="page-title"><?= admin_icon_svg('credit-card') ?> Transaction Ledger</h1>
     <p class="text-muted">Full audit trail of all platform payment transactions.</p>
   </div>
-  <div style="display:flex;gap:0.75rem;align-items:center;">
+  <div class="dashboard-head-meta">
     <a href="<?= 'transactions.php?' . http_build_query(array_merge($filterQs, ['export' => 'csv'])) ?>" class="btn btn-secondary btn-sm" id="txn-export-csv">
       <?= admin_icon_svg('download') ?> Export CSV
     </a>

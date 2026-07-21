@@ -120,9 +120,9 @@ renderDashboardChromeStart([
 ?>
 
 <div class="container dashboard-content-frame" style="padding-top:2.25rem;padding-bottom:3rem;">
-  <div class="page-header" style="gap:1rem;align-items:flex-start;flex-wrap:wrap;">
+  <div class="page-header">
     <div>
-      <h1 class="page-title" style="display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;">
+      <h1 class="page-title">
         <?= dashboard_icon_svg('wallet') ?>
         <span>Withdrawals & Settlements</span>
       </h1>

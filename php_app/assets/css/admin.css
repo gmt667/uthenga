@@ -139,6 +139,9 @@
 .table-responsive {
   overflow-x: auto;
   margin-top: 1rem;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 .admin-table {
   width: 100%;
@@ -918,11 +921,34 @@
     order: 4;
     min-height: 42px;
   }
+  .dashboard-topbar-actions {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    justify-content: flex-end;
+    min-width: 0;
+  }
   .theme-toggle-label {
     display: none;
   }
   .dashboard-profile .profile-dropdown-btn > span:nth-child(2) {
     display: none;
+  }
+  .dashboard-topbar-actions .theme-toggle {
+    min-width: 34px;
+    width: 34px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+  }
+  .dashboard-topbar-actions .dashboard-icon-link {
+    min-width: 34px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+  }
+  .dashboard-topbar-actions .profile-dropdown-btn {
+    padding-inline: 0.5rem;
+    max-width: 48vw;
   }
   .admin-content {
     padding: 1rem;
@@ -1583,6 +1609,26 @@
     flex-direction: column;
     align-items: flex-start;
   }
+
+  .page-header {
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .dashboard-head-meta {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.4rem;
+  }
+
+  .dashboard-head-meta .btn,
+  .page-header .btn {
+    width: auto;
+    min-height: 38px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 1280px) {
@@ -1687,6 +1733,14 @@
     justify-content: center;
   }
 
+  .table-responsive {
+    margin-top: 0.85rem;
+  }
+
+  .admin-table {
+    min-width: 520px;
+  }
+
   .modal-overlay {
     padding: 0.85rem;
   }
@@ -1708,6 +1762,7 @@
 @media (max-width: 480px) {
   .dashboard-topbar {
     grid-template-columns: auto 1fr auto;
+    gap: 0.45rem;
   }
 
   .dashboard-sidebar-toggle {
@@ -1720,10 +1775,69 @@
   .dashboard-topbar-actions .profile-dropdown-btn span:nth-child(2) {
     display: none;
   }
+  .dashboard-topbar-actions .theme-toggle {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+  }
+  .dashboard-topbar-actions .dashboard-icon-link {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+  }
+  .dashboard-topbar-actions .profile-dropdown-btn {
+    padding-inline: 0.4rem;
+    max-width: 44vw;
+  }
 
   .dashboard-content,
   .admin-content {
     padding: 0.85rem;
+  }
+
+  .page-header {
+    gap: 0.35rem;
+  }
+
+  .dashboard-head-meta {
+    gap: 0.3rem;
+  }
+
+  .dashboard-head-meta .btn,
+  .page-header .btn {
+    min-height: 34px;
+    padding: 0.28rem 0.5rem;
+    font-size: 0.72rem;
+  }
+
+  .table-toolbar {
+    gap: 0.65rem;
+  }
+
+  .table-toolbar .search-wrap,
+  .table-toolbar select,
+  .table-toolbar .export-group,
+  .quick-approval-actions {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .table-toolbar .export-group {
+    flex-direction: column;
+  }
+
+  .table-toolbar .export-group .btn,
+  .quick-approval-actions .btn,
+  .pagination .page-btn {
+    width: 100%;
+  }
+
+  .table-responsive {
+    margin-top: 0.75rem;
+  }
+
+  .admin-table {
+    min-width: 440px;
   }
 
   .dashboard-footer {

@@ -324,7 +324,7 @@ $popularCategories = [
 <?php if ($search !== ''): ?>
   <section class="section" id="results">
     <div class="container">
-      <div class="section-header" style="margin-bottom:1.25rem;">
+      <div class="section-header">
         <div>
           <div class="section-label">Search Results</div>
           <h2 style="margin-top:0.25rem;"><?= e($search) ?></h2>

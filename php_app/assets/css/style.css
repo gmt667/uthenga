@@ -2521,13 +2521,15 @@ thead th,
 
 @media (max-width: 768px) {
   .navbar-inner {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     height: auto;
-    padding: 0.75rem 0;
+    padding: 0.45rem 0;
+    gap: 0.45rem;
   }
 
-  .navbar-links {
-    width: 100%;
+  .navbar-logo {
+    min-width: 0;
+    flex: 0 1 auto;
   }
 
   .navbar-actions {
@@ -2538,23 +2540,39 @@ thead th,
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.5rem;
-    padding: 0 1rem 0.85rem;
-    width: 100%;
-    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-left: auto;
+    width: auto;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    padding: 0;
   }
 
   .navbar-mobile-actions .btn {
-    flex: 0 1 auto;
+    width: auto;
+    min-height: 34px;
+    padding: 0.35rem 0.55rem;
+    font-size: 0.75rem;
+    line-height: 1;
+    white-space: nowrap;
+    flex: 0 0 auto;
   }
 
-  .theme-toggle-label {
-    display: inline;
+  .navbar-mobile-actions .theme-toggle {
+    min-width: 34px;
+    width: 34px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+  }
+
+  .navbar-mobile-actions .theme-toggle-label {
+    display: none;
   }
 
   .dashboard-topbar-actions .theme-toggle,
   .navbar-mobile-actions .theme-toggle {
-    min-width: 3.25rem;
+    min-width: 34px;
   }
 }
 
@@ -2595,6 +2613,20 @@ thead th,
     align-items: stretch;
   }
 
+  .hero-btns,
+  .slide-btns {
+    width: 100%;
+    gap: 0.65rem;
+  }
+
+  .hero-btns .btn,
+  .slide-btns .btn {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+  }
+
   .section-header {
     gap: 0.75rem;
   }
@@ -2610,6 +2642,28 @@ thead th,
   .search-bar .btn {
     width: 100%;
     min-width: 0;
+  }
+
+  .table-toolbar {
+    gap: 0.65rem;
+  }
+
+  .table-toolbar .export-group {
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .table-toolbar .export-group .btn {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .search-bar {
+    gap: 0.65rem;
+  }
+
+  .search-bar input {
+    min-height: 44px;
   }
 
   .filter-tabs,
@@ -2649,6 +2703,15 @@ thead th,
   .modal-body {
     padding-top: 1rem;
     padding-bottom: 1rem;
+  }
+
+  .hero-slider-content {
+    padding: 4.5rem 0 3rem;
+    min-height: auto;
+  }
+
+  .hero-slider-content .hero-content {
+    max-width: none;
   }
 
   .sidebar {
@@ -3023,11 +3086,43 @@ body.navbar-menu-open {
   .section-header .btn {
     width: 100%;
   }
+
+  .page-header {
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .page-header .dashboard-head-meta {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.4rem;
+  }
+
+  .page-header .dashboard-head-meta .btn,
+  .page-header .btn {
+    width: auto;
+    min-height: 38px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .section-header {
+    gap: 0.65rem;
+  }
+
+  .section-header .btn {
+    width: auto;
+    min-height: 38px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 480px) {
   .btn {
-    width: 100%;
+    width: auto;
     min-height: 44px;
   }
 
@@ -3040,11 +3135,114 @@ body.navbar-menu-open {
     gap: 0.65rem;
   }
 
+  .hero-btns,
+  .slide-btns {
+    gap: 0.5rem;
+  }
+
+  .hero-btns .btn,
+  .slide-btns .btn {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .table-toolbar .export-group {
+    flex-direction: column;
+  }
+
+  .table-toolbar .export-group .btn {
+    width: 100%;
+  }
+
   .card-footer {
     gap: 0.65rem;
   }
 
   .section-label {
     letter-spacing: 0.14em;
+  }
+
+  .page-header .dashboard-head-meta,
+  .section-header {
+    gap: 0.35rem;
+  }
+
+  .page-header .dashboard-head-meta .btn,
+  .page-header .btn,
+  .section-header .btn {
+    min-height: 34px;
+    padding: 0.28rem 0.5rem;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 414px) {
+  .navbar-inner {
+    gap: 0.3rem;
+  }
+
+  .navbar-logo img {
+    height: 30px;
+  }
+
+  .navbar-hamburger {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navbar-mobile-actions {
+    gap: 0.25rem;
+  }
+
+  .navbar-mobile-actions .btn {
+    padding: 0.28rem 0.42rem;
+    font-size: 0.68rem;
+  }
+
+  .navbar-mobile-actions .theme-toggle {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+  }
+
+  .hero-btns {
+    flex-direction: column;
+  }
+
+  .hero-btns .btn {
+    width: 100%;
+  }
+
+  .slide-btns {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .slide-btns .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 320px) {
+  .navbar-inner {
+    gap: 0.2rem;
+  }
+
+  .navbar-logo img {
+    height: 28px;
+  }
+
+  .navbar-mobile-actions {
+    gap: 0.18rem;
+  }
+
+  .navbar-mobile-actions .btn {
+    padding: 0.24rem 0.36rem;
+    font-size: 0.64rem;
+  }
+
+  .navbar-hamburger {
+    width: 34px;
+    height: 34px;
   }
 }

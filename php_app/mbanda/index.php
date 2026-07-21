@@ -96,12 +96,12 @@ if (empty($trips) && $pickup === '' && $dest === '') {
 <?php require_once __DIR__ . '/../includes/header.php'; ?>
 
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
-  <div class="page-header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+  <div class="page-header">
     <div>
       <h1 class="page-title">Mbanda Ride Sharing</h1>
       <p class="text-muted">Offer or find rides across Malawi. Share costs, travel together.</p>
     </div>
-    <div style="display: flex; gap: 0.75rem;">
+    <div class="dashboard-head-meta">
       <?php if (isLoggedIn()): ?>
         <a href="my_trips.php" class="btn btn-secondary btn-sm">My Offered Rides</a>
         <a href="my_bookings.php" class="btn btn-secondary btn-sm">My Booked Seats</a>

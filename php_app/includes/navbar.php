@@ -18,6 +18,26 @@ $themePreference = uthenga_theme_preference();
   <div class="navbar-inner">
     <?php $logoSize = 'md'; $logoLink = true; require __DIR__ . '/logo.php'; ?>
 
+    <div class="navbar-mobile-actions" aria-label="Mobile actions">
+      <button
+        type="button"
+        class="btn btn-sm btn-secondary btn-icon theme-toggle"
+        data-theme-toggle
+        aria-label="Toggle light and dark mode"
+        aria-pressed="false"
+        title="Toggle light and dark mode"
+      >
+        <span class="theme-toggle-icon" aria-hidden="true"></span>
+        <span class="theme-toggle-label">Dark</span>
+      </button>
+      <?php if ($isLoggedIn): ?>
+        <a href="<?= BASE_URL . ($userRole === ROLE_CUSTOMER ? 'dashboard.php' : (in_array($userRole, ADMIN_ROLES, true) ? ($userRole === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') : 'vendor/dashboard.php')) ?>" class="btn btn-sm btn-primary">Dashboard</a>
+      <?php else: ?>
+        <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-secondary">Sign In</a>
+        <a href="<?= BASE_URL ?>register.php" class="btn btn-sm btn-primary">Register</a>
+      <?php endif; ?>
+    </div>
+
     <button
       type="button"
       class="navbar-hamburger"
@@ -91,27 +111,6 @@ $themePreference = uthenga_theme_preference();
       <?php endif; ?>
     </div>
   </div>
-
-  <div class="navbar-mobile-actions" aria-label="Mobile actions">
-    <button
-      type="button"
-      class="btn btn-sm btn-secondary btn-icon theme-toggle"
-      data-theme-toggle
-      aria-label="Toggle light and dark mode"
-      aria-pressed="false"
-      title="Toggle light and dark mode"
-    >
-      <span class="theme-toggle-icon" aria-hidden="true"></span>
-      <span class="theme-toggle-label">Dark</span>
-    </button>
-    <?php if ($isLoggedIn): ?>
-      <a href="<?= BASE_URL . ($userRole === ROLE_CUSTOMER ? 'dashboard.php' : (in_array($userRole, ADMIN_ROLES, true) ? ($userRole === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') : 'vendor/dashboard.php')) ?>" class="btn btn-sm btn-primary">Dashboard</a>
-    <?php else: ?>
-      <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-secondary">Sign In</a>
-      <a href="<?= BASE_URL ?>register.php" class="btn btn-sm btn-primary">Register</a>
-    <?php endif; ?>
-  </div>
-
 </nav>
 
 <script>

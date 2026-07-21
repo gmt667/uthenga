@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
     <span style="color:var(--clr-text-soft);">Contact Us</span>
   </nav>
 
-  <div class="page-header" style="margin-bottom: 1rem;">
+  <div class="page-header">
     <div>
       <h1 class="page-title">ðŸ“ž Contact Our Team</h1>
       <p class="text-muted">Have questions? We'd love to hear from you. Send us a message.</p>

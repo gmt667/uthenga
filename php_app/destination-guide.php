@@ -195,7 +195,7 @@ $activeNav = 'tourism';
 
     <?php if (!$guide): ?>
     <div class="glass-panel" style="padding:1.25rem;margin-bottom:2rem;">
-      <div class="page-header" style="margin-bottom:1rem;">
+      <div class="page-header">
         <div>
           <h2 class="page-title" style="font-size:1.4rem;">Explore Malawi by District</h2>
           <p class="text-muted">All 28 districts are covered below, including major city hubs like Blantyre, Lilongwe, Zomba, Mzuzu, and Mangochi / Gosheni City.</p>
@@ -217,7 +217,7 @@ $activeNav = 'tourism';
     </div>
 
     <div class="glass-panel" style="padding:1.25rem;margin-bottom:2rem;">
-      <div class="page-header" style="margin-bottom:1rem;">
+      <div class="page-header">
         <div>
           <h2 class="page-title" style="font-size:1.4rem;">Featured Cities</h2>
           <p class="text-muted">Mock city spotlight cards with images for quick inspiration and section previews.</p>

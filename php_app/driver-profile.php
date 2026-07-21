@@ -166,7 +166,7 @@ if ($driver) {
 <div class="container" style="padding-bottom: 5rem;">
 
   <div class="glass-panel" style="padding:1.5rem;margin-bottom:2rem;">
-    <div class="page-header" style="margin-bottom:1rem;">
+    <div class="page-header">
       <div>
         <h2 class="page-title" style="font-size:1.35rem;">Popular Routes & City Hubs</h2>
         <p class="text-muted">Mock district cards with images for the transport section and route inspiration.</p>

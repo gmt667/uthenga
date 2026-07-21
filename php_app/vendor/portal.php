@@ -223,7 +223,7 @@ renderDashboardChromeStart([
   </div>
 
   <div class="glass-panel" style="padding:1.25rem;margin-bottom:1rem;">
-    <div class="page-header" style="margin-bottom:1rem;">
+    <div class="page-header">
       <div>
         <h2 class="page-title" style="font-size:1.4rem;">Your Inventory</h2>
         <p class="text-muted">This now reads directly from module tables, not a legacy listings table.</p>
@@ -261,7 +261,7 @@ renderDashboardChromeStart([
   </div>
 
   <div class="glass-panel" style="padding:1.25rem;">
-    <div class="page-header" style="margin-bottom:1rem;">
+    <div class="page-header">
       <div>
         <h2 class="page-title" style="font-size:1.4rem;">Recent Bookings</h2>
         <p class="text-muted">Bookings are now tied to booking items and vendor ownership.</p>

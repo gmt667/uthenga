@@ -150,13 +150,13 @@ if ($selectedId) {
 }
 ?>
 
-<div class="page-header" style="margin-bottom:1.5rem;">
+<div class="page-header">
   <div>
     <h1 class="page-title"><?= admin_icon_svg('report') ?> Event Report</h1>
     <p class="text-muted">Detailed analytics, ticket breakdown, and attendance reports for events.</p>
   </div>
   <?php if ($event): ?>
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;" id="report-export-btns">
+    <div class="dashboard-head-meta" id="report-export-btns">
       <a href="?event_id=<?= urlencode($selectedId) ?>&export=csv" class="btn btn-sm btn-secondary" id="export-csv-btn"><?= admin_icon_svg('download') ?> Export CSV</a>
       <a href="?event_id=<?= urlencode($selectedId) ?>&export=excel" class="btn btn-sm btn-secondary" id="export-excel-btn"><?= admin_icon_svg('file') ?> Export Excel</a>
       <button class="btn btn-sm btn-secondary" id="export-pdf-btn" onclick="window.print()"><?= admin_icon_svg('report') ?> Print / PDF</button>

@@ -164,7 +164,7 @@ $healthStatus = [
 </style>
 
 <div class="container dashboard-content-frame" style="padding-top:2rem;padding-bottom:3rem;">
-  <div class="page-header" style="margin-bottom: 2rem;">
+  <div class="page-header">
     <div>
       <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('shield') ?><span>Super Admin Command Center</span></h1>
       <p class="text-muted">High-level operations dashboard and platform administration metrics.</p>

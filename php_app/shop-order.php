@@ -67,7 +67,7 @@ renderDashboardChromeStart([
     </div>
   <?php endif; ?>
 
-  <div class="page-header" style="margin-bottom:1rem;">
+  <div class="page-header">
     <div>
       <h1 class="page-title">Receipt <?= e($order['order_number']) ?></h1>
       <p class="text-muted">Invoice and delivery details for your Shop order.</p>
