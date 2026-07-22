@@ -20,7 +20,7 @@ if (!function_exists('uthenga_shop_defaults')) {
             'airtel_money_enabled' => 1,
             'paychangu_enabled' => 0,
             'shop_name' => 'Uthenga Shop',
-            'shop_tagline' => 'Everyday essentials, drinks, groceries, and more',
+            'shop_tagline' => 'Beers, spirits, soft drinks, and chilled beverages',
         ];
     }
 }
@@ -191,7 +191,7 @@ if (!function_exists('uthenga_shop_products')) {
             return [];
         }
 
-        $where = ['p.deleted_at IS NULL'];
+        $where = ["p.deleted_at IS NULL", "p.status = 'active'"];
         $params = [];
 
         if (!empty($filters['query'])) {
@@ -258,7 +258,7 @@ if (!function_exists('uthenga_shop_product_by_slug')) {
             "SELECT p.*, c.name AS category_name, c.slug AS category_slug
              FROM shop_products p
              LEFT JOIN shop_categories c ON c.id = p.category_id
-             WHERE p.slug = ? AND p.deleted_at IS NULL
+             WHERE p.slug = ? AND p.deleted_at IS NULL AND p.status = 'active'
              LIMIT 1",
             [$slug]
         );
@@ -277,7 +277,7 @@ if (!function_exists('uthenga_shop_cart_enrich')) {
                     "SELECT p.*, c.name AS category_name, c.slug AS category_slug
                      FROM shop_products p
                      LEFT JOIN shop_categories c ON c.id = p.category_id
-                     WHERE p.id = ? LIMIT 1",
+                     WHERE p.id = ? AND p.deleted_at IS NULL AND p.status = 'active' LIMIT 1",
                     [(int) $productId]
                 ) ?: null;
             }
@@ -417,7 +417,7 @@ if (!function_exists('uthenga_shop_product_by_id')) {
             "SELECT p.*, c.name AS category_name, c.slug AS category_slug
              FROM shop_products p
              LEFT JOIN shop_categories c ON c.id = p.category_id
-             WHERE p.id = ? AND p.deleted_at IS NULL
+             WHERE p.id = ? AND p.deleted_at IS NULL AND p.status = 'active'
              LIMIT 1",
             [$productId]
         );

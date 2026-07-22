@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS shop_settings (
 
 INSERT IGNORE INTO shop_settings (setting_key, setting_value, value_type, description) VALUES
 ('shop_name', 'Uthenga Shop', 'string', 'Public-facing shop name'),
-('shop_tagline', 'Everyday essentials, drinks, groceries, and more', 'string', 'Marketing tagline'),
+('shop_tagline', 'Beers, spirits, soft drinks, and chilled beverages', 'string', 'Marketing tagline'),
 ('delivery_fee_mwk', '1500', 'number', 'Default delivery fee in MWK'),
 ('free_delivery_threshold_mwk', '25000', 'number', 'Subtotal threshold for free delivery'),
 ('tax_rate_percent', '0', 'number', 'Default tax percentage'),
@@ -279,15 +279,7 @@ INSERT IGNORE INTO shop_categories (id, name, slug, description, sort_order, is_
 (4, 'Soft Drinks', 'soft-drinks', 'Sodas and fizzy refreshments.', 40, 1),
 (5, 'Water', 'water', 'Still and sparkling bottled water.', 50, 1),
 (6, 'Juice', 'juice', 'Fruit juices and nectar drinks.', 60, 1),
-(7, 'Energy Drinks', 'energy-drinks', 'Performance and focus beverages.', 70, 1),
-(8, 'Maize Flour', 'maize-flour', 'Nsima flour and staple meal packs.', 80, 1),
-(9, 'Rice', 'rice', 'Polished, fragrant, and family-size rice bags.', 90, 1),
-(10, 'Sugar', 'sugar', 'Table sugar and baking sugar.', 100, 1),
-(11, 'Cooking Oil', 'cooking-oil', 'Vegetable, sunflower, and blended oils.', 110, 1),
-(12, 'Groceries', 'groceries', 'General grocery baskets and household staples.', 120, 1),
-(13, 'Household Essentials', 'household-essentials', 'Cleaning, paper goods, and daily-use items.', 130, 1),
-(14, 'Snacks', 'snacks', 'Biscuits, crisps, and confectionery.', 140, 1),
-(15, 'Other Products', 'other-products', 'Additional stocked products.', 150, 1);
+(7, 'Energy Drinks', 'energy-drinks', 'Performance and focus beverages.', 70, 1);
 
 INSERT IGNORE INTO delivery_riders (id, rider_code, name, phone_number, bike_registration, availability, status, current_location) VALUES
 (1, 'RDR-0001', 'Amon Phiri', '+265 888 100 101', 'MMB 4012', 'available', 'active', 'Blantyre'),
@@ -305,12 +297,8 @@ INSERT IGNORE INTO shop_products (id, category_id, supplier_id, warehouse_id, sk
 (2, 2, 1, 1, 'BEER-001', 'Premium Lager 6 Pack', 'premium-lager-6-pack', 'Cold six-pack lager for gatherings.', 'A crisp local-style lager available in a convenient six-pack.', 'Uthenga Direct', '6 pack', 8200, NULL, 60, 12, 'https://images.unsplash.com/photo-1527281400683-b4d2a2f6f8ff?w=900&fit=crop&q=80', NULL, 1, 0, 1, 0, NULL, 1, 'active'),
 (3, 4, 1, 1, 'SODA-001', 'Orange Soda 12 Pack', 'orange-soda-12-pack', 'Bright citrus soda multipack.', 'Sweet orange-flavoured soda for family and office stocking.', 'Uthenga Direct', '12 pack', 5400, NULL, 48, 10, 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=900&fit=crop&q=80', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
 (4, 5, 1, 1, 'WATER-001', 'Purified Water 12 Pack', 'purified-water-12-pack', 'Bottled water for home and office use.', 'Sealed purified drinking water bottles in a family pack.', 'Uthenga Direct', '12 pack', 3800, NULL, 85, 20, 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=900&fit=crop&q=80', NULL, 1, 1, 0, 0, NULL, 0, 'active'),
-(5, 8, 1, 1, 'FLOUR-001', 'Maize Flour 25kg', 'maize-flour-25kg', 'Staple maize flour bag.', 'Local staple maize flour suitable for households and caterers.', 'Uthenga Direct', '25kg bag', 24000, NULL, 30, 8, 'https://images.unsplash.com/photo-1518843875459-f738682238a6?w=900&fit=crop&q=80', NULL, 1, 0, 1, 0, NULL, 0, 'active'),
-(6, 11, 1, 1, 'OIL-001', 'Cooking Oil 5L', 'cooking-oil-5l', 'Family-size cooking oil.', 'Refined cooking oil for everyday meal preparation.', 'Uthenga Direct', '5L bottle', 18500, NULL, 42, 10, 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=900&fit=crop&q=80', NULL, 0, 1, 0, 1, 'Limited stock', 0, 'active'),
-(7, 6, 1, 1, 'JUICE-001', 'Mixed Fruit Juice 1L', 'mixed-fruit-juice-1l', 'Family-size juice for breakfast and snacks.', 'A refreshing blended fruit juice with a smooth finish.', 'Uthenga Direct', '1L carton', 3200, NULL, 72, 18, 'https://images.unsplash.com/photo-1589734759944-5f1a5c5f5d12?w=900&fit=crop&q=80', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
-(8, 14, 1, 1, 'SNACK-001', 'Family Snack Box', 'family-snack-box', 'Assorted snacks for home, office, or travel.', 'A mixed box of biscuits, crisps, and confectionery favorites.', 'Uthenga Direct', 'Box', 6700, 7900, 58, 14, 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=900&fit=crop&q=80', NULL, 1, 1, 1, 1, 'Bundle offer', 0, 'active'),
-(9, 12, 1, 1, 'GROC-001', 'Everyday Grocery Basket', 'everyday-grocery-basket', 'Household essentials and pantry basics.', 'A practical basket with assorted grocery staples for weekly shopping.', 'Uthenga Direct', 'Basket', 14900, NULL, 26, 6, 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=900&fit=crop&q=80', NULL, 1, 0, 1, 0, NULL, 0, 'active'),
-(10, 13, 1, 1, 'HOME-001', 'Household Essentials Pack', 'household-essentials-pack', 'Cleaning and daily-use household pack.', 'Selected cleaning and household items for everyday convenience.', 'Uthenga Direct', 'Pack', 9800, NULL, 34, 10, 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=900&fit=crop&q=80', NULL, 0, 1, 0, 0, NULL, 0, 'active');
+(5, 6, 1, 1, 'JUICE-001', 'Mixed Fruit Juice 1L', 'mixed-fruit-juice-1l', 'Family-size juice for breakfast and snacks.', 'A refreshing blended fruit juice with a smooth finish.', 'Uthenga Direct', '1L carton', 3200, NULL, 72, 18, 'https://images.unsplash.com/photo-1589734759944-5f1a5c5f5d12?w=900&fit=crop&q=80', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
+(6, 7, 1, 1, 'ENERGY-001', 'Energy Drink 4 Pack', 'energy-drink-4-pack', 'Refreshing energy drink multipack.', 'A bold energy drink pack for long days, events, and road trips.', 'Uthenga Direct', '4 pack', 6200, NULL, 36, 8, 'https://images.unsplash.com/photo-1553251494-3c6a5a7bd2a5?w=900&fit=crop&q=80', NULL, 0, 0, 1, 1, 'Cold stock', 0, 'active');
 
 INSERT IGNORE INTO shop_product_images (id, product_id, image_url, alt_text, sort_order, is_primary) VALUES
 (1, 1, 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&fit=crop&q=80', 'Reserve Merlot bottle', 1, 1),
@@ -318,11 +306,7 @@ INSERT IGNORE INTO shop_product_images (id, product_id, image_url, alt_text, sor
 (3, 2, 'https://images.unsplash.com/photo-1527281400683-b4d2a2f6f8ff?w=1200&fit=crop&q=80', 'Premium lager bottles', 1, 1),
 (4, 3, 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=1200&fit=crop&q=80', 'Soft drink cans', 1, 1),
 (5, 4, 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=1200&fit=crop&q=80', 'Water bottle pack', 1, 1),
-(6, 5, 'https://images.unsplash.com/photo-1518843875459-f738682238a6?w=1200&fit=crop&q=80', 'Maize flour sack', 1, 1),
-(7, 6, 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=1200&fit=crop&q=80', 'Cooking oil bottle', 1, 1),
-(8, 7, 'https://images.unsplash.com/photo-1589734759944-5f1a5c5f5d12?w=1200&fit=crop&q=80', 'Mixed fruit juice carton', 1, 1),
-(9, 8, 'https://images.unsplash.com/photo-1566478989037-eec170784d0b?w=1200&fit=crop&q=80', 'Snack assortment box', 1, 1),
-(10, 9, 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&fit=crop&q=80', 'Grocery basket', 1, 1),
-(11, 10, 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=1200&fit=crop&q=80', 'Household essentials pack', 1, 1);
+(6, 5, 'https://images.unsplash.com/photo-1589734759944-5f1a5c5f5d12?w=1200&fit=crop&q=80', 'Mixed fruit juice carton', 1, 1),
+(7, 6, 'https://images.unsplash.com/photo-1553251494-3c6a5a7bd2a5?w=1200&fit=crop&q=80', 'Energy drink cans', 1, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

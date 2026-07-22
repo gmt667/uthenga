@@ -2,6 +2,7 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/restoration_helpers.php';
+require_once __DIR__ . '/includes/auth_check.php';
 require_once __DIR__ . '/includes/security_helper.php';
 require_once __DIR__ . '/includes/brand_icons.php';
 

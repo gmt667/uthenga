@@ -204,7 +204,7 @@ $activeNav = 'shop';
       <div class="shop-hero-card">
         <span class="shop-hero-kicker"><?= uthenga_public_icon_svg('shop') ?> <?= e($settings['shop_name']) ?></span>
         <h1 style="margin-top:1rem;"><?= e($settings['shop_tagline']) ?></h1>
-        <p class="text-muted" style="max-width:56ch;">Shop fresh essentials, drinks, groceries, and household staples from Uthenga. Browse curated collections, add items to your cart, and checkout with delivery for Malawi-wide convenience.</p>
+        <p class="text-muted" style="max-width:56ch;">Shop beers, spirits, soft drinks, water, juice, and other chilled beverages from Uthenga. Browse curated collections, add items to your cart, and checkout with delivery for Malawi-wide convenience.</p>
         <div style="display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.35rem;">
           <span style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .7rem;border:1px solid var(--clr-border);border-radius:999px;background:var(--clr-surface);font-size:.78rem;font-weight:600;"><?= uthenga_public_icon_svg('check') ?> Fast delivery</span>
           <span style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .7rem;border:1px solid var(--clr-border);border-radius:999px;background:var(--clr-surface);font-size:.78rem;font-weight:600;"><?= uthenga_public_icon_svg('cart') ?> Secure checkout</span>
