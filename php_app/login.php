@@ -67,13 +67,106 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
 
 require_once __DIR__ . '/includes/header.php';
 ?>
+<style>
+  .login-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+    gap: 1rem;
+    align-items: stretch;
+  }
+  .login-panel {
+    border-radius: 24px;
+    border: 1px solid var(--clr-border);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+  .login-panel-form {
+    padding: 2rem;
+    background:
+      radial-gradient(circle at top left, rgba(6,182,212,.14), transparent 40%),
+      linear-gradient(180deg, rgba(255,255,255,.98), rgba(244,247,250,.96));
+  }
+  html[data-theme="dark"] .login-panel-form {
+    background:
+      radial-gradient(circle at top left, rgba(6,182,212,.14), transparent 40%),
+      linear-gradient(180deg, rgba(17,24,39,.98), rgba(11,17,32,.96));
+  }
+  .login-panel-brand {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+    background:
+      radial-gradient(circle at top right, rgba(245,158,11,.18), transparent 38%),
+      linear-gradient(135deg, rgba(6,182,212,.16), rgba(16,185,129,.12));
+  }
+  .login-brand-card {
+    padding: 1.25rem;
+    border-radius: 20px;
+    background: rgba(255,255,255,.72);
+    border: 1px solid rgba(255,255,255,.55);
+    backdrop-filter: blur(14px);
+  }
+  html[data-theme="dark"] .login-brand-card {
+    background: rgba(17,24,39,.55);
+    border-color: rgba(255,255,255,.08);
+  }
+  .login-brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 0.75rem;
+  }
+  .login-brand-copy h2 {
+    margin: 0 0 0.6rem;
+    font-size: 1.55rem;
+  }
+  .login-brand-copy p {
+    margin: 0;
+    color: var(--clr-text-muted);
+    line-height: 1.6;
+  }
+  .login-brand-list {
+    display: grid;
+    gap: .7rem;
+  }
+  .login-brand-item {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .8rem .9rem;
+    border-radius: 16px;
+    background: rgba(255,255,255,.52);
+    border: 1px solid rgba(255,255,255,.55);
+    font-size: .9rem;
+    font-weight: 600;
+  }
+  html[data-theme="dark"] .login-brand-item {
+    background: rgba(17,24,39,.48);
+    border-color: rgba(255,255,255,.08);
+  }
+  .login-password-links {
+    display: flex;
+    gap: .9rem;
+    flex-wrap: wrap;
+    margin-top: .9rem;
+    font-size: .875rem;
+  }
+  .login-password-links a {
+    font-weight: 600;
+  }
+  @media (max-width: 900px) {
+    .login-shell { grid-template-columns: 1fr; }
+  }
+</style>
 <section class="section" style="padding:3rem 0 4rem;">
-  <div class="container" style="max-width:920px;">
-    <div class="grid grid-cols-2 gap-4" style="align-items:stretch;">
-      <div class="card" style="padding:2rem;">
+  <div class="container" style="max-width:1120px;">
+    <div class="login-shell">
+      <div class="login-panel login-panel-form">
         <div class="section-label">Welcome back</div>
         <h1 style="margin:0.5rem 0 1rem;">Sign in to your Uthenga account</h1>
-        <p class="text-muted" style="max-width:520px;">Access bookings, vendor tools, dashboards, and support from one account.</p>
+        <p class="text-muted" style="max-width:520px;">Access your dashboard, orders, vendor tools, and support from one account.</p>
         <?php if ($error): ?><div class="alert alert-error" style="margin-top:1rem;"><?= e($error) ?></div><?php endif; ?>
         <?php if ($success): ?><div class="alert alert-success" style="margin-top:1rem;"><?= e($success) ?></div><?php endif; ?>
         <?php if ($socialLoginEnabled): ?>
@@ -116,19 +209,29 @@ require_once __DIR__ . '/includes/header.php';
           </div>
           <button type="submit" class="btn btn-primary">Sign In</button>
         </form>
+        <div class="login-password-links">
+          <a href="<?= BASE_URL ?>forgot_password.php">Forgot customer password?</a>
+          <a href="<?= BASE_URL ?>forgot_password.php?role=vendor">Forgot vendor password?</a>
+        </div>
         <div class="text-sm text-muted" style="margin-top:1rem;">
           Don't have an account? <a href="<?= BASE_URL ?>register.php">Register</a>
           or <a href="<?= BASE_URL ?>vendor/register.php">register as a vendor</a>.
         </div>
       </div>
-      <div class="card" style="padding:2rem;background:linear-gradient(135deg,rgba(6,182,212,.12),rgba(16,185,129,.10));">
-        <div class="section-label">Demo access</div>
-        <h2 style="margin:0.5rem 0 1rem;">Seeded accounts are ready</h2>
-        <div class="simple-list">
-          <div class="simple-list-item"><strong>Super Admin</strong><span class="text-xs text-muted">mwalwandadesire5@gmail.com</span></div>
-          <div class="simple-list-item"><strong>Customer</strong><span class="text-xs text-muted">grace.banda@gmail.com</span></div>
-          <div class="simple-list-item"><strong>Vendor</strong><span class="text-xs text-muted">events@lakemalawi.com</span></div>
-          <div class="simple-list-item"><strong>Password</strong><span class="text-xs text-muted">Use the freshly generated seed passwords from install/generate_hashes.php</span></div>
+      <div class="login-panel login-panel-brand">
+        <div class="login-brand-card">
+          <div class="login-brand-logo">
+            <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/includes/logo.php'; ?>
+          </div>
+          <div class="login-brand-copy">
+            <h2>Secure access for customers, vendors, and admins.</h2>
+            <p>Use your Uthenga account to manage orders, bookings, marketplace activity, and vendor operations from one place.</p>
+          </div>
+        </div>
+        <div class="login-brand-list">
+          <div class="login-brand-item"><?= uthenga_public_icon_svg('check') ?> Customer dashboard access</div>
+          <div class="login-brand-item"><?= uthenga_public_icon_svg('check') ?> Vendor portal access</div>
+          <div class="login-brand-item"><?= uthenga_public_icon_svg('check') ?> Fast account recovery</div>
         </div>
       </div>
     </div>
