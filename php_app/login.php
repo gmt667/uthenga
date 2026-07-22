@@ -210,8 +210,7 @@ require_once __DIR__ . '/includes/header.php';
           <button type="submit" class="btn btn-primary">Sign In</button>
         </form>
         <div class="login-password-links">
-          <a href="<?= BASE_URL ?>forgot_password.php">Forgot customer password?</a>
-          <a href="<?= BASE_URL ?>forgot_password.php?role=vendor">Forgot vendor password?</a>
+          <a href="<?= BASE_URL ?>forgot_password.php">Forgot password?</a>
         </div>
         <div class="text-sm text-muted" style="margin-top:1rem;">
           Don't have an account? <a href="<?= BASE_URL ?>register.php">Register</a>
