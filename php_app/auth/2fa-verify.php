@@ -17,6 +17,12 @@ if (empty($_SESSION['2fa_pending']) || empty($_SESSION['2fa_user_id'])) {
     redirect(BASE_URL . 'login.php');
 }
 
+$hasTwoFactorTable = uthenga_table_exists('two_factor_auth');
+if (!$hasTwoFactorTable) {
+    unset($_SESSION['2fa_pending'], $_SESSION['2fa_user_id'], $_SESSION['2fa_user_role'], $_SESSION['2fa_user_name']);
+    redirect(BASE_URL . 'login.php?error=2fa_not_available');
+}
+
 $userId = $_SESSION['2fa_user_id'];
 $error = '';
 $useBackup = isset($_GET['backup']) && $_GET['backup'] === '1';

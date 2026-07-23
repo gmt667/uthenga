@@ -14,12 +14,6 @@ $userId = (int) ($_SESSION['user_id'] ?? 0);
 $user = dbQueryOne('SELECT * FROM users WHERE id = ?', [$userId]);
 $listings = marketplace_fetch_favorites($userId);
 
-function renderStars($rating) {
-    $rating = (float) $rating;
-    $full = (int) floor($rating);
-    $half = (($rating - $full) >= 0.5) ? 1 : 0;
-    return str_repeat('â˜…', $full) . str_repeat('Â½', $half) . str_repeat('â˜†', 5 - $full - $half);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,14 +36,14 @@ function renderStars($rating) {
 <div class="container" style="padding-top:2.5rem;padding-bottom:4rem;">
   <div class="page-header">
     <div>
-      <h1 class="page-title">â¤ï¸ My Wishlist</h1>
+      <h1 class="page-title">My Wishlist</h1>
       <p class="text-muted">Explore and book the items you saved for later.</p>
     </div>
   </div>
 
   <?php if (empty($listings)): ?>
     <div class="glass-panel animate-in text-center" style="padding:4rem 2rem; text-align:center; margin-top:1rem;">
-      <div style="font-size:3.5rem;margin-bottom:1rem;">â¤ï¸</div>
+      <div style="font-size:3.5rem;margin-bottom:1rem;"><?= uthenga_public_icon_svg('heart') ?></div>
       <h3>Your wishlist is empty</h3>
       <p class="text-muted" style="margin:0.5rem 0 1.5rem;">Explore the marketplace and click "Save to Favorites" to keep track of your favorites.</p>
       <a href="<?= BASE_URL ?>index.php" class="btn btn-primary btn-lg">Explore Marketplace</a>
@@ -67,15 +61,11 @@ function renderStars($rating) {
                 data-id="<?= e($listing['id']) ?>"
                 data-type="<?= e($listing['type']) ?>"
                 style="position:absolute;top:0.75rem;right:0.75rem;background:rgba(0,0,0,0.6);color:#ef4444;border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;"
-                title="Remove from Wishlist">âœ•</button>
+                title="Remove from Wishlist">Remove</button>
             </div>
             <div class="card-body">
               <div class="card-title"><?= e($listing['title']) ?></div>
-              <div class="card-loc">ðŸ“ <?= e($listing['location']) ?></div>
-              <div class="flex items-center gap-1" style="margin-bottom:0.75rem;">
-                <span class="stars"><?= renderStars(isset($listing['rating']) ? $listing['rating'] : 0) ?></span>
-                <span class="text-xs text-muted"><?= e(isset($listing['rating']) ? $listing['rating'] : 0) ?></span>
-              </div>
+              <div class="card-loc">Location: <?= e($listing['location']) ?></div>
               <div class="card-price"><?= e($listing['price_label']) ?></div>
             </div>
             <div class="card-footer">

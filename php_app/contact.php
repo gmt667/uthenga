@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 /**
- * Uthenga â€” Contact Us Page
+ * Uthenga — Contact Us Page
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
   <!-- Breadcrumb -->
   <nav style="font-size:0.8rem;color:var(--clr-text-muted);margin-bottom:1.5rem;">
     <a href="<?= BASE_URL ?>index.php">Explore</a>
-    <span style="margin:0 0.4rem;">â€º</span>
+    <span style="margin:0 0.4rem;">›</span>
     <span style="color:var(--clr-text-soft);">Contact Us</span>
   </nav>
 

@@ -349,7 +349,6 @@ $popularCategories = [
               <div class="card-body">
                 <div class="card-title"><?= e($listing['title']) ?></div>
                 <div class="card-loc">Location: <?= e($listing['location']) ?></div>
-                <div class="text-sm text-muted" style="margin-top:0.5rem;">Rating: <?= e(isset($listing['rating']) ? $listing['rating'] : 0) ?>/5</div>
                 <div class="card-price"><?= e($listing['price_label']) ?></div>
               </div>
               <div class="card-footer">

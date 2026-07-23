@@ -1,6 +1,6 @@
 <?php
 /**
- * Uthenga â€” Universal Listing Details Page
+ * Uthenga — Universal Listing Details Page
  */
 require_once __DIR__ . '/config.php';
 
@@ -74,7 +74,7 @@ if (uthenga_table_exists('customer_reviews')) {
     ) ?: [];
 }
 
-// Safely count related bookings â€” guard against missing booking_items table
+// Safely count related bookings — guard against missing booking_items table
 $relCount = 0;
 if (uthenga_table_exists('booking_items')) {
     try {
@@ -88,7 +88,7 @@ if (uthenga_table_exists('booking_items')) {
             $relCount = dbCount("SELECT COUNT(*) FROM booking_items WHERE item_type = 'transport_seat' AND reference_id = ?", [$id]);
         }
     } catch (Throwable $e) {
-        // Graceful fallback â€” non-critical stat
+        // Graceful fallback — non-critical stat
         $relCount = 0;
     }
 }
@@ -181,7 +181,7 @@ if (!function_exists('renderStars')) {
 function renderStars(float $rating): string {
     $full = (int)floor($rating);
     $half = ($rating - $full) >= 0.5 ? 1 : 0;
-    return str_repeat('â˜…', $full) . str_repeat('Â½', $half) . str_repeat('â˜†', 5 - $full - $half);
+    return str_repeat('★', $full) . str_repeat('½', $half) . str_repeat('☆', 5 - $full - $half);
 }
 }
 
@@ -373,7 +373,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
   <nav style="font-size:0.8rem;color:var(--clr-text-muted);margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
     <div>
       <a href="<?= BASE_URL ?>index.php">Explore</a>
-      <span style="margin:0 0.4rem;">â€º</span>
+      <span style="margin:0 0.4rem;">›</span>
       <span style="margin:0 0.4rem;">›</span>
       <a href="<?= BASE_URL ?><?= e($listing['listing_type']) ?>s.php"><?= ucfirst(e($listing['listing_type'])) ?>s</a>
       <span style="margin:0 0.4rem;">›</span>
@@ -730,7 +730,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
               <span style="font-weight:600;font-size:0.875rem;"><?= e($rev['user_name']) ?></span>
               <div style="display:flex;align-items:center;gap:0.5rem;">
-                <span style="color:var(--clr-accent);"><?= str_repeat('â˜…', (int)$rev['rating']) ?><?= str_repeat('â˜†', 5-(int)$rev['rating']) ?></span>
+                <span style="color:var(--clr-accent);"><?= str_repeat('★', (int)$rev['rating']) ?><?= str_repeat('☆', 5-(int)$rev['rating']) ?></span>
                 <span class="text-xs text-muted"><?= e($rev['review_date']) ?></span>
               </div>
             </div>
@@ -751,11 +751,11 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
                 <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label" style="display: block; margin-bottom: 0.25rem;">Rating</label>
                   <select name="rating" class="form-control text-sm" required style="padding: 0.4rem;">
-                    <option value="5">â˜…â˜…â˜…â˜…â˜… (5 Stars)</option>
-                    <option value="4">â˜…â˜…â˜…â˜…â˜† (4 Stars)</option>
-                    <option value="3">â˜…â˜…â˜…â˜†â˜† (3 Stars)</option>
-                    <option value="2">â˜…â˜…â˜†â˜†â˜† (2 Stars)</option>
-                    <option value="1">â˜…â˜†â˜†â˜†â˜† (1 Star)</option>
+                    <option value="5">★★★★★ (5 Stars)</option>
+                    <option value="4">★★★★☆ (4 Stars)</option>
+                    <option value="3">★★★☆☆ (3 Stars)</option>
+                    <option value="2">★★☆☆☆ (2 Stars)</option>
+                    <option value="1">★☆☆☆☆ (1 Star)</option>
                   </select>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
@@ -873,7 +873,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
           <div style="display:grid;gap:0.6rem;">
             <div class="flex items-center justify-between text-sm">
               <span class="text-muted">Rating</span>
-              <span style="color:var(--clr-accent);">â˜… <?= e($listing['rating']) ?>/5.0</span>
+              <span style="color:var(--clr-accent);">★ <?= e($listing['rating']) ?>/5.0</span>
             </div>
             <div class="flex items-center justify-between text-sm">
               <span class="text-muted">Bookings</span>
@@ -926,9 +926,9 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
             <select name="ticket_type" class="form-control" id="bk-ticket-type"
               data-standard-price="<?= (float)($meta['standardTicketPrice'] ?? 0) ?>"
               data-vip-price="<?= (float)($meta['vipTicketPrice'] ?? 0) ?>">
-              <option value="Standard">Standard â€” MK <?= number_format($meta['standardTicketPrice'] ?? 0) ?></option>
+              <option value="Standard">Standard — MK <?= number_format($meta['standardTicketPrice'] ?? 0) ?></option>
               <?php if (($meta['vipTicketPrice'] ?? 0) > 0): ?>
-              <option value="VIP">VIP â€” MK <?= number_format($meta['vipTicketPrice'] ?? 0) ?></option>
+              <option value="VIP">VIP — MK <?= number_format($meta['vipTicketPrice'] ?? 0) ?></option>
               <?php endif; ?>
             </select>
             <div class="text-xs text-muted" style="margin-top:0.35rem;">
@@ -994,7 +994,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
                 <option value="<?= e($d) ?>"><?= e($d) ?></option>
               <?php endforeach; ?>
               <?php if (empty($meta['datesAvailable'] ?? [])): ?>
-                <option value="">No scheduled dates â€” contact vendor</option>
+                <option value="">No scheduled dates — contact vendor</option>
               <?php endif; ?>
             </select>
           </div>
@@ -1248,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      promoBtn.textContent = 'â€¦';
+      promoBtn.textContent = '…';
       promoBtn.disabled = true;
 
       try {

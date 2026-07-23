@@ -41,7 +41,7 @@ function requireLogin(array $allowedRoles = []): void {
     }
 
     // Validate active device session
-    if (isset($_SESSION['device_session_token'])) {
+    if (isset($_SESSION['device_session_token']) && uthenga_table_exists('device_sessions')) {
         $validSession = dbQueryOne(
             "SELECT id FROM device_sessions WHERE user_id = ? AND session_token = ?",
             [$_SESSION['user_id'], $_SESSION['device_session_token']]

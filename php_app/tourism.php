@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 /**
- * Uthenga â€” Tourism & Travel Hub
+ * Uthenga — Tourism & Travel Hub
  * Interactive map, weather, destination guides, and itinerary tools
  */
 require_once __DIR__ . '/config.php';
@@ -10,14 +10,14 @@ $pageTitle = 'Tourism & Travel';
 $activeNav = 'tourism';
 
 // Fetch destination guides
-$guides = dbQuery(
-    "SELECT * FROM destination_guides WHERE is_active = 1 ORDER BY is_featured DESC, created_at DESC LIMIT 6"
-) ?: [];
+$guides = uthenga_table_exists('destination_guides')
+    ? (dbQuery("SELECT * FROM destination_guides WHERE is_active = 1 ORDER BY is_featured DESC, created_at DESC LIMIT 6") ?: [])
+    : [];
 
 // Fetch featured map points for initial display
-$mapPoints = dbQuery(
-    "SELECT * FROM map_points WHERE is_active = 1 ORDER BY is_featured DESC, name ASC"
-) ?: [];
+$mapPoints = uthenga_table_exists('map_points')
+    ? (dbQuery("SELECT * FROM map_points WHERE is_active = 1 ORDER BY is_featured DESC, name ASC") ?: [])
+    : [];
 
 // Malawi major cities for weather widget
 $weatherCities = [
@@ -29,9 +29,9 @@ $weatherCities = [
 ];
 
 // Featured tours
-$featuredTours = dbQuery(
-    "SELECT * FROM tour_packages WHERE status = 'published' ORDER BY created_at DESC LIMIT 6"
-) ?: [];
+$featuredTours = uthenga_table_exists('tour_packages')
+    ? (dbQuery("SELECT * FROM tour_packages WHERE status = 'published' ORDER BY created_at DESC LIMIT 6") ?: [])
+    : [];
 
 $citySpotlights = uthenga_malawi_featured_cities();
 
@@ -289,29 +289,10 @@ $citySpotlights = uthenga_malawi_featured_cities();
     </div>
 
     <?php if (empty($guides)): ?>
-    <!-- Fallback static guides if DB empty -->
-    <div class="grid grid-cols-3 gap-4">
-      <?php $staticGuides = [
-        ['city'=>'Blantyre','title'=>'Blantyre Travel Guide','summary'=>'Commercial capital, gateway to Mount Mulanje and Zomba Plateau.','img'=>'https://images.unsplash.com/photo-1612892483236-52d32a0e0ac1?w=600&fit=crop&q=80','slug'=>'blantyre-travel-guide'],
-        ['city'=>'Lilongwe','title'=>'Lilongwe City Guide','summary'=>'Political capital with vibrant Old Town markets and wildlife sanctuary.','img'=>'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&fit=crop&q=80','slug'=>'lilongwe-city-guide'],
-        ['city'=>'Mangochi / Lake','title'=>'Lake Malawi Guide','summary'=>'Crystal clear freshwater lake â€” the Lake of Stars â€” with beaches and water sports.','img'=>'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=600&fit=crop&q=80','slug'=>'lake-malawi-mangochi-guide'],
-        ['city'=>'Zomba','title'=>'Zomba Plateau','summary'=>'Hiking trails, waterfalls, and breathtaking views over the Great Rift Valley.','img'=>'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&fit=crop&q=80','slug'=>'zomba-plateau-guide'],
-        ['city'=>'Mulanje','title'=>'Mount Mulanje','summary'=>'Highest peak in Central Africa â€” trekking, camping, and dramatic scenery.','img'=>'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&fit=crop&q=80','slug'=>'mount-mulanje-guide'],
-        ['city'=>'Liwonde','title'=>'Liwonde National Park','summary'=>'Prime game reserve with elephants, hippos, crocodiles, and boat safaris.','img'=>'https://images.unsplash.com/photo-1549366021-9f761d450615?w=600&fit=crop&q=80','slug'=>'liwonde-national-park-guide'],
-      ]; foreach ($staticGuides as $g): ?>
-      <div class="guide-card">
-        <img src="<?= e($g['img']) ?>" alt="<?= e($g['title']) ?>" loading="lazy">
-        <div class="guide-card-body">
-          <div class="guide-card-city"><?= e($g['city']) ?></div>
-          <div class="guide-card-title"><?= e($g['title']) ?></div>
-          <div class="guide-card-summary"><?= e($g['summary']) ?></div>
-          <div class="guide-card-footer">
-            <a href="<?= BASE_URL ?>destination-guide.php?slug=<?= e($g['slug']) ?>" class="btn btn-sm btn-secondary" style="width:100%">Read Guide</a>
-          </div>
-        </div>
+      <div class="guide-card" style="padding:2rem;text-align:center;grid-column:1/-1;">
+        <h3 style="margin-bottom:0.5rem;">No destination guides yet</h3>
+        <p class="text-muted" style="margin:0;">The travel guides will appear here once they are added in the admin dashboard.</p>
       </div>
-      <?php endforeach; ?>
-    </div>
     <?php else: ?>
     <div class="grid grid-cols-3 gap-4">
       <?php foreach ($guides as $g): ?>
@@ -339,7 +320,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   <div class="container">
     <div class="itinerary-cta">
       <h2><?= uthenga_public_icon_svg('sparkles') ?> Plan Your Perfect Malawi Trip</h2>
-      <p>Use our AI-powered trip planner to get a personalized itinerary, budget estimate, and downloadable PDF â€” in seconds.</p>
+      <p>Use our AI-powered trip planner to get a personalized itinerary, budget estimate, and downloadable PDF — in seconds.</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
         <a href="<?= BASE_URL ?>trip-planner.php" class="btn btn-white btn-lg">ðŸ—“ Plan My Trip</a>
         <a href="<?= BASE_URL ?>ai/chat.php" class="btn btn-outline-white btn-lg">ðŸ¤– Ask AI Assistant</a>
@@ -360,11 +341,11 @@ $citySpotlights = uthenga_malawi_featured_cities();
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('calendar') ?> Best Time to Visit</h4>
-        <p>May to October (dry season) is ideal. The rainy season (Novemberâ€“April) brings lush greenery but some roads become impassable.</p>
+        <p>May to October (dry season) is ideal. The rainy season (November–April) brings lush greenery but some roads become impassable.</p>
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('warning') ?> Health</h4>
-        <p>Malaria is present â€” take prophylaxis and use mosquito repellent. Drink bottled or purified water. Travel insurance is strongly recommended.</p>
+        <p>Malaria is present — take prophylaxis and use mosquito repellent. Drink bottled or purified water. Travel insurance is strongly recommended.</p>
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('bus') ?> Getting Around</h4>
@@ -372,7 +353,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('globe') ?> Lake Safety</h4>
-        <p>Lake Malawi is generally safe for swimming on sandy shores. Avoid reedy areas (bilharzia risk). Lifeguards are rare â€” swim with care.</p>
+        <p>Lake Malawi is generally safe for swimming on sandy shores. Avoid reedy areas (bilharzia risk). Lifeguards are rare — swim with care.</p>
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('phone') ?> Connectivity</h4>
@@ -380,7 +361,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('heart') ?> Culture</h4>
-        <p>Malawians are renowned for their warmth and friendliness â€” "the warm heart of Africa." Dress modestly in rural areas and markets.</p>
+        <p>Malawians are renowned for their warmth and friendliness — "the warm heart of Africa." Dress modestly in rural areas and markets.</p>
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('heart') ?> Wildlife</h4>

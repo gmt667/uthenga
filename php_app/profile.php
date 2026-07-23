@@ -13,6 +13,10 @@ requireLogin();
 
 $userId  = $_SESSION['user_id'];
 $user    = dbQueryOne('SELECT * FROM users WHERE id = ?', [$userId]);
+$hasDeviceSessionsTable = uthenga_table_exists('device_sessions');
+$hasTwoFactorTable      = uthenga_table_exists('two_factor_auth');
+$hasTwoFactorColumn     = is_array($user) && array_key_exists('two_factor_enabled', $user);
+$canManageTwoFactor     = $hasTwoFactorTable && $hasTwoFactorColumn;
 
 $profileSuccess = '';
 $profileError   = '';
@@ -102,7 +106,9 @@ $securityError   = '';
 
 // ─── Enable 2FA ──────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enable_2fa'])) {
-    if (!validateCsrf()) {
+    if (!$canManageTwoFactor) {
+        $securityError = 'Two-Factor Authentication is not available on this installation yet.';
+    } elseif (!validateCsrf()) {
         $securityError = 'Security error. Please refresh.';
     } else {
         $code = trim($_POST['code'] ?? '');
@@ -145,7 +151,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enable_2fa'])) {
 
 // ─── Disable 2FA ─────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['disable_2fa'])) {
-    if (!validateCsrf()) {
+    if (!$canManageTwoFactor) {
+        $securityError = 'Two-Factor Authentication is not available on this installation yet.';
+    } elseif (!validateCsrf()) {
         $securityError = 'Security error. Please refresh.';
     } else {
         $password = $_POST['password'] ?? '';
@@ -167,7 +175,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['disable_2fa'])) {
 
 // ─── Revoke Device Session ───────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['revoke_session'])) {
-    if (!validateCsrf()) {
+    if (!$hasDeviceSessionsTable) {
+        $securityError = 'Device session tracking is not available on this server yet.';
+    } elseif (!validateCsrf()) {
         $securityError = 'Security error. Please refresh.';
     } else {
         $sessionToken = $_POST['session_token'] ?? '';
@@ -205,7 +215,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_preferences'])
 
 // Generate draft secret if 2FA setup is needed
 if (empty($user['two_factor_enabled']) && empty($_SESSION['2fa_draft_secret'])) {
-    $_SESSION['2fa_draft_secret'] = TotpHelper::generateSecret();
+    if (!$canManageTwoFactor) {
+        unset($_SESSION['2fa_draft_secret']);
+    } elseif (empty($_SESSION['2fa_draft_secret'])) {
+        $_SESSION['2fa_draft_secret'] = TotpHelper::generateSecret();
+    }
 }
 
 $pageTitle = 'My Profile';
@@ -217,12 +231,12 @@ $totalSpent   = dbQueryOne('SELECT COALESCE(SUM(total_price),0) AS total FROM bo
 $auditLogs    = dbQuery('SELECT * FROM audit_logs WHERE user_id = ? ORDER BY created_at DESC LIMIT 8', [$userId]);
 
 // Fetch device sessions
-$activeSessions = dbQuery("
+$activeSessions = $hasDeviceSessionsTable ? dbQuery("
     SELECT *, (session_token = ?) AS is_current 
     FROM device_sessions 
     WHERE user_id = ? 
     ORDER BY is_current DESC, last_active_at DESC
-", [$_SESSION['device_session_token'] ?? '', $userId]);
+", [$_SESSION['device_session_token'] ?? '', $userId]) : [];
 ?>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
@@ -238,7 +252,7 @@ $activeSessions = dbQuery("
       <?php if (!empty($user['avatar'])): ?>
         <img src="<?= e($user['avatar']) ?>" alt="" style="width:100%;height:100%;object-fit:cover;">
       <?php else: ?>
-        <?= mb_strtoupper(mb_substr($user['name'], 0, 1)) ?>
+        <?= strtoupper(substr((string) ($user['name'] ?? 'U'), 0, 1)) ?>
       <?php endif; ?>
     </div>
     <div style="flex:1;min-width:180px;">
@@ -269,27 +283,6 @@ $activeSessions = dbQuery("
         <div style="font-size:1.1rem;font-weight:800;color:var(--clr-accent);"><?= formatMWK((float)($totalSpent['total'] ?? 0)) ?></div>
         <div class="text-xs text-muted">Total Spent</div>
       </div>
-    </div>
-  </div>
-
-  <div class="glass-panel" style="padding:1.5rem;margin-bottom:2.5rem;">
-  <div class="page-header">
-      <div>
-        <h3 class="page-title" style="font-size:1.35rem;">Explore Malawi</h3>
-        <p class="text-muted">Mock city cards with images for the profile section and travel inspiration.</p>
-      </div>
-    </div>
-    <div class="grid grid-cols-5 gap-4">
-      <?php foreach (uthenga_malawi_featured_cities() as $city): ?>
-        <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($city['city']) ?>" class="card" style="overflow:hidden;display:block;text-decoration:none;color:inherit;">
-          <img src="<?= e($city['image']) ?>" alt="<?= e($city['city']) ?>" loading="lazy" style="width:100%;height:120px;object-fit:cover;">
-          <div style="padding:0.9rem;">
-            <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-accent);"><?= e($city['district']) ?></div>
-            <strong style="display:block;margin-top:.25rem;"><?= e($city['city']) ?></strong>
-            <p class="text-xs text-muted" style="margin:0.35rem 0 0;"><?= e($city['summary']) ?></p>
-          </div>
-        </a>
-      <?php endforeach; ?>
     </div>
   </div>
 
@@ -405,7 +398,7 @@ $activeSessions = dbQuery("
         <div class="alert alert-success" style="margin-bottom: 1rem;"><?= uthenga_public_icon_svg('check') ?> <?= e($securitySuccess) ?></div>
       <?php endif; ?>
 
-      <?php if (!empty($user['two_factor_enabled'])): ?>
+      <?php if ($canManageTwoFactor && !empty($user['two_factor_enabled'])): ?>
         <div class="card" style="padding:1.5rem;border:1px solid var(--clr-green);background:rgba(16,185,129,0.05);margin-bottom:1rem;">
           <div style="display:flex;align-items:center;gap:0.5rem;font-weight:700;color:var(--clr-green);margin-bottom:0.5rem;">
             <span><?= uthenga_public_icon_svg('lock') ?></span> Two-Factor Authentication is Active
@@ -437,7 +430,7 @@ $activeSessions = dbQuery("
           <?php unset($_SESSION['2fa_backup_codes_show']); ?>
         <?php endif; ?>
 
-      <?php else: ?>
+      <?php elseif ($canManageTwoFactor): ?>
         <div class="card" style="padding:1.5rem;margin-bottom:1.5rem;">
           <p class="text-sm text-muted" style="margin-bottom:1rem;">Protect your account with Google Authenticator, Authy, or any TOTP compatible app.</p>
 
@@ -466,6 +459,13 @@ $activeSessions = dbQuery("
             </div>
           </form>
         </div>
+      <?php else: ?>
+        <div class="card" style="padding:1.5rem;margin-bottom:1.5rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;font-weight:700;margin-bottom:0.5rem;">
+            <?= uthenga_public_icon_svg('lock') ?> Two-Factor Authentication unavailable
+          </div>
+          <p class="text-sm text-muted" style="margin:0;">This installation does not include the 2FA tables or user column yet, so security setup is hidden until that migration is applied.</p>
+        </div>
       <?php endif; ?>
 
       <!-- Active Devices -->
@@ -474,7 +474,11 @@ $activeSessions = dbQuery("
         <div class="alert alert-success" style="margin-bottom: 1rem;"><?= uthenga_public_icon_svg('check') ?> <?= e($securitySuccess) ?></div>
       <?php endif; ?>
       <div style="display:grid;gap:0.75rem;margin-bottom:2rem;">
-        <?php if (empty($activeSessions)): ?>
+        <?php if (!$hasDeviceSessionsTable): ?>
+          <div class="card" style="padding:1rem;">
+            <p class="text-sm text-muted" style="margin:0;">Device session tracking is not enabled on this installation yet.</p>
+          </div>
+        <?php elseif (empty($activeSessions)): ?>
           <p class="text-sm text-muted">No device sessions tracked.</p>
         <?php else: ?>
           <?php foreach ($activeSessions as $sess): ?>
@@ -483,7 +487,7 @@ $activeSessions = dbQuery("
                 <span style="font-size:1.5rem;"><?= (($sess['device_type'] ?? '') === 'mobile') ? uthenga_public_icon_svg('phone') : uthenga_public_icon_svg('globe') ?></span>
                 <div>
                   <strong><?= e($sess['device_name'] ?? 'Device') ?></strong>
-                  <div class="text-xs text-muted"><?= e(($sess['browser'] ?? '') . ' • ' . ($sess['os'] ?? '')) ?></div>
+                  <div class="text-xs text-muted"><?= e(($sess['browser'] ?? '') . ' · ' . ($sess['os'] ?? '')) ?></div>
                   <div class="text-xs text-muted"><?= e($sess['ip_address'] ?? '') ?></div>
                 </div>
               </div>

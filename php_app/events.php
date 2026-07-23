@@ -1,6 +1,6 @@
-﻿<?php
+<?php
 /**
- * Uthenga â€” Events Directory (Enhanced)
+ * Uthenga — Events Directory (Enhanced)
  * Features: Hero Slider, Ad Strip, Filters, Grid/Map View Toggle
  */
 require_once __DIR__ . '/config.php';
@@ -128,13 +128,7 @@ if (empty($allLocations)) {
 // Active advertisements for the strip
 $activeAds = getActiveAds('banner', 6);
 
-// Placeholder ad data when no real ads exist
-$placeholderAds = [
-    ['title' => 'ðŸŽ‰ Featured Event â€” Blantyre Jazz Festival', 'link_url' => '#', 'image_url' => ''],
-    ['title' => 'ðŸŸï¸ Nyasa Big Bullets vs Silver Strikers â€” Book Now!', 'link_url' => '#', 'image_url' => ''],
-    ['title' => 'ðŸŽ¤ Malawi Music Awards 2026 â€” Limited VIP Seats', 'link_url' => '#', 'image_url' => ''],
-];
-$displayAds = !empty($activeAds) ? $activeAds : $placeholderAds;
+$displayAds = $activeAds;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -325,6 +319,7 @@ $displayAds = !empty($activeAds) ? $activeAds : $placeholderAds;
 </section>
 <?php endif; ?>
 
+<?php if (!empty($displayAds)): ?>
 <!-- â”€â”€â”€ Advertisement Strip â”€â”€â”€ -->
 <div class="ad-strip" role="complementary" aria-label="Sponsored events">
   <div class="container" style="padding: 0;">
@@ -344,6 +339,7 @@ $displayAds = !empty($activeAds) ? $activeAds : $placeholderAds;
     </div>
   </div>
 </div>
+<?php endif; ?>
 
 <!-- â”€â”€â”€ Main Content â”€â”€â”€ -->
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
@@ -462,12 +458,17 @@ $displayAds = !empty($activeAds) ? $activeAds : $placeholderAds;
                 <span class="text-xs text-muted"><?= e($listing['rating']) ?></span>
               </div>
               <?php if (!empty($listing['description'])): ?>
-                <div class="card-short-desc"><?= e(mb_substr($listing['description'], 0, 120)) ?><?= mb_strlen($listing['description']) > 120 ? 'â€¦' : '' ?></div>
+                <?php
+                  $desc = (string) ($listing['description'] ?? '');
+                  $shortDesc = function_exists('mb_substr') ? mb_substr($desc, 0, 120) : substr($desc, 0, 120);
+                  $needsEllipsis = function_exists('mb_strlen') ? mb_strlen($desc) > 120 : strlen($desc) > 120;
+                ?>
+                <div class="card-short-desc"><?= e($shortDesc) ?><?= $needsEllipsis ? '…' : '' ?></div>
               <?php endif; ?>
               <div class="card-price"><?= getEventPrice($listing) ?></div>
               <?php if ($totalAvail > 0): ?>
                 <div class="card-tickets-left <?= $isLowStock ? 'low' : '' ?>">
-                  ðŸŽŸï¸ <?= number_format($totalAvail) ?> tickets left<?= $isLowStock ? ' â€” Almost sold out!' : '' ?>
+                  ðŸŽŸï¸ <?= number_format($totalAvail) ?> tickets left<?= $isLowStock ? ' — Almost sold out!' : '' ?>
                 </div>
               <?php else: ?>
                 <div class="card-tickets-left low" style="font-weight: 700;">âŒ Sold Out</div>

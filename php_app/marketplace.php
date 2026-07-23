@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Local Business Marketplace
  * Directory of restaurants, cafes, tour guides, car hire, photographers,
@@ -244,10 +244,13 @@ if (empty($listings)) {
             continue;
         }
         if ($search !== '') {
-            $searchLower = mb_strtolower($search);
-            $nameMatch = mb_strpos(mb_strtolower($biz['business_name']), $searchLower) !== false;
-            $descMatch = mb_strpos(mb_strtolower($biz['description']), $searchLower) !== false;
-            $cityMatch = mb_strpos(mb_strtolower($biz['city']), $searchLower) !== false;
+            $searchLower = function_exists('mb_strtolower') ? mb_strtolower($search) : strtolower($search);
+            $nameValue = function_exists('mb_strtolower') ? mb_strtolower((string)($biz['business_name'] ?? '')) : strtolower((string)($biz['business_name'] ?? ''));
+            $descValue = function_exists('mb_strtolower') ? mb_strtolower((string)($biz['description'] ?? '')) : strtolower((string)($biz['description'] ?? ''));
+            $cityValue = function_exists('mb_strtolower') ? mb_strtolower((string)($biz['city'] ?? '')) : strtolower((string)($biz['city'] ?? ''));
+            $nameMatch = strpos($nameValue, $searchLower) !== false;
+            $descMatch = strpos($descValue, $searchLower) !== false;
+            $cityMatch = strpos($cityValue, $searchLower) !== false;
             if (!$nameMatch && !$descMatch && !$cityMatch) {
                 continue;
             }
@@ -321,7 +324,7 @@ if ($viewId !== '') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
-  <meta name="description" content="Discover local businesses in Malawi â€” restaurants, cafes, tour guides, car hire, photographers, curio shops and boat operators on Uthenga.">
+  <meta name="description" content="Discover local businesses in Malawi — restaurants, cafes, tour guides, car hire, photographers, curio shops and boat operators on Uthenga.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= APP_VERSION ?>">
@@ -568,9 +571,6 @@ if ($viewId !== '') {
         $bizType    = $biz['business_type'] ?? '';
         $typeLabel  = $businessTypes[$bizType] ?? 'Other';
         $typeIcon   = $businessTypeIcons[$bizType] ?? 'info';
-        $rating     = (float)($biz['avg_rating'] ?? 0);
-        $ratingCount = (int)($biz['review_count'] ?? 0);
-        $stars = str_repeat('★', min(5, max(0, round($rating)))) . str_repeat('☆', 5 - min(5, max(0, round($rating))));
         $coverImg = $biz['cover_image'] ?? '';
         $phone  = $biz['phone']  ?? $biz['vendor_phone'] ?? '';
         $waLink = $phone ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $phone) : '';
@@ -594,14 +594,6 @@ if ($viewId !== '') {
           <?php if (!empty($biz['description'])): ?>
             <div class="biz-description"><?= e($biz['description']) ?></div>
           <?php endif; ?>
-
-          <div class="biz-rating">
-            <span class="biz-stars"><?= $stars ?></span>
-            <span style="font-size:.85rem; font-weight:700;"><?= number_format($rating, 1) ?></span>
-            <?php if ($ratingCount > 0): ?>
-              <span class="biz-rating-count">(<?= $ratingCount ?> reviews)</span>
-            <?php endif; ?>
-          </div>
 
           <?php if ($phone || !empty($biz['website'])): ?>
           <div style="font-size:.75rem; color:var(--clr-text-soft); margin-bottom:.65rem;">
@@ -656,9 +648,6 @@ if ($viewId !== '') {
   <?php if ($viewListing): 
     $vlTypeLabel = $businessTypes[$viewListing['business_type'] ?? ''] ?? 'Other';
     $vlTypeIcon  = $businessTypeIcons[$viewListing['business_type'] ?? ''] ?? 'info';
-    $vlRating = (float)($viewListing['avg_rating'] ?? 0);
-    $vlRatingCount = (int)($viewListing['review_count'] ?? 0);
-    $vlStars = str_repeat('★', min(5, max(0, round($vlRating)))) . str_repeat('☆', 5 - min(5, max(0, round($vlRating))));
     $vlPhone = $viewListing['phone'] ?? $viewListing['vendor_phone'] ?? '';
     $vlCleanUrl = BASE_URL . 'marketplace.php?' . http_build_query(array_filter(['type' => $type, 'search' => $search, 'city' => $city]));
     $vlWaLink = $vlPhone ? 'https://wa.me/' . preg_replace('/[^0-9]/', '', $vlPhone) : '';
@@ -688,7 +677,6 @@ if ($viewId !== '') {
           <?php endif; ?>
           <div style="display:flex;align-items:center;gap:0.5rem;">
             <span style="color:#f59e0b;"><?= $vlStars ?></span>
-            <strong><?= number_format($vlRating, 1) ?></strong> (<?= $vlRatingCount ?> reviews)
           </div>
         </div>
 
@@ -755,7 +743,7 @@ function initMap() {
       className: '', iconSize: [12, 12], iconAnchor: [6, 6]
     });
     const marker = L.marker([biz.lat, biz.lng], { icon }).addTo(map);
-    const stars = 'â˜…'.repeat(Math.round(biz.avg_rating || 0)) + 'â˜†'.repeat(5 - Math.round(biz.avg_rating || 0));
+    const stars = '★'.repeat(Math.round(biz.avg_rating || 0)) + '☆'.repeat(5 - Math.round(biz.avg_rating || 0));
     marker.bindPopup(`
       <div style="min-width:160px;">
         ${biz.cover_image ? `<img src="${biz.cover_image}" style="width:100%;height:80px;object-fit:cover;border-radius:4px;margin-bottom:.5rem;">` : ''}

@@ -60,6 +60,10 @@ function getDeviceFingerprint(): array {
  * Registers a new device session in database and checks for login alerts.
  */
 function registerDeviceSession(string $userId): void {
+    if (!uthenga_table_exists('device_sessions')) {
+        return;
+    }
+
     $fingerprint = getDeviceFingerprint();
     $sessionToken = bin2hex(random_bytes(32));
 
@@ -97,6 +101,10 @@ function registerDeviceSession(string $userId): void {
     ]);
 
     if (!$exists) {
+        if (!uthenga_table_exists('login_alerts')) {
+            return;
+        }
+
         // This is a new device login! Trigger alert/log
         dbExecute("
             INSERT INTO login_alerts (user_id, alert_type, ip_address, user_agent, details, is_read, created_at)

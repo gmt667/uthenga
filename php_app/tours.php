@@ -193,10 +193,6 @@ function getPrice(array $listing): string {
           <div class="card-body">
             <div class="card-title"><?= e($listing['title']) ?></div>
             <div class="card-loc"><?= uthenga_public_icon_svg('pin') ?> <?= e($listing['location']) ?></div>
-            <div class="flex items-center gap-1" style="margin-bottom: 0.75rem;">
-              <span class="stars"><?= renderStars((float)$listing['rating']) ?></span>
-              <span class="text-xs text-muted"><?= e($listing['rating']) ?></span>
-            </div>
             <div class="card-price"><?= getPrice($listing) ?></div>
           </div>
           <div class="card-footer">

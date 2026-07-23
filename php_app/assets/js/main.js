@@ -1,6 +1,6 @@
-﻿/**
- * Uthenga Marketplace â€” Main JavaScript
- * Vanilla JS â€” no frameworks, no dependencies
+/**
+ * Uthenga Marketplace — Main JavaScript
+ * Vanilla JS — no frameworks, no dependencies
  */
 
 'use strict';
@@ -102,7 +102,7 @@ function replaceEmojiWithIcons(root) {
     ['✈️', 'plane'],
     ['🔒', 'shield'],
     ['💳', 'wallet'],
-    ['Ã°Å¸Â¤â€“', 'bot'],
+    ['Ã°Å¸Â¤–', 'bot'],
     ['ðŸ¤–', 'bot'],
     ['Ã°Å¸â€˜â€¹', 'wave'],
     ['ðŸ‘‹', 'wave'],
@@ -110,19 +110,19 @@ function replaceEmojiWithIcons(root) {
     ['ðŸŒŠ', 'compass'],
     ['Ã°Å¸Å½Â«', 'ticket'],
     ['ðŸŽ«', 'ticket'],
-    ['Ã°Å¸Ââ€ºÃ¯Â¸Â', 'map'],
+    ['Ã°Å¸Â›Ã¯Â¸Â', 'map'],
     ['ðŸ›ï¸', 'map'],
     ['Ã°Å¸Å½Â¤', 'ticket'],
     ['ðŸŽ¤', 'ticket'],
     ['Ã°Å¸â€™Â°', 'wallet'],
     ['ðŸ’°', 'wallet'],
-    ['Ã°Å¸â€œâ€¦', 'calendar'],
+    ['Ã°Å¸â€œ…', 'calendar'],
     ['ðŸ“…', 'calendar'],
     ['Ã°Å¸ÂÂ¨', 'hotel'],
     ['ðŸ¨', 'hotel'],
     ['Ã°Å¸Å¡Å’', 'bus'],
     ['ðŸšŒ', 'bus'],
-    ['Ã°Å¸Å¡â€”', 'car'],
+    ['Ã°Å¸Å¡—', 'car'],
     ['ðŸš—', 'car'],
     ['Ã°Å¸â€Â', 'search'],
     ['ðŸ”', 'search'],
@@ -130,14 +130,14 @@ function replaceEmojiWithIcons(root) {
     ['ðŸŽ‰', 'sparkles'],
     ['Ã°Å¸â€™Â³', 'wallet'],
     ['ðŸ’³', 'wallet'],
-    ['Ã°Å¸â€œâ€¦', 'calendar'],
-    ['Ã°Å¸â€œÂ', 'pin'],
+    ['Ã°Å¸â€œ…', 'calendar'],
+    ['📍', 'pin'],
     ['ðŸ“', 'pin'],
-    ['Ã°Å¸â€â€”', 'link'],
+    ['Ã°Å¸â€—', 'link'],
     ['ðŸ”—', 'link'],
     ['Ã°Å¸â€™Â¬', 'chat'],
     ['ðŸ’¬', 'chat'],
-    ['Ã°Å¸â€â€”', 'link'],
+    ['Ã°Å¸â€—', 'link'],
     ['Ã°Å¸â€â€™', 'shield'],
     ['ðŸ”’', 'shield'],
     ['Ã°Å¸Å¸Â¦', 'check'],
@@ -152,11 +152,11 @@ function replaceEmojiWithIcons(root) {
     ['ðŸš', 'bus'],
     ['Ã°Å¸Å¡Âº', 'bus'],
     ['ðŸ›º', 'car'],
-    ['Ã°Å¸â€ºÂº', 'car'],
+    ['Ã°Å¸›Âº', 'car'],
     ['ðŸ›¡ï¸', 'shield'],
-    ['Ã°Å¸â€ºÂ¡Ã¯Â¸Â', 'shield'],
+    ['Ã°Å¸›Â¡Ã¯Â¸Â', 'shield'],
     ['ðŸ›ï¸', 'cart'],
-    ['Ã°Å¸â€ºÂÃ¯Â¸Â', 'cart'],
+    ['Ã°Å¸›ÂÃ¯Â¸Â', 'cart'],
     ['â­', 'star'],
     ['âœ¨', 'sparkles'],
     ['ðŸ“£', 'megaphone'],
@@ -616,11 +616,11 @@ function openBookingModal(listingId, listingType, listingTitle, price, vipPrice 
 
     const stdOption = ticketTypeSelect.querySelector('option[value="Standard"]');
     const vipOption = ticketTypeSelect.querySelector('option[value="VIP"]');
-    if (stdOption) stdOption.textContent = `Standard â€” MK ${parseFloat(price).toLocaleString('en-MW')}`;
+    if (stdOption) stdOption.textContent = `Standard — MK ${parseFloat(price).toLocaleString('en-MW')}`;
     if (vipOption) {
       if (parseFloat(vipPrice) > 0) {
         vipOption.style.display = '';
-        vipOption.textContent = `VIP â€” MK ${parseFloat(vipPrice).toLocaleString('en-MW')}`;
+        vipOption.textContent = `VIP — MK ${parseFloat(vipPrice).toLocaleString('en-MW')}`;
       } else {
         vipOption.style.display = 'none';
       }
@@ -664,7 +664,7 @@ if (bookingForm) {
     e.preventDefault();
     const btn = bookingForm.querySelector('[type=submit]');
     btn.disabled = true;
-    btn.textContent = 'Processingâ€¦';
+    btn.textContent = 'Processing…';
 
     const formData = new FormData(bookingForm);
     formData.append('action', 'create_booking');
