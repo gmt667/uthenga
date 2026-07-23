@@ -411,7 +411,7 @@ $activeSessions = dbQuery("
             <span><?= uthenga_public_icon_svg('lock') ?></span> Two-Factor Authentication is Active
           </div>
           <p class="text-xs text-muted" style="margin-bottom:1rem;">Your account is protected by an additional verification step during login.</p>
-          
+
           <form method="POST" action="" onsubmit="return confirm('Are you sure you want to disable 2FA? This decreases account security.');">
             <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
             <input type="hidden" name="disable_2fa" value="1">
@@ -440,7 +440,7 @@ $activeSessions = dbQuery("
       <?php else: ?>
         <div class="card" style="padding:1.5rem;margin-bottom:1.5rem;">
           <p class="text-sm text-muted" style="margin-bottom:1rem;">Protect your account with Google Authenticator, Authy, or any TOTP compatible app.</p>
-          
+
           <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;margin-bottom:1.25rem;">
             <div style="background:#fff;padding:0.5rem;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;margin:0 auto;">
               <img src="<?= TotpHelper::getQrCodeUrl($user['email'], $_SESSION['2fa_draft_secret'] ?? '') ?>" alt="QR Code" style="width:130px;height:130px;">
@@ -448,7 +448,7 @@ $activeSessions = dbQuery("
             <div style="flex:1;min-width:180px;">
               <div class="text-xs text-muted">Secret Key:</div>
               <div style="font-family:monospace;font-size:0.95rem;font-weight:700;letter-spacing:0.05em;background:var(--clr-surface2);padding:0.35rem 0.65rem;border-radius:4px;display:inline-block;margin-top:0.25rem;word-break:break-all;">
-                <?= e(implode(' ', str_split($_SESSION['2fa_draft_secret'] ?? '', 4))) ?>
+                <?= e(implode(' ', str_split((string) ($_SESSION['2fa_draft_secret'] ?? ''), 4))) ?>
               </div>
               <p class="text-xs text-muted" style="margin-top:0.5rem;">Scan the QR code or enter the key manually to get started.</p>
             </div>
@@ -480,63 +480,21 @@ $activeSessions = dbQuery("
           <?php foreach ($activeSessions as $sess): ?>
             <div class="card" style="padding:1rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;">
               <div style="display:flex;gap:0.75rem;align-items:center;">
-                <span style="font-size:1.5rem;"><?= $sess['device_type'] === 'mobile' ? uthenga_public_icon_svg('phone') : uthenga_public_icon_svg('globe') ?></span>
+                <span style="font-size:1.5rem;"><?= (($sess['device_type'] ?? '') === 'mobile') ? uthenga_public_icon_svg('phone') : uthenga_public_icon_svg('globe') ?></span>
                 <div>
-                  <div style="font-size:0.875rem;font-weight:600;">
-                    <?= e($sess['device_name']) ?>
-                    <?php if ($sess['is_current']): ?>
-                      <span class="status-badge status-confirmed" style="font-size:0.65rem;margin-left:0.35rem;padding:0.1rem 0.4rem;background:var(--clr-green);color:#fff;">This Device</span>
-                    <?php endif; ?>
-                  </div>
-                  <div class="text-xs text-muted" style="margin-top:0.1rem;">
-                    IP: <?= e($sess['ip_address']) ?> &middot; Active: <?= e(date('M j, Y H:i', strtotime($sess['last_active_at']))) ?>
-                  </div>
+                  <strong><?= e($sess['device_name'] ?? 'Device') ?></strong>
+                  <div class="text-xs text-muted"><?= e(($sess['browser'] ?? '') . ' • ' . ($sess['os'] ?? '')) ?></div>
+                  <div class="text-xs text-muted"><?= e($sess['ip_address'] ?? '') ?></div>
                 </div>
               </div>
-              
-              <?php if (!$sess['is_current']): ?>
-                <form method="POST" action="" style="margin:0;">
-                  <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
-                  <input type="hidden" name="revoke_session" value="1">
-                  <input type="hidden" name="session_token" value="<?= e($sess['session_token']) ?>">
-                  <button type="submit" class="btn btn-sm btn-ghost" style="color:#ef4444;border-color:rgba(239,68,68,0.25);">Revoke</button>
-                </form>
+              <?php if (!empty($sess['is_current'])): ?>
+                <span class="badge badge-approved">Current</span>
               <?php endif; ?>
             </div>
           <?php endforeach; ?>
         <?php endif; ?>
       </div>
-
-      <h3 style="margin-bottom:1.25rem;">Recent Activity</h3>
-      <?php if (empty($auditLogs)): ?>
-        <p class="text-muted text-sm">No recent activity recorded.</p>
-      <?php else: ?>
-        <div style="display:grid;gap:0.6rem;">
-          <?php foreach ($auditLogs as $log): ?>
-          <div style="display:flex;gap:0.75rem;padding:0.85rem;background:var(--clr-surface);border:1px solid var(--clr-border);border-radius:var(--radius-md);align-items:flex-start;">
-            <div style="width:32px;height:32px;border-radius:50%;background:var(--clr-surface2);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">
-              <?php
-              $icon = match(true) {
-                  str_contains($log['action'], 'Login')    => uthenga_public_icon_svg('lock'),
-                  str_contains($log['action'], 'Booking')  => uthenga_public_icon_svg('ticket'),
-                  str_contains($log['action'], 'Password') => uthenga_public_icon_svg('lock'),
-                  str_contains($log['action'], 'Profile')  => uthenga_public_icon_svg('user'),
-                  str_contains($log['action'], 'Ticket')   => uthenga_public_icon_svg('ticket'),
-                  default                                   => uthenga_public_icon_svg('info'),
-              };
-              echo $icon;
-              ?>
-            </div>
-            <div>
-              <div style="font-size:0.85rem;font-weight:600;"><?= e($log['action']) ?></div>
-              <div class="text-xs text-muted" style="margin-top:0.1rem;"><?= e(substr($log['details'], 0, 80)) ?><?= strlen($log['details']) > 80 ? '…' : '' ?></div>
-              <div class="text-xs text-muted" style="margin-top:0.15rem;"><?= e(substr($log['created_at'], 0, 16)) ?></div>
-            </div>
-          </div>
-          <?php endforeach; ?>
-        </div>
-        <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;text-align:center;" id="view-bookings-btn">Go to Dashboard &rarr;</a>
-      <?php endif; ?>
+      <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;text-align:center;" id="view-bookings-btn">Go to Dashboard &rarr;</a>
 
       <!-- Quick Links -->
       <h3 style="margin-top:2rem;margin-bottom:1rem;">Quick Links</h3>

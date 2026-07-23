@@ -43,6 +43,9 @@ if (isset($_GET['pending'])) {
 if (isset($_GET['suspended'])) {
     $error = 'Your account has been suspended. Please contact support.';
 }
+if (isset($_GET['oauth_error'])) {
+    $error = 'OAuth authentication failed. Please try again or sign in with your admin credentials.';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrf()) {

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Password Reset Request
  */
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrf()) {
         $error = 'Security token mismatch. Please refresh and try again.';
     } else {
-        $email = trim($_POST['email'] ?? '');
+        $email = trim((string) ($_POST['email'] ?? ''));
 
         if ($email === '') {
             $error = 'Please enter your email address.';
@@ -63,14 +63,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle = 'Reset Password';
+$themePreference = uthenga_theme_preference();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="<?= e($themePreference) ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
+  <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <title>Reset Password | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,8 +82,8 @@ $pageTitle = 'Reset Password';
 <body>
 <?php require_once __DIR__ . '/includes/page_loader.php'; ?>
 <div class="auth-page">
-  <div class="auth-card animate-in">
-    <div class="auth-logo">
+  <div class="auth-card animate-in" style="max-width:520px;">
+    <div class="auth-logo" style="margin-bottom:1rem;">
       <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/includes/logo.php'; ?>
     </div>
 
@@ -89,10 +91,10 @@ $pageTitle = 'Reset Password';
     <p class="auth-subtitle">We will send a secure reset link to the official email address on file.</p>
 
     <?php if ($error): ?>
-      <div class="alert alert-error">âœ– <?= e($error) ?></div>
+      <div class="alert alert-error">✖ <?= e($error) ?></div>
     <?php endif; ?>
     <?php if ($message): ?>
-      <div class="alert alert-success">âœ“ <?= e($message) ?></div>
+      <div class="alert alert-success">✓ <?= e($message) ?></div>
     <?php endif; ?>
 
     <?php if ($devResetLink): ?>

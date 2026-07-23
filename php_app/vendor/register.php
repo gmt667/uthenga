@@ -304,7 +304,9 @@ require_once __DIR__ . '/../includes/header.php';
 function utPwToggle(inputId, btn) {
   var inp = document.getElementById(inputId);
   if (!inp) return;
-  inp.type = inp.type === 'text' ? 'password' : 'text';
+  var isText = inp.type === 'text';
+  inp.type = isText ? 'password' : 'text';
+  if (btn) btn.textContent = isText ? 'Show' : 'Hide';
 }
 </script>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

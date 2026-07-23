@@ -21,47 +21,74 @@ if (isLoggedIn()) {
     redirectByRole(currentRole());
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
-    $email = trim((string)($_POST['email'] ?? ''));
-    $password = (string)($_POST['password'] ?? '');
-    $redirect = uthenga_safe_redirect_url((string)($_POST['redirect'] ?? ''), '');
+if (isset($_GET['logout'])) {
+    $success = 'You have been logged out successfully.';
+}
+if (isset($_GET['session_revoked'])) {
+    $error = 'Your session has expired or was revoked. Please sign in again.';
+}
+if (isset($_GET['registered'])) {
+    $success = 'Account created successfully! Please sign in with your credentials.';
+}
+if (isset($_GET['reset'])) {
+    $success = 'Password updated successfully! Please sign in with your new password.';
+}
+if (isset($_GET['oauth_error'])) {
+    $errCode = (string)$_GET['oauth_error'];
+    if ($errCode === 'access_denied') {
+        $error = 'Social login was cancelled or denied.';
+    } elseif ($errCode === 'extension_missing') {
+        $error = 'Server cURL extension is missing. Please contact support.';
+    } else {
+        $error = 'Social sign-in could not be completed (' . e($errCode) . '). Please try again or sign in with your email.';
+    }
+}
 
-    try {
-        if ($email === '' || $password === '') {
-            throw new RuntimeException('Email and password are required.');
-        }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new RuntimeException('Please enter a valid email address.');
-        }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!validateCsrf()) {
+        $error = 'Security token mismatch or session expired. Please refresh and try again.';
+    } else {
+        $email = trim((string)($_POST['email'] ?? ''));
+        $password = (string)($_POST['password'] ?? '');
+        $redirect = uthenga_safe_redirect_url((string)($_POST['redirect'] ?? ''), '');
 
-        $user = uthenga_auth_find_user_by_email($email);
-        if (!$user || !password_verify($password, (string)$user['password_hash'])) {
-            throw new RuntimeException('Invalid email or password. Please try again.');
-        }
+        try {
+            if ($email === '' || $password === '') {
+                throw new RuntimeException('Email address and password are required.');
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new RuntimeException('Please enter a valid email address.');
+            }
 
-        if (in_array($user['role'], ADMIN_ROLES, true)) {
-            throw new RuntimeException('Please use the private admin portal to sign in.');
-        }
+            $user = uthenga_auth_find_user_by_email($email);
+            if (!$user || !password_verify($password, (string)$user['password_hash'])) {
+                throw new RuntimeException('Invalid email or password. Please try again.');
+            }
 
-        if (in_array($user['role'], VENDOR_ROLES, true) && empty($user['is_approved'])) {
+            if (in_array($user['role'], ADMIN_ROLES, true)) {
+                throw new RuntimeException('Admin accounts must sign in via the Admin Portal.');
+            }
+
+            if (in_array($user['role'], VENDOR_ROLES, true) && empty($user['is_approved'])) {
+                uthenga_auth_login_user($user);
+                redirect(BASE_URL . 'vendor/pending.php');
+            }
+
             uthenga_auth_login_user($user);
-            redirect(BASE_URL . 'vendor/pending.php');
+            logAction('User Login', 'Successful login for ' . $user['email']);
+
+            if (!empty($user['must_change_pw'])) {
+                redirect(BASE_URL . 'change_password.php');
+            }
+
+            if ($redirect !== '') {
+                redirect($redirect);
+            }
+
+            redirectByRole((string)$user['role']);
+        } catch (Throwable $e) {
+            $error = $e->getMessage();
         }
-
-        uthenga_auth_login_user($user);
-        logAction('User Login', 'Successful login for ' . $user['email']);
-
-        if (!empty($user['must_change_pw'])) {
-            redirect(BASE_URL . 'change_password.php');
-        }
-
-        if ($redirect !== '') {
-            redirect($redirect);
-        }
-
-        redirectByRole((string)$user['role']);
-    } catch (Throwable $e) {
-        $error = $e->getMessage();
     }
 }
 
@@ -156,6 +183,27 @@ require_once __DIR__ . '/includes/header.php';
   .login-password-links a {
     font-weight: 600;
   }
+  .password-input-wrap {
+    position: relative;
+  }
+  .password-toggle-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--clr-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    transition: color 0.2s ease;
+  }
+  .password-toggle-btn:hover {
+    color: var(--clr-primary);
+  }
   @media (max-width: 900px) {
     .login-shell { grid-template-columns: 1fr; }
   }
@@ -167,7 +215,16 @@ require_once __DIR__ . '/includes/header.php';
         <div class="section-label">Welcome back</div>
         <h1 style="margin:0.5rem 0 1rem;">Sign in to your Uthenga account</h1>
         <p class="text-muted" style="max-width:520px;">Access your dashboard, orders, vendor tools, and support from one account.</p>
-        <?php if ($error): ?><div class="alert alert-error" style="margin-top:1rem;"><?= e($error) ?></div><?php endif; ?>
+        <?php if ($error): ?>
+          <div class="alert alert-error" style="margin-top:1rem;">
+            <?= e($error) ?>
+            <?php if (strpos($error, 'Admin Portal') !== false): ?>
+              <div style="margin-top:0.5rem;">
+                <a href="<?= BASE_URL ?>admin/login.php" class="btn btn-sm btn-outline" style="display:inline-block;margin-top:0.25rem;">Go to Admin Portal &rarr;</a>
+              </div>
+            <?php endif; ?>
+          </div>
+        <?php endif; ?>
         <?php if ($success): ?><div class="alert alert-success" style="margin-top:1rem;"><?= e($success) ?></div><?php endif; ?>
         <?php if ($socialLoginEnabled): ?>
         <div style="display:grid;gap:0.75rem;margin-top:1.25rem;margin-bottom:1rem;">
@@ -196,25 +253,30 @@ require_once __DIR__ . '/includes/header.php';
           </div>
         </div>
         <?php endif; ?>
-        <form method="post" style="margin-top:1.25rem;display:grid;gap:1rem;">
+        <form method="post" style="margin-top:1.25rem;display:grid;gap:1rem;" id="loginForm">
           <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
           <input type="hidden" name="redirect" value="<?= e($redirect) ?>">
           <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" name="email" class="form-control" required value="<?= e($_POST['email'] ?? '') ?>">
+            <label class="form-label" for="login-email">Email Address</label>
+            <input type="email" id="login-email" name="email" class="form-control" required autocomplete="username" placeholder="name@example.com" value="<?= e($_POST['email'] ?? '') ?>">
           </div>
           <div class="form-group">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" required>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+              <label class="form-label" for="login-password" style="margin-bottom:0;">Password</label>
+              <a href="<?= BASE_URL ?>forgot_password.php" class="text-xs" style="color:var(--clr-primary);font-weight:600;">Forgot password?</a>
+            </div>
+            <div class="password-input-wrap">
+              <input type="password" id="login-password" name="password" class="form-control" required autocomplete="current-password" placeholder="••••••••" style="padding-right:2.75rem;">
+              <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Toggle password visibility">
+                <svg id="eyeIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary">Sign In</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmit">Sign In</button>
         </form>
-        <div class="login-password-links">
-          <a href="<?= BASE_URL ?>forgot_password.php">Forgot password?</a>
-        </div>
-        <div class="text-sm text-muted" style="margin-top:1rem;">
-          Don't have an account? <a href="<?= BASE_URL ?>register.php">Register</a>
-          or <a href="<?= BASE_URL ?>vendor/register.php">register as a vendor</a>.
+        <div class="text-sm text-muted" style="margin-top:1.25rem;">
+          Don't have an account? <a href="<?= BASE_URL ?>register.php" style="font-weight:600;">Register</a>
+          or <a href="<?= BASE_URL ?>vendor/register.php" style="font-weight:600;">register as a vendor</a>.
         </div>
       </div>
       <div class="login-panel login-panel-brand">
@@ -236,4 +298,22 @@ require_once __DIR__ . '/includes/header.php';
     </div>
   </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const togglePassword = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('login-password');
+  const eyeIcon = document.getElementById('eyeIcon');
+
+  if (togglePassword && passwordInput && eyeIcon) {
+    togglePassword.addEventListener('click', function() {
+      const isPassword = passwordInput.getAttribute('type') === 'password';
+      passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+      eyeIcon.innerHTML = isPassword
+        ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+        : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    });
+  }
+});
+</script>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

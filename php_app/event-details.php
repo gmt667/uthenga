@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga â€” Universal Listing Details Page
  */
@@ -374,19 +374,20 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
     <div>
       <a href="<?= BASE_URL ?>index.php">Explore</a>
       <span style="margin:0 0.4rem;">â€º</span>
+      <span style="margin:0 0.4rem;">›</span>
       <a href="<?= BASE_URL ?><?= e($listing['listing_type']) ?>s.php"><?= ucfirst(e($listing['listing_type'])) ?>s</a>
-      <span style="margin:0 0.4rem;">â€º</span>
+      <span style="margin:0 0.4rem;">›</span>
       <span style="color:var(--clr-text-soft);"><?= e($listing['title']) ?></span>
     </div>
     <div style="display:flex; gap:0.5rem;">
       <?php if (isLoggedIn()): ?>
         <button class="wishlist-btn <?= $inWishlist ? 'active' : '' ?>" id="wishlist-toggle-btn" data-id="<?= e($id) ?>">
-          <?= $inWishlist ? 'â¤ï¸ Saved' : 'ðŸ¤ Save to Wishlist' ?>
+          <?= $inWishlist ? '❤️ Saved' : '🤍 Save to Wishlist' ?>
         </button>
       <?php else: ?>
-        <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="wishlist-btn">ðŸ¤ Save to Wishlist</a>
+        <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="wishlist-btn">🤍 Save to Wishlist</a>
       <?php endif; ?>
-      <button class="wishlist-btn" id="share-listing-btn">ðŸ”— Share</button>
+      <button class="wishlist-btn" id="share-listing-btn">🔗 Share</button>
     </div>
   </nav>
 
@@ -396,19 +397,17 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
     <div class="detail-hero-overlay"></div>
     <div class="detail-hero-info">
       <?php
-      $typeBadge = match($listing['listing_type']) {
-          'event' => 'badge-event', 'accommodation' => 'badge-accommodation',
-          'tour'  => 'badge-tour',  'transport'      => 'badge-transport', default => ''
-      };
+      $lType = strtolower($listing['listing_type'] ?? '');
+      $typeBadge = ($lType === 'event') ? 'badge-event' : (($lType === 'accommodation') ? 'badge-accommodation' : (($lType === 'tour') ? 'badge-tour' : (($lType === 'transport') ? 'badge-transport' : '')));
       ?>
       <span class="card-badge <?= $typeBadge ?>" style="position:static;display:inline-flex;margin-bottom:0.5rem;"><?= ucfirst(e($listing['listing_type'])) ?></span>
       <h1 style="font-size:clamp(1.4rem,4vw,2.2rem);color:#fff;margin-bottom:0.4rem;text-shadow:0 2px 8px rgba(0,0,0,0.5);"><?= e($listing['title']) ?></h1>
       <div style="display:flex;align-items:center;gap:1rem;color:rgba(255,255,255,0.75);font-size:0.9rem;flex-wrap:wrap;">
-        <span>ðŸ“ <?= e($listing['location']) ?></span>
-        <span style="color:var(--clr-accent);">â˜… <?= e($listing['rating']) ?></span>
+        <span>📍 <?= e($listing['location']) ?></span>
+        <span style="color:var(--clr-accent);">★ <?= e($listing['rating']) ?></span>
         <span><?= count($reviews) ?> review<?= count($reviews) !== 1 ? 's' : '' ?></span>
-        <span>ðŸŽ« <?= number_format($relCount) ?> booked</span>
-        <?php if ($listing['featured']): ?><span style="color:var(--clr-accent);">â­ Featured</span><?php endif; ?>
+        <span>🎟 <?= number_format($relCount) ?> booked</span>
+        <?php if ($listing['featured']): ?><span style="color:var(--clr-accent);">★ Featured</span><?php endif; ?>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Password Reset Completion
  */
@@ -6,7 +6,7 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/auth_check.php';
 
-$token = trim($_GET['token'] ?? ($_POST['token'] ?? ''));
+$token = trim((string) ($_GET['token'] ?? ($_POST['token'] ?? '')));
 $error = '';
 $success = '';
 $resetRow = null;
@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!$resetRow) {
         $error = 'This password reset link is invalid or has expired.';
     } else {
-        $password = $_POST['password'] ?? '';
-        $password2 = $_POST['password2'] ?? '';
+        $password = (string) ($_POST['password'] ?? '');
+        $password2 = (string) ($_POST['password2'] ?? '');
 
         if (strlen($password) < MIN_PASSWORD_LEN) {
             $error = 'Password must be at least ' . MIN_PASSWORD_LEN . ' characters.';
@@ -52,52 +52,61 @@ if ($success !== '' && !headers_sent()) {
 }
 
 $pageTitle = 'Set New Password';
+$themePreference = uthenga_theme_preference();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="<?= e($themePreference) ?>">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="base-url" content="<?= BASE_URL ?>">
   <meta name="csrf-token" content="<?= e($_SESSION['csrf_token']) ?>">
+  <meta name="theme-color" content="<?= $themePreference === 'dark' ? '#0b1120' : '#f8fafc' ?>">
   <title>Reset Password | <?= APP_NAME ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
   <style>
-  .pw-wrapper { position: relative; }
-  .pw-toggle {
-    position: absolute; right: 0.75rem; top: 50%;
-    transform: translateY(-50%);
-    background: none; border: none; cursor: pointer;
-    color: var(--clr-text-soft, #9ca3af); padding: 0.25rem; line-height: 1; transition: color 0.2s;
-  }
-  .pw-toggle:hover { color: var(--clr-text, #e2e8f0); }
-  .pw-toggle svg { display: block; width: 18px; height: 18px; }
-  .pw-wrapper .form-control { padding-right: 2.5rem; }
+    .pw-wrapper { position: relative; }
+    .pw-toggle {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--clr-text-soft, #9ca3af);
+      padding: 0.25rem;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: var(--clr-text, #e2e8f0); }
+    .pw-toggle svg { display: block; width: 18px; height: 18px; }
+    .pw-wrapper .form-control { padding-right: 2.5rem; }
   </style>
 </head>
 <body>
 <?php require_once __DIR__ . '/includes/page_loader.php'; ?>
 <div class="auth-page">
   <div class="auth-card animate-in">
-    <div class="auth-logo">
+    <div class="auth-logo" style="margin-bottom:1rem;">
       <?php $logoSize = 'lg'; $logoLink = false; require __DIR__ . '/includes/logo.php'; ?>
     </div>
 
     <h1 class="auth-title">Set a new password</h1>
-    <p class="auth-subtitle">Choose a secure password for your Uthenga account.</p>
+    <p class="auth-subtitle">Create a strong new password to secure your account.</p>
 
     <?php if ($error): ?>
-      <div class="alert alert-error">âœ– <?= e($error) ?></div>
+      <div class="alert alert-error">✖ <?= e($error) ?></div>
     <?php endif; ?>
     <?php if ($success): ?>
-      <div class="alert alert-success">âœ“ <?= e($success) ?></div>
+      <div class="alert alert-success">✓ <?= e($success) ?></div>
     <?php endif; ?>
 
-    <?php if (!$success): ?>
-      <form method="POST" action="">
+    <?php if ($resetRow && $success === ''): ?>
+      <form method="POST" action="" style="margin-top:1.5rem;">
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
         <input type="hidden" name="token" value="<?= e($token) ?>">
 
@@ -114,7 +123,7 @@ $pageTitle = 'Set New Password';
               required
               minlength="<?= MIN_PASSWORD_LEN ?>"
             >
-            <button type="button" class="pw-toggle" onclick="utPwToggle('password',this)" aria-label="Toggle password visibility">
+            <button type="button" class="pw-toggle" onclick="utPwToggle('password', this)" aria-label="Toggle password visibility">
               <svg class="pw-eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
               <svg class="pw-eye-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -133,7 +142,7 @@ $pageTitle = 'Set New Password';
               autocomplete="new-password"
               required
             >
-            <button type="button" class="pw-toggle" onclick="utPwToggle('password2',this)" aria-label="Toggle confirm password visibility">
+            <button type="button" class="pw-toggle" onclick="utPwToggle('password2', this)" aria-label="Toggle confirm password visibility">
               <svg class="pw-eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
               <svg class="pw-eye-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
@@ -142,6 +151,10 @@ $pageTitle = 'Set New Password';
 
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">Update Password</button>
       </form>
+    <?php else: ?>
+      <div class="alert alert-info" style="margin-top:1rem;">
+        This reset link is not available. Please request a new password reset if needed.
+      </div>
     <?php endif; ?>
 
     <p style="text-align:center;margin-top:1.25rem;font-size:0.875rem;color:var(--clr-text-muted);">
@@ -158,7 +171,7 @@ function utPwToggle(inputId, btn) {
   var eyeOff = btn.querySelector('.pw-eye-off');
   var eyeOn  = btn.querySelector('.pw-eye-on');
   if (eyeOff) eyeOff.style.display = isText ? '' : 'none';
-  if (eyeOn)  eyeOn.style.display  = isText ? 'none' : '';
+  if (eyeOn) eyeOn.style.display = isText ? 'none' : '';
 }
 </script>
 </body>

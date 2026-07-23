@@ -20,13 +20,12 @@ $bookings = dbQuery(
 );
 
 function statusClass(string $status): string {
-    return match(strtolower($status)) {
-        'confirmed','paid','success','resolved' => 'status-confirmed',
-        'pending', 'open', 'in progress'        => 'status-pending',
-        'cancelled', 'failed'                   => 'status-cancelled',
-        'refunded'                              => 'status-refunded',
-        default                                 => 'status-pending'
-    };
+    $s = strtolower($status);
+    if (in_array($s, ['confirmed', 'paid', 'success', 'resolved'], true)) return 'status-confirmed';
+    if (in_array($s, ['pending', 'open', 'in progress'], true)) return 'status-pending';
+    if (in_array($s, ['cancelled', 'failed'], true)) return 'status-cancelled';
+    if ($s === 'refunded') return 'status-refunded';
+    return 'status-pending';
 }
 ?>
 <!DOCTYPE html>

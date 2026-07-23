@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Admin Payments & Financial Ledger
  */
@@ -91,12 +91,17 @@ $processedPayouts = uthenga_table_exists('vendor_payouts') ? dbQueryOne("SELECT 
 $refundTotals = uthenga_table_exists('refunds') ? dbQueryOne("SELECT COALESCE(SUM(amount),0) AS total FROM refunds WHERE LOWER(status) IN ('processed','approved')") : ['total' => 0];
 
 function txStatusBadge(string $s): string {
-    return match(strtolower($s)) {
-        'success'  => 'badge-approved',
-        'refunded' => 'badge-refunded',
-        'failed'   => 'badge-cancelled',
-        default    => 'badge-pending'
-    };
+    $val = strtolower($s);
+    if ($val === 'success') {
+        return 'badge-approved';
+    }
+    if ($val === 'refunded') {
+        return 'badge-refunded';
+    }
+    if ($val === 'failed') {
+        return 'badge-cancelled';
+    }
+    return 'badge-pending';
 }
 ?>
 

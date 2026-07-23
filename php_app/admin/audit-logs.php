@@ -131,11 +131,14 @@ $allRoles   = dbQuery("SELECT DISTINCT user_role FROM audit_logs ORDER BY user_r
         </thead>
         <tbody>
           <?php foreach ($logs as $log): 
-              $badgeClass = match(true) {
-                  str_contains($log['action'], 'Login Failed') || str_contains($log['action'], 'Denied') => 'badge-rejected',
-                  str_contains($log['action'], 'Login') => 'badge-approved',
-                  default => 'badge-pending'
-              };
+              $act = $log['action'] ?? '';
+              if (strpos($act, 'Login Failed') !== false || strpos($act, 'Denied') !== false) {
+                  $badgeClass = 'badge-rejected';
+              } elseif (strpos($act, 'Login') !== false) {
+                  $badgeClass = 'badge-approved';
+              } else {
+                  $badgeClass = 'badge-pending';
+              }
           ?>
             <tr>
               <td class="text-xs text-muted"><?= e($log['created_at']) ?></td>

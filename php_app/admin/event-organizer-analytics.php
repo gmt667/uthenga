@@ -333,80 +333,44 @@ require_once __DIR__ . '/includes/admin_header.php';
       </div>
     </div>
 
+        <?php if (empty($promoUsage)): ?>
+          <div class="text-sm text-muted" style="padding:1rem;text-align:center;">No promo codes configured yet.</div>
+          <a href="<?= BASE_URL ?>admin/settings.php" class="btn btn-sm btn-secondary" style="margin-top:.75rem;">Manage Promo Codes</a>
+        <?php else: ?>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+              <thead>
+                <tr style="border-bottom:1px solid var(--clr-border);">
+                  <th style="padding:.5rem .75rem;text-align:left;font-weight:600;">Code</th>
+                  <th style="padding:.5rem .75rem;text-align:center;">Uses</th>
+                  <th style="padding:.5rem .75rem;text-align:right;">Total Discount</th>
+                  <th style="padding:.5rem .75rem;text-align:right;">Gross Rev</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($promoUsage as $promo): ?>
+                <tr style="border-bottom:1px solid var(--clr-border);">
+                  <td style="padding:.5rem .75rem;">
+                    <span class="promo-badge"><?= e($promo['code']) ?></span>
+                    <div class="text-xs text-muted" style="margin-top:2px;">
+                      <?= $promo['discount_type'] === 'percentage' ? $promo['discount_value'] . '%' : formatMWK($promo['discount_value']) ?> off
+                    </div>
+                  </td>
+                  <td style="padding:.5rem .75rem;text-align:center;"><?= number_format($promo['uses']) ?></td>
+                  <td style="padding:.5rem .75rem;text-align:right;color:var(--clr-red);">-<?= formatMWK($promo['total_discount'] ?? 0) ?></td>
+                  <td style="padding:.5rem .75rem;text-align:right;color:var(--clr-green);"><?= formatMWK($promo['gross_rev'] ?? 0) ?></td>
+                </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+
     <!-- Recent Bookings -->
     <div class="chart-card">
       <div class="section-heading"><?= uthenga_public_icon_svg('calendar') ?> Recent Event Bookings</div>
-      <div style="overflow-x:auto;">
-        <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
-          <thead>
-            <tr style="border-bottom:1px solid var(--clr-border);">
-              <th style="padding:.5rem .75rem;text-align:left;">Event</th>
-              <th style="padding:.5rem .75rem;text-align:left;">Customer</th>
-              <th style="padding:.5rem .75rem;text-align:center;">Qty</th>
-              <th style="padding:.5rem .75rem;text-align:right;">Amount</th>
-              <th style="padding:.5rem .75rem;text-align:center;">Discount</th>
-              <th style="padding:.5rem .75rem;text-align:center;">Gateway</th>
-              <th style="padding:.5rem .75rem;text-align:center;">Status</th>
-              <th style="padding:.5rem .75rem;text-align:right;">Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if (empty($recentBookings)): ?>
-            <tr><td colspan="8" style="padding:1.5rem;text-align:center;" class="text-muted">No bookings found for this period.</td></tr>
-            <?php else: ?>
-            <?php foreach ($recentBookings as $bk): ?>
-            <tr style="border-bottom:1px solid var(--clr-border);">
-              <td style="padding:.45rem .75rem;font-weight:500;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><?= e($bk['listing_title']) ?></td>
-              <td style="padding:.45rem .75rem;"><?= e($bk['customer_name']) ?></td>
-              <td style="padding:.45rem .75rem;text-align:center;"><?= (int)$bk['quantity'] ?></td>
-              <td style="padding:.45rem .75rem;text-align:right;font-weight:700;color:var(--clr-accent);"><?= formatMWK($bk['total_price']) ?></td>
-              <td style="padding:.45rem .75rem;text-align:center;">
-                <?php if ($bk['discount'] > 0): ?>
-                  <span style="color:var(--clr-red);font-size:.75rem;">-<?= formatMWK($bk['discount']) ?></span>
-                  <?php if ($bk['coupon_code']): ?>
-                    <div class="text-xs text-muted"><?= e($bk['coupon_code']) ?></div>
-                  <?php endif; ?>
-                <?php else: ?>
-                  <span class="text-muted">—</span>
-                <?php endif; ?>
-              </td>
-              <td style="padding:.45rem .75rem;text-align:center;font-size:.75rem;"><?= e($bk['gateway'] ?? '—') ?></td>
-              <td style="padding:.45rem .75rem;text-align:center;">
-                <?php
-                  $st = $bk['payment_status'] ?? 'Pending';
-                  $cls = match($st) { 'Paid' => 'var(--clr-green)', 'Pending' => 'var(--clr-accent)', default => 'var(--clr-red)' };
-                ?>
-                <span style="font-size:.72rem;font-weight:700;color:<?= $cls ?>;"><?= e($st) ?></span>
-              </td>
-              <td style="padding:.45rem .75rem;text-align:right;font-size:.75rem;color:var(--clr-text-soft);"><?= date('d M Y', strtotime($bk['created_at'])) ?></td>
-            </tr>
-            <?php endforeach; ?>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</main>
-
-<?php require_once __DIR__ . '/includes/admin_footer.php'; ?>
-
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-(function() {
-  // Colour helpers
-  const accent  = '#06b6d4';
-  const green   = '#22c55e';
-  const red     = '#ef4444';
-  const purple  = '#a855f7';
-  const gridClr = 'rgba(255,255,255,0.06)';
-  const textClr = '#94a3b8';
-
-  // ── Revenue Trend ───────────────────────────────────────────────────────────
-  const trendLabels  = <?= json_encode(array_column($dailyTrend, 'day')) ?>;
-  const trendRevenue = <?= json_encode(array_map(fn($r) => (float)$r['revenue'], $dailyTrend)) ?>;
-  const trendCount   = <?= json_encode(array_map(fn($r) => (int)$r['bookings'], $dailyTrend)) ?>;
 
   const trendCtx = document.getElementById('revenueTrendChart')?.getContext('2d');
   if (trendCtx && trendLabels.length > 0) {

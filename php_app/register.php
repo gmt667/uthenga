@@ -311,19 +311,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           class="form-control"
           placeholder="e.g. UTH12345"
           value="<?= e($refCodeVal) ?>"
-          autocomplete="off"
-          style="text-transform: uppercase; font-family: monospace;"
-        >
-      </div>
-
-      <p class="text-xs text-muted" style="margin-bottom:1rem;">
-        By registering, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-      </p>
-
-      <button type="submit" id="register-btn" class="btn btn-primary btn-lg" style="width:100%;">
-        Create Account
-      </button>
-    </form>
 
     <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--clr-text-muted);">
       Already have an account?
