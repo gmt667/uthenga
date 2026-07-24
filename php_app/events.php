@@ -145,7 +145,7 @@ $displayAds = $activeAds;
   <!-- Leaflet CSS for Map View -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <style>
-    /* â”€â”€â”€ Hero Slider â”€â”€â”€ */
+    /* ─── Hero Slider ─── */
     .hero-slider-container {
       position: relative; width: 100%; height: 480px; overflow: hidden;
       border-radius: var(--radius-xl); margin-bottom: 0;
@@ -181,7 +181,7 @@ $displayAds = $activeAds;
     .slider-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: var(--transition); }
     .slider-dot.active { background: var(--clr-accent); width: 20px; border-radius: 8px; }
 
-    /* â”€â”€â”€ Ad Strip â”€â”€â”€ */
+    /* ─── Ad Strip ─── */
     .ad-strip { background: var(--clr-surface); border-top: 2px solid var(--clr-accent); border-bottom: 1px solid var(--clr-border);
       padding: 0.6rem 0; overflow: hidden; position: relative; }
     .ad-strip-track { display: flex; gap: 0; white-space: nowrap; animation: adScroll 28s linear infinite; }
@@ -194,7 +194,7 @@ $displayAds = $activeAds;
       color: #fff; background: var(--clr-accent); padding: 0.15rem 0.5rem; border-radius: 4px; }
     @keyframes adScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    /* â”€â”€â”€ Filters â”€â”€â”€ */
+    /* ─── Filters ─── */
     .filters-wrapper { background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2rem; }
     .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 1.25rem; }
     .filter-checkboxes { display: flex; flex-wrap: wrap; gap: 1.5rem; padding-top: 0.5rem; border-top: 1px solid var(--clr-border); }
@@ -202,14 +202,14 @@ $displayAds = $activeAds;
     .checkbox-label input { accent-color: var(--clr-accent); width: 16px; height: 16px; }
     .filter-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
 
-    /* â”€â”€â”€ View Toggle â”€â”€â”€ */
+    /* ─── View Toggle ─── */
     .view-toggle-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
     .view-toggle-btns { display: flex; border: 1px solid var(--clr-border); border-radius: var(--radius-sm); overflow: hidden; }
     .view-toggle-btn { padding: 0.5rem 1.1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;
       background: var(--clr-surface); color: var(--clr-text-soft); border: none; transition: var(--transition); display: flex; align-items: center; gap: 0.4rem; }
     .view-toggle-btn.active { background: var(--clr-accent); color: #000; }
 
-    /* â”€â”€â”€ Event Cards â”€â”€â”€ */
+    /* ─── Event Cards ─── */
     .card-category-badge { display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.72rem; font-weight: 700;
       color: #000; background: var(--clr-accent); border-radius: 4px; text-transform: uppercase; margin-bottom: 0.5rem; }
     .card-tickets-left { font-size: 0.78rem; font-weight: 600; color: var(--clr-green); margin-top: 0.5rem; }
@@ -217,7 +217,7 @@ $displayAds = $activeAds;
     .card-short-desc { font-size: 0.8rem; color: var(--clr-text-muted); margin-top: 0.4rem;
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.45; }
 
-    /* â”€â”€â”€ Map View â”€â”€â”€ */
+    /* ─── Map View ─── */
     .map-view-container { display: none; border-radius: var(--radius-lg); overflow: hidden;
       border: 1px solid var(--clr-border); box-shadow: var(--shadow-md); height: 580px; }
     .map-view-container.visible { display: block; }
@@ -232,7 +232,7 @@ $displayAds = $activeAds;
     .map-popup-btn { display: block; text-align: center; padding: 0.4rem 0.8rem; background: var(--clr-accent);
       color: #000; font-weight: 700; font-size: 0.8rem; border-radius: var(--radius-sm); text-decoration: none; }
 
-    /* â”€â”€â”€ Responsive â”€â”€â”€ */
+    /* ─── Responsive ─── */
     @media (max-width: 992px) { .filter-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 768px) {
       .hero-slider-container { height: 380px; }
@@ -270,7 +270,7 @@ $displayAds = $activeAds;
 <body>
 <?php require_once __DIR__ . '/includes/navbar.php'; ?>
 
-<!-- â”€â”€â”€ Hero Slider â”€â”€â”€ -->
+<!-- ─── Hero Slider ─── -->
 <?php if (!empty($sliderEvents)): ?>
 <section style="padding-top: 1.5rem;">
   <div class="container">
@@ -290,9 +290,9 @@ $displayAds = $activeAds;
           <span class="slide-category"><?= e($sm['category'] ?? 'Event') ?></span>
           <h2 class="slide-title"><?= e($se['title']) ?></h2>
           <div class="slide-meta">
-            <span>ðŸ“… <?= e($sm['date'] ?? 'TBC') ?></span>
+            <span>📅 <?= e($sm['date'] ?? 'TBC') ?></span>
             <span>ðŸ“ <?= e($se['location']) ?></span>
-            <?php if (!empty($sm['time'])): ?><span>â° <?= e($sm['time']) ?></span><?php endif; ?>
+            <?php if (!empty($sm['time'])): ?><span>⏰ <?= e($sm['time']) ?></span><?php endif; ?>
           </div>
           <p class="slide-desc"><?= e($se['description']) ?></p>
           <div class="slide-price"><?= getEventPrice($se) ?></div>
@@ -320,7 +320,7 @@ $displayAds = $activeAds;
 <?php endif; ?>
 
 <?php if (!empty($displayAds)): ?>
-<!-- â”€â”€â”€ Advertisement Strip â”€â”€â”€ -->
+<!-- ─── Advertisement Strip ─── -->
 <div class="ad-strip" role="complementary" aria-label="Sponsored events">
   <div class="container" style="padding: 0;">
     <div class="ad-strip-track" id="ad-strip-track">
@@ -341,7 +341,7 @@ $displayAds = $activeAds;
 </div>
 <?php endif; ?>
 
-<!-- â”€â”€â”€ Main Content â”€â”€â”€ -->
+<!-- ─── Main Content ─── -->
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
 
   <!-- Filters -->
@@ -412,7 +412,7 @@ $displayAds = $activeAds;
     </div>
     <div class="view-toggle-btns" role="group" aria-label="View mode">
       <button class="view-toggle-btn <?= $viewMode === 'grid' ? 'active' : '' ?>" id="btn-grid-view" onclick="switchView('grid')" aria-label="Grid view">
-        âŠž Grid
+        ⊞ Grid
       </button>
       <button class="view-toggle-btn <?= $viewMode === 'map' ? 'active' : '' ?>" id="btn-map-view" onclick="switchView('map')" aria-label="Map view">
         ðŸ—ºï¸ Map
@@ -443,15 +443,15 @@ $displayAds = $activeAds;
             <div class="card-img-wrap">
               <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="card-img" loading="lazy">
               <span class="card-badge badge-event">Event</span>
-              <?php if (!empty($listing['is_trending'])): ?><span class="card-badge badge-trending" style="left:auto;right:0.75rem;">ðŸ”¥ Trending</span><?php endif; ?>
-              <?php if ($listing['featured'] && empty($listing['is_trending'])): ?><span class="card-badge badge-featured" style="left:auto;right:0.75rem;">â­ Featured</span><?php endif; ?>
+              <?php if (!empty($listing['is_trending'])): ?><span class="card-badge badge-trending" style="left:auto;right:0.75rem;">🔥 Trending</span><?php endif; ?>
+              <?php if ($listing['featured'] && empty($listing['is_trending'])): ?><span class="card-badge badge-featured" style="left:auto;right:0.75rem;">⭐ Featured</span><?php endif; ?>
             </div>
             <div class="card-body">
               <div class="card-category-badge"><?= e($meta['category'] ?? 'Event') ?></div>
               <div class="card-title"><?= e($listing['title']) ?></div>
               <div class="card-loc">ðŸ“ <?= e($listing['location']) ?></div>
               <div style="font-size: 0.8rem; color: var(--clr-accent); margin-bottom: 0.4rem;">
-                ðŸ“… <?= e($meta['date'] ?? 'TBC') ?> Â· â° <?= e($meta['time'] ?? 'TBC') ?>
+                📅 <?= e($meta['date'] ?? 'TBC') ?> · ⏰ <?= e($meta['time'] ?? 'TBC') ?>
               </div>
               <div class="flex items-center gap-1" style="margin-bottom: 0.4rem;">
                 <span class="stars"><?= renderStars((float)$listing['rating']) ?></span>
@@ -468,10 +468,10 @@ $displayAds = $activeAds;
               <div class="card-price"><?= getEventPrice($listing) ?></div>
               <?php if ($totalAvail > 0): ?>
                 <div class="card-tickets-left <?= $isLowStock ? 'low' : '' ?>">
-                  ðŸŽŸï¸ <?= number_format($totalAvail) ?> tickets left<?= $isLowStock ? ' — Almost sold out!' : '' ?>
+                  🎟️ï¸ <?= number_format($totalAvail) ?> tickets left<?= $isLowStock ? ' — Almost sold out!' : '' ?>
                 </div>
               <?php else: ?>
-                <div class="card-tickets-left low" style="font-weight: 700;">âŒ Sold Out</div>
+                <div class="card-tickets-left low" style="font-weight: 700;">❌ Sold Out</div>
               <?php endif; ?>
             </div>
             <div class="card-footer">
@@ -507,7 +507,7 @@ $displayAds = $activeAds;
   <div class="modal">
     <div class="modal-header">
       <h3 id="bk-modal-title">Book Ticket</h3>
-      <button class="modal-close" onclick="closeModal('booking-modal')">âœ•</button>
+      <button class="modal-close" onclick="closeModal('booking-modal')">✕</button>
     </div>
     <form method="POST" action="<?= BASE_URL ?>request_api.php" id="booking-form">
       <div class="modal-body">
@@ -557,7 +557,7 @@ $displayAds = $activeAds;
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('booking-modal')">Cancel</button>
-        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment â†’</button>
+        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment →</button>
       </div>
     </form>
   </div>
@@ -567,7 +567,7 @@ $displayAds = $activeAds;
   <div class="modal">
     <div class="modal-header">
       <h3>Confirm Payment</h3>
-      <button class="modal-close" onclick="closeModal('payment-modal')">âœ•</button>
+      <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
     </div>
     <div class="modal-body" style="text-align:center;">
       <div style="font-size:3rem;margin-bottom:1rem;">ðŸ’³</div>
@@ -578,7 +578,7 @@ $displayAds = $activeAds;
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" onclick="closeModal('payment-modal')">Back</button>
-      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary">âœ“ Pay Now</button>
+      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary">✓ Pay Now</button>
     </div>
   </div>
 </div>
@@ -633,7 +633,7 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
 
 <script>
 (function () {
-  // â”€â”€â”€ Slider â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── Slider ───────────────────────────────────────────────────────────────
   var slides      = document.querySelectorAll('.slide');
   var dots        = document.querySelectorAll('.slider-dot');
   var prevBtn     = document.querySelector('.slider-arrow.prev');
@@ -670,7 +670,7 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
     dots.forEach(function(d){ d.addEventListener('click', function(){ showSlide(parseInt(d.dataset.index)); }); });
   }
 
-  // â”€â”€â”€ View Toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ─── View Toggle ──────────────────────────────────────────────────────────
   var gridView  = document.getElementById('events-grid-view');
   var mapView   = document.getElementById('events-map-view');
   var btnGrid   = document.getElementById('btn-grid-view');
@@ -701,7 +701,7 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
     if (leafletMap) return; // Already initialised
     leafletMap = L.map('events-map').setView([-13.96, 33.78], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: 'Â© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 18
     }).addTo(leafletMap);
 
@@ -721,7 +721,7 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
       var popupHtml = '<div style="min-width:200px;">' + imgTag +
         '<div class="map-popup-title">' + ev.title + '</div>' +
         '<div class="map-popup-venue">ðŸ“ ' + ev.venue + '</div>' +
-        '<div class="map-popup-venue">ðŸ“… ' + ev.date + '</div>' +
+        '<div class="map-popup-venue">📅 ' + ev.date + '</div>' +
         '<div class="map-popup-price">' + ev.price + '</div>' +
         '<div style="display:flex;gap:0.4rem;">' +
           '<a class="map-popup-btn" href="' + ev.url + '" style="flex:1;background:var(--clr-surface2,#1a1a28);color:var(--clr-text,#f0f0f5);border:1px solid rgba(255,255,255,0.1);">Details</a>' +

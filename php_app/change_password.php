@@ -6,7 +6,6 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/auth_check.php';
-require_once __DIR__ . '/includes/page_photos.php';
 
 if (!isLoggedIn()) {
     redirect(BASE_URL . 'login.php');
@@ -152,13 +151,77 @@ $themePreference = uthenga_theme_preference();
       .auth-card { padding: 1rem; border-radius: 1rem; }
       .setup-grid { grid-template-columns: 1fr; }
     }
+    @media (max-width: 320px) {
+      .auth-shell {
+        padding: 0.65rem;
+      }
+
+      .auth-card {
+        padding: 0.9rem;
+        border-radius: 1rem;
+      }
+
+      .auth-logo {
+        margin-bottom: 0.75rem !important;
+      }
+
+      .auth-title {
+        font-size: 1.18rem;
+        line-height: 1.15;
+      }
+
+      .auth-subtitle {
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+
+      .setup-note {
+        padding: 0.85rem 0.95rem;
+        margin-bottom: 1rem;
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .setup-grid {
+        gap: 0.65rem;
+      }
+
+      .form-group {
+        margin-bottom: 0.95rem;
+      }
+
+      .form-label {
+        font-size: 0.8rem;
+      }
+
+      .form-control {
+        min-height: 40px;
+        font-size: 0.84rem;
+      }
+
+      .pw-wrapper .form-control {
+        padding-right: 2.3rem;
+      }
+
+      .pw-toggle {
+        right: 0.6rem;
+      }
+
+      .pw-toggle svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .btn.btn-primary.btn-lg {
+        min-height: 40px;
+        font-size: 0.82rem;
+        padding: 0.55rem 0.8rem;
+      }
+    }
   </style>
 </head>
 <body>
 <?php require_once __DIR__ . '/includes/page_loader.php'; ?>
-<div class="container" style="max-width:1120px;position:relative;z-index:1;">
-  <?php uthenga_render_photo_strip('auth'); ?>
-</div>
 <div class="auth-shell">
   <div class="auth-card animate-in">
     <div class="auth-logo" style="margin-bottom:1rem;">

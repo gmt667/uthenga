@@ -5,7 +5,6 @@
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/auth.php';
-require_once __DIR__ . '/../includes/page_photos.php';
 
 if (isLoggedIn()) {
     $current = dbQueryOne('SELECT is_approved FROM users WHERE id = ?', [$_SESSION['user_id']]);
@@ -210,10 +209,7 @@ $themePreference = uthenga_theme_preference();
 </head>
 <body class="admin-login-body">
 <?php require_once __DIR__ . '/../includes/page_loader.php'; ?>
-<div class="admin-login-shell">
-  <div class="admin-login-visual">
-    <?php uthenga_render_photo_strip('admin'); ?>
-  </div>
+  <div class="admin-login-shell">
   <div class="admin-login-card animate-in">
     <div class="admin-login-card-head">
       <div class="admin-login-brand">

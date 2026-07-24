@@ -48,7 +48,7 @@ $serviceFeeAccommodation = (float)getSetting('service_fee_accommodation', 0);
 $serviceFeeTour = (float)getSetting('service_fee_tour', 0);
 $serviceFeeTransport = (float)getSetting('service_fee_transport', 0);
 
-// â”€â”€â”€ Filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Filters ─────────────────────────────────────────────────────────────────
 $filterStatus  = strtolower($_GET['status']  ?? 'all');
 $filterGateway = $_GET['gateway'] ?? 'all';
 $search        = trim($_GET['q']  ?? '');

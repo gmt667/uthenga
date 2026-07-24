@@ -157,7 +157,7 @@ if ($isDriver) {
 
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem; max-width: 900px;">
   <div style="margin-bottom: 2rem;">
-    <a href="index.php" class="text-muted" style="text-decoration: none;">âž” Back to Ride Sharing</a>
+    <a href="index.php" class="text-muted" style="text-decoration: none;">➔ Back to Ride Sharing</a>
     <h1 class="page-title" style="margin-top: 0.5rem;"><?= e($trip['pickup_location']) ?> to <?= e($trip['destination']) ?></h1>
   </div>
 

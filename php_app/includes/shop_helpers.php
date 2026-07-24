@@ -350,6 +350,11 @@ if (!function_exists('uthenga_shop_default_catalog')) {
             }
             $product['category_name'] = $category['name'] ?? 'Shop';
             $product['category_slug'] = $category['slug'] ?? 'shop';
+            $product['supplier_id'] = $product['supplier_id'] ?? 1;
+            $product['warehouse_id'] = $product['warehouse_id'] ?? 1;
+            $product['supplier_name'] = $product['supplier_name'] ?? 'Uthenga Direct Stock';
+            $product['vendor_name'] = $product['vendor_name'] ?? $product['supplier_name'];
+            $product['warehouse_name'] = $product['warehouse_name'] ?? 'Central Dispatch Store';
             $product['stock_label'] = ((int) $product['stock_quantity'] > 0) ? 'In Stock' : 'Out of Stock';
             $product['deleted_at'] = null;
             $product['created_at'] = $product['created_at'] ?? date('Y-m-d H:i:s');
@@ -601,9 +606,13 @@ if (!function_exists('uthenga_shop_products')) {
 
         $sql = "
             SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+                   s.name AS supplier_name, s.supplier_code AS supplier_code,
+                   w.name AS warehouse_name, w.warehouse_code AS warehouse_code,
                    CASE WHEN p.stock_quantity > 0 THEN 'In Stock' ELSE 'Out of Stock' END AS stock_label
             FROM shop_products p
             LEFT JOIN shop_categories c ON c.id = p.category_id
+            LEFT JOIN shop_suppliers s ON s.id = p.supplier_id
+            LEFT JOIN shop_warehouses w ON w.id = p.warehouse_id
             WHERE " . implode(' AND ', $where) . "
             ORDER BY {$orderBy}
         ";
@@ -633,9 +642,13 @@ if (!function_exists('uthenga_shop_product_by_slug')) {
         }
 
         $product = dbQueryOne(
-            "SELECT p.*, c.name AS category_name, c.slug AS category_slug
+            "SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+                    s.name AS supplier_name, s.supplier_code AS supplier_code,
+                    w.name AS warehouse_name, w.warehouse_code AS warehouse_code
              FROM shop_products p
              LEFT JOIN shop_categories c ON c.id = p.category_id
+             LEFT JOIN shop_suppliers s ON s.id = p.supplier_id
+             LEFT JOIN shop_warehouses w ON w.id = p.warehouse_id
              WHERE p.slug = ? AND p.deleted_at IS NULL AND p.status = 'active'
              LIMIT 1",
             [$slug]
@@ -662,9 +675,13 @@ if (!function_exists('uthenga_shop_cart_enrich')) {
             $product = is_array($item['product'] ?? null) ? $item['product'] : null;
             if (!$product && uthenga_table_exists('shop_products')) {
                 $product = dbQueryOne(
-                    "SELECT p.*, c.name AS category_name, c.slug AS category_slug
+                    "SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+                            s.name AS supplier_name, s.supplier_code AS supplier_code,
+                            w.name AS warehouse_name, w.warehouse_code AS warehouse_code
                      FROM shop_products p
                      LEFT JOIN shop_categories c ON c.id = p.category_id
+                     LEFT JOIN shop_suppliers s ON s.id = p.supplier_id
+                     LEFT JOIN shop_warehouses w ON w.id = p.warehouse_id
                      WHERE p.id = ? AND p.deleted_at IS NULL AND p.status = 'active' LIMIT 1",
                     [(int) $productId]
                 ) ?: null;
@@ -807,9 +824,13 @@ if (!function_exists('uthenga_shop_product_by_id')) {
         }
 
         $product = dbQueryOne(
-            "SELECT p.*, c.name AS category_name, c.slug AS category_slug
+            "SELECT p.*, c.name AS category_name, c.slug AS category_slug,
+                    s.name AS supplier_name, s.supplier_code AS supplier_code,
+                    w.name AS warehouse_name, w.warehouse_code AS warehouse_code
              FROM shop_products p
              LEFT JOIN shop_categories c ON c.id = p.category_id
+             LEFT JOIN shop_suppliers s ON s.id = p.supplier_id
+             LEFT JOIN shop_warehouses w ON w.id = p.warehouse_id
              WHERE p.id = ? AND p.deleted_at IS NULL AND p.status = 'active'
              LIMIT 1",
             [$productId]

@@ -50,7 +50,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <style>
-    /* â”€â”€ Tourism Page Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Tourism Page Styles ─────────────────────────────────────────── */
     .tourism-hero {
       background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
       color: #fff;
@@ -192,7 +192,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
 <body>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
-<!-- â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<!-- ── Hero ─────────────────────────────────────────────────────────── -->
 <section class="tourism-hero">
   <div class="container">
     <div class="section-label">Discover Malawi</div>
@@ -212,7 +212,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   </div>
 </section>
 
-<!-- â”€â”€ Interactive Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<!-- ── Interactive Map ───────────────────────────────────────────────── -->
 <section class="map-section">
   <div class="container">
     <div class="section-label">Interactive Map</div>
@@ -235,7 +235,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   </div>
 </section>
 
-<!-- â”€â”€ Weather â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<!-- ── Weather ───────────────────────────────────────────────────────── -->
 <section class="weather-section">
   <div class="container">
     <div class="section-label">Current Weather</div>
@@ -253,7 +253,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   </div>
 </section>
 
-<!-- â”€â”€ Destination Guides â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<!-- ── Destination Guides ────────────────────────────────────────────── -->
 <section style="padding:3rem 0;">
   <div class="container">
     <div style="display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
@@ -315,7 +315,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   </div>
 </section>
 
-<!-- â”€â”€ AI Trip Planner CTA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<!-- ── AI Trip Planner CTA ───────────────────────────────────────────── -->
 <section style="padding:2rem 0;">
   <div class="container">
     <div class="itinerary-cta">
@@ -329,7 +329,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
   </div>
 </section>
 
-<!-- â”€â”€ Travel Tips â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+<!-- ── Travel Tips ───────────────────────────────────────────────────── -->
 <section style="padding:2rem 0 3rem;">
   <div class="container">
     <div class="section-label">Tips & Advice</div>
@@ -377,7 +377,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
 <script>
 const MAP_POINTS = <?= json_encode($mapPoints, JSON_UNESCAPED_UNICODE) ?>;
 
-// â”€â”€ Leaflet Map â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Leaflet Map ────────────────────────────────────────────────────────
 const map = L.map('tourism-map', {
   center: [-13.5, 33.9],
   zoom: 7,
@@ -490,7 +490,7 @@ document.querySelectorAll('.tourism-cat-btn').forEach(btn => {
   });
 });
 
-// â”€â”€ Weather Fetch â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Weather Fetch ──────────────────────────────────────────────────────
 const weatherCards = document.querySelectorAll('.weather-card');
 
 const weatherCodes = {};

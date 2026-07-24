@@ -7,7 +7,7 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/shop_helpers.php';
 
 $isSuperAdmin = currentRole() === ROLE_SUPER_ADMIN;
-$pageTitle = $isSuperAdmin ? 'Global Shop Management' : 'Shop Management';
+$pageTitle = $isSuperAdmin ? 'Global Shop Management' : 'Shop Control Room';
 $activeNav = $isSuperAdmin ? 'admin-shop-global' : 'admin-shop';
 
 require_once __DIR__ . '/includes/admin_header.php';
@@ -209,6 +209,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
                 ]
             );
             $flashMessage = 'Stock updated.';
+        } elseif ($action === 'delete_product') {
+            $productId = (int) ($_POST['product_id'] ?? 0);
+            dbExecute(
+                "UPDATE shop_products SET deleted_at = NOW(), status = 'archived', updated_at = NOW() WHERE id = ?",
+                [$productId]
+            );
+            $flashMessage = 'Product archived.';
+        } elseif ($action === 'restore_product') {
+            $productId = (int) ($_POST['product_id'] ?? 0);
+            dbExecute(
+                "UPDATE shop_products SET deleted_at = NULL, status = 'active', updated_at = NOW() WHERE id = ?",
+                [$productId]
+            );
+            $flashMessage = 'Product restored.';
         } elseif ($action === 'save_settings' && $isSuperAdmin) {
             $fields = [
                 'delivery_fee_mwk' => ['number', (float) ($_POST['delivery_fee_mwk'] ?? 0)],
@@ -237,8 +251,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
 
 $settings = uthenga_shop_settings();
 $categories = uthenga_table_exists('shop_categories') ? dbQuery('SELECT * FROM shop_categories ORDER BY sort_order ASC, name ASC') : [];
+$suppliers = uthenga_table_exists('shop_suppliers') ? dbQuery('SELECT * FROM shop_suppliers ORDER BY name ASC') : [];
+$warehouses = uthenga_table_exists('shop_warehouses') ? dbQuery('SELECT * FROM shop_warehouses ORDER BY name ASC') : [];
 $products = uthenga_table_exists('shop_products')
-    ? dbQuery("SELECT p.*, c.name AS category_name FROM shop_products p LEFT JOIN shop_categories c ON c.id = p.category_id WHERE p.deleted_at IS NULL ORDER BY p.created_at DESC LIMIT 30")
+    ? dbQuery("SELECT p.*, c.name AS category_name, s.name AS supplier_name, w.name AS warehouse_name FROM shop_products p LEFT JOIN shop_categories c ON c.id = p.category_id LEFT JOIN shop_suppliers s ON s.id = p.supplier_id LEFT JOIN shop_warehouses w ON w.id = p.warehouse_id WHERE p.deleted_at IS NULL ORDER BY p.created_at DESC LIMIT 30")
+    : [];
+$deletedProducts = uthenga_table_exists('shop_products')
+    ? dbQuery("SELECT p.*, c.name AS category_name, s.name AS supplier_name, w.name AS warehouse_name FROM shop_products p LEFT JOIN shop_categories c ON c.id = p.category_id LEFT JOIN shop_suppliers s ON s.id = p.supplier_id LEFT JOIN shop_warehouses w ON w.id = p.warehouse_id WHERE p.deleted_at IS NOT NULL ORDER BY p.deleted_at DESC LIMIT 15")
     : [];
 $orders = uthenga_table_exists('shop_orders')
     ? dbQuery("SELECT * FROM shop_orders ORDER BY placed_at DESC LIMIT 25")
@@ -254,6 +273,7 @@ $metrics = [
     'orders' => count($orders),
     'revenue' => uthenga_table_exists('shop_orders') ? (dbQueryOne("SELECT COALESCE(SUM(total_amount),0) AS total FROM shop_orders WHERE LOWER(payment_status) IN ('paid','authorized','partially_paid')") ?: ['total' => 0]) : ['total' => 0],
     'low_stock' => uthenga_table_exists('shop_products') ? dbCount('SELECT COUNT(*) FROM shop_products WHERE stock_quantity <= low_stock_threshold') : 0,
+    'deleted' => count($deletedProducts),
     'riders' => count($riders),
 ];
 
@@ -319,11 +339,11 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
         <p class="text-xs text-muted">Quick numbers from the live shop tables.</p>
       </div>
     </div>
-    <div class="shop-admin-grid" style="margin-bottom:0;">
+      <div class="shop-admin-grid" style="margin-bottom:0;">
       <div class="shop-admin-stat"><span>Categories</span><strong><?= number_format((int) $metrics['categories']) ?></strong></div>
       <div class="shop-admin-stat"><span>Delivery Riders</span><strong><?= number_format((int) $metrics['riders']) ?></strong></div>
       <div class="shop-admin-stat"><span>Orders in Queue</span><strong><?= number_format(count(array_filter($orders, static fn($o) => in_array(strtolower((string) ($o['order_status'] ?? '')), ['pending','confirmed','preparing'], true)))) ?></strong></div>
-      <div class="shop-admin-stat"><span>Shop Theme</span><strong><?= e($settings['shop_name']) ?></strong></div>
+      <div class="shop-admin-stat"><span>Archived</span><strong><?= number_format((int) $metrics['deleted']) ?></strong></div>
     </div>
   </section>
 
@@ -410,8 +430,8 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
         <label class="form-group"><span class="form-label">Description</span><textarea name="description" class="form-control" rows="3"></textarea></label>
         <label class="form-group"><span class="form-label">Unit Label</span><input type="text" name="unit_label" class="form-control" placeholder="e.g. 6 pack, 25kg bag"></label>
         <label class="form-group"><span class="form-label">Promotion Label</span><input type="text" name="promotion_label" class="form-control" placeholder="Weekend offer"></label>
-        <label class="form-group"><span class="form-label">Supplier</span><select name="supplier_id" class="form-control"><option value="0">Default</option><option value="1">Uthenga Direct Stock</option></select></label>
-        <label class="form-group"><span class="form-label">Warehouse</span><select name="warehouse_id" class="form-control"><option value="0">Default</option><option value="1">Central Dispatch Store</option></select></label>
+        <label class="form-group"><span class="form-label">Supplier</span><select name="supplier_id" class="form-control"><option value="0">Select Supplier</option><?php foreach ($suppliers as $supplier): ?><option value="<?= (int) $supplier['id'] ?>"><?= e($supplier['name']) ?></option><?php endforeach; ?></select></label>
+        <label class="form-group"><span class="form-label">Warehouse</span><select name="warehouse_id" class="form-control"><option value="0">Select Warehouse</option><?php foreach ($warehouses as $warehouse): ?><option value="<?= (int) $warehouse['id'] ?>"><?= e($warehouse['name']) ?></option><?php endforeach; ?></select></label>
       </div>
       <div class="shop-table-actions">
         <label><input type="checkbox" name="is_featured"> Featured</label>
@@ -433,7 +453,7 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
 
     <div class="table-responsive">
       <table class="admin-table">
-        <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Quick Stock</th></tr></thead>
+        <thead><tr><th>Product</th><th>Vendor</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody>
           <?php foreach ($products as $product): ?>
             <tr>
@@ -441,24 +461,30 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
                 <strong><a href="<?= BASE_URL ?>admin/shop-product.php?id=<?= (int) $product['id'] ?>"><?= e($product['name']) ?></a></strong><br>
                 <span class="text-xs text-muted"><?= e($product['sku']) ?></span>
               </td>
+              <td><?= e($product['supplier_name'] ?? 'Uthenga Direct Stock') ?><br><span class="text-xs text-muted"><?= e($product['warehouse_name'] ?? 'Central Dispatch Store') ?></span></td>
               <td><?= e($product['category_name'] ?? 'Uncategorized') ?></td>
               <td><?= uthenga_shop_money((float) $product['price']) ?></td>
               <td><?= (int) $product['stock_quantity'] ?></td>
               <td><span class="badge <?= uthenga_shop_status_badge((string) $product['status']) ?>"><?= e($product['status']) ?></span></td>
               <td>
-                <form method="post" class="shop-table-actions" style="margin:0;">
-                  <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
-                  <input type="hidden" name="action" value="adjust_stock">
-                  <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
-                  <input type="number" name="stock_quantity" class="form-control" style="max-width:110px;" value="<?= (int) $product['stock_quantity'] ?>">
-                  <select name="status" class="form-control" style="max-width:130px;">
-                    <option value="active" <?= $product['status'] === 'active' ? 'selected' : '' ?>>Active</option>
-                    <option value="draft" <?= $product['status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
-                    <option value="archived" <?= $product['status'] === 'archived' ? 'selected' : '' ?>>Archived</option>
-                    <option value="out_of_stock" <?= $product['status'] === 'out_of_stock' ? 'selected' : '' ?>>Out of Stock</option>
-                  </select>
-                  <button type="submit" class="btn btn-secondary btn-sm">Save</button>
-                </form>
+                <div class="shop-table-actions" style="margin:0;">
+                  <a href="<?= BASE_URL ?>admin/shop-product.php?id=<?= (int) $product['id'] ?>" class="btn btn-sm btn-secondary">Edit</a>
+                  <?php if (empty($product['deleted_at'])): ?>
+                    <form method="post" style="margin:0;">
+                      <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                      <input type="hidden" name="action" value="delete_product">
+                      <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                      <button type="submit" class="btn btn-sm btn-secondary">Archive</button>
+                    </form>
+                  <?php else: ?>
+                    <form method="post" style="margin:0;">
+                      <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                      <input type="hidden" name="action" value="restore_product">
+                      <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                      <button type="submit" class="btn btn-sm btn-primary">Restore</button>
+                    </form>
+                  <?php endif; ?>
+                </div>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -547,6 +573,37 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
               <td><?= e($rider['bike_registration'] ?? 'N/A') ?></td>
               <td><span class="badge <?= uthenga_shop_status_badge((string) $rider['availability']) ?>"><?= e($rider['availability']) ?></span></td>
               <td><?= number_format((int) $rider['delivery_history_count']) ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="shop-card" id="trash">
+    <div class="section-head">
+      <div>
+        <h3>Archived Products</h3>
+        <p class="text-xs text-muted">Soft-deleted items can be restored here.</p>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead><tr><th>Product</th><th>Vendor</th><th>Deleted</th><th>Action</th></tr></thead>
+        <tbody>
+          <?php foreach ($deletedProducts as $product): ?>
+            <tr>
+              <td><strong><?= e($product['name']) ?></strong><br><span class="text-xs text-muted"><?= e($product['sku']) ?></span></td>
+              <td><?= e($product['supplier_name'] ?? 'Uthenga Direct Stock') ?></td>
+              <td><?= e($product['deleted_at'] ?? '') ?></td>
+              <td>
+                <form method="post" style="margin:0;">
+                  <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                  <input type="hidden" name="action" value="restore_product">
+                  <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
+                  <button type="submit" class="btn btn-primary btn-sm">Restore</button>
+                </form>
+              </td>
             </tr>
           <?php endforeach; ?>
         </tbody>

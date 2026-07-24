@@ -259,7 +259,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
       margin-bottom: 0.75rem;
     }
     
-    /* â”€â”€â”€ Timeline Styles â”€â”€â”€ */
+    /* ─── Timeline Styles ─── */
     .timeline {
       position: relative;
       padding-left: 2rem;
@@ -293,7 +293,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
       color: #fff;
     }
     
-    /* â”€â”€â”€ Map Styles â”€â”€â”€ */
+    /* ─── Map Styles ─── */
     .map-container {
       margin-bottom: 2.5rem;
     }
@@ -305,7 +305,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
       z-index: 1;
     }
 
-    /* â”€â”€â”€ Share Feedback Message â”€â”€â”€ */
+    /* ─── Share Feedback Message ─── */
     .share-toast {
       position: fixed;
       bottom: 2rem;
@@ -439,8 +439,8 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
         <div class="glass-panel" style="padding:1.5rem;">
         <?php if ($listing['listing_type'] === 'event'): ?>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-            <div><div class="text-xs text-muted">ðŸ“… Date</div><div style="font-weight:600;margin-top:0.2rem;"><?= e($meta['date'] ?? 'TBC') ?></div></div>
-            <div><div class="text-xs text-muted">â° Time</div><div style="font-weight:600;margin-top:0.2rem;"><?= e($meta['time'] ?? 'TBC') ?></div></div>
+            <div><div class="text-xs text-muted">📅 Date</div><div style="font-weight:600;margin-top:0.2rem;"><?= e($meta['date'] ?? 'TBC') ?></div></div>
+            <div><div class="text-xs text-muted">⏰ Time</div><div style="font-weight:600;margin-top:0.2rem;"><?= e($meta['time'] ?? 'TBC') ?></div></div>
             <div><div class="text-xs text-muted">ðŸŸ Category</div><div style="font-weight:600;margin-top:0.2rem;"><?= e($meta['category'] ?? '') ?></div></div>
             <div><div class="text-xs text-muted">ðŸ‘¥ Capacity</div><div style="font-weight:600;margin-top:0.2rem;"><?= number_format($meta['venueCapacity'] ?? 0) ?> seats</div></div>
           </div>
@@ -484,7 +484,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
           <!-- Room Availability Calendar & Date Check -->
           <div class="glass-panel" style="padding: 1.25rem; margin-bottom: 1.5rem; background: rgba(6, 182, 212, 0.05); border: 1px solid rgba(6, 182, 212, 0.15);">
             <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.35rem;">
-              <span>ðŸ“…</span> Check-in & Room Availability Calendar
+              <span>📅</span> Check-in & Room Availability Calendar
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; align-items: flex-end;">
               <div class="form-group" style="margin-bottom: 0;">
@@ -505,7 +505,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
             <div class="text-xs text-muted" style="margin-bottom:0.5rem;">Amenities</div>
             <div>
               <?php foreach ($meta['amenities'] as $a): ?>
-                <span class="meta-pill">âœ“ <?= e($a) ?></span>
+                <span class="meta-pill">✓ <?= e($a) ?></span>
               <?php endforeach; ?>
             </div>
           </div>
@@ -522,7 +522,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
                   <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:0.5rem;">
                     <div style="flex:1;">
                       <div style="font-weight:700;font-size:0.95rem;color:#fff;"><?= e($room['room_name']) ?></div>
-                      <div class="text-xs text-muted" style="margin-top:0.25rem;">Max guests: <?= $room['max_occupancy'] ?> Â· <?= number_format($room['available_rooms']) ?> / <?= number_format($room['total_rooms']) ?> rooms available</div>
+                      <div class="text-xs text-muted" style="margin-top:0.25rem;">Max guests: <?= $room['max_occupancy'] ?> · <?= number_format($room['available_rooms']) ?> / <?= number_format($room['total_rooms']) ?> rooms available</div>
                       <?php if (!empty($amenities)): ?>
                         <div class="room-amenities">
                           <?php foreach (array_slice($amenities, 0, 4) as $am): ?>
@@ -551,7 +551,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
               <div style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem;background:var(--clr-surface2);border:1px solid var(--clr-border);border-radius:var(--radius-md);">
                 <div>
                   <div style="font-weight:600;font-size:0.9rem;"><?= e($room['name']) ?></div>
-                  <div class="text-xs text-muted">Capacity: <?= (int)($room['capacity'] ?? 2) ?> guests Â· <?= (int)($room['availableRooms'] ?? 0) ?> available</div>
+                  <div class="text-xs text-muted">Capacity: <?= (int)($room['capacity'] ?? 2) ?> guests · <?= (int)($room['availableRooms'] ?? 0) ?> available</div>
                 </div>
                 <div style="text-align:right;">
                   <div style="font-weight:700;color:var(--clr-accent);">MK <?= number_format($room['pricePerNight'] ?? 0) ?></div>
@@ -586,7 +586,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
             <div class="text-xs text-muted" style="margin-bottom:0.5rem;">Available Dates</div>
             <div>
               <?php foreach ($meta['datesAvailable'] as $d): ?>
-                <span class="meta-pill">ðŸ“… <?= e($d) ?></span>
+                <span class="meta-pill">📅 <?= e($d) ?></span>
               <?php endforeach; ?>
             </div>
           </div>
@@ -614,7 +614,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
               <div style="font-weight:700;font-size:1.1rem;"><?= e($meta['routeFrom'] ?? '') ?></div>
               <div class="text-xs text-muted"><?= e($meta['departureTime'] ?? '') ?></div>
             </div>
-            <div style="text-align:center;color:var(--clr-accent);font-size:1.5rem;">â†’</div>
+            <div style="text-align:center;color:var(--clr-accent);font-size:1.5rem;">→</div>
             <div style="text-align:center;padding:1rem;background:var(--clr-surface2);border-radius:var(--radius-md);">
               <div style="font-weight:700;font-size:1.1rem;"><?= e($meta['routeTo'] ?? '') ?></div>
               <div class="text-xs text-muted"><?= e($meta['arrivalTime'] ?? '') ?></div>
@@ -712,7 +712,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
           </div>
           <div>
             <h3 style="font-size:1.1rem; margin-bottom:0.25rem; color:#fff;"><?= e($listing['vendor_name']) ?></h3>
-            <div style="font-size:0.78rem; color:var(--clr-green); font-weight:700; margin-bottom:0.4rem;">âœ“ Verified Service Provider</div>
+            <div style="font-size:0.78rem; color:var(--clr-green); font-weight:700; margin-bottom:0.4rem;">✓ Verified Service Provider</div>
             <p class="text-xs text-muted" style="margin-bottom:0.2rem;">ðŸ“§ Email: <?= e($vendor['email'] ?? 'info@uthenga.com') ?></p>
             <p class="text-xs text-muted">Joined: <?= e($vendor['joined_date'] ?? '2026-01-01') ?></p>
           </div>
@@ -788,14 +788,14 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
           <div class="text-xs text-muted" style="margin-bottom:0.25rem;">Starting From</div>
           <div style="font-size:2rem;font-weight:800;color:var(--clr-accent);"><?= detailPrice($listing, $meta) ?></div>
           <?php if ($listing['listing_type'] === 'event'): ?>
-            <div class="text-xs text-muted">Standard ticket Â· VIP also available</div>
+            <div class="text-xs text-muted">Standard ticket · VIP also available</div>
           <?php endif; ?>
         </div>
 
         <!-- Event Countdown Timer -->
         <?php if ($listing['listing_type'] === 'event' && !empty($meta['date'])): ?>
           <div style="padding:1rem; margin-bottom:1.5rem; text-align:center; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--clr-primary); border-radius: var(--radius-md);">
-            <div class="text-xs text-muted" style="margin-bottom:0.4rem; text-transform:uppercase; font-weight:700; color:var(--clr-primary);">â³ Event Countdown</div>
+            <div class="text-xs text-muted" style="margin-bottom:0.4rem; text-transform:uppercase; font-weight:700; color:var(--clr-primary);">⏳ Event Countdown</div>
             <div id="event-countdown" style="font-size:1.3rem; font-weight:800; font-family:monospace; color:#fff; letter-spacing: 0.05em;">--d --h --m --s</div>
           </div>
           <script>
@@ -865,7 +865,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
         <?php endif; ?>
 
         <div class="text-xs text-muted" style="text-align:center;margin-top:0.75rem;">
-          ðŸ”’ Secure booking Â· Instant confirmation
+          🔒 Secure booking · Instant confirmation
         </div>
 
         <!-- Quick Facts -->
@@ -889,7 +889,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
 
       <!-- Back Link -->
       <a href="<?= BASE_URL ?><?= e($listing['listing_type']) ?>s.php" class="btn btn-secondary" style="width:100%;text-align:center;margin-top:1rem;" id="back-to-listings">
-        â† Back to <?= ucfirst(e($listing['listing_type'])) ?>s
+        ← Back to <?= ucfirst(e($listing['listing_type'])) ?>s
       </a>
     </div>
   </div>
@@ -901,7 +901,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
   <div class="modal">
     <div class="modal-header">
       <h3 id="bk-modal-title"><?= uthenga_booking_btn_label($listing['listing_type']) ?></h3>
-      <button class="modal-close" onclick="closeModal('booking-modal')" aria-label="Close">âœ•</button>
+      <button class="modal-close" onclick="closeModal('booking-modal')" aria-label="Close">✕</button>
     </div>
     <form method="POST" action="<?= BASE_URL ?>request_api.php" id="booking-form">
       <div class="modal-body">
@@ -1037,7 +1037,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('booking-modal')">Cancel</button>
-        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment â†’</button>
+        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment →</button>
       </div>
     </form>
   </div>
@@ -1047,7 +1047,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
   <div class="modal">
     <div class="modal-header">
       <h3>Confirm Payment</h3>
-      <button class="modal-close" onclick="closeModal('payment-modal')">âœ•</button>
+      <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
     </div>
     <div class="modal-body" style="text-align:center;">
       <div style="font-size:3rem;margin-bottom:1rem;">ðŸ’³</div>
@@ -1058,7 +1058,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" onclick="closeModal('payment-modal')">Back</button>
-      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary">âœ“ Pay Now</button>
+      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary">✓ Pay Now</button>
     </div>
   </div>
 </div>
@@ -1090,7 +1090,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
 <?php endif; ?>
 
 <!-- Share Success Toast -->
-<div id="share-toast" class="share-toast">âœ“ Link copied to clipboard!</div>
+<div id="share-toast" class="share-toast">✓ Link copied to clipboard!</div>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -1154,7 +1154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const map = L.map('map').setView(centerCoords, 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: 'Â© OpenStreetMap contributors'
+      attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
     L.marker(centerCoords).addTo(map)
@@ -1199,7 +1199,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.success) {
           if (data.added) {
             wishlistBtn.classList.add('active');
-            wishlistBtn.textContent = 'â¤ï¸ Saved';
+            wishlistBtn.textContent = '❤️ Saved';
           } else {
             wishlistBtn.classList.remove('active');
             wishlistBtn.textContent = 'ðŸ¤ Save to Wishlist';
@@ -1217,7 +1217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script>
-// â”€â”€ Seat Selection toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Seat Selection toggle ─────────────────────────────────────────────────────
 function toggleSeat(el) {
   el.classList.toggle('selected');
   const selected = Array.from(document.querySelectorAll('.seat-item.selected')).map(s => s.dataset.seat);
@@ -1232,7 +1232,7 @@ function toggleSeat(el) {
   }
 }
 
-// â”€â”€ Promo Code Validation (via api/validate-promo.php) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Promo Code Validation (via api/validate-promo.php) ────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   const promoBtn = document.getElementById('apply-coupon');
   if (promoBtn) {
@@ -1262,12 +1262,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
 
         if (data.success) {
-          if (msgEl) { msgEl.textContent = 'âœ“ ' + data.message; msgEl.style.color = 'var(--clr-green)'; }
+          if (msgEl) { msgEl.textContent = '✓ ' + data.message; msgEl.style.color = 'var(--clr-green)'; }
           const discountInput = document.getElementById('bk-discount');
           if (discountInput) discountInput.value = data.discount_amount;
           if (typeof updateBookingTotal === 'function') updateBookingTotal();
         } else {
-          if (msgEl) { msgEl.textContent = 'âœ— ' + data.message; msgEl.style.color = 'var(--clr-red)'; }
+          if (msgEl) { msgEl.textContent = '✗ ' + data.message; msgEl.style.color = 'var(--clr-red)'; }
           const discountInput = document.getElementById('bk-discount');
           if (discountInput) discountInput.value = 0;
           if (typeof updateBookingTotal === 'function') updateBookingTotal();
@@ -1286,7 +1286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <?php if (($listing['listing_type'] ?? $listing['type'] ?? '') === 'event' && !empty($listing['id'])): ?>
 <script>
-// â”€â”€ Non-blocking view tracking for AI event ranking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Non-blocking view tracking for AI event ranking ──────────────────────────
 (function () {
   try {
     var url  = '<?= BASE_URL ?>api/track_event_view.php';
@@ -1312,12 +1312,12 @@ function checkAccommodationAvailability(propertyId) {
   var statusMsg = document.getElementById('avail-status-msg');
   
   if (!checkin || !checkout) {
-    statusMsg.textContent = 'âŒ Please select check-in and check-out dates.';
+    statusMsg.textContent = '❌ Please select check-in and check-out dates.';
     statusMsg.style.color = '#ef4444';
     return;
   }
   
-  statusMsg.textContent = 'â³ Checking room availability...';
+  statusMsg.textContent = '⏳ Checking room availability...';
   statusMsg.style.color = 'var(--clr-muted)';
   
   fetch('<?= BASE_URL ?>api/room-availability.php?property_id=' + propertyId + '&check_in=' + checkin + '&check_out=' + checkout)
@@ -1327,19 +1327,19 @@ function checkAccommodationAvailability(propertyId) {
         var availableRooms = data.rooms.filter(r => r.available);
         if (availableRooms.length > 0) {
           var names = availableRooms.map(r => r.room_name + ' (MK ' + r.price_per_night.toLocaleString() + ')').join(', ');
-          statusMsg.textContent = 'âœ… Available rooms: ' + names;
+          statusMsg.textContent = '✅ Available rooms: ' + names;
           statusMsg.style.color = '#10b981';
         } else {
-          statusMsg.textContent = 'âŒ No rooms available for the selected dates.';
+          statusMsg.textContent = '❌ No rooms available for the selected dates.';
           statusMsg.style.color = '#ef4444';
         }
       } else {
-        statusMsg.textContent = 'âŒ ' + data.message;
+        statusMsg.textContent = '❌ ' + data.message;
         statusMsg.style.color = '#ef4444';
       }
     })
     .catch(err => {
-      statusMsg.textContent = 'âŒ Failed to check room availability.';
+      statusMsg.textContent = '❌ Failed to check room availability.';
       statusMsg.style.color = '#ef4444';
     });
 }
@@ -1360,19 +1360,19 @@ function submitReview(event) {
   .then(r => r.json())
   .then(data => {
     if (data.success) {
-      status.textContent = 'âœ… Review submitted!';
+      status.textContent = '✅ Review submitted!';
       status.style.color = '#10b981';
       form.reset();
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } else {
-      status.textContent = 'âŒ ' + data.message;
+      status.textContent = '❌ ' + data.message;
       status.style.color = '#ef4444';
     }
   })
   .catch(err => {
-    status.textContent = 'âŒ Failed to submit review.';
+    status.textContent = '❌ Failed to submit review.';
     status.style.color = '#ef4444';
   });
 }

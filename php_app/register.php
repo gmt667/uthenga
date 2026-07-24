@@ -1,11 +1,10 @@
-<?php
+﻿<?php
 /**
  * Uthenga - Customer Registration Page
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/includes/brand_icons.php';
-require_once __DIR__ . '/includes/page_photos.php';
 
 if (isLoggedIn()) redirect(BASE_URL . 'dashboard.php');
 
@@ -170,9 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <?php require_once __DIR__ . '/includes/page_loader.php'; ?>
-<div class="container" style="max-width:1120px;position:relative;z-index:1;">
-  <?php uthenga_render_photo_strip('auth'); ?>
-</div>
 <div class="auth-page">
   <div class="auth-card animate-in">
     <div class="auth-logo">
@@ -216,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <div class="alert alert-error">
         <div>
           <?php foreach ($errors as $err): ?>
-            <div>✕ <?= e($err) ?></div>
+            <div>&times; <?= e($err) ?></div>
           <?php endforeach; ?>
         </div>
       </div>
@@ -343,3 +339,4 @@ function utPwToggle(inputId, btn) {
 </script>
 </body>
 </html>
+

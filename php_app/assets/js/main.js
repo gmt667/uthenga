@@ -372,7 +372,7 @@ function replaceEmojiWithIcons(root) {
   window.addEventListener('resize', syncSidebarMode);
 })();
 
-// â”€â”€â”€ Active nav link auto-detect â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Active nav link auto-detect ──────────────────────────────────────────────
 (function () {
   const path = window.location.pathname;
   document.querySelectorAll('.navbar-links a').forEach(a => {
@@ -443,7 +443,7 @@ document.addEventListener('click', (e) => {
   trackEventMetric(trigger.dataset.trackEventClick, trigger.dataset.trackEventMetric || 'click');
 });
 
-// â”€â”€â”€ Alert Utility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Alert Utility ────────────────────────────────────────────────────────────
 function showAlert(container, message, type = 'error') {
   const icons = { error: createInlineSvgIcon('x'), success: createInlineSvgIcon('check'), info: createInlineSvgIcon('info'), warning: createInlineSvgIcon('warning') };
   const el = document.createElement('div');
@@ -453,7 +453,7 @@ function showAlert(container, message, type = 'error') {
   setTimeout(() => el.remove(), 5000);
 }
 
-// â”€â”€â”€ Modal Control â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Modal Control ───────────────────────────────────────────────────────────
 function openModal(id) {
   const overlay = document.getElementById(id);
   if (!overlay) return;
@@ -487,7 +487,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// â”€â”€â”€ Filter Tabs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Filter Tabs ─────────────────────────────────────────────────────────────
 document.querySelectorAll('.filter-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     const group = tab.closest('.filter-tabs');
@@ -504,7 +504,7 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
   });
 });
 
-// â”€â”€â”€ Search Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Search Bar ───────────────────────────────────────────────────────────────
 const searchInput = document.getElementById('listing-search');
 if (searchInput) {
   searchInput.addEventListener('input', () => {
@@ -517,7 +517,7 @@ if (searchInput) {
   });
 }
 
-// â”€â”€â”€ Booking Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Booking Modal ───────────────────────────────────────────────────────────
 function openBookingModal(listingId, listingType, listingTitle, price, vipPrice = 0) {
   document.getElementById('bk-listing-id').value     = listingId;
   document.getElementById('bk-listing-type').value   = listingType;
@@ -575,7 +575,7 @@ function updateBookingTotal() {
   if (hiddenTotal) hiddenTotal.value = total;
 }
 
-// â”€â”€â”€ Booking Form Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Booking Form Submit ──────────────────────────────────────────────────────
 const bookingForm = document.getElementById('booking-form');
 if (bookingForm) {
   bookingForm.addEventListener('submit', async (e) => {
@@ -611,7 +611,7 @@ if (bookingForm) {
   });
 }
 
-// â”€â”€â”€ Booking Success Flash â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Booking Success Flash ────────────────────────────────────────────────────
 function showSuccessBooking(booking) {
   const el = document.getElementById('booking-success');
   if (!el) return;
@@ -704,7 +704,7 @@ function showSuccessBooking(booking) {
   el.scrollIntoView({ behavior: 'smooth' });
 }
 
-// â”€â”€â”€ Cancel Booking â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Cancel Booking ───────────────────────────────────────────────────────────
 document.querySelectorAll('.btn-cancel-booking').forEach(btn => {
   btn.addEventListener('click', async () => {
     const id = btn.dataset.bookingId;
@@ -719,7 +719,7 @@ document.querySelectorAll('.btn-cancel-booking').forEach(btn => {
   });
 });
 
-// â”€â”€â”€ Admin: Status Update â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Admin: Status Update ─────────────────────────────────────────────────────
 document.querySelectorAll('.admin-status-select').forEach(sel => {
   sel.addEventListener('change', async () => {
     const { bookingId, field } = sel.dataset;
@@ -735,7 +735,7 @@ document.querySelectorAll('.admin-status-select').forEach(sel => {
   });
 });
 
-// â”€â”€â”€ Admin: Toggle User Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Admin: Toggle User Status ────────────────────────────────────────────────
 document.querySelectorAll('.btn-toggle-user').forEach(btn => {
   btn.addEventListener('click', async () => {
     const userId = btn.dataset.userId;
@@ -748,7 +748,7 @@ document.querySelectorAll('.btn-toggle-user').forEach(btn => {
   });
 });
 
-// â”€â”€â”€ Admin: Refund â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Admin: Refund ────────────────────────────────────────────────────────────
 document.querySelectorAll('.btn-refund').forEach(btn => {
   btn.addEventListener('click', async () => {
     const id = btn.dataset.bookingId;
@@ -762,7 +762,7 @@ document.querySelectorAll('.btn-refund').forEach(btn => {
   });
 });
 
-// â”€â”€â”€ Coupon Validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Coupon Validation ────────────────────────────────────────────────────────
 const couponInput = document.getElementById('coupon-code');
 const couponBtn   = document.getElementById('apply-coupon');
 if (couponBtn && couponInput) {
@@ -772,7 +772,7 @@ if (couponBtn && couponInput) {
     const data = await api('validate_coupon', { code, spend: document.getElementById('bk-total-price')?.value || 0 });
     const msg = document.getElementById('coupon-msg');
     if (data.valid) {
-      if (msg) { msg.textContent = `âœ“ Coupon applied! ${data.description}`; msg.className = 'text-sm text-green'; }
+      if (msg) { msg.textContent = `✓ Coupon applied! ${data.description}`; msg.className = 'text-sm text-green'; }
       const el = document.getElementById('bk-discount');
       if (el) el.value = data.discount;
       updateBookingTotal();
@@ -782,11 +782,11 @@ if (couponBtn && couponInput) {
   });
 }
 
-// â”€â”€â”€ Quantity change â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Quantity change ──────────────────────────────────────────────────────────
 const qtyInput = document.getElementById('bk-quantity');
 if (qtyInput) qtyInput.addEventListener('input', updateBookingTotal);
 
-// â”€â”€â”€ Ticket Type change (Standard vs VIP) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Ticket Type change (Standard vs VIP) ──────────────────────────────────────
 const ticketTypeSelect = document.getElementById('bk-ticket-type');
 if (ticketTypeSelect) {
   ticketTypeSelect.addEventListener('change', () => {
@@ -801,7 +801,7 @@ if (ticketTypeSelect) {
   });
 }
 
-// â”€â”€â”€ Gateway Selection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Gateway Selection ────────────────────────────────────────────────────────
 document.querySelectorAll('.gateway-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.gateway-btn').forEach(b => b.classList.remove('selected'));
@@ -811,7 +811,7 @@ document.querySelectorAll('.gateway-btn').forEach(btn => {
   });
 });
 
-// â”€â”€â”€ Confirm Payment Step â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Confirm Payment Step ─────────────────────────────────────────────────────
 const proceedPayBtn = document.getElementById('proceed-to-payment');
 if (proceedPayBtn) {
   proceedPayBtn.addEventListener('click', () => {
@@ -831,7 +831,7 @@ if (proceedPayBtn) {
   });
 }
 
-// â”€â”€â”€ Table sort (basic) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Table sort (basic) ───────────────────────────────────────────────────────
 document.querySelectorAll('th[data-sort]').forEach(th => {
   th.style.cursor = 'pointer';
   th.addEventListener('click', () => {
@@ -850,7 +850,7 @@ document.querySelectorAll('th[data-sort]').forEach(th => {
   });
 });
 
-// â”€â”€â”€ Animate cards on scroll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Animate cards on scroll ──────────────────────────────────────────────────
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -961,7 +961,7 @@ console.log('%cMalawi\'s Premier Marketplace Platform', 'color:#7c7c9a;font-size
   }
 })();
 
-// â”€â”€â”€ IntersectionObserver for Progressive Image Lazy Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── IntersectionObserver for Progressive Image Lazy Loading ─────────────────
 (function () {
   'use strict';
   const lazyImages = document.querySelectorAll('img[data-src]');

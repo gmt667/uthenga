@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/malawi_locations.php';
 $pageTitle = 'Local Business Marketplace';
 $activeNav = 'marketplace';
 
-// â”€â”€ Filter params â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Filter params ────────────────────────────────────────────────────────────
 $type   = trim(is_array($_GET['type']   ?? null) ? '' : (string)($_GET['type']   ?? ''));
 $search = trim(is_array($_GET['search'] ?? null) ? '' : (string)($_GET['search'] ?? ''));
 $city   = trim(is_array($_GET['city']   ?? null) ? '' : (string)($_GET['city']   ?? ''));
@@ -50,12 +50,12 @@ $featuredCities = uthenga_malawi_featured_cities();
 $hasLocalBusinessListings = uthenga_table_exists('local_business_listings');
 $marketplaceSchemaMissing = !$hasLocalBusinessListings;
 
-// â”€â”€ Validate filters â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Validate filters ─────────────────────────────────────────────────────────
 if ($type !== '' && !array_key_exists($type, $businessTypes)) {
     $type = '';
 }
 
-// â”€â”€ Resolve specific business details if view is set â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Resolve specific business details if view is set ─────────────────────────
 $viewId = trim($_GET['view'] ?? '');
 $viewListing = null;
 
@@ -163,7 +163,7 @@ $mockListingsList = [
     ],
 ];
 
-// â”€â”€ Build query â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Build query ───────────────────────────────────────────────────────────────
 $conditions = ['lbl.is_active = 1'];
 $params     = [];
 $total      = 0;
@@ -293,7 +293,7 @@ if (empty($cities)) {
     ];
 }
 
-// â”€â”€ Resolve specific business details if view is set â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Resolve specific business details if view is set ─────────────────────────
 if ($viewId !== '') {
     if ($hasLocalBusinessListings) {
         try {
@@ -330,7 +330,7 @@ if ($viewId !== '') {
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= APP_VERSION ?>">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <style>
-    /* â”€â”€ Marketplace Styles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+    /* ── Marketplace Styles ─────────────────────────────────────── */
     .mp-hero { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
                padding: 4rem 0 2.5rem; text-align: center; margin-bottom: 0; }
     .mp-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: .75rem;
@@ -698,7 +698,7 @@ if ($viewId !== '') {
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// â”€â”€ Map / Grid View Toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Map / Grid View Toggle ────────────────────────────────────────────────
 let mapInitialized = false;
 const mapData = <?= $mapJson ?>;
 
@@ -726,7 +726,7 @@ function initMap() {
   mapInitialized = true;
   const map = L.map('mp-map').setView([-13.9669, 33.7873], 7); // Malawi centre
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'Â© OpenStreetMap contributors', maxZoom: 18
+    attribution: '© OpenStreetMap contributors', maxZoom: 18
   }).addTo(map);
 
   const categoryColors = {
@@ -750,7 +750,7 @@ function initMap() {
         <strong>${biz.business_name}</strong><br>
         <small style="color:#64748b;">${biz.city || ''}</small><br>
         <span style="color:#f59e0b;">${stars}</span><br>
-        <a href="<?= BASE_URL ?>marketplace.php?view=${biz.id}" style="color:#38bdf8;font-size:.8rem;">View Details â†’</a>
+        <a href="<?= BASE_URL ?>marketplace.php?view=${biz.id}" style="color:#38bdf8;font-size:.8rem;">View Details →</a>
       </div>
     `);
   });
