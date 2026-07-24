@@ -136,6 +136,75 @@ renderDashboardChromeStart([
       font-size: .92rem;
     }
   }
+  @media (max-width: 320px) {
+    .receipt-shell {
+      padding: 1rem 0 1.5rem;
+    }
+
+    .receipt-card {
+      padding: .75rem;
+      border-radius: 16px;
+    }
+
+    .page-header {
+      gap: .65rem;
+    }
+
+    .page-header .page-title {
+      font-size: 1.1rem;
+      line-height: 1.15;
+    }
+
+    .page-header .text-muted {
+      font-size: .8rem;
+      line-height: 1.4;
+    }
+
+    .dashboard-head-meta {
+      gap: .4rem;
+    }
+
+    .dashboard-head-meta .btn,
+    .print-bar .btn,
+    .print-bar form {
+      width: 100%;
+    }
+
+    .dashboard-head-meta .btn,
+    .print-bar .btn {
+      min-height: 38px;
+      font-size: .8rem;
+      padding: .48rem .7rem;
+    }
+
+    .receipt-line {
+      gap: .5rem;
+      padding: .24rem 0;
+      font-size: .76rem;
+    }
+
+    .receipt-line strong {
+      font-size: .78rem;
+    }
+
+    .detail-badge {
+      padding: .18rem .42rem;
+      font-size: .62rem;
+    }
+
+    .timeline-step {
+      padding: .55rem .7rem;
+      border-radius: 12px;
+    }
+
+    .timeline-step strong {
+      font-size: .84rem;
+    }
+
+    .timeline-step .text-muted {
+      font-size: .74rem;
+    }
+  }
 </style>
 
 <div class="container receipt-shell">

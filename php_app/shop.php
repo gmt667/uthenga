@@ -413,6 +413,162 @@ $activeNav = 'shop';
       min-height: 42px;
     }
   }
+  @media (max-width: 320px) {
+    .shop-hero {
+      padding-top: .75rem;
+    }
+
+    .shop-hero-card,
+    .shop-side-card,
+    .detail-panel {
+      padding: .85rem;
+      border-radius: 16px;
+    }
+
+    .shop-hero-card h1 {
+      font-size: 1.28rem;
+      line-height: 1.12;
+    }
+
+    .shop-hero-card p.text-muted {
+      font-size: .84rem;
+      line-height: 1.45;
+    }
+
+    .shop-hero-kicker {
+      padding: .28rem .55rem;
+      font-size: .64rem;
+    }
+
+    .shop-hero-actions {
+      gap: .4rem;
+      margin-top: 1rem;
+    }
+
+    .shop-hero-actions .btn {
+      min-height: 38px;
+      font-size: .82rem;
+      padding: .5rem .75rem;
+    }
+
+    .shop-hero-stats {
+      margin-top: .85rem;
+      gap: .5rem;
+    }
+
+    .shop-stat {
+      padding: .75rem .8rem;
+      border-radius: 14px;
+    }
+
+    .shop-stat strong {
+      font-size: .95rem;
+    }
+
+    .shop-mini-item {
+      padding: .55rem;
+      gap: .5rem;
+      border-radius: 14px;
+    }
+
+    .shop-mini-item img {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+    }
+
+    .product-grid,
+    .related-grid {
+      gap: .7rem;
+    }
+
+    .product-card {
+      border-radius: 16px;
+    }
+
+    .product-image {
+      aspect-ratio: 15 / 10;
+    }
+
+    .product-body {
+      padding: .78rem;
+      gap: .35rem;
+    }
+
+    .product-meta,
+    .product-desc,
+    .product-stock {
+      font-size: .72rem;
+    }
+
+    .product-title {
+      font-size: .92rem;
+      line-height: 1.25;
+    }
+
+    .product-price {
+      font-size: .95rem;
+    }
+
+    .product-actions {
+      gap: .35rem;
+    }
+
+    .product-actions .btn {
+      min-height: 38px;
+      font-size: .8rem;
+      padding: .48rem .7rem;
+    }
+
+    .gallery-main {
+      border-radius: 16px;
+    }
+
+    .gallery-main img {
+      aspect-ratio: 4 / 3;
+    }
+
+    .gallery-thumbs {
+      gap: .3rem;
+      margin-top: .55rem;
+    }
+
+    .gallery-thumbs img {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+    }
+
+    .detail-panel h2 {
+      font-size: 1.12rem;
+    }
+
+    .detail-panel .text-muted,
+    .detail-panel .text-sm {
+      font-size: .74rem;
+      line-height: 1.45;
+    }
+
+    .detail-badges {
+      gap: .3rem;
+      margin-bottom: .6rem;
+    }
+
+    .detail-badge {
+      padding: .2rem .45rem;
+      font-size: .64rem;
+    }
+
+    .shop-toolbar {
+      gap: .75rem;
+      margin-bottom: 1rem;
+    }
+
+    .shop-toolbar .form-control {
+      min-height: 40px;
+      font-size: .84rem;
+    }
+  }
 </style>
 
 <div class="container">
