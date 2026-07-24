@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/auth_check.php';
+require_once __DIR__ . '/../../includes/page_photos.php';
 require_once __DIR__ . '/admin_icons.php';
 
 requireAdmin();
@@ -73,6 +74,10 @@ $themePreference = uthenga_theme_preference();
         </div>
       </div>
     </header>
+
+    <div class="dashboard-visual-row">
+      <?php uthenga_render_photo_strip('admin'); ?>
+    </div>
 
     <div class="admin-layout">
       <?php require __DIR__ . '/admin_sidebar.php'; ?>

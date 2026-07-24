@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/page_photos.php';
 
 if (isLoggedIn()) {
     redirect(BASE_URL . 'dashboard.php');
@@ -81,6 +82,9 @@ $themePreference = uthenga_theme_preference();
 </head>
 <body>
 <?php require_once __DIR__ . '/includes/page_loader.php'; ?>
+<div class="container" style="max-width:1120px;position:relative;z-index:1;">
+  <?php uthenga_render_photo_strip('auth'); ?>
+</div>
 <div class="auth-page">
   <div class="auth-card animate-in" style="max-width:520px;">
     <div class="auth-logo" style="margin-bottom:1rem;">

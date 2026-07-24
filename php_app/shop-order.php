@@ -58,6 +58,84 @@ renderDashboardChromeStart([
   .timeline-step strong { display:block; }
   .print-bar { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1rem; }
   @media (max-width: 960px) { .receipt-grid { grid-template-columns:1fr; } }
+  @media (max-width: 768px) {
+    .receipt-shell {
+      padding: 1.25rem 0 2rem;
+    }
+
+    .receipt-card {
+      padding: 1rem;
+      border-radius: 20px;
+    }
+
+    .receipt-grid {
+      gap: 1rem;
+    }
+
+    .receipt-line {
+      gap: .65rem;
+      padding: .3rem 0;
+      font-size: .88rem;
+    }
+
+    .timeline {
+      gap: .55rem;
+    }
+
+    .timeline-step {
+      padding: .65rem .85rem;
+      border-radius: 14px;
+    }
+
+    .print-bar .btn,
+    .print-bar form {
+      width: 100%;
+    }
+
+    .print-bar .btn {
+      justify-content: center;
+    }
+
+    .dashboard-head-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      width: 100%;
+    }
+
+    .dashboard-head-meta .btn {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+  @media (max-width: 480px) {
+    .receipt-card {
+      padding: .9rem;
+      border-radius: 18px;
+    }
+
+    .receipt-card h2,
+    .receipt-card h3 {
+      font-size: 1.08rem;
+    }
+
+    .receipt-line {
+      font-size: .82rem;
+    }
+
+    .detail-badges {
+      gap: .35rem;
+    }
+
+    .detail-badge {
+      padding: .24rem .5rem;
+      font-size: .68rem;
+    }
+
+    .timeline-step strong {
+      font-size: .92rem;
+    }
+  }
 </style>
 
 <div class="container receipt-shell">

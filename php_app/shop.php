@@ -196,6 +196,223 @@ $activeNav = 'shop';
     .shop-hero-grid, .shop-detail-grid, .shop-toolbar { grid-template-columns: 1fr; }
     .shop-hero-stats { grid-template-columns: 1fr; }
   }
+  @media (max-width: 768px) {
+    .shop-hero {
+      padding: 1.25rem 0 .75rem;
+    }
+
+    .shop-hero-card,
+    .shop-side-card,
+    .detail-panel {
+      border-radius: 20px;
+    }
+
+    .shop-hero-card {
+      padding: 1.25rem;
+    }
+
+    .shop-hero-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .shop-hero-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .shop-hero-stats {
+      gap: .65rem;
+      margin-top: 1rem;
+    }
+
+    .shop-mini-list {
+      gap: .6rem;
+    }
+
+    .shop-mini-item {
+      padding: .65rem;
+      gap: .6rem;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: .85rem;
+    }
+
+    .product-body {
+      padding: .85rem;
+      gap: .45rem;
+    }
+
+    .product-desc {
+      min-height: 0;
+      font-size: .78rem;
+    }
+
+    .product-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: .55rem;
+    }
+
+    .product-actions {
+      width: 100%;
+    }
+
+    .product-actions .btn,
+    .product-actions form {
+      width: 100%;
+      flex: 1 1 100%;
+    }
+
+    .product-actions .btn {
+      justify-content: center;
+    }
+
+    .shop-toolbar > form > div {
+      grid-template-columns: 1fr !important;
+    }
+
+    .shop-filters {
+      gap: .45rem;
+    }
+
+    .shop-filters a {
+      padding: .38rem .7rem;
+      font-size: .76rem;
+    }
+
+    .gallery-main img {
+      aspect-ratio: 4 / 3;
+    }
+
+    .gallery-thumbs {
+      gap: .4rem;
+    }
+
+    .gallery-thumbs img {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+    }
+
+    .detail-badges {
+      gap: .4rem;
+      margin-bottom: .7rem;
+    }
+
+    .related-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: .75rem;
+    }
+  }
+  @media (max-width: 480px) {
+    .shop-hero-card,
+    .shop-side-card,
+    .detail-panel {
+      border-radius: 18px;
+    }
+
+    .shop-hero-card {
+      padding: 1rem;
+    }
+
+    .shop-hero-kicker {
+      font-size: .68rem;
+      letter-spacing: .06em;
+    }
+
+    .shop-hero-actions .btn {
+      min-height: 42px;
+    }
+
+    .product-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .product-image {
+      aspect-ratio: 16 / 11;
+    }
+
+    .product-card {
+      border-radius: 18px;
+    }
+
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .shop-mini-item img {
+      width: 50px;
+      height: 50px;
+    }
+
+    .shop-stat strong {
+      font-size: 1rem;
+    }
+
+    .detail-panel {
+      padding: 1rem;
+    }
+  }
+  @media (max-width: 420px) {
+    .shop-hero {
+      padding-top: .9rem;
+    }
+
+    .shop-hero-card h1 {
+      font-size: 1.45rem;
+      line-height: 1.15;
+    }
+
+    .shop-hero-card p.text-muted {
+      font-size: .92rem;
+    }
+
+    .shop-hero-actions {
+      gap: .5rem;
+    }
+
+    .shop-hero-actions .btn,
+    .product-actions .btn {
+      min-height: 40px;
+    }
+
+    .detail-badge {
+      padding: .25rem .5rem;
+      font-size: .7rem;
+    }
+
+    .gallery-main {
+      border-radius: 18px;
+    }
+
+    .gallery-main img {
+      aspect-ratio: 1 / 1;
+    }
+
+    .detail-panel h2 {
+      font-size: 1.25rem;
+    }
+
+    .detail-panel .text-sm {
+      font-size: .8rem;
+    }
+
+    .product-actions {
+      gap: .4rem;
+    }
+
+    .product-actions .btn,
+    .product-actions form {
+      width: 100%;
+    }
+
+    .shop-toolbar .form-control {
+      min-height: 42px;
+    }
+  }
 </style>
 
 <div class="container">

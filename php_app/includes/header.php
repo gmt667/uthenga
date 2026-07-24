@@ -6,6 +6,7 @@
  *   $activeNav (string) - current nav key for highlight
  */
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/page_photos.php';
 
 $pageTitle  = $pageTitle  ?? APP_NAME;
 $activeNav  = $activeNav  ?? '';
@@ -60,4 +61,7 @@ if (in_array($userRole, VENDOR_ROLES, true)) {
 
 <?php require_once __DIR__ . '/page_loader.php'; ?>
 <?php require_once __DIR__ . '/navbar.php'; ?>
+<div class="container">
+  <?php uthenga_render_photo_strip('public'); ?>
+</div>
 <main>

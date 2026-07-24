@@ -5,6 +5,7 @@ require_once __DIR__ . '/includes/restoration_helpers.php';
 require_once __DIR__ . '/includes/auth_check.php';
 require_once __DIR__ . '/includes/security_helper.php';
 require_once __DIR__ . '/includes/brand_icons.php';
+require_once __DIR__ . '/includes/page_photos.php';
 
 $pageTitle = 'Sign In';
 $activeNav = '';
@@ -210,6 +211,7 @@ require_once __DIR__ . '/includes/header.php';
 </style>
 <section class="section" style="padding:3rem 0 4rem;">
   <div class="container" style="max-width:1120px;">
+    <?php uthenga_render_photo_strip('auth'); ?>
     <div class="login-shell">
       <div class="login-panel login-panel-form">
         <div class="section-label">Welcome back</div>

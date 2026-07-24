@@ -70,6 +70,90 @@ require_once __DIR__ . '/includes/header.php';
     .cart-item { grid-template-columns: 72px 1fr; }
     .cart-item .cart-actions { grid-column: 1/-1; }
   }
+  @media (max-width: 768px) {
+    .cart-layout {
+      gap: 1rem;
+      padding: 1.25rem 0 2rem;
+    }
+
+    .cart-item {
+      grid-template-columns: 64px 1fr;
+      gap: .75rem;
+      padding: .85rem;
+      border-radius: 18px;
+    }
+
+    .cart-item img {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+    }
+
+    .cart-item h3 {
+      font-size: .98rem;
+    }
+
+    .cart-item-meta {
+      gap: .45rem;
+      font-size: .75rem;
+    }
+
+    .cart-actions {
+      grid-column: 1 / -1;
+      margin-top: .25rem;
+    }
+
+    .cart-actions form {
+      min-width: 0 !important;
+    }
+
+    .cart-actions .btn {
+      width: 100%;
+    }
+
+    .cart-summary {
+      padding: 1rem;
+      border-radius: 20px;
+    }
+
+    .dashboard-head-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      width: 100%;
+    }
+
+    .dashboard-head-meta .btn {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+  @media (max-width: 480px) {
+    .cart-item {
+      grid-template-columns: 56px 1fr;
+      padding: .75rem;
+    }
+
+    .cart-item img {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+    }
+
+    .cart-summary {
+      padding: .9rem;
+    }
+
+    .summary-row {
+      padding: .45rem 0;
+      font-size: .84rem;
+    }
+
+    .empty-cart {
+      padding: 1.25rem;
+      border-radius: 18px;
+    }
+  }
 </style>
 
 <div class="container">

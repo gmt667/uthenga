@@ -209,6 +209,68 @@ require_once __DIR__ . '/includes/header.php';
     .checkout-summary { position: static; }
     .field-grid { grid-template-columns: 1fr; }
   }
+  @media (max-width: 768px) {
+    .checkout-layout {
+      gap: 1rem;
+      padding: 1.25rem 0 2rem;
+    }
+
+    .checkout-panel,
+    .checkout-summary {
+      padding: 1rem;
+      border-radius: 20px;
+    }
+
+    .field-grid {
+      gap: .75rem;
+    }
+
+    .checkout-panel .product-actions {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .checkout-panel .product-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .summary-line {
+      gap: .75rem;
+      padding: .5rem 0;
+      font-size: .88rem;
+    }
+
+    .checkout-summary {
+      order: -1;
+    }
+  }
+  @media (max-width: 480px) {
+    .checkout-panel,
+    .checkout-summary {
+      padding: .9rem;
+      border-radius: 18px;
+    }
+
+    .checkout-panel h3,
+    .checkout-summary h3 {
+      font-size: 1.05rem;
+    }
+
+    .form-control,
+    .btn {
+      min-height: 42px;
+    }
+
+    .checkout-panel textarea.form-control {
+      min-height: 92px;
+    }
+
+    .summary-line:last-child {
+      font-size: .98rem;
+    }
+  }
 </style>
 
 <div class="container">
