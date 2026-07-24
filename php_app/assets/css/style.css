@@ -2536,8 +2536,8 @@ thead th,
   .navbar-inner {
     flex-wrap: nowrap;
     height: auto;
-    padding: 0.45rem 0;
-    gap: 0.45rem;
+    padding: 0.38rem 0;
+    gap: 0.3rem;
   }
 
   .navbar-logo {
@@ -2553,22 +2553,25 @@ thead th,
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 0.35rem;
+    gap: 0.28rem;
     margin-left: auto;
     width: auto;
     flex: 0 0 auto;
     flex-wrap: nowrap;
     padding: 0;
+    white-space: nowrap;
+    overflow: hidden;
   }
 
   .navbar-mobile-actions .btn {
     width: auto;
     min-height: 34px;
-    padding: 0.35rem 0.55rem;
-    font-size: 0.75rem;
+    padding: 0.28rem 0.45rem;
+    font-size: 0.7rem;
     line-height: 1;
     white-space: nowrap;
     flex: 0 0 auto;
+    min-width: 0;
   }
 
   .navbar-mobile-actions .theme-toggle {
@@ -2806,12 +2809,19 @@ thead th,
   }
 
   .navbar-mobile-actions {
-    justify-content: stretch;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 0.3rem;
   }
 
   .navbar-mobile-actions .btn,
   .navbar-mobile-actions .theme-toggle {
-    flex: 1 1 100%;
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  .navbar-mobile-actions .theme-toggle-label {
+    display: none;
   }
 
   .table-wrap,
@@ -3214,11 +3224,11 @@ body.navbar-menu-open {
 
 @media (max-width: 414px) {
   .navbar-inner {
-    gap: 0.3rem;
+    gap: 0.22rem;
   }
 
   .navbar-logo img {
-    height: 30px;
+    height: 28px;
   }
 
   .navbar-hamburger {
@@ -3227,18 +3237,18 @@ body.navbar-menu-open {
   }
 
   .navbar-mobile-actions {
-    gap: 0.25rem;
+    gap: 0.18rem;
   }
 
   .navbar-mobile-actions .btn {
-    padding: 0.28rem 0.42rem;
-    font-size: 0.68rem;
+    padding: 0.22rem 0.34rem;
+    font-size: 0.62rem;
   }
 
   .navbar-mobile-actions .theme-toggle {
-    width: 32px;
-    min-width: 32px;
-    height: 32px;
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
   }
 
   .hero-btns {
@@ -3261,24 +3271,24 @@ body.navbar-menu-open {
 
 @media (max-width: 320px) {
   .navbar-inner {
-    gap: 0.2rem;
+    gap: 0.14rem;
   }
 
   .navbar-logo img {
-    height: 28px;
+    height: 26px;
   }
 
   .navbar-mobile-actions {
-    gap: 0.18rem;
+    gap: 0.14rem;
   }
 
   .navbar-mobile-actions .btn {
-    padding: 0.24rem 0.36rem;
-    font-size: 0.64rem;
+    padding: 0.2rem 0.3rem;
+    font-size: 0.6rem;
   }
 
   .navbar-hamburger {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
   }
 }

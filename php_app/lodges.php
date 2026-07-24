@@ -49,11 +49,6 @@ $allLocations = dbQuery("
     ORDER BY location ASC
 ");
 
-function lodgeStars(float $rating): string {
-    $full = (int) floor($rating);
-    $half = ($rating - $full) >= 0.5 ? 1 : 0;
-    return str_repeat('*', $full) . str_repeat('�', $half) . str_repeat('�', 5 - $full - $half);
-}
 
 function lodgePrice(array $listing): string {
     $meta = json_decode($listing['meta'] ?? '[]', true) ?: [];

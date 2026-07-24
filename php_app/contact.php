@@ -106,13 +106,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
   <!-- Breadcrumb -->
   <nav style="font-size:0.8rem;color:var(--clr-text-muted);margin-bottom:1.5rem;">
     <a href="<?= BASE_URL ?>index.php">Explore</a>
-    <span style="margin:0 0.4rem;">›</span>
+    <span style="margin:0 0.4rem;">&gt;</span>
     <span style="color:var(--clr-text-soft);">Contact Us</span>
   </nav>
 
   <div class="page-header">
     <div>
-      <h1 class="page-title">ðŸ“ž Contact Our Team</h1>
+      <h1 class="page-title">Contact Our Team</h1>
       <p class="text-muted">Have questions? We'd love to hear from you. Send us a message.</p>
     </div>
   </div>
@@ -123,10 +123,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
       <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Send a Message</h2>
       
       <?php if ($errorMsg): ?>
-        <div class="alert alert-error">âœ• <?= e($errorMsg) ?></div>
+        <div class="alert alert-error">- <?= e($errorMsg) ?></div>
       <?php endif; ?>
       <?php if ($successMsg): ?>
-        <div class="alert alert-success">âœ“ <?= e($successMsg) ?></div>
+        <div class="alert alert-success">+ <?= e($successMsg) ?></div>
       <?php endif; ?>
 
       <form method="POST" action="contact.php" id="contact-form">
@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
         <h2 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Corporate Headquarters</h2>
         
         <div class="info-item">
-          <div class="info-icon">ðŸ“</div>
+          <div class="info-icon">•</div>
           <div class="info-text">
             <h4>Location</h4>
             <p>Uthenga Building, Area 3, Lilongwe, Malawi</p>
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
         </div>
 
         <div class="info-item">
-          <div class="info-icon">âœ‰ï¸</div>
+          <div class="info-icon">•</div>
           <div class="info-text">
             <h4>Email Support</h4>
             <p><a href="mailto:<?= e(SUPPORT_CONTACT['email']) ?>"><?= e(SUPPORT_CONTACT['email']) ?></a></p>
@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
         </div>
 
         <div class="info-item">
-          <div class="info-icon">ðŸ“ž</div>
+          <div class="info-icon">•</div>
           <div class="info-text">
             <h4>Phone Support</h4>
             <p><a href="tel:<?= e(SUPPORT_CONTACT['phone']) ?>"><?= e(SUPPORT_CONTACT['phone']) ?></a> / <a href="tel:<?= e(SUPPORT_CONTACT['phone_alt']) ?>"><?= e(SUPPORT_CONTACT['phone_alt']) ?></a></p>

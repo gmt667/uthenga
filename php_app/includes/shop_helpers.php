@@ -64,6 +64,366 @@ if (!function_exists('uthenga_shop_money')) {
     }
 }
 
+if (!function_exists('uthenga_shop_asset_url')) {
+    function uthenga_shop_asset_url(string $path): string {
+        $path = trim($path);
+        if ($path === '') {
+            return '';
+        }
+
+        if (preg_match('~^https?://~i', $path)) {
+            return $path;
+        }
+
+        return BASE_URL . ltrim($path, '/');
+    }
+}
+
+if (!function_exists('uthenga_shop_default_image_for_product')) {
+    function uthenga_shop_default_image_for_product(array $product): string {
+        $category = strtolower(trim((string) ($product['category_name'] ?? '')));
+        $name = strtolower(trim((string) ($product['name'] ?? '')));
+        $haystack = $category . ' ' . $name;
+
+        if (str_contains($haystack, 'spirits') || str_contains($haystack, 'gin') || str_contains($haystack, 'vodka') || str_contains($haystack, 'whisky') || str_contains($haystack, 'rum')) {
+            return uthenga_shop_asset_url('assets/images/shop/spirits-bottles.png');
+        }
+
+        if (str_contains($haystack, 'beer') || str_contains($haystack, 'lager') || str_contains($haystack, 'stout') || str_contains($haystack, 'ale')) {
+            return uthenga_shop_asset_url('assets/images/shop/beer-assortment.png');
+        }
+
+        if (str_contains($haystack, 'soft drink') || str_contains($haystack, 'soda') || str_contains($haystack, 'juice') || str_contains($haystack, 'energy')) {
+            return uthenga_shop_asset_url('assets/images/shop/soft-drinks.png');
+        }
+
+        if (str_contains($haystack, 'water')) {
+            return uthenga_shop_asset_url('assets/images/shop/water-juice.png');
+        }
+
+        return uthenga_shop_asset_url('assets/images/shop/beer-assortment.png');
+    }
+}
+
+if (!function_exists('uthenga_shop_default_categories')) {
+    function uthenga_shop_default_categories(): array {
+        return [
+            ['id' => 1, 'name' => 'Wine', 'slug' => 'wine', 'description' => 'Red, white, sparkling, and special occasion wines.', 'sort_order' => 10, 'is_active' => 1],
+            ['id' => 2, 'name' => 'Beer', 'slug' => 'beer', 'description' => 'Lagers, stout, and seasonal beers.', 'sort_order' => 20, 'is_active' => 1],
+            ['id' => 3, 'name' => 'Spirits', 'slug' => 'spirits', 'description' => 'Whisky, gin, vodka, rum, and more.', 'sort_order' => 30, 'is_active' => 1],
+            ['id' => 4, 'name' => 'Soft Drinks', 'slug' => 'soft-drinks', 'description' => 'Sodas and fizzy refreshments.', 'sort_order' => 40, 'is_active' => 1],
+            ['id' => 5, 'name' => 'Water', 'slug' => 'water', 'description' => 'Still and sparkling bottled water.', 'sort_order' => 50, 'is_active' => 1],
+            ['id' => 6, 'name' => 'Juice', 'slug' => 'juice', 'description' => 'Fruit juices and nectar drinks.', 'sort_order' => 60, 'is_active' => 1],
+            ['id' => 7, 'name' => 'Energy Drinks', 'slug' => 'energy-drinks', 'description' => 'Performance and focus beverages.', 'sort_order' => 70, 'is_active' => 1],
+        ];
+    }
+}
+
+if (!function_exists('uthenga_shop_default_catalog')) {
+    function uthenga_shop_default_catalog(): array {
+        $base = [
+            [
+                'id' => 101,
+                'category_id' => 2,
+                'sku' => 'BEER-GL-6',
+                'name' => 'Great Lakes Lager 6 Pack',
+                'slug' => 'great-lakes-lager-6-pack',
+                'short_description' => 'A chilled six-pack lager for gatherings.',
+                'description' => 'A crisp, easy-drinking lager made for casual nights, celebrations, and restocks.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '6 pack',
+                'price' => 10900,
+                'compare_at_price' => 11900,
+                'stock_quantity' => 48,
+                'low_stock_threshold' => 12,
+                'primary_image_url' => 'assets/images/shop/beer-assortment.png',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 102,
+                'category_id' => 2,
+                'sku' => 'BEER-PIL-6',
+                'name' => 'Premium Pilsner 6 Pack',
+                'slug' => 'premium-pilsner-6-pack',
+                'short_description' => 'Cold pilsner for parties and home stock.',
+                'description' => 'A smooth pilsner with a clean finish and a refreshing taste.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '6 pack',
+                'price' => 9900,
+                'compare_at_price' => null,
+                'stock_quantity' => 60,
+                'low_stock_threshold' => 12,
+                'primary_image_url' => 'assets/images/shop/beer-assortment.png',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 103,
+                'category_id' => 3,
+                'sku' => 'SPIRIT-GIN-700',
+                'name' => 'Malawi Dry Gin 700ml',
+                'slug' => 'malawi-dry-gin-700ml',
+                'short_description' => 'Classic gin for mixers and cocktails.',
+                'description' => 'A dry gin profile suited to simple mixers, ice, and social occasions.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '700ml bottle',
+                'price' => 14900,
+                'compare_at_price' => 16200,
+                'stock_quantity' => 32,
+                'low_stock_threshold' => 8,
+                'primary_image_url' => 'assets/images/shop/spirits-bottles.png',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 1,
+                'promotion_label' => 'Weekend offer',
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 104,
+                'category_id' => 3,
+                'sku' => 'SPIRIT-VODKA-700',
+                'name' => 'Premium Vodka 700ml',
+                'slug' => 'premium-vodka-700ml',
+                'short_description' => 'Smooth vodka for premium mixed drinks.',
+                'description' => 'A clean vodka with a smooth finish, ideal for social events and mixers.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '700ml bottle',
+                'price' => 15800,
+                'compare_at_price' => null,
+                'stock_quantity' => 28,
+                'low_stock_threshold' => 8,
+                'primary_image_url' => 'assets/images/shop/spirits-bottles.png',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 105,
+                'category_id' => 4,
+                'sku' => 'SOFT-COLA-12',
+                'name' => 'Cola 12 Pack',
+                'slug' => 'cola-12-pack',
+                'short_description' => 'Refreshing cola multipack.',
+                'description' => 'A classic cola pack for offices, events, and family gatherings.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '12 pack',
+                'price' => 6400,
+                'compare_at_price' => null,
+                'stock_quantity' => 72,
+                'low_stock_threshold' => 18,
+                'primary_image_url' => 'assets/images/shop/soft-drinks.png',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+            [
+                'id' => 106,
+                'category_id' => 4,
+                'sku' => 'SOFT-ORANGE-12',
+                'name' => 'Orange Soda 12 Pack',
+                'slug' => 'orange-soda-12-pack',
+                'short_description' => 'Bright citrus soda for chilled service.',
+                'description' => 'Sweet orange-flavoured soda with a bright, refreshing finish.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '12 pack',
+                'price' => 5900,
+                'compare_at_price' => null,
+                'stock_quantity' => 68,
+                'low_stock_threshold' => 16,
+                'primary_image_url' => 'assets/images/shop/soft-drinks.png',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 1,
+                'promotion_label' => 'Cold stock',
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+            [
+                'id' => 107,
+                'category_id' => 5,
+                'sku' => 'WATER-12',
+                'name' => 'Purified Water 12 Pack',
+                'slug' => 'purified-water-12-pack',
+                'short_description' => 'Bottled water for office and home use.',
+                'description' => 'Sealed purified water in a family-friendly pack.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '12 pack',
+                'price' => 4300,
+                'compare_at_price' => null,
+                'stock_quantity' => 88,
+                'low_stock_threshold' => 20,
+                'primary_image_url' => 'assets/images/shop/water-juice.png',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+            [
+                'id' => 108,
+                'category_id' => 6,
+                'sku' => 'JUICE-MIX-1L',
+                'name' => 'Mixed Fruit Juice 1L',
+                'slug' => 'mixed-fruit-juice-1l',
+                'short_description' => 'Family-size juice for breakfast and snacks.',
+                'description' => 'A refreshing mixed fruit juice with a smooth, bright finish.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '1L carton',
+                'price' => 3600,
+                'compare_at_price' => null,
+                'stock_quantity' => 74,
+                'low_stock_threshold' => 18,
+                'primary_image_url' => 'assets/images/shop/water-juice.png',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+            [
+                'id' => 109,
+                'category_id' => 7,
+                'sku' => 'ENERGY-4',
+                'name' => 'Energy Drink 4 Pack',
+                'slug' => 'energy-drink-4-pack',
+                'short_description' => 'Refreshing energy drink multipack.',
+                'description' => 'A bold energy drink pack for long days, events, and road trips.',
+                'brand' => 'Uthenga Direct',
+                'unit_label' => '4 pack',
+                'price' => 7200,
+                'compare_at_price' => null,
+                'stock_quantity' => 40,
+                'low_stock_threshold' => 10,
+                'primary_image_url' => 'assets/images/shop/soft-drinks.png',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 1,
+                'promotion_label' => 'Cold stock',
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+        ];
+
+        foreach ($base as &$product) {
+            $category = null;
+            foreach (uthenga_shop_default_categories() as $cat) {
+                if ((int) $cat['id'] === (int) $product['category_id']) {
+                    $category = $cat;
+                    break;
+                }
+            }
+            $product['category_name'] = $category['name'] ?? 'Shop';
+            $product['category_slug'] = $category['slug'] ?? 'shop';
+            $product['stock_label'] = ((int) $product['stock_quantity'] > 0) ? 'In Stock' : 'Out of Stock';
+            $product['deleted_at'] = null;
+            $product['created_at'] = $product['created_at'] ?? date('Y-m-d H:i:s');
+            $product['updated_at'] = $product['updated_at'] ?? $product['created_at'];
+        }
+        unset($product);
+
+        return $base;
+    }
+}
+
+if (!function_exists('uthenga_shop_filter_default_catalog')) {
+    function uthenga_shop_filter_default_catalog(array $products, array $filters = []): array {
+        $filtered = array_values(array_filter($products, static function (array $product) use ($filters): bool {
+            if (!empty($filters['query'])) {
+                $query = strtolower((string) $filters['query']);
+                $haystack = strtolower(implode(' ', [
+                    $product['name'] ?? '',
+                    $product['short_description'] ?? '',
+                    $product['description'] ?? '',
+                    $product['sku'] ?? '',
+                    $product['brand'] ?? '',
+                ]));
+                if (!str_contains($haystack, $query)) {
+                    return false;
+                }
+            }
+
+            if (!empty($filters['category_id']) && (int) $product['category_id'] !== (int) $filters['category_id']) {
+                return false;
+            }
+            if (!empty($filters['featured']) && empty($product['is_featured'])) {
+                return false;
+            }
+            if (!empty($filters['new']) && empty($product['is_new_arrival'])) {
+                return false;
+            }
+            if (!empty($filters['best']) && empty($product['is_best_seller'])) {
+                return false;
+            }
+            if (!empty($filters['promotion']) && empty($product['is_promotion'])) {
+                return false;
+            }
+            if (!empty($filters['in_stock']) && (int) ($product['stock_quantity'] ?? 0) <= 0) {
+                return false;
+            }
+
+            return true;
+        }));
+
+        $sort = (string) ($filters['sort'] ?? 'featured');
+        usort($filtered, static function (array $a, array $b) use ($sort): int {
+            return match ($sort) {
+                'price_low' => ($a['price'] <=> $b['price']) ?: strcmp((string) $a['name'], (string) $b['name']),
+                'price_high' => ($b['price'] <=> $a['price']) ?: strcmp((string) $a['name'], (string) $b['name']),
+                'newest' => strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? '')) ?: strcmp((string) $a['name'], (string) $b['name']),
+                'stock' => (($b['stock_quantity'] ?? 0) <=> ($a['stock_quantity'] ?? 0)) ?: strcmp((string) $a['name'], (string) $b['name']),
+                'name' => strcmp((string) $a['name'], (string) $b['name']),
+                default => (($b['is_featured'] ?? 0) <=> ($a['is_featured'] ?? 0))
+                    ?: (($b['is_best_seller'] ?? 0) <=> ($a['is_best_seller'] ?? 0))
+                    ?: (($b['is_promotion'] ?? 0) <=> ($a['is_promotion'] ?? 0))
+                    ?: strcmp((string) ($b['created_at'] ?? ''), (string) ($a['created_at'] ?? ''))
+                    ?: strcmp((string) $a['name'], (string) $b['name']),
+            };
+        });
+
+        if (!empty($filters['limit'])) {
+            $filtered = array_slice($filtered, 0, max(1, (int) $filters['limit']));
+        }
+
+        return $filtered;
+    }
+}
+
 if (!function_exists('uthenga_shop_slugify')) {
     function uthenga_shop_slugify(string $value): string {
         $value = strtolower(trim($value));
@@ -141,9 +501,14 @@ if (!function_exists('uthenga_shop_cart_save_state')) {
 if (!function_exists('uthenga_shop_product_image_urls')) {
     function uthenga_shop_product_image_urls(array $product): array {
         $urls = [];
+        $defaultImage = uthenga_shop_default_image_for_product($product);
+        if ($defaultImage !== '') {
+            $urls[] = $defaultImage;
+        }
+
         foreach (['primary_image_url', 'secondary_image_url'] as $key) {
             if (!empty($product[$key])) {
-                $urls[] = (string) $product[$key];
+                $urls[] = uthenga_shop_asset_url((string) $product[$key]);
             }
         }
 
@@ -155,7 +520,7 @@ if (!function_exists('uthenga_shop_product_image_urls')) {
                 );
                 foreach ($rows as $row) {
                     if (!empty($row['image_url'])) {
-                        $urls[] = (string) $row['image_url'];
+                        $urls[] = uthenga_shop_asset_url((string) $row['image_url']);
                     }
                 }
             } catch (Throwable $e) {
@@ -171,7 +536,10 @@ if (!function_exists('uthenga_shop_product_image_urls')) {
 if (!function_exists('uthenga_shop_category_tree')) {
     function uthenga_shop_category_tree(bool $activeOnly = true): array {
         if (!uthenga_table_exists('shop_categories')) {
-            return [];
+            $categories = uthenga_shop_default_categories();
+            return $activeOnly
+                ? array_values(array_filter($categories, static fn (array $category): bool => !empty($category['is_active'])))
+                : $categories;
         }
 
         $sql = 'SELECT * FROM shop_categories';
@@ -188,7 +556,7 @@ if (!function_exists('uthenga_shop_category_tree')) {
 if (!function_exists('uthenga_shop_products')) {
     function uthenga_shop_products(array $filters = []): array {
         if (!uthenga_table_exists('shop_products')) {
-            return [];
+            return uthenga_shop_filter_default_catalog(uthenga_shop_default_catalog(), $filters);
         }
 
         $where = ["p.deleted_at IS NULL", "p.status = 'active'"];
@@ -244,13 +612,23 @@ if (!function_exists('uthenga_shop_products')) {
             $sql .= ' LIMIT ' . max(1, (int) $filters['limit']);
         }
 
-        return dbQuery($sql, $params);
+        $rows = dbQuery($sql, $params);
+        if (!empty($rows)) {
+            return $rows;
+        }
+
+        return uthenga_shop_filter_default_catalog(uthenga_shop_default_catalog(), $filters);
     }
 }
 
 if (!function_exists('uthenga_shop_product_by_slug')) {
     function uthenga_shop_product_by_slug(string $slug): ?array {
         if (!uthenga_table_exists('shop_products')) {
+            foreach (uthenga_shop_default_catalog() as $product) {
+                if ((string) $product['slug'] === $slug) {
+                    return $product;
+                }
+            }
             return null;
         }
 
@@ -263,7 +641,17 @@ if (!function_exists('uthenga_shop_product_by_slug')) {
             [$slug]
         );
 
-        return $product ?: null;
+        if ($product) {
+            return $product;
+        }
+
+        foreach (uthenga_shop_default_catalog() as $defaultProduct) {
+            if ((string) $defaultProduct['slug'] === $slug) {
+                return $defaultProduct;
+            }
+        }
+
+        return null;
     }
 }
 
@@ -410,6 +798,11 @@ if (!function_exists('uthenga_shop_cart_sync_from_db')) {
 if (!function_exists('uthenga_shop_product_by_id')) {
     function uthenga_shop_product_by_id(int $productId): ?array {
         if (!uthenga_table_exists('shop_products')) {
+            foreach (uthenga_shop_default_catalog() as $product) {
+                if ((int) $product['id'] === $productId) {
+                    return $product;
+                }
+            }
             return null;
         }
 
@@ -422,7 +815,17 @@ if (!function_exists('uthenga_shop_product_by_id')) {
             [$productId]
         );
 
-        return $product ?: null;
+        if ($product) {
+            return $product;
+        }
+
+        foreach (uthenga_shop_default_catalog() as $defaultProduct) {
+            if ((int) $defaultProduct['id'] === $productId) {
+                return $defaultProduct;
+            }
+        }
+
+        return null;
     }
 }
 

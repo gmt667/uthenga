@@ -293,20 +293,20 @@ INSERT IGNORE INTO shop_warehouses (id, warehouse_code, name, location, status) 
 (1, 'WH-0001', 'Central Dispatch Store', 'Blantyre', 'active');
 
 INSERT IGNORE INTO shop_products (id, category_id, supplier_id, warehouse_id, sku, name, slug, short_description, description, brand, unit_label, price, compare_at_price, stock_quantity, low_stock_threshold, primary_image_url, secondary_image_url, is_featured, is_new_arrival, is_best_seller, is_promotion, promotion_label, requires_age_verification, status) VALUES
-(1, 1, 1, 1, 'WINE-001', 'Reserve Merlot', 'reserve-merlot', 'Smooth red wine for dinners and gifting.', 'A full-bodied reserve Merlot with dark fruit notes and a balanced finish.', 'Uthenga Direct', '750ml bottle', 12500, 13900, 24, 6, 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=900&fit=crop&q=80', NULL, 1, 1, 1, 1, 'Weekend offer', 1, 'active'),
-(2, 2, 1, 1, 'BEER-001', 'Premium Lager 6 Pack', 'premium-lager-6-pack', 'Cold six-pack lager for gatherings.', 'A crisp local-style lager available in a convenient six-pack.', 'Uthenga Direct', '6 pack', 8200, NULL, 60, 12, 'https://images.unsplash.com/photo-1527281400683-b4d2a2f6f8ff?w=900&fit=crop&q=80', NULL, 1, 0, 1, 0, NULL, 1, 'active'),
-(3, 4, 1, 1, 'SODA-001', 'Orange Soda 12 Pack', 'orange-soda-12-pack', 'Bright citrus soda multipack.', 'Sweet orange-flavoured soda for family and office stocking.', 'Uthenga Direct', '12 pack', 5400, NULL, 48, 10, 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=900&fit=crop&q=80', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
-(4, 5, 1, 1, 'WATER-001', 'Purified Water 12 Pack', 'purified-water-12-pack', 'Bottled water for home and office use.', 'Sealed purified drinking water bottles in a family pack.', 'Uthenga Direct', '12 pack', 3800, NULL, 85, 20, 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=900&fit=crop&q=80', NULL, 1, 1, 0, 0, NULL, 0, 'active'),
-(5, 6, 1, 1, 'JUICE-001', 'Mixed Fruit Juice 1L', 'mixed-fruit-juice-1l', 'Family-size juice for breakfast and snacks.', 'A refreshing blended fruit juice with a smooth finish.', 'Uthenga Direct', '1L carton', 3200, NULL, 72, 18, 'https://images.unsplash.com/photo-1589734759944-5f1a5c5f5d12?w=900&fit=crop&q=80', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
-(6, 7, 1, 1, 'ENERGY-001', 'Energy Drink 4 Pack', 'energy-drink-4-pack', 'Refreshing energy drink multipack.', 'A bold energy drink pack for long days, events, and road trips.', 'Uthenga Direct', '4 pack', 6200, NULL, 36, 8, 'https://images.unsplash.com/photo-1553251494-3c6a5a7bd2a5?w=900&fit=crop&q=80', NULL, 0, 0, 1, 1, 'Cold stock', 0, 'active');
+(1, 1, 1, 1, 'WINE-001', 'Reserve Merlot', 'reserve-merlot', 'Smooth red wine for dinners and gifting.', 'A full-bodied reserve Merlot with dark fruit notes and a balanced finish.', 'Uthenga Direct', '750ml bottle', 12500, 13900, 24, 6, 'assets/images/shop/spirits-bottles.png', NULL, 1, 1, 1, 1, 'Weekend offer', 1, 'active'),
+(2, 2, 1, 1, 'BEER-001', 'Premium Lager 6 Pack', 'premium-lager-6-pack', 'Cold six-pack lager for gatherings.', 'A crisp local-style lager available in a convenient six-pack.', 'Uthenga Direct', '6 pack', 8200, NULL, 60, 12, 'assets/images/shop/beer-assortment.png', NULL, 1, 0, 1, 0, NULL, 1, 'active'),
+(3, 4, 1, 1, 'SODA-001', 'Orange Soda 12 Pack', 'orange-soda-12-pack', 'Bright citrus soda multipack.', 'Sweet orange-flavoured soda for family and office stocking.', 'Uthenga Direct', '12 pack', 5400, NULL, 48, 10, 'assets/images/shop/soft-drinks.png', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
+(4, 5, 1, 1, 'WATER-001', 'Purified Water 12 Pack', 'purified-water-12-pack', 'Bottled water for home and office use.', 'Sealed purified drinking water bottles in a family pack.', 'Uthenga Direct', '12 pack', 3800, NULL, 85, 20, 'assets/images/shop/water-juice.png', NULL, 1, 1, 0, 0, NULL, 0, 'active'),
+(5, 6, 1, 1, 'JUICE-001', 'Mixed Fruit Juice 1L', 'mixed-fruit-juice-1l', 'Family-size juice for breakfast and snacks.', 'A refreshing blended fruit juice with a smooth finish.', 'Uthenga Direct', '1L carton', 3200, NULL, 72, 18, 'assets/images/shop/water-juice.png', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
+(6, 7, 1, 1, 'ENERGY-001', 'Energy Drink 4 Pack', 'energy-drink-4-pack', 'Refreshing energy drink multipack.', 'A bold energy drink pack for long days, events, and road trips.', 'Uthenga Direct', '4 pack', 6200, NULL, 36, 8, 'assets/images/shop/soft-drinks.png', NULL, 0, 0, 1, 1, 'Cold stock', 0, 'active');
 
 INSERT IGNORE INTO shop_product_images (id, product_id, image_url, alt_text, sort_order, is_primary) VALUES
-(1, 1, 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200&fit=crop&q=80', 'Reserve Merlot bottle', 1, 1),
-(2, 1, 'https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200&fit=crop&q=80', 'Wine glass and bottle', 2, 0),
-(3, 2, 'https://images.unsplash.com/photo-1527281400683-b4d2a2f6f8ff?w=1200&fit=crop&q=80', 'Premium lager bottles', 1, 1),
-(4, 3, 'https://images.unsplash.com/photo-1581636625402-29b2a704ef13?w=1200&fit=crop&q=80', 'Soft drink cans', 1, 1),
-(5, 4, 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=1200&fit=crop&q=80', 'Water bottle pack', 1, 1),
-(6, 5, 'https://images.unsplash.com/photo-1589734759944-5f1a5c5f5d12?w=1200&fit=crop&q=80', 'Mixed fruit juice carton', 1, 1),
-(7, 6, 'https://images.unsplash.com/photo-1553251494-3c6a5a7bd2a5?w=1200&fit=crop&q=80', 'Energy drink cans', 1, 1);
+(1, 1, 'assets/images/shop/spirits-bottles.png', 'Reserve Merlot bottle', 1, 1),
+(2, 1, 'assets/images/shop/spirits-bottles.png', 'Wine glass and bottle', 2, 0),
+(3, 2, 'assets/images/shop/beer-assortment.png', 'Premium lager bottles', 1, 1),
+(4, 3, 'assets/images/shop/soft-drinks.png', 'Soft drink cans', 1, 1),
+(5, 4, 'assets/images/shop/water-juice.png', 'Water bottle pack', 1, 1),
+(6, 5, 'assets/images/shop/water-juice.png', 'Mixed fruit juice carton', 1, 1),
+(7, 6, 'assets/images/shop/soft-drinks.png', 'Energy drink cans', 1, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
