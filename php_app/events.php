@@ -841,6 +841,42 @@ if (!empty($listings)) {
                   $shortDesc = function_exists('mb_substr') ? mb_substr($desc, 0, 110) : substr($desc, 0, 110);
                   $needsEllipsis = function_exists('mb_strlen') ? mb_strlen($desc) > 110 : strlen($desc) > 110;
                 ?>
+                <p style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-bottom: 0.75rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  <?= e($shortDesc) ?><?= $needsEllipsis ? '…' : '' ?>
+                </p>
+              <?php endif; ?>
+
+              <div class="ticket-price-tag"><?= getEventPrice($listing) ?></div>
+
+              <?php if ($totalAvail > 0): ?>
+                <div class="ticket-stock-bar <?= $isLowStock ? 'low' : '' ?>">
+                  🎟️ <?= number_format($totalAvail) ?> tickets available<?= $isLowStock ? ' — Selling Fast!' : '' ?>
+                </div>
+              <?php else: ?>
+                <div class="ticket-stock-bar low" style="color:#ff4d6d;">❌ Sold Out</div>
+              <?php endif; ?>
+            </div>
+            <div class="ticket-footer">
+              <a href="event-details.php?id=<?= e($listing['id']) ?>" class="btn btn-sm btn-secondary" style="flex:1; border-radius:10px; justify-content:center;" data-track-event-click="<?= e($listing['id']) ?>">View Details</a>
+              <?php if ($totalAvail > 0): ?>
+                <?php if (isLoggedIn()): ?>
+                  <button class="btn btn-sm btn-primary"
+                    onclick="openBookingModal('<?= e($listing['id']) ?>','event','<?= addslashes(e($listing['title'])) ?>',<?= (float)($meta['standardTicketPrice'] ?? 0) ?>,<?= (float)($meta['vipTicketPrice'] ?? 0) ?>); if (window.trackEventMetric) { window.trackEventMetric('<?= e($listing['id']) ?>', 'click'); }"
+                    style="flex:1.2; border-radius:10px; justify-content:center; background: linear-gradient(135deg, #ff6b35, #f72585); border:none;">🎟️ Buy Ticket</button>
+                <?php else: ?>
+                  <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-sm btn-primary" style="flex:1.2; border-radius:10px; justify-content:center; background: linear-gradient(135deg, #ff6b35, #f72585); border:none;">🎟️ Buy Ticket</a>
+                <?php endif; ?>
+              <?php else: ?>
+                <button class="btn btn-sm btn-primary" disabled style="flex:1.2; border-radius:10px; justify-content:center;">Sold Out</button>
+              <?php endif; ?>
+            </div>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+
   <!-- Map View -->
   <div id="events-map-view" class="map-view-container <?= $viewMode === 'map' ? 'visible' : '' ?>">
     <div id="events-map"></div>
