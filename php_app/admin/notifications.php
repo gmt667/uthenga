@@ -10,8 +10,20 @@ require_once __DIR__ . '/includes/admin_header.php';
 $hasAuditLogs = uthenga_table_exists('audit_logs');
 $hasSupportTickets = uthenga_table_exists('support_tickets');
 
+if (!function_exists('notificationTicketStatusLabel')) {
+    function notificationTicketStatusLabel(string $status): string {
+        return match (strtolower(trim($status))) {
+            'open' => 'Open',
+            'in progress', 'in_progress' => 'In Progress',
+            'resolved' => 'Resolved',
+            'closed' => 'Closed',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+        };
+    }
+}
+
 $recentLogs = $hasAuditLogs ? dbQuery("SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 10") : [];
-$openTickets = $hasSupportTickets ? dbQuery("SELECT * FROM support_tickets WHERE status IN ('Open','In Progress') ORDER BY created_at DESC LIMIT 10") : [];
+$openTickets = $hasSupportTickets ? dbQuery("SELECT * FROM support_tickets WHERE LOWER(status) IN ('open','in progress','in_progress') ORDER BY created_at DESC LIMIT 10") : [];
 $pendingVendorApprovals = dbCount("SELECT COUNT(*) FROM users WHERE role IN ('Event Organizer','Hotel/Lodge Manager','Tour Operator','Transport Provider','Vendor') AND is_approved = 0");
 ?>
 
@@ -77,7 +89,7 @@ $pendingVendorApprovals = dbCount("SELECT COUNT(*) FROM users WHERE role IN ('Ev
               <tr>
                 <td class="font-mono text-xs"><?= e($ticket['id']) ?></td>
                 <td class="text-xs"><?= e($ticket['customer_name']) ?></td>
-                <td><span class="badge badge-pending"><?= e($ticket['status']) ?></span></td>
+                <td><span class="badge badge-pending"><?= e(notificationTicketStatusLabel((string) $ticket['status'])) ?></span></td>
               </tr>
             <?php endforeach; ?>
           <?php endif; ?>

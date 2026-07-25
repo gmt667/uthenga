@@ -7,6 +7,31 @@ $activeNav = 'admin-logs';
 
 require_once __DIR__ . '/includes/admin_header.php';
 
+if (!function_exists('auditLogActionLabel')) {
+    function auditLogActionLabel(string $action): string {
+        return ucwords(str_replace(['_', '-'], ' ', trim($action)));
+    }
+}
+
+if (!function_exists('auditLogRoleLabel')) {
+    function auditLogRoleLabel(string $role): string {
+        return ucwords(str_replace(['_', '-'], ' ', trim($role)));
+    }
+}
+
+if (!function_exists('auditLogActionBadgeClass')) {
+    function auditLogActionBadgeClass(string $action): string {
+        $act = strtolower(trim($action));
+        if (strpos($act, 'failed') !== false || strpos($act, 'denied') !== false || strpos($act, 'deleted') !== false) {
+            return 'badge-rejected';
+        }
+        if (strpos($act, 'login') !== false || strpos($act, 'approved') !== false || strpos($act, 'created') !== false || strpos($act, 'updated') !== false) {
+            return 'badge-approved';
+        }
+        return 'badge-pending';
+    }
+}
+
 // Filters
 $search       = trim($_GET['q'] ?? '');
 $filterAction = trim($_GET['action_filter'] ?? 'all');
@@ -132,20 +157,14 @@ $allRoles   = dbQuery("SELECT DISTINCT user_role FROM audit_logs ORDER BY user_r
         <tbody>
           <?php foreach ($logs as $log): 
               $act = $log['action'] ?? '';
-              if (strpos($act, 'Login Failed') !== false || strpos($act, 'Denied') !== false) {
-                  $badgeClass = 'badge-rejected';
-              } elseif (strpos($act, 'Login') !== false) {
-                  $badgeClass = 'badge-approved';
-              } else {
-                  $badgeClass = 'badge-pending';
-              }
+              $badgeClass = auditLogActionBadgeClass($act);
           ?>
             <tr>
               <td class="text-xs text-muted"><?= e($log['created_at']) ?></td>
-              <td><span class="badge <?= $badgeClass ?>"><?= e($log['action']) ?></span></td>
+              <td><span class="badge <?= $badgeClass ?>"><?= e(auditLogActionLabel((string) $log['action'])) ?></span></td>
               <td>
                 <strong><?= e($log['user_name']) ?></strong>
-                <div class="text-xs text-muted"><?= e($log['user_role']) ?></div>
+                <div class="text-xs text-muted"><?= e(auditLogRoleLabel((string) $log['user_role'])) ?></div>
               </td>
               <td class="text-sm"><?= e($log['details']) ?></td>
             </tr>

@@ -47,6 +47,26 @@ function vendorStatusBadge(string $status): string {
         default => 'badge-pending',
     };
 }
+
+function vendorStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+        'suspended' => 'Suspended',
+        'pending' => 'Pending',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
+function vendorStatusHint(string $status): string {
+    return match (strtolower(trim($status))) {
+        'approved' => 'The vendor account is active and verified.',
+        'rejected' => 'The vendor application was not approved.',
+        'suspended' => 'The vendor account is currently suspended.',
+        'pending' => 'The vendor application is waiting for review.',
+        default => 'Current vendor status.',
+    };
+}
 ?>
 
 <div class="page-header">
@@ -91,7 +111,10 @@ function vendorStatusBadge(string $status): string {
               <td><?= e($vendor['email']) ?></td>
               <td><?= e($vendor['category'] ?: $vendor['role'] ?: 'Vendor') ?></td>
               <td><?= e(trim(($vendor['city'] ? $vendor['city'] . ', ' : '') . ($vendor['address'] ?? '')) ?: 'N/A') ?></td>
-              <td><span class="badge <?= vendorStatusBadge($vendor['status']) ?>"><?= e(ucfirst((string)$vendor['status'])) ?></span></td>
+              <td>
+                <span class="badge <?= vendorStatusBadge($vendor['status']) ?>"><?= e(vendorStatusLabel((string) $vendor['status'])) ?></span>
+                <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(vendorStatusHint((string) $vendor['status'])) ?></div>
+              </td>
               <td style="text-align:right;">
                 <div style="display:inline-flex;gap:0.5rem;flex-wrap:wrap;justify-content:flex-end;">
                   <button class="btn btn-sm btn-secondary" onclick='viewDetails(<?= json_encode($vendor, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>)'>Details</button>
@@ -150,10 +173,21 @@ function vendorStatusBadge(string $status): string {
 </div>
 
 <script>
+function vendorStatusLabelClient(status) {
+  const value = String(status || 'pending').toLowerCase().trim();
+  switch (value) {
+    case 'approved': return 'Approved';
+    case 'rejected': return 'Rejected';
+    case 'suspended': return 'Suspended';
+    case 'pending': return 'Pending';
+    default: return value.replace(/[_-]+/g, ' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
+  }
+}
+
 function viewDetails(vendor) {
   document.getElementById('modal-vendor-name').textContent = (vendor.business_name || vendor.full_name) + ' - Profile';
   document.getElementById('modal-vendor-id').textContent = vendor.id || '';
-  document.getElementById('modal-vendor-contact').innerHTML = 'Email: ' + (vendor.email || 'N/A') + '<br>Phone: ' + (vendor.phone || 'Not provided') + '<br>Status: ' + (vendor.status || 'pending');
+  document.getElementById('modal-vendor-contact').innerHTML = 'Email: ' + (vendor.email || 'N/A') + '<br>Phone: ' + (vendor.phone || 'Not provided') + '<br>Status: ' + vendorStatusLabelClient(vendor.status || 'pending');
   document.getElementById('modal-vendor-desc').textContent = vendor.description || 'No description provided.';
   openModal('vendor-details-modal');
 }

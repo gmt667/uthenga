@@ -18,6 +18,32 @@ $replyError = '';
 $hasSupportTickets = uthenga_table_exists('support_tickets');
 $hasTicketResponses = uthenga_table_exists('ticket_responses');
 
+if (!function_exists('supportTicketStatusLabel')) {
+    function supportTicketStatusLabel(string $status): string {
+        return match (strtolower(trim($status))) {
+            'open' => 'Open',
+            'in_progress' => 'In Progress',
+            'resolved' => 'Resolved',
+            'closed' => 'Closed',
+            'waiting_customer' => 'Waiting for Customer',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+        };
+    }
+}
+
+if (!function_exists('supportTicketStatusHint')) {
+    function supportTicketStatusHint(string $status): string {
+        return match (strtolower(trim($status))) {
+            'open' => 'The ticket still needs attention.',
+            'in_progress' => 'The ticket is being worked on.',
+            'resolved' => 'The issue has been resolved.',
+            'closed' => 'The ticket is closed.',
+            'waiting_customer' => 'Waiting for the customer to respond.',
+            default => 'Current ticket status.',
+        };
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reply_ticket']) && validateCsrf()) {
     $ticketId = trim($_POST['ticket_id'] ?? '');
     $message = trim($_POST['reply_message'] ?? '');
@@ -118,9 +144,9 @@ require_once __DIR__ . '/../includes/admin_header.php';
   <input type="text" name="q" placeholder="Search tickets..." class="form-control" style="max-width:260px;" value="<?= e($search) ?>">
   <select name="status" class="form-control" style="max-width:160px;" onchange="this.form.submit()">
     <option value="all" <?= $filterStatus === 'all' ? 'selected' : '' ?>>All Statuses</option>
-    <option value="open" <?= $filterStatus === 'open' ? 'selected' : '' ?>>Open</option>
-    <option value="in_progress" <?= $filterStatus === 'in_progress' ? 'selected' : '' ?>>In Progress</option>
-    <option value="resolved" <?= $filterStatus === 'resolved' ? 'selected' : '' ?>>Resolved</option>
+    <option value="open" <?= $filterStatus === 'open' ? 'selected' : '' ?>><?= e(supportTicketStatusLabel('open')) ?></option>
+    <option value="in_progress" <?= $filterStatus === 'in_progress' ? 'selected' : '' ?>><?= e(supportTicketStatusLabel('in_progress')) ?></option>
+    <option value="resolved" <?= $filterStatus === 'resolved' ? 'selected' : '' ?>><?= e(supportTicketStatusLabel('resolved')) ?></option>
   </select>
   <button type="submit" class="btn btn-primary btn-sm" id="support-filter-btn"><?= admin_icon_svg('search') ?> Filter</button>
   <a href="support.php" class="btn btn-secondary btn-sm" id="support-clear-btn">Clear</a>
@@ -153,7 +179,8 @@ require_once __DIR__ . '/../includes/admin_header.php';
               <span><?= admin_icon_svg('calendar') ?> <?= e(substr($ticket['created_at'], 0, 16)) ?></span>
             </div>
           </div>
-          <span class="badge <?= $badgeClass ?>"><?= e($ticket['status']) ?></span>
+          <span class="badge <?= $badgeClass ?>"><?= e(supportTicketStatusLabel((string) $ticket['status'])) ?></span>
+          <div class="text-xs text-muted" style="margin-top:.35rem;line-height:1.35;"><?= e(supportTicketStatusHint((string) $ticket['status'])) ?></div>
         </div>
 
         <div class="support-thread">

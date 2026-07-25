@@ -26,6 +26,48 @@ function dashboardBadgeClass(string $status): string {
     };
 }
 
+function dashboardStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'confirmed' => 'Confirmed',
+        'completed' => 'Completed',
+        'resolved' => 'Resolved',
+        'closed' => 'Closed',
+        'paid', 'success' => 'Paid',
+        'authorized' => 'Authorized',
+        'cancelled' => 'Cancelled',
+        'failed' => 'Failed',
+        'rejected' => 'Rejected',
+        'suspended' => 'Suspended',
+        'open' => 'Open',
+        'in progress', 'in_progress' => 'In Progress',
+        'waiting_customer' => 'Waiting for Customer',
+        'approved' => 'Approved',
+        'active' => 'Active',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
+function dashboardStatusHint(string $status): string {
+    return match (strtolower(trim($status))) {
+        'confirmed' => 'The booking is confirmed and active.',
+        'completed' => 'The workflow has been completed.',
+        'resolved' => 'The ticket or issue has been resolved.',
+        'closed' => 'The item is closed.',
+        'paid', 'success' => 'Payment has cleared successfully.',
+        'authorized' => 'The payment has been authorized and is awaiting settlement.',
+        'cancelled' => 'The item was cancelled.',
+        'failed' => 'The payment or workflow did not complete.',
+        'rejected' => 'The request was not approved.',
+        'suspended' => 'The account or listing is suspended.',
+        'open' => 'The item is still awaiting attention.',
+        'in progress', 'in_progress' => 'Work is currently in progress.',
+        'waiting_customer' => 'Waiting for the customer to respond.',
+        'approved' => 'The account or item is approved.',
+        'active' => 'The account or item is active.',
+        default => 'Current status.',
+    };
+}
+
 $hasSupportTickets = uthenga_table_exists('support_tickets');
 
 $metrics = [
@@ -146,8 +188,14 @@ $recentTickets = $hasSupportTickets ? dbQuery("
               <tr>
                 <td><?= e($row['booking_code'] ?? '') ?></td>
                 <td><?= e($row['reference_name'] ?? '') ?></td>
-                <td><span class="badge <?= dashboardBadgeClass((string) ($row['booking_status'] ?? '')) ?>"><?= e($row['booking_status'] ?? '') ?></span></td>
-                <td><span class="badge <?= dashboardBadgeClass((string) ($row['payment_status'] ?? '')) ?>"><?= e($row['payment_status'] ?? '') ?></span></td>
+                <td>
+                  <span class="badge <?= dashboardBadgeClass((string) ($row['booking_status'] ?? '')) ?>"><?= e(dashboardStatusLabel((string) ($row['booking_status'] ?? ''))) ?></span>
+                  <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(dashboardStatusHint((string) ($row['booking_status'] ?? ''))) ?></div>
+                </td>
+                <td>
+                  <span class="badge <?= dashboardBadgeClass((string) ($row['payment_status'] ?? '')) ?>"><?= e(dashboardStatusLabel((string) ($row['payment_status'] ?? ''))) ?></span>
+                  <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(dashboardStatusHint((string) ($row['payment_status'] ?? ''))) ?></div>
+                </td>
                 <td><?= formatMWK((float) ($row['grand_total'] ?? 0)) ?></td>
               </tr>
             <?php endforeach; ?>
@@ -179,7 +227,10 @@ $recentTickets = $hasSupportTickets ? dbQuery("
                 <td><?= e($ticket['ticket_code'] ?? '') ?></td>
                 <td><?= e($ticket['requester_name'] ?? '') ?></td>
                 <td><?= e($ticket['subject'] ?? '') ?></td>
-                <td><span class="badge <?= dashboardBadgeClass((string) ($ticket['status'] ?? '')) ?>"><?= e($ticket['status'] ?? '') ?></span></td>
+                <td>
+                  <span class="badge <?= dashboardBadgeClass((string) ($ticket['status'] ?? '')) ?>"><?= e(dashboardStatusLabel((string) ($ticket['status'] ?? ''))) ?></span>
+                  <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(dashboardStatusHint((string) ($ticket['status'] ?? ''))) ?></div>
+                </td>
                 <td><?= e($ticket['created_at'] ?? '') ?></td>
               </tr>
             <?php endforeach; ?>
@@ -209,7 +260,10 @@ $recentTickets = $hasSupportTickets ? dbQuery("
               <tr>
                 <td><?= e($row['full_name'] ?? '') ?></td>
                 <td><?= e($row['email'] ?? '') ?></td>
-                <td><span class="badge <?= dashboardBadgeClass((string) ($row['account_status'] ?? '')) ?>"><?= e($row['account_status'] ?? '') ?></span></td>
+                <td>
+                  <span class="badge <?= dashboardBadgeClass((string) ($row['account_status'] ?? '')) ?>"><?= e(dashboardStatusLabel((string) ($row['account_status'] ?? ''))) ?></span>
+                  <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(dashboardStatusHint((string) ($row['account_status'] ?? ''))) ?></div>
+                </td>
                 <td><?= e($row['created_at'] ?? '') ?></td>
               </tr>
             <?php endforeach; ?>

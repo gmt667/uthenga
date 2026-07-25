@@ -68,7 +68,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
             number_format((float)$r['amount'], 2, '.', ''),
             $r['gateway_name'],
             $r['transaction_type'] ?? '',
-            $r['status'],
+            txStatusLabel((string) $r['status']),
             $r['created_at'],
         ]);
     }
@@ -175,6 +175,30 @@ function txStatusBadge(string $s): string {
         'refunded' => 'badge-refunded',
         'failed' => 'badge-cancelled',
         default => 'badge-pending',
+    };
+}
+
+function txStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'success', 'paid' => 'Successful',
+        'pending' => 'Pending',
+        'failed' => 'Failed',
+        'refunded' => 'Refunded',
+        'authorized' => 'Authorized',
+        'processing' => 'Processing',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
+function txStatusHint(string $status): string {
+    return match (strtolower(trim($status))) {
+        'success', 'paid' => 'The transaction has cleared successfully.',
+        'pending' => 'The payment is waiting for confirmation.',
+        'failed' => 'The payment did not complete.',
+        'refunded' => 'The payment was returned to the customer.',
+        'authorized' => 'The payment has been authorized and is awaiting settlement.',
+        'processing' => 'The payment is being processed.',
+        default => 'Current transaction status.',
     };
 }
 
@@ -301,7 +325,7 @@ $filterQs = array_filter([
       <label class="form-label" style="font-size:0.72rem;margin-bottom:0.3rem;">Status</label>
       <select name="status" id="txn-status" class="form-control" style="height:2.25rem;">
         <option value="all" <?= $filterStatus === 'all' ? 'selected' : '' ?>>All Statuses</option>
-        <option value="success" <?= $filterStatus === 'success' ? 'selected' : '' ?>><?= admin_icon_svg('check') ?> Success</option>
+        <option value="success" <?= $filterStatus === 'success' ? 'selected' : '' ?>><?= admin_icon_svg('check') ?> Successful</option>
         <option value="pending" <?= $filterStatus === 'pending' ? 'selected' : '' ?>><?= admin_icon_svg('clock') ?> Pending</option>
         <option value="failed" <?= $filterStatus === 'failed' ? 'selected' : '' ?>><?= admin_icon_svg('close') ?> Failed</option>
         <option value="refunded"<?= $filterStatus === 'refunded' ? 'selected' : '' ?>><?= admin_icon_svg('cash') ?> Refunded</option>
@@ -358,7 +382,10 @@ $filterQs = array_filter([
             </td>
             <td style="font-weight:700;color:var(--clr-accent);"><?= formatMWK((float)$t['amount']) ?></td>
             <td class="text-xs"><?= e($t['gateway_name'] ?? 'N/A') ?></td>
-            <td><span class="badge <?= txStatusBadge($t['status']) ?>"><?= e($t['status']) ?></span></td>
+            <td>
+              <span class="badge <?= txStatusBadge($t['status']) ?>"><?= e(txStatusLabel((string) $t['status'])) ?></span>
+              <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(txStatusHint((string) $t['status'])) ?></div>
+            </td>
             <td class="text-xs text-muted"><?= e(substr((string)$t['created_at'], 0, 16)) ?></td>
           </tr>
           <?php endforeach; ?>

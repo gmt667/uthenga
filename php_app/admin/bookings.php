@@ -219,6 +219,46 @@ function pyStatusBadge(string $status): string {
     };
 }
 
+function bkStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'confirmed' => 'Confirmed',
+        'completed' => 'Completed',
+        'pending' => 'Pending',
+        'cancelled' => 'Cancelled',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
+function bkStatusHint(string $status): string {
+    return match (strtolower(trim($status))) {
+        'confirmed' => 'The booking has been approved and is active.',
+        'completed' => 'The booking has been completed.',
+        'pending' => 'The booking is waiting for review or payment.',
+        'cancelled' => 'The booking was cancelled.',
+        default => 'Current booking status.',
+    };
+}
+
+function pyStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'paid', 'success' => 'Paid',
+        'refunded' => 'Refunded',
+        'failed' => 'Failed',
+        'pending' => 'Pending',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
+function pyStatusHint(string $status): string {
+    return match (strtolower(trim($status))) {
+        'paid', 'success' => 'Payment has cleared successfully.',
+        'refunded' => 'The payment was refunded to the customer.',
+        'failed' => 'The payment attempt did not complete.',
+        'pending' => 'Payment is still awaiting confirmation.',
+        default => 'Current payment status.',
+    };
+}
+
 $pageTitle = 'Booking Management';
 $activeNav = 'admin-bookings';
 require_once __DIR__ . '/includes/admin_header.php';
@@ -331,13 +371,16 @@ require_once __DIR__ . '/includes/admin_header.php';
                   data-original="<?= e($bk['booking_status']) ?>"
                   style="padding:0.25rem;font-size:0.75rem;width:120px;"
                 >
-                  <option value="pending" <?= $bk['booking_status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
-                  <option value="confirmed" <?= $bk['booking_status'] === 'confirmed' ? 'selected' : '' ?>>Confirmed</option>
-                  <option value="cancelled" <?= $bk['booking_status'] === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                  <option value="completed" <?= $bk['booking_status'] === 'completed' ? 'selected' : '' ?>>Completed</option>
+                  <option value="pending" <?= $bk['booking_status'] === 'pending' ? 'selected' : '' ?>><?= e(bkStatusLabel('pending')) ?></option>
+                  <option value="confirmed" <?= $bk['booking_status'] === 'confirmed' ? 'selected' : '' ?>><?= e(bkStatusLabel('confirmed')) ?></option>
+                  <option value="cancelled" <?= $bk['booking_status'] === 'cancelled' ? 'selected' : '' ?>><?= e(bkStatusLabel('cancelled')) ?></option>
+                  <option value="completed" <?= $bk['booking_status'] === 'completed' ? 'selected' : '' ?>><?= e(bkStatusLabel('completed')) ?></option>
                 </select>
               </td>
-              <td><span class="badge <?= pyStatusBadge($bk['payment_status']) ?>"><?= e($bk['payment_status']) ?></span></td>
+              <td>
+                <span class="badge <?= pyStatusBadge($bk['payment_status']) ?>"><?= e(pyStatusLabel((string) $bk['payment_status'])) ?></span>
+                <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(pyStatusHint((string) $bk['payment_status'])) ?></div>
+              </td>
               <td style="text-align:right;">
                 <div style="display:inline-flex;gap:0.4rem;justify-content:flex-end;">
                   <?php if ($bk['payment_status'] !== 'refunded' && $bk['booking_status'] !== 'cancelled'): ?>
