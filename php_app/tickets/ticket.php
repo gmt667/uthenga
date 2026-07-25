@@ -17,8 +17,8 @@ if (!$bk) {
     die('Ticket not found.');
 }
 
-// Verify owner or admin
-if ($_SESSION['user_id'] !== $bk['customer_id'] && !hasRole(ADMIN_ROLES)) {
+// Verify owner or admin. Cast IDs so valid users are not blocked by string/int mismatches.
+if ((int) ($_SESSION['user_id'] ?? 0) !== (int) ($bk['customer_id'] ?? 0) && !hasRole(ADMIN_ROLES)) {
     die('Unauthorized access.');
 }
 
