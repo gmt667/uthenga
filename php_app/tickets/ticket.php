@@ -237,6 +237,60 @@ $ticketModeLabel = match ($ticketFormat) {
       cursor: pointer;
       border: none;
     }
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem .65rem;
+      }
+
+      .ticket-container {
+        border-radius: 14px;
+      }
+
+      .ticket-header,
+      .ticket-body {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .ticket-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: .85rem;
+      }
+
+      .ticket-code-text {
+        font-size: 1rem;
+        letter-spacing: .12em;
+      }
+
+      .qr-code-img {
+        width: 160px;
+        height: 160px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .ticket-header {
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
+      }
+
+      .ticket-title {
+        font-size: 1.1rem;
+      }
+
+      .ticket-meta {
+        font-size: .8rem;
+      }
+
+      .ticket-action-btn {
+        font-size: .8rem;
+        padding: .72rem .85rem;
+      }
+    }
     @media print {
       body { background: #fff; padding: 0; }
       .ticket-container { box-shadow: none; border: none; }

@@ -332,6 +332,77 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .secure-badge { font-size: .72rem; color: var(--clr-text-soft); display: flex; align-items: center; gap: .3rem; }
     .phone-field { display: none; margin-top: .75rem; }
     .phone-field.visible { display: block; }
+    @media (max-width: 640px) {
+      .checkout-card {
+        padding: 1.1rem;
+      }
+
+      .gw-option {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .6rem;
+        padding: .9rem;
+      }
+
+      .gw-icon {
+        width: 2rem;
+        height: 2rem;
+        min-width: 2rem;
+      }
+
+      .gw-coming {
+        margin-left: 0;
+        margin-top: .3rem;
+      }
+
+      .order-row,
+      .order-total {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .25rem;
+      }
+
+      .order-row strong,
+      .order-row span,
+      .order-total strong {
+        max-width: none !important;
+      }
+
+      .secure-badges {
+        gap: .5rem;
+      }
+
+      .secure-badge {
+        width: 100%;
+      }
+
+      #pay-btn {
+        font-size: .95rem !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .checkout-grid {
+        gap: 1rem;
+      }
+
+      .checkout-card {
+        padding: .95rem;
+        border-radius: 1rem;
+      }
+
+      .gw-label {
+        font-size: .9rem;
+      }
+
+      .gw-desc {
+        font-size: .72rem;
+      }
+
+      .phone-field input {
+        font-size: .92rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -339,8 +410,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <main class="container" style="padding-top:2rem; padding-bottom:5rem;">
   <div style="margin-bottom:2rem;">
-    <h1 style="font-size:1.8rem; font-weight:800; margin-bottom:.25rem;">Secure Checkout</h1>
-    <p class="text-muted">Complete your booking payment safely.</p>
+    <h1 style="font-size:clamp(1.35rem, 4vw, 1.8rem); font-weight:800; margin-bottom:.25rem;">Secure Checkout</h1>
+    <p class="text-muted" style="max-width: 52ch;">Complete your booking payment safely.</p>
   </div>
 
   <?php if ($errors): ?>

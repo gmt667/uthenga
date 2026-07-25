@@ -329,6 +329,60 @@ $ticketImage = 'https://chart.googleapis.com/chart?chs=240x240&cht=qr&chl=' . ur
       font-weight: 700;
       text-decoration: none;
     }
+    @media (max-width: 640px) {
+      .payment-success-shell {
+        padding: 1.25rem 0 3.5rem;
+      }
+
+      .payment-success-grid {
+        gap: 1rem;
+      }
+
+      .success-hero,
+      .success-body,
+      .ticket-body {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .ticket-preview {
+        padding: 1rem;
+      }
+
+      .ticket-preview-head {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .redirect-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .action-row {
+        flex-direction: column;
+      }
+
+      .action-row .btn {
+        flex-basis: auto;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .summary-grid {
+        gap: .75rem;
+      }
+
+      .summary-item {
+        padding: .8rem .85rem;
+      }
+
+      .ticket-code-text {
+        font-size: .88rem;
+        letter-spacing: .08em;
+      }
+    }
   </style>
 </head>
 <body>

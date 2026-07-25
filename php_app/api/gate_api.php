@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Uthenga — Gate Session API
  * JSON endpoint for all gate session actions
@@ -115,131 +115,153 @@ switch ($action) {
             jsonResponse(['success' => false, 'message' => 'No active session found.']);
         }
 
-        // Look up booking by qr_code field
-        $booking = dbQueryOne(
-            "SELECT b.id, b.customer_name, b.customer_email, b.listing_title, b.listing_type, b.created_at,
-                    COALESCE(NULLIF(b.quantity, 0), 1) AS quantity,
-                    JSON_UNQUOTE(JSON_EXTRACT(b.details, '$.ticket_type')) AS ticket_type,
-                    b.booking_status, b.payment_status
-             FROM bookings b
-             WHERE b.qr_code = ? AND b.listing_id = ?",
-            [$qrCode, $session['listing_id']]
-        );
+        try {
+            if ($pdo instanceof PDO) {
+                $pdo->beginTransaction();
+            }
 
-        if (!$booking) {
-            // Invalid — not found or wrong event
-            dbExecute(
-                "INSERT INTO gate_scans (session_id, qr_code, scan_result, scanned_by, scanned_name)
-                 VALUES (?, ?, 'invalid', ?, ?)",
-                [$sessionId, $qrCode, $userId, $userName]
+            $booking = dbQueryOne(
+                "SELECT b.id, b.customer_name, b.customer_email, b.listing_title, b.listing_type, b.created_at,
+                        COALESCE(NULLIF(b.quantity, 0), 1) AS quantity,
+                        COALESCE(NULLIF(b.tickets_used, 0), 0) AS tickets_used,
+                        JSON_UNQUOTE(JSON_EXTRACT(b.details, '$.ticket_type')) AS ticket_type,
+                        b.booking_status, b.payment_status
+                 FROM bookings b
+                 WHERE b.qr_code = ? AND b.listing_id = ?
+                 FOR UPDATE",
+                [$qrCode, $session['listing_id']]
             );
+
+            if (!$booking) {
+                if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                    $pdo->commit();
+                }
+                dbExecute(
+                    "INSERT INTO gate_scans (session_id, qr_code, scan_result, scanned_by, scanned_name)
+                     VALUES (?, ?, 'invalid', ?, ?)",
+                    [$sessionId, $qrCode, $userId, $userName]
+                );
+                dbExecute(
+                    "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_invalid = total_invalid + 1 WHERE id = ?",
+                    [$sessionId]
+                );
+                jsonResponse([
+                    'success'     => true,
+                    'scan_result' => 'invalid',
+                    'message'     => 'Invalid ticket â€” not found or wrong event.',
+                    'icon'        => 'âŒ',
+                    'css_class'   => 'scan-invalid',
+                ]);
+            }
+
+            if (strtolower((string) $booking['payment_status']) !== 'paid') {
+                if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                    $pdo->commit();
+                }
+                dbExecute(
+                    "INSERT INTO gate_scans (session_id, qr_code, booking_id, scan_result, notes, scanned_by, scanned_name)
+                     VALUES (?, ?, ?, 'invalid', 'Payment not completed', ?, ?)",
+                    [$sessionId, $qrCode, $booking['id'], $userId, $userName]
+                );
+                dbExecute(
+                    "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_invalid = total_invalid + 1 WHERE id = ?",
+                    [$sessionId]
+                );
+                jsonResponse([
+                    'success'     => true,
+                    'scan_result' => 'invalid',
+                    'message'     => 'Payment not completed for this ticket.',
+                    'icon'        => 'âŒ',
+                    'css_class'   => 'scan-invalid',
+                ]);
+            }
+
+            $ticketsPurchased = max(1, (int) ($booking['quantity'] ?? 1));
+            $ticketsUsed = max(0, (int) ($booking['tickets_used'] ?? 0));
+            $countedValidScans = (int) dbCount(
+                "SELECT COUNT(*) FROM gate_scans WHERE booking_id = ? AND scan_result = 'valid'",
+                [$booking['id']]
+            );
+            $ticketsUsed = max($ticketsUsed, $countedValidScans);
+
+            if ($ticketsUsed >= $ticketsPurchased) {
+                if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                    $pdo->commit();
+                }
+                dbExecute(
+                    "INSERT INTO gate_scans (session_id, qr_code, booking_id, customer_name, ticket_type, scan_result, notes, scanned_by, scanned_name, tickets_in_booking, tickets_used_after)
+                     VALUES (?, ?, ?, ?, ?, 'duplicate', 'All purchased tickets have already been used.', ?, ?, ?, ?)",
+                    [$sessionId, $qrCode, $booking['id'], $booking['customer_name'], $booking['ticket_type'] ?? 'Standard', $userId, $userName, $ticketsPurchased, $ticketsUsed]
+                );
+                dbExecute(
+                    "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_duplicate = total_duplicate + 1 WHERE id = ?",
+                    [$sessionId]
+                );
+                jsonResponse([
+                    'success'            => true,
+                    'scan_result'        => 'duplicate',
+                    'message'            => 'All purchased tickets have already been used.',
+                    'icon'               => 'âš ï¸',
+                    'css_class'          => 'scan-duplicate',
+                    'ticket_id'          => $booking['id'],
+                    'customer_name'      => $booking['customer_name'],
+                    'ticket_type'        => $booking['ticket_type'] ?? 'Standard',
+                    'tickets_purchased'  => $ticketsPurchased,
+                    'tickets_used'       => $ticketsUsed,
+                    'tickets_remaining'  => 0,
+                    'purchase_date'      => $booking['created_at'] ?? null,
+                    'ticket_status'      => 'used',
+                ]);
+            }
+
+            $newUsedCount = $ticketsUsed + 1;
+            $newStatus = ($newUsedCount >= $ticketsPurchased) ? 'fully_used' : 'partially_used';
+
             dbExecute(
-                "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_invalid = total_invalid + 1 WHERE id = ?",
+                "INSERT INTO gate_scans (session_id, qr_code, booking_id, customer_name, ticket_type, scan_result, scanned_by, scanned_name, tickets_in_booking, tickets_used_after)
+                 VALUES (?, ?, ?, ?, ?, 'valid', ?, ?, ?, ?)",
+                [$sessionId, $qrCode, $booking['id'], $booking['customer_name'], $booking['ticket_type'] ?? 'Standard', $userId, $userName, $ticketsPurchased, $newUsedCount]
+            );
+
+            dbExecute(
+                "UPDATE bookings SET tickets_used = ?, ticket_status = ? WHERE id = ?",
+                [$newUsedCount, $newStatus, $booking['id']]
+            );
+
+            dbExecute(
+                "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_valid = total_valid + 1 WHERE id = ?",
                 [$sessionId]
             );
+
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                $pdo->commit();
+            }
+
             jsonResponse([
-                'success'     => true,
-                'scan_result' => 'invalid',
-                'message'     => 'Invalid ticket — not found or wrong event.',
-                'icon'        => '❌',
-                'css_class'   => 'scan-invalid',
+                'success'       => true,
+                'scan_result'   => 'valid',
+                'message'       => 'Valid ticket â€” entry granted!',
+                'icon'          => 'âœ…',
+                'css_class'     => 'scan-valid',
+                'ticket_id'     => $booking['id'],
+                'customer_name' => $booking['customer_name'],
+                'ticket_type'   => $booking['ticket_type'] ?? 'Standard',
+                'booking_id'    => $booking['id'],
+                'tickets_purchased' => $ticketsPurchased,
+                'tickets_used'      => $newUsedCount,
+                'tickets_remaining' => max(0, $ticketsPurchased - $newUsedCount),
+                'purchase_date'     => $booking['created_at'] ?? null,
+                'ticket_status'     => $newStatus,
             ]);
+        } catch (Throwable $e) {
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log('[Uthenga gate scan] ' . $e->getMessage());
+            jsonResponse(['success' => false, 'message' => 'Unable to validate the ticket right now.']);
         }
-
-        // Validate booking status
-        if (strtolower($booking['payment_status']) !== 'paid') {
-            dbExecute(
-                "INSERT INTO gate_scans (session_id, qr_code, booking_id, scan_result, notes, scanned_by, scanned_name)
-                 VALUES (?, ?, ?, 'invalid', 'Payment not completed', ?, ?)",
-                [$sessionId, $qrCode, $booking['id'], $userId, $userName]
-            );
-            dbExecute(
-                "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_invalid = total_invalid + 1 WHERE id = ?",
-                [$sessionId]
-            );
-            jsonResponse([
-                'success'     => true,
-                'scan_result' => 'invalid',
-                'message'     => 'Payment not completed for this ticket.',
-                'icon'        => '❌',
-                'css_class'   => 'scan-invalid',
-            ]);
-        }
-
-        $ticketsPurchased = max(1, (int) ($booking['quantity'] ?? 1));
-        $ticketsUsed = (int) dbCount(
-            "SELECT COUNT(*) FROM gate_scans WHERE booking_id = ? AND scan_result = 'valid'",
-            [$booking['id']]
-        );
-        $ticketsRemaining = max(0, $ticketsPurchased - $ticketsUsed);
-
-        if ($ticketsRemaining <= 0) {
-            dbExecute(
-                "INSERT INTO gate_scans (session_id, qr_code, booking_id, customer_name, ticket_type, scan_result, notes, scanned_by, scanned_name, tickets_in_booking, tickets_used_after)
-                 VALUES (?, ?, ?, ?, ?, 'duplicate', 'All purchased tickets have already been used.', ?, ?, ?, ?)",
-                [$sessionId, $qrCode, $booking['id'], $booking['customer_name'], $booking['ticket_type'] ?? 'Standard', $userId, $userName, $ticketsPurchased, $ticketsUsed]
-            );
-            dbExecute(
-                "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_duplicate = total_duplicate + 1 WHERE id = ?",
-                [$sessionId]
-            );
-            jsonResponse([
-                'success'            => true,
-                'scan_result'        => 'duplicate',
-                'message'            => 'All purchased tickets have already been used.',
-                'icon'               => '⚠️',
-                'css_class'          => 'scan-duplicate',
-                'ticket_id'          => $booking['id'],
-                'customer_name'      => $booking['customer_name'],
-                'ticket_type'        => $booking['ticket_type'] ?? 'Standard',
-                'tickets_purchased'  => $ticketsPurchased,
-                'tickets_used'       => $ticketsUsed,
-                'tickets_remaining'  => 0,
-                'purchase_date'      => $booking['created_at'] ?? null,
-                'ticket_status'      => 'used',
-            ]);
-        }
-
-        // Valid scan – record it
-        $newUsedCount = $ticketsUsed + 1;
-        $newStatus = ($newUsedCount >= $ticketsPurchased) ? 'fully_used' : 'partially_used';
-
-        dbExecute(
-            "INSERT INTO gate_scans (session_id, qr_code, booking_id, customer_name, ticket_type, scan_result, scanned_by, scanned_name, tickets_in_booking, tickets_used_after)
-             VALUES (?, ?, ?, ?, ?, 'valid', ?, ?, ?, ?)",
-            [$sessionId, $qrCode, $booking['id'], $booking['customer_name'], $booking['ticket_type'] ?? 'Standard', $userId, $userName, $ticketsPurchased, $newUsedCount]
-        );
-        
-        // Update booking row with new counts and status
-        dbExecute(
-            "UPDATE bookings SET tickets_used = ?, ticket_status = ? WHERE id = ?",
-            [$newUsedCount, $newStatus, $booking['id']]
-        );
-
-        dbExecute(
-            "UPDATE gate_sessions SET total_scanned = total_scanned + 1, total_valid = total_valid + 1 WHERE id = ?",
-            [$sessionId]
-        );
-
-        jsonResponse([
-            'success'       => true,
-            'scan_result'   => 'valid',
-            'message'       => 'Valid ticket — entry granted!',
-            'icon'          => '✅',
-            'css_class'     => 'scan-valid',
-            'ticket_id'     => $booking['id'],
-            'customer_name' => $booking['customer_name'],
-            'ticket_type'   => $booking['ticket_type'] ?? 'Standard',
-            'booking_id'    => $booking['id'],
-            'tickets_purchased' => $ticketsPurchased,
-            'tickets_used'      => $newUsedCount,
-            'tickets_remaining' => max(0, $ticketsPurchased - $newUsedCount),
-            'purchase_date'     => $booking['created_at'] ?? null,
-            'ticket_status'     => $newStatus,
-        ]);
         break;
 
-    // ── Get live session statistics ───────────────────────────────────────────
     case 'session_stats':
         $sessionId = trim($_GET['session_id'] ?? $_POST['session_id'] ?? '');
         if (empty($sessionId)) {
@@ -295,3 +317,4 @@ switch ($action) {
     default:
         jsonResponse(['success' => false, 'message' => 'Unknown action.'], 400);
 }
+
