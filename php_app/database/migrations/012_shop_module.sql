@@ -260,8 +260,8 @@ CREATE TABLE IF NOT EXISTS shop_settings (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO shop_settings (setting_key, setting_value, value_type, description) VALUES
-('shop_name', 'Uthenga Shop', 'string', 'Public-facing shop name'),
-('shop_tagline', 'Beers, spirits, soft drinks, and chilled beverages', 'string', 'Marketing tagline'),
+('shop_name', 'Uthenga Drinks Shop', 'string', 'Public-facing shop name'),
+('shop_tagline', 'Malawi beers, spirits, soft drinks, and chilled imports', 'string', 'Marketing tagline'),
 ('delivery_fee_mwk', '1500', 'number', 'Default delivery fee in MWK'),
 ('free_delivery_threshold_mwk', '25000', 'number', 'Subtotal threshold for free delivery'),
 ('tax_rate_percent', '0', 'number', 'Default tax percentage'),
@@ -279,7 +279,8 @@ INSERT IGNORE INTO shop_categories (id, name, slug, description, sort_order, is_
 (4, 'Soft Drinks', 'soft-drinks', 'Sodas and fizzy refreshments.', 40, 1),
 (5, 'Water', 'water', 'Still and sparkling bottled water.', 50, 1),
 (6, 'Juice', 'juice', 'Fruit juices and nectar drinks.', 60, 1),
-(7, 'Energy Drinks', 'energy-drinks', 'Performance and focus beverages.', 70, 1);
+(7, 'Energy Drinks', 'energy-drinks', 'Performance and focus beverages.', 70, 1),
+(8, 'Ciders & RTDs', 'ciders-rtds', 'Ready-to-drink ciders, sparkling cocktails, and aperitifs.', 80, 1);
 
 INSERT IGNORE INTO delivery_riders (id, rider_code, name, phone_number, bike_registration, availability, status, current_location) VALUES
 (1, 'RDR-0001', 'Amon Phiri', '+265 888 100 101', 'MMB 4012', 'available', 'active', 'Blantyre'),
@@ -293,20 +294,38 @@ INSERT IGNORE INTO shop_warehouses (id, warehouse_code, name, location, status) 
 (1, 'WH-0001', 'Central Dispatch Store', 'Blantyre', 'active');
 
 INSERT IGNORE INTO shop_products (id, category_id, supplier_id, warehouse_id, sku, name, slug, short_description, description, brand, unit_label, price, compare_at_price, stock_quantity, low_stock_threshold, primary_image_url, secondary_image_url, is_featured, is_new_arrival, is_best_seller, is_promotion, promotion_label, requires_age_verification, status) VALUES
-(1, 1, 1, 1, 'WINE-001', 'Reserve Merlot', 'reserve-merlot', 'Smooth red wine for dinners and gifting.', 'A full-bodied reserve Merlot with dark fruit notes and a balanced finish.', 'Uthenga Direct', '750ml bottle', 12500, 13900, 24, 6, 'assets/images/shop/spirits-bottles.png', NULL, 1, 1, 1, 1, 'Weekend offer', 1, 'active'),
-(2, 2, 1, 1, 'BEER-001', 'Premium Lager 6 Pack', 'premium-lager-6-pack', 'Cold six-pack lager for gatherings.', 'A crisp local-style lager available in a convenient six-pack.', 'Uthenga Direct', '6 pack', 8200, NULL, 60, 12, 'assets/images/shop/beer-assortment.png', NULL, 1, 0, 1, 0, NULL, 1, 'active'),
-(3, 4, 1, 1, 'SODA-001', 'Orange Soda 12 Pack', 'orange-soda-12-pack', 'Bright citrus soda multipack.', 'Sweet orange-flavoured soda for family and office stocking.', 'Uthenga Direct', '12 pack', 5400, NULL, 48, 10, 'assets/images/shop/soft-drinks.png', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
-(4, 5, 1, 1, 'WATER-001', 'Purified Water 12 Pack', 'purified-water-12-pack', 'Bottled water for home and office use.', 'Sealed purified drinking water bottles in a family pack.', 'Uthenga Direct', '12 pack', 3800, NULL, 85, 20, 'assets/images/shop/water-juice.png', NULL, 1, 1, 0, 0, NULL, 0, 'active'),
-(5, 6, 1, 1, 'JUICE-001', 'Mixed Fruit Juice 1L', 'mixed-fruit-juice-1l', 'Family-size juice for breakfast and snacks.', 'A refreshing blended fruit juice with a smooth finish.', 'Uthenga Direct', '1L carton', 3200, NULL, 72, 18, 'assets/images/shop/water-juice.png', NULL, 0, 1, 0, 0, NULL, 0, 'active'),
-(6, 7, 1, 1, 'ENERGY-001', 'Energy Drink 4 Pack', 'energy-drink-4-pack', 'Refreshing energy drink multipack.', 'A bold energy drink pack for long days, events, and road trips.', 'Uthenga Direct', '4 pack', 6200, NULL, 36, 8, 'assets/images/shop/soft-drinks.png', NULL, 0, 0, 1, 1, 'Cold stock', 0, 'active');
+(1, 3, 1, 1, 'GIN-MW-750', 'Malawi Gin 750ml', 'malawi-gin-750ml', 'Flagship local gin for mixed drinks and celebrations.', 'Official Malawi Gin bottle with a crisp botanical profile for mixers, event bars, and premium home service.', 'Malawi Gin', '750ml bottle', 27000, 29500, 36, 8, 'https://castelmalawi.com/storage/2025/02/Packshots_0004_Malawi-gin-1.png', 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0002_Gin-3.0-1-1.png', 1, 1, 1, 0, NULL, 1, 'active'),
+(2, 3, 1, 1, 'GIN-MW-330', 'Malawi Gin 330ml', 'malawi-gin-330ml', 'Smaller bottle for quick service and cooler packs.', 'A compact Malawi Gin bottle for events, bars, and fast-moving retail shelves.', 'Malawi Gin', '330ml bottle', 7200, NULL, 72, 16, 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0002_Gin-3.0-1-1.png', 'https://castelmalawi.com/storage/2025/02/Packshots_0004_Malawi-gin-1.png', 0, 1, 1, 0, NULL, 1, 'active'),
+(3, 3, 1, 1, 'BRANDY-MW-750', 'Premier Brandy 750ml', 'premier-brandy-750ml', 'A smooth local brandy for gifting and premium pours.', 'Premier Brandy in a full-size bottle for home bars, events, and premium delivery orders.', 'Premier Brandy', '750ml bottle', 33000, 35000, 28, 6, 'https://castelmalawi.com/storage/2025/02/bigbrandy.png', 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0000_Brandy-3.0-1.png', 1, 1, 0, 1, 'Launch offer', 1, 'active'),
+(4, 3, 1, 1, 'BRANDY-MW-330', 'Premier Brandy 330ml', 'premier-brandy-330ml', 'Small bottle for minibars and cooler packs.', 'A smaller Premier Brandy bottle for quick service, event stocking, and compact delivery orders.', 'Premier Brandy', '330ml bottle', 11500, NULL, 54, 12, 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0000_Brandy-3.0-1.png', 'https://castelmalawi.com/storage/2025/02/bigbrandy.png', 0, 1, 1, 0, NULL, 1, 'active'),
+(5, 3, 1, 1, 'VODKA-MW-750', 'Malawi Vodka 750ml', 'malawi-vodka-750ml', 'Clean local vodka for mixed drinks and events.', 'A classic Malawi Vodka bottle for premium mixers and delivery-ready bar stock.', 'Malawi Vodka', '750ml bottle', 26500, 27900, 30, 8, 'https://castelmalawi.com/storage/2025/02/Packshots_0003_Malawi-vodka-1.png', 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0001_Vodka-3.0-1.png', 1, 1, 1, 0, NULL, 1, 'active'),
+(6, 2, 1, 1, 'BEER-KK-6', 'Kuche Kuche 6 Pack', 'kuche-kuche-6-pack', 'Popular Malawi beer multipack for gatherings.', 'A chilled Kuche Kuche six-pack for parties, events, and home restocking.', 'Kuche Kuche', '6 pack', 16800, 17800, 64, 12, 'https://castelmalawi.com/storage/2025/02/Packshot-KK-1.png', 'https://castelmalawi.com/storage/2025/02/KK-6-PACK-1.png', 1, 0, 1, 0, NULL, 1, 'active'),
+(7, 2, 1, 1, 'BEER-CARL-GREEN-640', 'Carlsberg Green 640ml', 'carlsberg-green-640ml', 'Big bottle lager for bars and home delivery.', 'The classic Carlsberg Green bottle ready for chilled delivery across Malawi.', 'Carlsberg Green', '640ml bottle', 4200, NULL, 96, 24, 'https://castelmalawi.com/storage/2025/02/biggreen.png', 'https://castelmalawi.com/storage/2025/02/Carlsberg-Green-1-1.png', 1, 0, 1, 0, NULL, 1, 'active'),
+(8, 4, 1, 1, 'SODA-COKE-2L', 'Coca-Cola 2L', 'coca-cola-2l', 'Classic cola for events, meetings, and home service.', 'A family-size Coca-Cola bottle for parties, restaurants, and cooling fridges fast.', 'Coca-Cola', '2L bottle', 5200, NULL, 84, 18, 'https://www.coca-colacompany.com/content/dam/corporate/us/en/tccc/brands/coca-cola-new-picture-1.jpg', NULL, 1, 0, 1, 0, NULL, 0, 'active'),
+(9, 4, 1, 1, 'SODA-SPRITE-300', 'Sprite 300ml', 'sprite-300ml', 'Chilled lemon-lime soda for daily service.', 'A crisp Sprite bottle for coolers, events, and fast-moving retail orders.', 'Sprite', '300ml bottle', 1800, NULL, 120, 30, 'https://www.coca-cola.com/content/dam/onexp/ie/en/brands/sprite/ie_sprite_750x750.jpg', NULL, 0, 1, 1, 0, NULL, 0, 'active'),
+(10, 4, 1, 1, 'SODA-FANTA-300', 'Fanta Orange 300ml', 'fanta-orange-300ml', 'Bright orange soda for chilled deliveries.', 'A sweet Fanta Orange bottle for fridge packs, events, and takeaway orders.', 'Fanta Orange', '300ml bottle', 1800, NULL, 120, 30, 'https://www.coca-cola.com/content/dam/onexp/cb/en/brands/fanta/fanta-naranja.jpg', NULL, 0, 1, 1, 0, NULL, 0, 'active'),
+(11, 1, 1, 1, 'WINE-LINGA-750', 'Linga Fruit Wine 750ml', 'linga-fruit-wine-750ml', 'Sweet local fruit wine for launch events and gifting.', 'A party-friendly fruit wine from Linga for private bars, restaurants, and event delivery.', 'Linga Wine', '750ml bottle', 19500, 21000, 30, 8, 'assets/images/shop/spirits-bottles.png', NULL, 1, 1, 0, 0, NULL, 1, 'active'),
+(12, 8, 1, 1, 'RTD-BRUTAL-FRUIT', 'Brutal Fruit Ruby Apple 275ml', 'brutal-fruit-ruby-apple-275ml', 'Ready-to-drink cider for premium occasions.', 'A chilled Brutal Fruit serving for event bars, premium gatherings, and delivery orders.', 'Brutal Fruit', '275ml bottle', 18900, 19900, 24, 6, 'assets/images/shop/spirits-bottles.png', NULL, 0, 1, 0, 1, 'Launch offer', 1, 'active'),
+(13, 8, 1, 1, 'RTD-ICE-TROPEZ', 'Ice Tropez Original 275ml', 'ice-tropez-original-275ml', 'Imported sparkling ready-to-drink bottle.', 'A premium Ice Tropez bottle for launch events, rooftop service, and curated drink boxes.', 'Ice Tropez', '275ml bottle', 19900, 21900, 18, 4, 'assets/images/shop/spirits-bottles.png', NULL, 0, 1, 0, 1, 'Premium launch', 1, 'active');
 
 INSERT IGNORE INTO shop_product_images (id, product_id, image_url, alt_text, sort_order, is_primary) VALUES
-(1, 1, 'assets/images/shop/spirits-bottles.png', 'Reserve Merlot bottle', 1, 1),
-(2, 1, 'assets/images/shop/spirits-bottles.png', 'Wine glass and bottle', 2, 0),
-(3, 2, 'assets/images/shop/beer-assortment.png', 'Premium lager bottles', 1, 1),
-(4, 3, 'assets/images/shop/soft-drinks.png', 'Soft drink cans', 1, 1),
-(5, 4, 'assets/images/shop/water-juice.png', 'Water bottle pack', 1, 1),
-(6, 5, 'assets/images/shop/water-juice.png', 'Mixed fruit juice carton', 1, 1),
-(7, 6, 'assets/images/shop/soft-drinks.png', 'Energy drink cans', 1, 1);
+(1, 1, 'https://castelmalawi.com/storage/2025/02/Packshots_0004_Malawi-gin-1.png', 'Malawi Gin bottle', 1, 1),
+(2, 1, 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0002_Gin-3.0-1-1.png', 'Malawi Gin bottle alternative view', 2, 0),
+(3, 2, 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0002_Gin-3.0-1-1.png', 'Malawi Gin 330ml', 1, 1),
+(4, 3, 'https://castelmalawi.com/storage/2025/02/bigbrandy.png', 'Premier Brandy bottle', 1, 1),
+(5, 3, 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0000_Brandy-3.0-1.png', 'Premier Brandy alternative view', 2, 0),
+(6, 4, 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0000_Brandy-3.0-1.png', 'Premier Brandy 330ml', 1, 1),
+(7, 5, 'https://castelmalawi.com/storage/2025/02/Packshots_0003_Malawi-vodka-1.png', 'Malawi Vodka bottle', 1, 1),
+(8, 5, 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0001_Vodka-3.0-1.png', 'Malawi Vodka bottle alternative view', 2, 0),
+(9, 6, 'https://castelmalawi.com/storage/2025/02/Packshot-KK-1.png', 'Kuche Kuche bottle', 1, 1),
+(10, 6, 'https://castelmalawi.com/storage/2025/02/KK-6-PACK-1.png', 'Kuche Kuche 6 pack', 2, 0),
+(11, 7, 'https://castelmalawi.com/storage/2025/02/biggreen.png', 'Carlsberg Green bottle', 1, 1),
+(12, 7, 'https://castelmalawi.com/storage/2025/02/Carlsberg-Green-1-1.png', 'Carlsberg Green bottle alternative view', 2, 0),
+(13, 8, 'assets/images/shop/soft-drinks.png', 'Coca-Cola 2L', 1, 1),
+(14, 9, 'assets/images/shop/soft-drinks.png', 'Sprite 300ml', 1, 1),
+(15, 10, 'assets/images/shop/soft-drinks.png', 'Fanta Orange 300ml', 1, 1),
+(16, 11, 'assets/images/shop/spirits-bottles.png', 'Linga Fruit Wine 750ml', 1, 1),
+(17, 12, 'assets/images/shop/spirits-bottles.png', 'Brutal Fruit Ruby Apple 275ml', 1, 1),
+(18, 13, 'assets/images/shop/spirits-bottles.png', 'Ice Tropez Original 275ml', 1, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
