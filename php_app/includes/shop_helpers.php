@@ -138,7 +138,7 @@ if (!function_exists('uthenga_shop_default_catalog')) {
                 'stock_quantity' => 48,
                 'low_stock_threshold' => 12,
                 'primary_image_url' => 'assets/images/shop/beer-assortment.png',
-                'secondary_image_url' => null,
+                'secondary_image_url' => 'https://malawiplus.com/wp-content/uploads/2021/07/Linga5.jpg',
                 'is_featured' => 1,
                 'is_new_arrival' => 1,
                 'is_best_seller' => 1,
@@ -363,7 +363,352 @@ if (!function_exists('uthenga_shop_default_catalog')) {
         }
         unset($product);
 
-        return $base;
+        return uthenga_shop_default_catalog_branded();
+    }
+}
+
+if (!function_exists('uthenga_shop_default_catalog_branded')) {
+    function uthenga_shop_default_catalog_branded(): array {
+        $now = date('Y-m-d H:i:s');
+        $products = [
+            [
+                'id' => 201,
+                'category_id' => 3,
+                'sku' => 'MW-GIN-750',
+                'name' => 'Malawi Gin 750ml',
+                'slug' => 'malawi-gin-750ml',
+                'short_description' => 'Popular local gin for mixers and chilled service.',
+                'description' => 'A strong local gin with a clean finish, served well chilled or with mixers.',
+                'brand' => 'Malawi Gin',
+                'unit_label' => '750ml bottle',
+                'price' => 18500,
+                'compare_at_price' => 19900,
+                'stock_quantity' => 36,
+                'low_stock_threshold' => 10,
+                'primary_image_url' => 'https://castelmalawi.com/storage/2025/02/Packshots_0004_Malawi-gin-1.png',
+                'secondary_image_url' => 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0002_Gin-3.0-1-1.png',
+                'is_featured' => 1,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 1,
+                'promotion_label' => 'Hot deal',
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 202,
+                'category_id' => 3,
+                'sku' => 'MW-GIN-330',
+                'name' => 'Malawi Gin 330ml',
+                'slug' => 'malawi-gin-330ml',
+                'short_description' => 'Compact gin bottle for personal use or travel.',
+                'description' => 'A smaller bottle of Malawi Gin for convenient ordering and quick restocks.',
+                'brand' => 'Malawi Gin',
+                'unit_label' => '330ml bottle',
+                'price' => 9900,
+                'compare_at_price' => null,
+                'stock_quantity' => 52,
+                'low_stock_threshold' => 12,
+                'primary_image_url' => 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0002_Gin-3.0-1-1.png',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 203,
+                'category_id' => 3,
+                'sku' => 'MW-BRANDY-750',
+                'name' => 'Premier Brandy 750ml',
+                'slug' => 'premier-brandy-750ml',
+                'short_description' => 'Rich local brandy for evening pours.',
+                'description' => 'A smooth brandy with warm notes, ideal for gifting, hosting, and relaxed evenings.',
+                'brand' => 'Premier Brandy',
+                'unit_label' => '750ml bottle',
+                'price' => 17200,
+                'compare_at_price' => 18600,
+                'stock_quantity' => 28,
+                'low_stock_threshold' => 8,
+                'primary_image_url' => 'https://castelmalawi.com/storage/2025/02/bigbrandy.png',
+                'secondary_image_url' => 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0000_Brandy-3.0-1.png',
+                'is_featured' => 1,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 204,
+                'category_id' => 3,
+                'sku' => 'MW-BRANDY-330',
+                'name' => 'Premier Brandy 330ml',
+                'slug' => 'premier-brandy-330ml',
+                'short_description' => 'Smaller brandy bottle for individual orders.',
+                'description' => 'A convenient 330ml bottle of Premier Brandy for quick personal purchases.',
+                'brand' => 'Premier Brandy',
+                'unit_label' => '330ml bottle',
+                'price' => 8900,
+                'compare_at_price' => null,
+                'stock_quantity' => 40,
+                'low_stock_threshold' => 10,
+                'primary_image_url' => 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0000_Brandy-3.0-1.png',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 205,
+                'category_id' => 3,
+                'sku' => 'MW-VODKA-750',
+                'name' => 'Malawi Vodka 750ml',
+                'slug' => 'malawi-vodka-750ml',
+                'short_description' => 'Clean vodka for cocktails and mixers.',
+                'description' => 'A crisp vodka profile for events, mixing, and premium chilled service.',
+                'brand' => 'Malawi Vodka',
+                'unit_label' => '750ml bottle',
+                'price' => 17800,
+                'compare_at_price' => 18900,
+                'stock_quantity' => 30,
+                'low_stock_threshold' => 8,
+                'primary_image_url' => 'https://castelmalawi.com/storage/2025/02/Packshots_0003_Malawi-vodka-1.png',
+                'secondary_image_url' => 'https://castelmalawi.com/storage/2025/02/Spirits-of-Malawi-Babies_0001_Vodka-3.0-1.png',
+                'is_featured' => 1,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 1,
+                'promotion_label' => 'New stock',
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 206,
+                'category_id' => 2,
+                'sku' => 'MW-KUCHE-6',
+                'name' => 'Kuche Kuche 6 Pack',
+                'slug' => 'kuche-kuche-6-pack',
+                'short_description' => 'Classic Malawi beer six-pack.',
+                'description' => 'A refreshing six-pack of Kuche Kuche for celebrations and chilled deliveries.',
+                'brand' => 'Kuche Kuche',
+                'unit_label' => '6 pack',
+                'price' => 13500,
+                'compare_at_price' => 14400,
+                'stock_quantity' => 54,
+                'low_stock_threshold' => 12,
+                'primary_image_url' => 'https://castelmalawi.com/storage/2025/02/Packshot-KK-1.png',
+                'secondary_image_url' => 'https://castelmalawi.com/storage/2025/02/KK-6-PACK-1.png',
+                'is_featured' => 1,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 207,
+                'category_id' => 2,
+                'sku' => 'MW-CARLSBERG-640',
+                'name' => 'Carlsberg Green 640ml',
+                'slug' => 'carlsberg-green-640ml',
+                'short_description' => 'Large chilled beer bottle for easy sharing.',
+                'description' => 'A familiar Carlsberg Green bottle for direct delivery to homes, bars, and events.',
+                'brand' => 'Carlsberg Green',
+                'unit_label' => '640ml bottle',
+                'price' => 3600,
+                'compare_at_price' => null,
+                'stock_quantity' => 96,
+                'low_stock_threshold' => 20,
+                'primary_image_url' => 'https://castelmalawi.com/storage/2025/02/biggreen.png',
+                'secondary_image_url' => 'https://castelmalawi.com/storage/2025/02/Carlsberg-Green-1-1.png',
+                'is_featured' => 1,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 208,
+                'category_id' => 4,
+                'sku' => 'MW-COKE-2L',
+                'name' => 'Coca-Cola 2L',
+                'slug' => 'coca-cola-2l',
+                'short_description' => 'Large cola bottle for families and events.',
+                'description' => 'A familiar 2L Coke bottle for meals, gatherings, and home restocks.',
+                'brand' => 'Coca-Cola',
+                'unit_label' => '2L bottle',
+                'price' => 3500,
+                'compare_at_price' => null,
+                'stock_quantity' => 120,
+                'low_stock_threshold' => 24,
+                'primary_image_url' => 'https://www.coca-colacompany.com/content/dam/corporate/us/en/tccc/brands/coca-cola-new-picture-1.jpg',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 0,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+            [
+                'id' => 209,
+                'category_id' => 4,
+                'sku' => 'MW-SPRITE-300',
+                'name' => 'Sprite 300ml',
+                'slug' => 'sprite-300ml',
+                'short_description' => 'Chilled lemon-lime soft drink.',
+                'description' => 'A crisp Sprite bottle for single servings, small gatherings, and chilled orders.',
+                'brand' => 'Sprite',
+                'unit_label' => '300ml bottle',
+                'price' => 1200,
+                'compare_at_price' => null,
+                'stock_quantity' => 140,
+                'low_stock_threshold' => 30,
+                'primary_image_url' => 'https://www.coca-cola.com/content/dam/onexp/ie/en/brands/sprite/ie_sprite_750x750.jpg',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 1,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+            [
+                'id' => 210,
+                'category_id' => 4,
+                'sku' => 'MW-FANTA-300',
+                'name' => 'Fanta Orange 300ml',
+                'slug' => 'fanta-orange-300ml',
+                'short_description' => 'Sweet orange soda for cold delivery.',
+                'description' => 'A bright orange Fanta bottle for events, family packs, and retail delivery.',
+                'brand' => 'Fanta',
+                'unit_label' => '300ml bottle',
+                'price' => 1200,
+                'compare_at_price' => null,
+                'stock_quantity' => 136,
+                'low_stock_threshold' => 30,
+                'primary_image_url' => 'https://www.coca-cola.com/content/dam/onexp/cb/en/brands/fanta/fanta-naranja.jpg',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 1,
+                'promotion_label' => 'Chilled favorite',
+                'requires_age_verification' => 0,
+                'status' => 'active',
+            ],
+            [
+                'id' => 211,
+                'category_id' => 1,
+                'sku' => 'MW-LINGA-WINE-750',
+                'name' => 'Linga Fruit Wine 750ml',
+                'slug' => 'linga-fruit-wine-750ml',
+                'short_description' => 'Sweet fruit wine for relaxed occasions.',
+                'description' => 'A smooth fruit wine with a soft finish, suitable for chilled evening service.',
+                'brand' => 'Linga Wine',
+                'unit_label' => '750ml bottle',
+                'price' => 14500,
+                'compare_at_price' => null,
+                'stock_quantity' => 24,
+                'low_stock_threshold' => 6,
+                'primary_image_url' => 'https://malawiplus.com/wp-content/uploads/2021/07/Linga4.jpg',
+                'secondary_image_url' => null,
+                'is_featured' => 0,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 212,
+                'category_id' => 8,
+                'sku' => 'MW-BRUTAL-FRUIT-275',
+                'name' => 'Brutal Fruit Ruby Apple 275ml',
+                'slug' => 'brutal-fruit-ruby-apple-275ml',
+                'short_description' => 'Refreshing ready-to-drink fruity cocktail.',
+                'description' => 'A chilled Brutal Fruit can for social nights and premium ready-to-drink service.',
+                'brand' => 'Brutal Fruit',
+                'unit_label' => '275ml can',
+                'price' => 4200,
+                'compare_at_price' => null,
+                'stock_quantity' => 48,
+                'low_stock_threshold' => 12,
+                'primary_image_url' => 'https://www.brutalfruit.co.za/sites/g/files/seuoyk1971/files/styles/product_preview/public/2023-07/packs_Ruby%20Apple.png?itok=EcTg5v1q',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 1,
+                'promotion_label' => 'Popular RTD',
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+            [
+                'id' => 213,
+                'category_id' => 8,
+                'sku' => 'MW-ICE-TROPEZ-275',
+                'name' => 'Ice Tropez Original 275ml',
+                'slug' => 'ice-tropez-original-275ml',
+                'short_description' => 'Elegant sparkling ready-to-drink option.',
+                'description' => 'A stylish sparkling RTD for premium delivery, celebrations, and gifting.',
+                'brand' => 'Ice Tropez',
+                'unit_label' => '275ml bottle',
+                'price' => 5200,
+                'compare_at_price' => null,
+                'stock_quantity' => 34,
+                'low_stock_threshold' => 8,
+                'primary_image_url' => 'https://icetropez.com/23-large_default/ice-tropez-original-12-pack.jpg',
+                'secondary_image_url' => null,
+                'is_featured' => 1,
+                'is_new_arrival' => 1,
+                'is_best_seller' => 0,
+                'is_promotion' => 0,
+                'promotion_label' => null,
+                'requires_age_verification' => 1,
+                'status' => 'active',
+            ],
+        ];
+
+        foreach ($products as &$product) {
+            $category = null;
+            foreach (uthenga_shop_default_categories() as $cat) {
+                if ((int) $cat['id'] === (int) $product['category_id']) {
+                    $category = $cat;
+                    break;
+                }
+            }
+
+            $product['category_name'] = $category['name'] ?? 'Shop';
+            $product['category_slug'] = $category['slug'] ?? 'shop';
+            $product['supplier_id'] = $product['supplier_id'] ?? 1;
+            $product['warehouse_id'] = $product['warehouse_id'] ?? 1;
+            $product['supplier_name'] = $product['supplier_name'] ?? 'Uthenga Drinks Supply';
+            $product['vendor_name'] = $product['vendor_name'] ?? $product['supplier_name'];
+            $product['warehouse_name'] = $product['warehouse_name'] ?? 'Central Dispatch Store';
+            $product['stock_label'] = ((int) $product['stock_quantity'] > 0) ? 'In Stock' : 'Out of Stock';
+            $product['deleted_at'] = null;
+            $product['created_at'] = $product['created_at'] ?? $now;
+            $product['updated_at'] = $product['updated_at'] ?? $now;
+        }
+        unset($product);
+
+        return $products;
     }
 }
 
@@ -507,11 +852,6 @@ if (!function_exists('uthenga_shop_cart_save_state')) {
 if (!function_exists('uthenga_shop_product_image_urls')) {
     function uthenga_shop_product_image_urls(array $product): array {
         $urls = [];
-        $defaultImage = uthenga_shop_default_image_for_product($product);
-        if ($defaultImage !== '') {
-            $urls[] = $defaultImage;
-        }
-
         foreach (['primary_image_url', 'secondary_image_url'] as $key) {
             if (!empty($product[$key])) {
                 $urls[] = uthenga_shop_asset_url((string) $product[$key]);
@@ -531,6 +871,13 @@ if (!function_exists('uthenga_shop_product_image_urls')) {
                 }
             } catch (Throwable $e) {
                 // Ignore missing table / data issues.
+            }
+        }
+
+        if (empty($urls)) {
+            $defaultImage = uthenga_shop_default_image_for_product($product);
+            if ($defaultImage !== '') {
+                $urls[] = $defaultImage;
             }
         }
 

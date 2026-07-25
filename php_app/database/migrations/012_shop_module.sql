@@ -304,9 +304,9 @@ INSERT IGNORE INTO shop_products (id, category_id, supplier_id, warehouse_id, sk
 (8, 4, 1, 1, 'SODA-COKE-2L', 'Coca-Cola 2L', 'coca-cola-2l', 'Classic cola for events, meetings, and home service.', 'A family-size Coca-Cola bottle for parties, restaurants, and cooling fridges fast.', 'Coca-Cola', '2L bottle', 5200, NULL, 84, 18, 'https://www.coca-colacompany.com/content/dam/corporate/us/en/tccc/brands/coca-cola-new-picture-1.jpg', NULL, 1, 0, 1, 0, NULL, 0, 'active'),
 (9, 4, 1, 1, 'SODA-SPRITE-300', 'Sprite 300ml', 'sprite-300ml', 'Chilled lemon-lime soda for daily service.', 'A crisp Sprite bottle for coolers, events, and fast-moving retail orders.', 'Sprite', '300ml bottle', 1800, NULL, 120, 30, 'https://www.coca-cola.com/content/dam/onexp/ie/en/brands/sprite/ie_sprite_750x750.jpg', NULL, 0, 1, 1, 0, NULL, 0, 'active'),
 (10, 4, 1, 1, 'SODA-FANTA-300', 'Fanta Orange 300ml', 'fanta-orange-300ml', 'Bright orange soda for chilled deliveries.', 'A sweet Fanta Orange bottle for fridge packs, events, and takeaway orders.', 'Fanta Orange', '300ml bottle', 1800, NULL, 120, 30, 'https://www.coca-cola.com/content/dam/onexp/cb/en/brands/fanta/fanta-naranja.jpg', NULL, 0, 1, 1, 0, NULL, 0, 'active'),
-(11, 1, 1, 1, 'WINE-LINGA-750', 'Linga Fruit Wine 750ml', 'linga-fruit-wine-750ml', 'Sweet local fruit wine for launch events and gifting.', 'A party-friendly fruit wine from Linga for private bars, restaurants, and event delivery.', 'Linga Wine', '750ml bottle', 19500, 21000, 30, 8, 'assets/images/shop/spirits-bottles.png', NULL, 1, 1, 0, 0, NULL, 1, 'active'),
-(12, 8, 1, 1, 'RTD-BRUTAL-FRUIT', 'Brutal Fruit Ruby Apple 275ml', 'brutal-fruit-ruby-apple-275ml', 'Ready-to-drink cider for premium occasions.', 'A chilled Brutal Fruit serving for event bars, premium gatherings, and delivery orders.', 'Brutal Fruit', '275ml bottle', 18900, 19900, 24, 6, 'assets/images/shop/spirits-bottles.png', NULL, 0, 1, 0, 1, 'Launch offer', 1, 'active'),
-(13, 8, 1, 1, 'RTD-ICE-TROPEZ', 'Ice Tropez Original 275ml', 'ice-tropez-original-275ml', 'Imported sparkling ready-to-drink bottle.', 'A premium Ice Tropez bottle for launch events, rooftop service, and curated drink boxes.', 'Ice Tropez', '275ml bottle', 19900, 21900, 18, 4, 'assets/images/shop/spirits-bottles.png', NULL, 0, 1, 0, 1, 'Premium launch', 1, 'active');
+(11, 1, 1, 1, 'WINE-LINGA-750', 'Linga Fruit Wine 750ml', 'linga-fruit-wine-750ml', 'Sweet local fruit wine for launch events and gifting.', 'A party-friendly fruit wine from Linga for private bars, restaurants, and event delivery.', 'Linga Wine', '750ml bottle', 19500, 21000, 30, 8, 'https://malawiplus.com/wp-content/uploads/2021/07/Linga4.jpg', 'https://malawiplus.com/wp-content/uploads/2021/07/Linga5.jpg', 1, 1, 0, 0, NULL, 1, 'active'),
+(12, 8, 1, 1, 'RTD-BRUTAL-FRUIT', 'Brutal Fruit Ruby Apple 275ml', 'brutal-fruit-ruby-apple-275ml', 'Ready-to-drink cider for premium occasions.', 'A chilled Brutal Fruit serving for event bars, premium gatherings, and delivery orders.', 'Brutal Fruit', '275ml bottle', 18900, 19900, 24, 6, 'https://www.brutalfruit.co.za/sites/g/files/seuoyk1971/files/styles/product_preview/public/2023-07/packs_Ruby%20Apple.png?itok=EcTg5v1q', NULL, 0, 1, 0, 1, 'Launch offer', 1, 'active'),
+(13, 8, 1, 1, 'RTD-ICE-TROPEZ', 'Ice Tropez Original 275ml', 'ice-tropez-original-275ml', 'Imported sparkling ready-to-drink bottle.', 'A premium Ice Tropez bottle for launch events, rooftop service, and curated drink boxes.', 'Ice Tropez', '275ml bottle', 19900, 21900, 18, 4, 'https://icetropez.com/23-large_default/ice-tropez-original-12-pack.jpg', NULL, 0, 1, 0, 1, 'Premium launch', 1, 'active');
 
 INSERT IGNORE INTO shop_product_images (id, product_id, image_url, alt_text, sort_order, is_primary) VALUES
 (1, 1, 'https://castelmalawi.com/storage/2025/02/Packshots_0004_Malawi-gin-1.png', 'Malawi Gin bottle', 1, 1),
@@ -324,8 +324,9 @@ INSERT IGNORE INTO shop_product_images (id, product_id, image_url, alt_text, sor
 (13, 8, 'assets/images/shop/soft-drinks.png', 'Coca-Cola 2L', 1, 1),
 (14, 9, 'assets/images/shop/soft-drinks.png', 'Sprite 300ml', 1, 1),
 (15, 10, 'assets/images/shop/soft-drinks.png', 'Fanta Orange 300ml', 1, 1),
-(16, 11, 'assets/images/shop/spirits-bottles.png', 'Linga Fruit Wine 750ml', 1, 1),
-(17, 12, 'assets/images/shop/spirits-bottles.png', 'Brutal Fruit Ruby Apple 275ml', 1, 1),
-(18, 13, 'assets/images/shop/spirits-bottles.png', 'Ice Tropez Original 275ml', 1, 1);
+(16, 11, 'https://malawiplus.com/wp-content/uploads/2021/07/Linga4.jpg', 'Linga Fruit Wine 750ml', 1, 1),
+(19, 11, 'https://malawiplus.com/wp-content/uploads/2021/07/Linga5.jpg', 'Linga Fruit Wine 750ml', 2, 0),
+(17, 12, 'https://www.brutalfruit.co.za/sites/g/files/seuoyk1971/files/styles/product_preview/public/2023-07/packs_Ruby%20Apple.png?itok=EcTg5v1q', 'Brutal Fruit Ruby Apple 275ml', 1, 1),
+(18, 13, 'https://icetropez.com/23-large_default/ice-tropez-original-12-pack.jpg', 'Ice Tropez Original 275ml', 1, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
