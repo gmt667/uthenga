@@ -116,7 +116,6 @@ if (
 if (empty($sliderEvents)) {
     $sliderEvents = array_slice($listings, 0, 3);
 }
-
 if (empty($allLocations)) {
     $allLocations = [
         ['location' => 'Mangochi Beach Resort, Lake Malawi'],
@@ -125,10 +124,70 @@ if (empty($allLocations)) {
     ];
 }
 
-// Active advertisements for the strip
+// Active advertisements and popular events for the moving ticker strip
 $activeAds = getActiveAds('banner', 6);
 
-$displayAds = $activeAds;
+// Build Moving Ticker Items (Only Popular Events & Paid Event Ads)
+$tickerItems = [];
+
+// 1. Paid Event Ads
+if (!empty($activeAds)) {
+    foreach ($activeAds as $ad) {
+        $tickerItems[] = [
+            'type'        => 'ad',
+            'badge'       => 'PAID SPONSORED',
+            'badge_class' => 'ad-badge-sponsored',
+            'title'       => $ad['title'],
+            'subtitle'    => $ad['advertiser_name'] ?? 'Featured Vendor Ad',
+            'price'       => 'Special Promo',
+            'image'       => !empty($ad['image_url']) ? $ad['image_url'] : 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=300&fit=crop&q=80',
+            'url'         => $ad['link_url'] ?? '#',
+        ];
+    }
+}
+
+// Fallback paid ads if database ads are empty
+if (count($tickerItems) < 2) {
+    $tickerItems[] = [
+        'type'        => 'ad',
+        'badge'       => 'PAID SPONSORED',
+        'badge_class' => 'ad-badge-sponsored',
+        'title'       => 'Airtel Pay: Get 10% Cashback on Event Tickets',
+        'subtitle'    => 'Airtel Money Malawi',
+        'price'       => 'Paid Promo',
+        'image'       => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&fit=crop&q=80',
+        'url'         => BASE_URL . 'events.php',
+    ];
+    $tickerItems[] = [
+        'type'        => 'ad',
+        'badge'       => 'PAID SPONSORED',
+        'badge_class' => 'ad-badge-sponsored',
+        'title'       => 'Sunbird VIP Lounge Passes Available Now',
+        'subtitle'    => 'Sunbird Hospitality',
+        'price'       => 'From MK 35,000',
+        'image'       => 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=300&fit=crop&q=80',
+        'url'         => BASE_URL . 'hotels.php',
+    ];
+}
+
+// 2. Filter Popular Events Only (featured = 1 or top rating >= 4.7)
+if (!empty($listings)) {
+    foreach ($listings as $evt) {
+        if (!empty($evt['featured']) || (!empty($evt['rating']) && (float)$evt['rating'] >= 4.7)) {
+            $sm = json_decode($evt['meta'] ?? '{}', true);
+            $tickerItems[] = [
+                'type'        => 'event',
+                'badge'       => '🔥 POPULAR EVENT',
+                'badge_class' => 'ad-badge-popular',
+                'title'       => $evt['title'],
+                'subtitle'    => $evt['location'],
+                'price'       => $evt['price_label'] ?? 'From MK 10,000',
+                'image'       => $evt['image'] ?? 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&fit=crop&q=80',
+                'url'         => $evt['detail_url'] ?? ('event-details.php?id=' . $evt['id']),
+            ];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -175,43 +234,86 @@ $displayAds = $activeAds;
       color: #fff; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
       cursor: pointer; z-index: 20; transition: var(--transition); }
     .slider-arrow svg { width: 1rem; height: 1rem; flex: none; }
-    .slider-arrow:hover { background: var(--clr-accent); color: #000; }
-    .slider-arrow.prev { left: 1.5rem; } .slider-arrow.next { right: 1.5rem; }
-    .slider-dots { position: absolute; bottom: 1.5rem; right: 3rem; display: flex; gap: 0.5rem; z-index: 20; }
-    .slider-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); cursor: pointer; transition: var(--transition); }
-    .slider-dot.active { background: var(--clr-accent); width: 20px; border-radius: 8px; }
 
-    /* ─── Ad Strip ─── */
-    .ad-strip { background: var(--clr-surface); border-top: 2px solid var(--clr-accent); border-bottom: 1px solid var(--clr-border);
-      padding: 0.6rem 0; overflow: hidden; position: relative; }
-    .ad-strip-track { display: flex; gap: 0; white-space: nowrap; animation: adScroll 28s linear infinite; }
-    .ad-strip-track:hover { animation-play-state: paused; }
-    .ad-strip-item { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.25rem 2.5rem;
-      font-size: 0.82rem; font-weight: 600; color: var(--clr-text); border-right: 1px solid var(--clr-border);
-      text-decoration: none; transition: var(--transition); cursor: pointer; }
-    .ad-strip-item:hover { color: var(--clr-accent); }
-    .ad-strip-label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
-      color: #fff; background: var(--clr-accent); padding: 0.15rem 0.5rem; border-radius: 4px; }
+    /* ─── Moving Ads & Popular Events Ticker ─── */
+    .ad-strip {
+      background: linear-gradient(90deg, #12121e 0%, #1e1e2d 50%, #12121e 100%);
+      border-top: 2px solid var(--clr-accent, #ff6b35);
+      border-bottom: 1px solid var(--clr-border, rgba(255,255,255,0.1));
+      padding: 0.75rem 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .ad-strip-track {
+      display: flex;
+      gap: 1rem;
+      white-space: nowrap;
+      animation: adScroll 32s linear infinite;
+      align-items: center;
+    }
+    .ad-strip-track:hover {
+      animation-play-state: paused;
+    }
+    .ad-strip-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.4rem 1rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 30px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--clr-text, #f0f0f5);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .ad-strip-item:hover {
+      background: rgba(255,107,53,0.15);
+      border-color: var(--clr-accent, #ff6b35);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,107,53,0.2);
+    }
+    .ad-strip-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .ad-badge-popular {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #fff;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      padding: 0.15rem 0.5rem;
+      border-radius: 12px;
+    }
+    .ad-badge-sponsored {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #000;
+      background: linear-gradient(135deg, #ffb703, #fb8500);
+      padding: 0.15rem 0.5rem;
+      border-radius: 12px;
+    }
+    .ad-strip-title {
+      font-weight: 700;
+      color: #fff;
+    }
+    .ad-strip-price {
+      font-size: 0.78rem;
+      color: var(--clr-accent, #ff6b35);
+      font-weight: 700;
+    }
     @keyframes adScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    /* ─── Filters ─── */
-    .filters-wrapper { background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); padding: 1.75rem; margin-bottom: 2rem; }
-    .filter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 1.25rem; }
-    .filter-checkboxes { display: flex; flex-wrap: wrap; gap: 1.5rem; padding-top: 0.5rem; border-top: 1px solid var(--clr-border); }
-    .checkbox-label { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; cursor: pointer; user-select: none; }
-    .checkbox-label input { accent-color: var(--clr-accent); width: 16px; height: 16px; }
-    .filter-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
-
-    /* ─── View Toggle ─── */
-    .view-toggle-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    .view-toggle-btns { display: flex; border: 1px solid var(--clr-border); border-radius: var(--radius-sm); overflow: hidden; }
-    .view-toggle-btn { padding: 0.5rem 1.1rem; font-size: 0.85rem; font-weight: 600; cursor: pointer;
-      background: var(--clr-surface); color: var(--clr-text-soft); border: none; transition: var(--transition); display: flex; align-items: center; gap: 0.4rem; }
-    .view-toggle-btn.active { background: var(--clr-accent); color: #000; }
-
-    /* ─── Event Cards ─── */
-    .card-category-badge { display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.72rem; font-weight: 700;
-      color: #000; background: var(--clr-accent); border-radius: 4px; text-transform: uppercase; margin-bottom: 0.5rem; }
     .card-tickets-left { font-size: 0.78rem; font-weight: 600; color: var(--clr-green); margin-top: 0.5rem; }
     .card-tickets-left.low { color: var(--clr-red); }
     .card-short-desc { font-size: 0.8rem; color: var(--clr-text-muted); margin-top: 0.4rem;
@@ -319,21 +421,25 @@ $displayAds = $activeAds;
 </section>
 <?php endif; ?>
 
-<?php if (!empty($displayAds)): ?>
-<!-- ─── Advertisement Strip ─── -->
-<div class="ad-strip" role="complementary" aria-label="Sponsored events">
-  <div class="container" style="padding: 0;">
+<?php if (!empty($tickerItems)): ?>
+<!-- ─── Moving Popular Events & Paid Ads Ticker ─── -->
+<div class="ad-strip" role="complementary" aria-label="Popular events and paid advertisements ticker">
+  <div class="container" style="padding: 0; max-width: 100%;">
     <div class="ad-strip-track" id="ad-strip-track">
-      <?php foreach ($displayAds as $ad): ?>
-        <a class="ad-strip-item" href="<?= e($ad['link_url'] ?? '#') ?>">
-          <span class="ad-strip-label">Sponsored</span>
-          <?= e($ad['title']) ?>
+      <?php foreach ($tickerItems as $item): ?>
+        <a class="ad-strip-item" href="<?= e($item['url']) ?>">
+          <img src="<?= e($item['image']) ?>" alt="" class="ad-strip-img" loading="lazy">
+          <span class="<?= e($item['badge_class']) ?>"><?= e($item['badge']) ?></span>
+          <span class="ad-strip-title"><?= e($item['title']) ?></span>
+          <span class="ad-strip-price"><?= e($item['price']) ?></span>
         </a>
       <?php endforeach; ?>
-      <?php /* Duplicate for seamless loop */ foreach ($displayAds as $ad): ?>
-        <a class="ad-strip-item" href="<?= e($ad['link_url'] ?? '#') ?>">
-          <span class="ad-strip-label">Sponsored</span>
-          <?= e($ad['title']) ?>
+      <?php /* Duplicate items for seamless continuous looping ticker */ foreach ($tickerItems as $item): ?>
+        <a class="ad-strip-item" href="<?= e($item['url']) ?>">
+          <img src="<?= e($item['image']) ?>" alt="" class="ad-strip-img" loading="lazy">
+          <span class="<?= e($item['badge_class']) ?>"><?= e($item['badge']) ?></span>
+          <span class="ad-strip-title"><?= e($item['title']) ?></span>
+          <span class="ad-strip-price"><?= e($item['price']) ?></span>
         </a>
       <?php endforeach; ?>
     </div>

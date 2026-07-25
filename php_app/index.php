@@ -530,34 +530,82 @@ $popularCategories = [
   <?php endif; ?>
 <?php endif; ?>
 
-<!-- ??? Promotional Popup ??????????????????????????????????????????????????? -->
-<div id="uthenga-popup-overlay" role="dialog" aria-modal="true" aria-label="Promotion" style="display:none;">
-  <div id="uthenga-popup-card">
+<!-- ─── Paid Promotional Popup Ad ───────────────────────────────────────────── -->
+<style>
+.uthenga-popup-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
+  z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.uthenga-popup-card {
+  position: relative; background: var(--clr-surface, #1e1e2d); border: 1px solid var(--clr-border, rgba(255,255,255,0.15));
+  border-radius: 16px; width: 100%; max-width: 440px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  animation: popupSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes popupSlideIn {
+  from { transform: translateY(20px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+#uthenga-popup-close {
+  position: absolute; top: 12px; right: 12px; z-index: 10; width: 32px; height: 32px;
+  border-radius: 50%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.2s ease;
+}
+#uthenga-popup-close:hover { background: #e63946; color: #fff; transform: scale(1.1); }
+.uthenga-popup-header {
+  padding: 1rem 1.25rem 0.6rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02);
+}
+.uthenga-ad-badge {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #ff6b35, #f72585); color: #fff; padding: 0.2rem 0.55rem; border-radius: 20px;
+}
+.uthenga-ad-sponsor { font-size: 0.78rem; font-weight: 600; color: var(--clr-accent, #ff6b35); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.uthenga-popup-img-wrap { width: 100%; height: 180px; overflow: hidden; position: relative; background: #000; }
+.uthenga-popup-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.uthenga-popup-card:hover .uthenga-popup-img-wrap img { transform: scale(1.03); }
+.uthenga-popup-body { padding: 1.25rem; }
+.uthenga-popup-body h3 { font-size: 1.2rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; line-height: 1.3; }
+.uthenga-popup-body p { font-size: 0.88rem; color: rgba(255,255,255,0.75); margin-bottom: 1rem; line-height: 1.5; }
+.uthenga-popup-vendor-link { font-size: 0.78rem; color: rgba(255,255,255,0.5); text-align: center; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.1); }
+.uthenga-popup-vendor-link a { color: var(--clr-accent, #ff6b35); font-weight: 600; text-decoration: underline; }
+</style>
+
+<div id="uthenga-popup-overlay" class="uthenga-popup-overlay" role="dialog" aria-modal="true" aria-label="Paid Advertisement" style="display:none; opacity:0; transition: opacity 0.3s ease;">
+  <div id="uthenga-popup-card" class="uthenga-popup-card">
     <button id="uthenga-popup-close" aria-label="Close promotion">&times;</button>
-    <div id="uthenga-popup-img-wrap" style="display:none;">
-      <img id="uthenga-popup-img" src="" alt="" loading="lazy">
+    <div class="uthenga-popup-header">
+      <span class="uthenga-ad-badge">⭐ Paid Advertisement</span>
+      <span id="uthenga-popup-sponsor" class="uthenga-ad-sponsor">Sponsored by Partner</span>
     </div>
-    <div id="uthenga-popup-body">
-      <div id="uthenga-popup-title"></div>
+    <div id="uthenga-popup-img-wrap" class="uthenga-popup-img-wrap" style="display:none;">
+      <img id="uthenga-popup-img" src="" alt="Paid Advertisement" loading="lazy">
+    </div>
+    <div id="uthenga-popup-body" class="uthenga-popup-body">
+      <h3 id="uthenga-popup-title"></h3>
       <p id="uthenga-popup-desc"></p>
-      <a id="uthenga-popup-cta" href="#" class="btn btn-primary" style="width:100%;justify-content:center;">Learn More</a>
+      <div class="uthenga-popup-actions">
+        <a id="uthenga-popup-cta" href="#" class="btn btn-primary" style="width:100%; justify-content:center; text-align:center;">Learn More</a>
+        <button id="uthenga-popup-dismiss-btn" class="btn btn-secondary" style="width:100%; justify-content:center; text-align:center; margin-top:0.4rem; background:transparent; border:1px solid rgba(255,255,255,0.2);">Cancel / Close</button>
+      </div>
+      <div class="uthenga-popup-vendor-link">
+        Are you a Vendor, Customer, or Business Owner? <a href="<?= BASE_URL ?>vendor/ads.php">Create a Paid Ad</a>
+      </div>
     </div>
   </div>
 </div>
 <script>
 (function () {
   'use strict';
-  var SUPPRESS_KEY = 'uthenga_popup_dismissed_at';
-  var SUPPRESS_MS  = 10 * 60 * 1000; // 10 minutes
-  var AUTO_CLOSE_MS = 15000;          // 15 seconds
+  var POPUP_INTERVAL_MS = 180000; // 3 minutes (180 seconds)
+  var adPool = [];
+  var timerId = null;
 
-  // Check LocalStorage suppression
-  try {
-    var dismissed = localStorage.getItem(SUPPRESS_KEY);
-    if (dismissed && (Date.now() - parseInt(dismissed, 10)) < SUPPRESS_MS) {
-      return; // still within suppression window
-    }
-  } catch (e) {}
+  function getRandomAd() {
+    if (!adPool || adPool.length === 0) return null;
+    var randomIndex = Math.floor(Math.random() * adPool.length);
+    return adPool[randomIndex];
+  }
 
   function dismissPopup() {
     var overlay = document.getElementById('uthenga-popup-overlay');
@@ -565,70 +613,117 @@ $popularCategories = [
       overlay.style.opacity = '0';
       setTimeout(function () { overlay.style.display = 'none'; }, 300);
     }
-    try { localStorage.setItem(SUPPRESS_KEY, String(Date.now())); } catch (e) {}
+    
+    // Record cancellation timestamp
+    try {
+      localStorage.setItem('uthenga_ad_cancelled_time', String(Date.now()));
+    } catch (e) {}
+
+    // Schedule next random ad after 3 minutes (180,000ms)
+    scheduleNextPopup(POPUP_INTERVAL_MS);
+  }
+
+  function scheduleNextPopup(delayMs) {
+    if (timerId) clearTimeout(timerId);
+
+    timerId = setTimeout(function () {
+      showRandomPopup();
+    }, delayMs);
   }
 
   function showPopup(data) {
+    if (!data) return;
+
     var overlay = document.getElementById('uthenga-popup-overlay');
     if (!overlay) return;
 
-    // Populate content
-    var title = document.getElementById('uthenga-popup-title');
-    var desc  = document.getElementById('uthenga-popup-desc');
-    var cta   = document.getElementById('uthenga-popup-cta');
-    var imgW  = document.getElementById('uthenga-popup-img-wrap');
-    var img   = document.getElementById('uthenga-popup-img');
+    var title   = document.getElementById('uthenga-popup-title');
+    var desc    = document.getElementById('uthenga-popup-desc');
+    var cta     = document.getElementById('uthenga-popup-cta');
+    var sponsor = document.getElementById('uthenga-popup-sponsor');
+    var imgW    = document.getElementById('uthenga-popup-img-wrap');
+    var img     = document.getElementById('uthenga-popup-img');
 
-    if (title) title.textContent = data.title || '';
-    if (desc)  desc.textContent  = data.description || '';
+    if (title)   title.textContent   = data.title || '';
+    if (desc)    desc.textContent    = data.description || '';
+    if (sponsor) sponsor.textContent = 'Paid Ad by ' + (data.sponsor_name || 'Verified Vendor');
+    
     if (cta) {
       cta.textContent = data.cta_text || 'Learn More';
       cta.href = data.cta_url || '#';
     }
+    
     if (imgW && img && data.image_url) {
       img.src = data.image_url;
       imgW.style.display = 'block';
+    } else if (imgW) {
+      imgW.style.display = 'none';
     }
 
     overlay.style.display = 'flex';
-    // Trigger transition
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         overlay.style.opacity = '1';
       });
     });
-
-    // Auto-close after 15 seconds
-    setTimeout(dismissPopup, AUTO_CLOSE_MS);
   }
 
-  function fetchAndShow() {
+  function showRandomPopup() {
+    var ad = getRandomAd();
+    if (ad) {
+      showPopup(ad);
+    }
+  }
+
+  function fetchAdsAndStart() {
     fetch('<?= BASE_URL ?>api/get_active_popup.php')
       .then(function (r) { return r.json(); })
-      .then(function (data) {
-        if (data && data.active) {
-          var delay = Math.max(3000, (parseInt(data.delay_seconds, 10) || 3) * 1000);
-          setTimeout(function () {
-            showPopup(data);
-          }, delay);
+      .then(function (res) {
+        if (res && res.items && res.items.length > 0) {
+          adPool = res.items;
+          if (res.repopup_ms) {
+            POPUP_INTERVAL_MS = res.repopup_ms; // 180,000 ms (3 minutes)
+          }
+          
+          var lastCancelled = 0;
+          try {
+            lastCancelled = parseInt(localStorage.getItem('uthenga_ad_cancelled_time') || '0', 10);
+          } catch(e) {}
+
+          var elapsed = Date.now() - lastCancelled;
+          if (lastCancelled > 0 && elapsed < POPUP_INTERVAL_MS) {
+            var remaining = POPUP_INTERVAL_MS - elapsed;
+            scheduleNextPopup(remaining);
+          } else {
+            // Initial show after 3 seconds
+            setTimeout(function () {
+              showRandomPopup();
+            }, 3000);
+          }
         }
       })
-      .catch(function () {});
+      .catch(function (err) {
+        console.error('Failed to load popup ads', err);
+      });
   }
 
-  // Wire up close button and overlay click
   document.addEventListener('DOMContentLoaded', function () {
-    var closeBtn = document.getElementById('uthenga-popup-close');
-    var overlay  = document.getElementById('uthenga-popup-overlay');
+    var closeBtn   = document.getElementById('uthenga-popup-close');
+    var dismissBtn = document.getElementById('uthenga-popup-dismiss-btn');
+    var overlay    = document.getElementById('uthenga-popup-overlay');
+
     if (closeBtn) closeBtn.addEventListener('click', dismissPopup);
-    if (overlay)  overlay.addEventListener('click', function (e) {
-      if (e.target === overlay) dismissPopup();
-    });
-    // Keyboard ESC
+    if (dismissBtn) dismissBtn.addEventListener('click', dismissPopup);
+    if (overlay) {
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) dismissPopup();
+      });
+    }
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') dismissPopup();
     });
-    fetchAndShow(); // Show after the configured delay (minimum 3 seconds)
+
+    fetchAdsAndStart();
   });
 })();
 </script>
