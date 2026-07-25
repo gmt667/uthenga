@@ -19,8 +19,8 @@ if (!function_exists('uthenga_shop_defaults')) {
             'tnm_mpamba_enabled' => 1,
             'airtel_money_enabled' => 1,
             'paychangu_enabled' => 0,
-            'shop_name' => 'Uthenga Shop',
-            'shop_tagline' => 'Beers, spirits, soft drinks, and chilled beverages',
+            'shop_name' => 'Uthenga Drinks Shop',
+            'shop_tagline' => 'Malawi beers, spirits, soft drinks, and chilled imports',
         ];
     }
 }
@@ -85,15 +85,15 @@ if (!function_exists('uthenga_shop_default_image_for_product')) {
         $name = strtolower(trim((string) ($product['name'] ?? '')));
         $haystack = $category . ' ' . $name;
 
-        if (str_contains($haystack, 'spirits') || str_contains($haystack, 'gin') || str_contains($haystack, 'vodka') || str_contains($haystack, 'whisky') || str_contains($haystack, 'rum')) {
+        if (str_contains($haystack, 'spirits') || str_contains($haystack, 'gin') || str_contains($haystack, 'vodka') || str_contains($haystack, 'whisky') || str_contains($haystack, 'rum') || str_contains($haystack, 'brandy')) {
             return uthenga_shop_asset_url('assets/images/shop/spirits-bottles.png');
         }
 
-        if (str_contains($haystack, 'beer') || str_contains($haystack, 'lager') || str_contains($haystack, 'stout') || str_contains($haystack, 'ale')) {
+        if (str_contains($haystack, 'beer') || str_contains($haystack, 'lager') || str_contains($haystack, 'stout') || str_contains($haystack, 'ale') || str_contains($haystack, 'kuche kuche') || str_contains($haystack, 'carlsberg')) {
             return uthenga_shop_asset_url('assets/images/shop/beer-assortment.png');
         }
 
-        if (str_contains($haystack, 'soft drink') || str_contains($haystack, 'soda') || str_contains($haystack, 'juice') || str_contains($haystack, 'energy')) {
+        if (str_contains($haystack, 'soft drink') || str_contains($haystack, 'soda') || str_contains($haystack, 'juice') || str_contains($haystack, 'energy') || str_contains($haystack, 'cola') || str_contains($haystack, 'sprite') || str_contains($haystack, 'fanta') || str_contains($haystack, 'sobo')) {
             return uthenga_shop_asset_url('assets/images/shop/soft-drinks.png');
         }
 
@@ -115,6 +115,7 @@ if (!function_exists('uthenga_shop_default_categories')) {
             ['id' => 5, 'name' => 'Water', 'slug' => 'water', 'description' => 'Still and sparkling bottled water.', 'sort_order' => 50, 'is_active' => 1],
             ['id' => 6, 'name' => 'Juice', 'slug' => 'juice', 'description' => 'Fruit juices and nectar drinks.', 'sort_order' => 60, 'is_active' => 1],
             ['id' => 7, 'name' => 'Energy Drinks', 'slug' => 'energy-drinks', 'description' => 'Performance and focus beverages.', 'sort_order' => 70, 'is_active' => 1],
+            ['id' => 8, 'name' => 'Ciders & RTDs', 'slug' => 'ciders-rtds', 'description' => 'Ready-to-drink ciders, sparkling cocktails, and aperitifs.', 'sort_order' => 80, 'is_active' => 1],
         ];
     }
 }

@@ -577,7 +577,7 @@ $activeNav = 'shop';
       <div class="shop-hero-card">
         <span class="shop-hero-kicker"><?= uthenga_public_icon_svg('shop') ?> <?= e($settings['shop_name']) ?></span>
         <h1 style="margin-top:1rem;"><?= e($settings['shop_tagline']) ?></h1>
-        <p class="text-muted" style="max-width:56ch;">Shop beers, spirits, soft drinks, water, juice, and other chilled beverages from Uthenga. Browse curated collections, add items to your cart, and checkout with delivery for Malawi-wide convenience.</p>
+        <p class="text-muted" style="max-width:56ch;">Shop Malawi drinks for delivery across the country. Browse local beers, spirits, ciders, and everyday soft drinks from one clean storefront built for real orders.</p>
         <div style="display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.35rem;">
           <span style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .7rem;border:1px solid var(--clr-border);border-radius:999px;background:var(--clr-surface);font-size:.78rem;font-weight:600;"><?= uthenga_public_icon_svg('check') ?> Fast delivery</span>
           <span style="display:inline-flex;align-items:center;gap:.35rem;padding:.4rem .7rem;border:1px solid var(--clr-border);border-radius:999px;background:var(--clr-surface);font-size:.78rem;font-weight:600;"><?= uthenga_public_icon_svg('cart') ?> Secure checkout</span>
@@ -596,7 +596,7 @@ $activeNav = 'shop';
       </div>
       <aside class="shop-side-card">
         <div class="section-label">Popular Now</div>
-        <h3 style="margin-top:.25rem;">Featured collections</h3>
+        <h3 style="margin-top:.25rem;">Featured bottles</h3>
         <div class="shop-mini-list">
           <?php foreach (array_slice($featuredProducts, 0, 3) as $item): ?>
             <?php $thumb = uthenga_shop_product_image_urls($item); ?>
@@ -604,7 +604,7 @@ $activeNav = 'shop';
               <img src="<?= e($thumb[0] ?? $item['primary_image_url'] ?? '') ?>" alt="<?= e($item['name']) ?>">
               <div>
                 <strong><?= e($item['name']) ?></strong>
-                <span><?= e($item['category_name'] ?? 'Shop') ?> &middot; <?= uthenga_shop_money((float) $item['price']) ?></span>
+                <span><?= e($item['brand'] ?? $item['category_name'] ?? 'Shop') ?> &middot; <?= uthenga_shop_money((float) $item['price']) ?></span>
               </div>
             </a>
           <?php endforeach; ?>
@@ -691,7 +691,7 @@ $activeNav = 'shop';
                 </div>
                 <div class="product-body">
                   <h3 class="product-title"><?= e($item['name']) ?></h3>
-                  <div class="product-meta"><span><?= e($item['category_name'] ?? '') ?></span><span><?= e($item['stock_label'] ?? '') ?></span></div>
+                  <div class="product-meta"><span><?= e($item['brand'] ?? $item['category_name'] ?? '') ?></span><span><?= e($item['unit_label'] ?? '') ?></span></div>
                   <div class="product-footer">
                     <strong class="product-price"><?= uthenga_shop_money((float) $item['price']) ?></strong>
                     <a class="btn btn-sm btn-secondary" href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>">View</a>
@@ -732,9 +732,9 @@ $activeNav = 'shop';
         <div class="shop-filters">
           <a href="<?= BASE_URL ?>shop.php" class="<?= !$featuredOnly && !$newOnly && !$bestOnly && !$promotionOnly && !$inStockOnly ? 'active' : '' ?>">All</a>
           <a href="<?= BASE_URL ?>shop.php?featured=1" class="<?= $featuredOnly ? 'active' : '' ?>">Featured</a>
-          <a href="<?= BASE_URL ?>shop.php?new=1" class="<?= $newOnly ? 'active' : '' ?>">New Arrivals</a>
-          <a href="<?= BASE_URL ?>shop.php?best=1" class="<?= $bestOnly ? 'active' : '' ?>">Best Sellers</a>
-          <a href="<?= BASE_URL ?>shop.php?promotion=1" class="<?= $promotionOnly ? 'active' : '' ?>">Promotions</a>
+          <a href="<?= BASE_URL ?>shop.php?new=1" class="<?= $newOnly ? 'active' : '' ?>">New Stock</a>
+          <a href="<?= BASE_URL ?>shop.php?best=1" class="<?= $bestOnly ? 'active' : '' ?>">Top Sellers</a>
+          <a href="<?= BASE_URL ?>shop.php?promotion=1" class="<?= $promotionOnly ? 'active' : '' ?>">Offers</a>
           <a href="<?= BASE_URL ?>shop.php?stock=1" class="<?= $inStockOnly ? 'active' : '' ?>">In Stock</a>
         </div>
       </div>
@@ -751,8 +751,8 @@ $activeNav = 'shop';
         <div style="margin-bottom:1.5rem;">
           <div class="section-head" style="margin-bottom:1rem;">
             <div>
-              <h3>Featured Products</h3>
-              <p class="text-xs text-muted">Hand-picked products for quick shopping.</p>
+              <h3>Featured Drinks</h3>
+              <p class="text-xs text-muted">Popular bottles and coolers ready for fast delivery.</p>
             </div>
           </div>
           <div class="product-grid">
@@ -764,7 +764,7 @@ $activeNav = 'shop';
                   <?php if (!empty($item['is_promotion'])): ?><span class="product-badge">Promotion</span><?php elseif (!empty($item['is_featured'])): ?><span class="product-badge">Featured</span><?php endif; ?>
                 </a>
                 <div class="product-body">
-                  <div class="product-meta"><span><?= e($item['category_name'] ?? 'Shop') ?></span><span><?= e($item['stock_label'] ?? '') ?></span></div>
+                  <div class="product-meta"><span><?= e($item['brand'] ?? $item['category_name'] ?? 'Shop') ?></span><span><?= e($item['unit_label'] ?? '') ?></span></div>
                   <h3 class="product-title"><a href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>"><?= e($item['name']) ?></a></h3>
                   <p class="product-desc"><?= e($item['short_description'] ?? '') ?></p>
                   <div class="product-footer">
@@ -807,7 +807,7 @@ $activeNav = 'shop';
                   <span class="product-badge"><?= e($item['stock_label'] ?? 'In Stock') ?></span>
                 </a>
                 <div class="product-body">
-                  <div class="product-meta"><span><?= e($item['category_name'] ?? 'Shop') ?></span><span><?= e($item['unit_label'] ?? 'Item') ?></span></div>
+                  <div class="product-meta"><span><?= e($item['brand'] ?? $item['category_name'] ?? 'Shop') ?></span><span><?= e($item['unit_label'] ?? 'Item') ?></span></div>
                   <h3 class="product-title"><a href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>"><?= e($item['name']) ?></a></h3>
                   <p class="product-desc"><?= e($item['short_description'] ?? '') ?></p>
                   <div class="product-footer">
@@ -835,7 +835,7 @@ $activeNav = 'shop';
         <div class="grid grid-cols-3 gap-3" style="margin-top:2rem;">
           <?php if (!empty($newArrivals)): ?>
             <div class="glass-panel" style="padding:1.15rem;">
-              <div class="section-head"><div><h3>New Arrivals</h3></div></div>
+              <div class="section-head"><div><h3>New Stock</h3></div></div>
               <div class="shop-mini-list">
                 <?php foreach (array_slice($newArrivals, 0, 3) as $item): ?>
                   <a class="shop-mini-item" href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>">
@@ -851,7 +851,7 @@ $activeNav = 'shop';
           <?php endif; ?>
           <?php if (!empty($bestSellers)): ?>
             <div class="glass-panel" style="padding:1.15rem;">
-              <div class="section-head"><div><h3>Best Sellers</h3></div></div>
+              <div class="section-head"><div><h3>Top Sellers</h3></div></div>
               <div class="shop-mini-list">
                 <?php foreach (array_slice($bestSellers, 0, 3) as $item): ?>
                   <a class="shop-mini-item" href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>">
@@ -867,7 +867,7 @@ $activeNav = 'shop';
           <?php endif; ?>
           <?php if (!empty($promoProducts)): ?>
             <div class="glass-panel" style="padding:1.15rem;">
-              <div class="section-head"><div><h3>Promotions</h3></div></div>
+              <div class="section-head"><div><h3>Offers</h3></div></div>
               <div class="shop-mini-list">
                 <?php foreach (array_slice($promoProducts, 0, 3) as $item): ?>
                   <a class="shop-mini-item" href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>">
