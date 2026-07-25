@@ -271,6 +271,115 @@ require_once __DIR__ . '/includes/header.php';
       font-size: .98rem;
     }
   }
+  @media (max-width: 360px) {
+    .checkout-layout {
+      gap: .85rem;
+      padding: 1rem 0 1.6rem;
+    }
+
+    .checkout-panel,
+    .checkout-summary {
+      padding: .8rem;
+      border-radius: 16px;
+    }
+
+    .page-header {
+      gap: .6rem;
+    }
+
+    .page-header .page-title {
+      font-size: 1.16rem;
+      line-height: 1.15;
+    }
+
+    .page-header .text-muted {
+      font-size: .8rem;
+      line-height: 1.4;
+    }
+
+    .checkout-panel h3,
+    .checkout-summary h3 {
+      font-size: 1rem;
+    }
+
+    .field-grid {
+      gap: .65rem;
+    }
+
+    .summary-line {
+      gap: .5rem;
+      padding: .42rem 0;
+      font-size: .8rem;
+    }
+
+    .summary-line span,
+    .summary-line strong {
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    .product-actions {
+      gap: .4rem;
+    }
+
+    .product-actions .btn {
+      min-height: 38px;
+      font-size: .8rem;
+      padding-inline: .7rem;
+    }
+  }
+  @media (max-width: 320px) {
+    .checkout-layout {
+      gap: .75rem;
+      padding: .9rem 0 1.4rem;
+    }
+
+    .checkout-panel,
+    .checkout-summary {
+      padding: .72rem;
+      border-radius: 14px;
+    }
+
+    .page-header .page-title {
+      font-size: 1.05rem;
+    }
+
+    .page-header .text-muted {
+      font-size: .75rem;
+    }
+
+    .form-control,
+    .btn {
+      min-height: 38px;
+      font-size: .78rem;
+    }
+
+    .checkout-panel textarea.form-control {
+      min-height: 84px;
+    }
+
+    .summary-line {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: .15rem;
+      padding: .35rem 0;
+      font-size: .75rem;
+    }
+
+    .summary-line strong {
+      justify-self: end;
+      font-size: .78rem;
+    }
+
+    .checkout-summary .glass-panel {
+      padding: .7rem !important;
+    }
+
+    .product-actions .btn {
+      min-height: 36px;
+      padding-inline: .65rem;
+    }
+  }
 </style>
 
 <div class="container">

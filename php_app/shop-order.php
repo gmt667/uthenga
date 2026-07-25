@@ -205,6 +205,126 @@ renderDashboardChromeStart([
       font-size: .74rem;
     }
   }
+  @media (max-width: 360px) {
+    .receipt-shell {
+      padding: .9rem 0 1.35rem;
+    }
+
+    .receipt-grid {
+      gap: .85rem;
+    }
+
+    .receipt-card {
+      padding: .8rem;
+      border-radius: 16px;
+    }
+
+    .receipt-card h2,
+    .receipt-card h3 {
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .receipt-line {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: .15rem;
+      padding: .28rem 0;
+      font-size: .78rem;
+    }
+
+    .receipt-line strong {
+      justify-self: end;
+      font-size: .8rem;
+    }
+
+    .timeline {
+      gap: .5rem;
+    }
+
+    .timeline-step {
+      padding: .58rem .72rem;
+      border-radius: 12px;
+    }
+
+    .timeline-step .text-muted {
+      font-size: .74rem;
+    }
+
+    .print-bar {
+      gap: .45rem;
+    }
+
+    .print-bar .btn,
+    .print-bar form {
+      width: 100%;
+    }
+  }
+  @media (max-width: 320px) {
+    .receipt-shell {
+      padding: .8rem 0 1.2rem;
+    }
+
+    .receipt-card {
+      padding: .7rem;
+      border-radius: 14px;
+    }
+
+    .page-header {
+      gap: .55rem;
+    }
+
+    .page-header .page-title {
+      font-size: 1rem;
+      line-height: 1.15;
+    }
+
+    .page-header .text-muted {
+      font-size: .74rem;
+      line-height: 1.4;
+    }
+
+    .dashboard-head-meta {
+      gap: .35rem;
+    }
+
+    .dashboard-head-meta .btn,
+    .print-bar .btn {
+      min-height: 36px;
+      font-size: .76rem;
+      padding: .45rem .62rem;
+    }
+
+    .detail-badges {
+      gap: .28rem;
+    }
+
+    .detail-badge {
+      padding: .16rem .38rem;
+      font-size: .6rem;
+    }
+
+    .receipt-line {
+      padding: .22rem 0;
+      font-size: .72rem;
+    }
+
+    .receipt-line strong {
+      font-size: .74rem;
+    }
+
+    .timeline-step {
+      padding: .5rem .62rem;
+    }
+
+    .timeline-step strong {
+      font-size: .8rem;
+    }
+
+    .timeline-step .text-muted {
+      font-size: .7rem;
+    }
+  }
 </style>
 
 <div class="container receipt-shell">
