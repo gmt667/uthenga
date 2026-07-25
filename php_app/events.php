@@ -130,9 +130,33 @@ $activeAds = getActiveAds('banner', 6);
 // Build Moving Ticker Items (Only Popular Events & Paid Event Ads)
 $tickerItems = [];
 
+$isEventRelatedAd = function (array $ad): bool {
+    $haystack = strtolower(trim(
+        (string) ($ad['title'] ?? '') . ' ' .
+        (string) ($ad['description'] ?? '') . ' ' .
+        (string) ($ad['caption'] ?? '') . ' ' .
+        (string) ($ad['link_url'] ?? '')
+    ));
+
+    if ($haystack === '') {
+        return false;
+    }
+
+    foreach (['event', 'ticket', 'tickets', 'festival', 'concert', 'launch', 'show', 'gala', 'vip', 'entry', 'booking'] as $keyword) {
+        if (str_contains($haystack, $keyword)) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
 // 1. Paid Event Ads
 if (!empty($activeAds)) {
     foreach ($activeAds as $ad) {
+        if (!$isEventRelatedAd($ad)) {
+            continue;
+        }
         $tickerItems[] = [
             'type'        => 'ad',
             'badge'       => 'PAID SPONSORED',
@@ -152,21 +176,21 @@ if (count($tickerItems) < 2) {
         'type'        => 'ad',
         'badge'       => 'PAID SPONSORED',
         'badge_class' => 'ad-badge-sponsored',
-        'title'       => 'Airtel Pay: Get 10% Cashback on Event Tickets',
-        'subtitle'    => 'Airtel Money Malawi',
+        'title'       => 'Lake of Stars Early Bird Tickets',
+        'subtitle'    => 'Paid Event Promotion',
         'price'       => 'Paid Promo',
-        'image'       => 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=300&fit=crop&q=80',
+        'image'       => 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=300&fit=crop&q=80',
         'url'         => BASE_URL . 'events.php',
     ];
     $tickerItems[] = [
         'type'        => 'ad',
         'badge'       => 'PAID SPONSORED',
         'badge_class' => 'ad-badge-sponsored',
-        'title'       => 'Sunbird VIP Lounge Passes Available Now',
-        'subtitle'    => 'Sunbird Hospitality',
+        'title'       => 'VIP Launch Party Tables',
+        'subtitle'    => 'Paid Event Promotion',
         'price'       => 'From MK 35,000',
-        'image'       => 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=300&fit=crop&q=80',
-        'url'         => BASE_URL . 'hotels.php',
+        'image'       => 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&fit=crop&q=80',
+        'url'         => BASE_URL . 'events.php',
     ];
 }
 
@@ -177,7 +201,7 @@ if (!empty($listings)) {
             $sm = json_decode($evt['meta'] ?? '{}', true);
             $tickerItems[] = [
                 'type'        => 'event',
-                'badge'       => '🔥 POPULAR EVENT',
+                'badge'       => 'POPULAR EVENT',
                 'badge_class' => 'ad-badge-popular',
                 'title'       => $evt['title'],
                 'subtitle'    => $evt['location'],
@@ -248,7 +272,7 @@ if (!empty($listings)) {
       display: flex;
       gap: 1rem;
       white-space: nowrap;
-      animation: adScroll 32s linear infinite;
+      animation: adScroll 70s linear infinite;
       align-items: center;
     }
     .ad-strip-track:hover {
@@ -314,10 +338,229 @@ if (!empty($listings)) {
     }
     @keyframes adScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-    .card-tickets-left { font-size: 0.78rem; font-weight: 600; color: var(--clr-green); margin-top: 0.5rem; }
-    .card-tickets-left.low { color: var(--clr-red); }
-    .card-short-desc { font-size: 0.8rem; color: var(--clr-text-muted); margin-top: 0.4rem;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.45; }
+    /* ─── Redesigned Filters Section ─── */
+    .filters-wrapper {
+      background: rgba(22, 22, 34, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+    }
+    .filter-header-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    .filter-header-title svg {
+      color: var(--clr-accent, #ff6b35);
+      width: 1.25rem; height: 1.25rem;
+    }
+    .filter-grid-primary {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .filter-grid-secondary {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .form-group-custom label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.4rem;
+    }
+    .form-input-custom {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 0.88rem;
+      transition: all 0.25s ease;
+    }
+    .form-input-custom:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--clr-accent, #ff6b35);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+    }
+    .form-input-custom option {
+      background: #1e1e2d;
+      color: #fff;
+    }
+    .filter-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pill-toggle-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      user-select: none;
+    }
+    .pill-toggle-label:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .pill-toggle-label input[type="checkbox"] {
+      accent-color: var(--clr-accent, #ff6b35);
+      width: 15px; height: 15px;
+    }
+
+    /* ─── Redesigned Event Ticket Pass Cards ─── */
+    .event-ticket-card {
+      position: relative;
+      background: rgba(30, 30, 45, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+      transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .event-ticket-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 107, 53, 0.4);
+      box-shadow: 0 16px 36px rgba(255, 107, 53, 0.2);
+    }
+    .ticket-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 190px;
+      overflow: hidden;
+      background: #000;
+    }
+    .ticket-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .event-ticket-card:hover .ticket-img {
+      transform: scale(1.06);
+    }
+    .ticket-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(30,30,45,0.95) 0%, transparent 60%);
+    }
+    .ticket-date-badge {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(18, 18, 28, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--clr-accent, #ff6b35);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .ticket-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .ticket-cat-badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #fff;
+      background: linear-gradient(135deg, #ff6b35, #f72585);
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      margin-bottom: 0.6rem;
+      align-self: flex-start;
+    }
+    .ticket-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.35;
+      margin-bottom: 0.4rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ticket-location {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.65);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-bottom: 0.6rem;
+    }
+    .ticket-price-tag {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--clr-accent, #ff6b35);
+      margin-top: auto;
+      padding-top: 0.5rem;
+    }
+    .ticket-stock-bar {
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #4cc9f0;
+    }
+    .ticket-stock-bar.low {
+      color: #ff4d6d;
+    }
+    .ticket-footer {
+      padding: 0.85rem 1.25rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      gap: 0.6rem;
+    }
+    @media (max-width: 992px) {
+      .filter-grid-primary, .filter-grid-secondary { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .filter-grid-primary, .filter-grid-secondary { grid-template-columns: 1fr; }
+    }
 
     /* ─── Map View ─── */
     .map-view-container { display: none; border-radius: var(--radius-lg); overflow: hidden;
@@ -393,7 +636,7 @@ if (!empty($listings)) {
           <h2 class="slide-title"><?= e($se['title']) ?></h2>
           <div class="slide-meta">
             <span>📅 <?= e($sm['date'] ?? 'TBC') ?></span>
-            <span>ðŸ“ <?= e($se['location']) ?></span>
+            <span>📍 <?= e($se['location']) ?></span>
             <?php if (!empty($sm['time'])): ?><span>⏰ <?= e($sm['time']) ?></span><?php endif; ?>
           </div>
           <p class="slide-desc"><?= e($se['description']) ?></p>
@@ -423,7 +666,7 @@ if (!empty($listings)) {
 
 <?php if (!empty($tickerItems)): ?>
 <!-- ─── Moving Popular Events & Paid Ads Ticker ─── -->
-<div class="ad-strip" role="complementary" aria-label="Popular events and paid advertisements ticker">
+<div class="ad-strip" role="complementary" aria-label="Popular events and paid event advertisements ticker">
   <div class="container" style="padding: 0; max-width: 100%;">
     <div class="ad-strip-track" id="ad-strip-track">
       <?php foreach ($tickerItems as $item): ?>
@@ -450,60 +693,83 @@ if (!empty($listings)) {
 <!-- ─── Main Content ─── -->
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
 
-  <!-- Filters -->
+  <!-- Redesigned Modern Filters Section -->
   <div class="filters-wrapper">
     <form method="GET" action="events.php" class="filter-form" id="events-filter-form">
       <input type="hidden" name="view" value="<?= e($viewMode) ?>">
-      <div class="filter-grid">
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">Search Keyword</label>
-          <input type="text" name="q" class="form-control" placeholder="Search title, venue, organizer..." value="<?= e($search) ?>" id="filter-search">
+      
+      <div class="filter-header-title">
+        <?= uthenga_public_icon_svg('search') ?>
+        <span>Filter Events & Tickets</span>
+      </div>
+
+      <div class="filter-grid-primary">
+        <div class="form-group-custom">
+          <label for="filter-search">Search Events</label>
+          <input type="text" name="q" class="form-input-custom" placeholder="Search event title, venue, artist..." value="<?= e($search) ?>" id="filter-search">
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">Category</label>
-          <select name="category" class="form-control" id="filter-category">
+        <div class="form-group-custom">
+          <label for="filter-category">Category</label>
+          <select name="category" class="form-input-custom" id="filter-category">
             <option value="">All Categories</option>
             <?php foreach ($categoriesList as $cat): ?>
               <option value="<?= e($cat) ?>" <?= $category === $cat ? 'selected' : '' ?>><?= e($cat) ?></option>
             <?php endforeach; ?>
           </select>
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">Location</label>
-          <select name="location" class="form-control" id="filter-location">
+        <div class="form-group-custom">
+          <label for="filter-location">Venue Location</label>
+          <select name="location" class="form-input-custom" id="filter-location">
             <option value="">All Locations</option>
             <?php foreach ($allLocations as $loc): ?>
               <option value="<?= e($loc['location']) ?>" <?= $location === $loc['location'] ? 'selected' : '' ?>><?= e($loc['location']) ?></option>
             <?php endforeach; ?>
           </select>
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">Date</label>
-          <select name="date_preset" class="form-control" id="filter-date">
+      </div>
+
+      <div class="filter-grid-secondary">
+        <div class="form-group-custom">
+          <label for="filter-date">Date Range</label>
+          <select name="date_preset" class="form-input-custom" id="filter-date">
             <option value="">Any Date</option>
             <option value="today" <?= $datePreset === 'today' ? 'selected' : '' ?>>Today</option>
             <option value="this_week" <?= $datePreset === 'this_week' ? 'selected' : '' ?>>This Week</option>
             <option value="this_month" <?= $datePreset === 'this_month' ? 'selected' : '' ?>>This Month</option>
           </select>
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">Min Price (MK)</label>
-          <input type="number" name="min_price" class="form-control" placeholder="Min" value="<?= $minPrice !== null ? e($minPrice) : '' ?>" min="0" id="filter-min-price">
+        <div class="form-group-custom">
+          <label for="filter-min-price">Min Price (MK)</label>
+          <input type="number" name="min_price" class="form-input-custom" placeholder="e.g. 5,000" value="<?= $minPrice !== null ? e($minPrice) : '' ?>" min="0" id="filter-min-price">
         </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">Max Price (MK)</label>
-          <input type="number" name="max_price" class="form-control" placeholder="Max" value="<?= $maxPrice !== null ? e($maxPrice) : '' ?>" min="0" id="filter-max-price">
+        <div class="form-group-custom">
+          <label for="filter-max-price">Max Price (MK)</label>
+          <input type="number" name="max_price" class="form-input-custom" placeholder="e.g. 50,000" value="<?= $maxPrice !== null ? e($maxPrice) : '' ?>" min="0" id="filter-max-price">
         </div>
       </div>
-      <div class="filter-checkboxes">
-        <label class="checkbox-label"><input type="checkbox" name="free" value="1" <?= $free ? 'checked' : '' ?>> <span>Free Events Only</span></label>
-        <label class="checkbox-label"><input type="checkbox" name="paid" value="1" <?= $paid ? 'checked' : '' ?>> <span>Paid Events Only</span></label>
-        <label class="checkbox-label"><input type="checkbox" name="upcoming" value="1" <?= $upcoming ? 'checked' : '' ?>> <span>Upcoming Only</span></label>
-        <label class="checkbox-label"><input type="checkbox" name="featured" value="1" <?= $featured ? 'checked' : '' ?>> <span>Featured Only</span></label>
+
+      <div class="filter-pills-row">
+        <label class="pill-toggle-label">
+          <input type="checkbox" name="free" value="1" <?= $free ? 'checked' : '' ?>>
+          <span>🏷️ Free Events</span>
+        </label>
+        <label class="pill-toggle-label">
+          <input type="checkbox" name="paid" value="1" <?= $paid ? 'checked' : '' ?>>
+          <span>🎟️ Paid Events</span>
+        </label>
+        <label class="pill-toggle-label">
+          <input type="checkbox" name="upcoming" value="1" <?= $upcoming ? 'checked' : '' ?>>
+          <span>⚡ Upcoming Only</span>
+        </label>
+        <label class="pill-toggle-label">
+          <input type="checkbox" name="featured" value="1" <?= $featured ? 'checked' : '' ?>>
+          <span>⭐ Featured Events</span>
+        </label>
       </div>
-      <div class="filter-actions">
-        <a href="events.php" class="btn btn-secondary" id="events-reset-btn">Reset Filters</a>
-        <button type="submit" class="btn btn-primary" id="events-apply-btn">Apply Filters</button>
+
+      <div class="filter-actions-row" style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+        <a href="events.php" class="btn btn-secondary" id="events-reset-btn" style="border-radius: 12px; padding: 0.6rem 1.25rem;">Reset Filters</a>
+        <button type="submit" class="btn btn-primary" id="events-apply-btn" style="border-radius: 12px; padding: 0.6rem 1.5rem; background: linear-gradient(135deg, #ff6b35, #f72585); border: none;">Apply Filters</button>
       </div>
     </form>
   </div>
@@ -521,7 +787,7 @@ if (!empty($listings)) {
         ⊞ Grid
       </button>
       <button class="view-toggle-btn <?= $viewMode === 'map' ? 'active' : '' ?>" id="btn-map-view" onclick="switchView('map')" aria-label="Map view">
-        ðŸ—ºï¸ Map
+        🗺️ Map
       </button>
     </div>
   </div>
@@ -530,7 +796,7 @@ if (!empty($listings)) {
   <div id="events-grid-view" style="display: <?= $viewMode === 'grid' ? 'block' : 'none' ?>;">
     <?php if (empty($listings)): ?>
       <div style="text-align: center; padding: 4rem 0;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">ðŸ”</div>
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔍 </div>
         <h3>No events found</h3>
         <p class="text-muted">Try adjusting your search criteria or clear the filters.</p>
         <a href="events.php" class="btn btn-secondary" style="margin-top: 1rem;" id="events-no-results-reset">Reset Filters</a>
@@ -538,69 +804,43 @@ if (!empty($listings)) {
     <?php else: ?>
       <div class="grid grid-cols-4 gap-3">
         <?php foreach ($listings as $listing):
-          $meta      = json_decode($listing['meta'], true);
-          $vipAvail  = (int) ($meta['vipAvailable'] ?? 0);
-          $stdAvail  = (int) ($meta['standardAvailable'] ?? 0);
+          $meta       = json_decode($listing['meta'], true);
+          $vipAvail   = (int) ($meta['vipAvailable'] ?? 0);
+          $stdAvail   = (int) ($meta['standardAvailable'] ?? 0);
           $totalAvail = $vipAvail + $stdAvail;
           $isLowStock = $totalAvail > 0 && $totalAvail <= 50;
         ?>
         <div class="listing-card-wrap">
-          <div class="card" id="listing-<?= e($listing['id']) ?>">
-            <div class="card-img-wrap">
-              <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="card-img" loading="lazy">
-              <span class="card-badge badge-event">Event</span>
-              <?php if (!empty($listing['is_trending'])): ?><span class="card-badge badge-trending" style="left:auto;right:0.75rem;">🔥 Trending</span><?php endif; ?>
-              <?php if ($listing['featured'] && empty($listing['is_trending'])): ?><span class="card-badge badge-featured" style="left:auto;right:0.75rem;">⭐ Featured</span><?php endif; ?>
+          <div class="event-ticket-card" id="listing-<?= e($listing['id']) ?>">
+            <div class="ticket-img-wrap">
+              <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="ticket-img" loading="lazy">
+              <div class="ticket-img-overlay"></div>
+              <span class="card-badge badge-event" style="position:absolute; top:10px; left:10px; z-index:5;">🎟️ EVENT</span>
+              <?php if (!empty($listing['is_trending'])): ?>
+                <span class="card-badge badge-trending" style="position:absolute; top:10px; right:10px; z-index:5; background: linear-gradient(135deg, #ff416c, #ff4b2b);">🔥 Trending</span>
+              <?php elseif ($listing['featured']): ?>
+                <span class="card-badge badge-featured" style="position:absolute; top:10px; right:10px; z-index:5; background: linear-gradient(135deg, #ffb703, #fb8500); color:#000;">⭐ Featured</span>
+              <?php endif; ?>
+              <div class="ticket-date-badge">
+                📅 <?= e($meta['date'] ?? 'TBC') ?> <?php if (!empty($meta['time'])): ?>· <?= e($meta['time']) ?><?php endif; ?>
+              </div>
             </div>
-            <div class="card-body">
-              <div class="card-category-badge"><?= e($meta['category'] ?? 'Event') ?></div>
-              <div class="card-title"><?= e($listing['title']) ?></div>
-              <div class="card-loc">ðŸ“ <?= e($listing['location']) ?></div>
-              <div style="font-size: 0.8rem; color: var(--clr-accent); margin-bottom: 0.4rem;">
-                📅 <?= e($meta['date'] ?? 'TBC') ?> · ⏰ <?= e($meta['time'] ?? 'TBC') ?>
-              </div>
-              <div class="flex items-center gap-1" style="margin-bottom: 0.4rem;">
+            <div class="ticket-body">
+              <span class="ticket-cat-badge"><?= e($meta['category'] ?? 'Event Pass') ?></span>
+              <h3 class="ticket-title"><?= e($listing['title']) ?></h3>
+              <div class="ticket-location">📍 <?= e($listing['location']) ?></div>
+              
+              <div class="flex items-center gap-1" style="margin-bottom: 0.5rem;">
                 <span class="stars"><?= renderStars((float)$listing['rating']) ?></span>
-                <span class="text-xs text-muted"><?= e($listing['rating']) ?></span>
+                <span class="text-xs text-muted">(<?= e($listing['rating']) ?>)</span>
               </div>
+
               <?php if (!empty($listing['description'])): ?>
                 <?php
                   $desc = (string) ($listing['description'] ?? '');
-                  $shortDesc = function_exists('mb_substr') ? mb_substr($desc, 0, 120) : substr($desc, 0, 120);
-                  $needsEllipsis = function_exists('mb_strlen') ? mb_strlen($desc) > 120 : strlen($desc) > 120;
+                  $shortDesc = function_exists('mb_substr') ? mb_substr($desc, 0, 110) : substr($desc, 0, 110);
+                  $needsEllipsis = function_exists('mb_strlen') ? mb_strlen($desc) > 110 : strlen($desc) > 110;
                 ?>
-                <div class="card-short-desc"><?= e($shortDesc) ?><?= $needsEllipsis ? '…' : '' ?></div>
-              <?php endif; ?>
-              <div class="card-price"><?= getEventPrice($listing) ?></div>
-              <?php if ($totalAvail > 0): ?>
-                <div class="card-tickets-left <?= $isLowStock ? 'low' : '' ?>">
-                  🎟️ï¸ <?= number_format($totalAvail) ?> tickets left<?= $isLowStock ? ' — Almost sold out!' : '' ?>
-                </div>
-              <?php else: ?>
-                <div class="card-tickets-left low" style="font-weight: 700;">❌ Sold Out</div>
-              <?php endif; ?>
-            </div>
-            <div class="card-footer">
-              <a href="event-details.php?id=<?= e($listing['id']) ?>" class="btn btn-sm btn-secondary" style="flex:1;" data-track-event-click="<?= e($listing['id']) ?>">Details</a>
-              <?php if ($totalAvail > 0): ?>
-                <?php if (isLoggedIn()): ?>
-                  <button class="btn btn-sm btn-primary"
-                    onclick="openBookingModal('<?= e($listing['id']) ?>','event','<?= addslashes(e($listing['title'])) ?>',<?= (float)($meta['standardTicketPrice'] ?? 0) ?>,<?= (float)($meta['vipTicketPrice'] ?? 0) ?>); if (window.trackEventMetric) { window.trackEventMetric('<?= e($listing['id']) ?>', 'click'); }"
-                    style="flex:1;">Buy Ticket</button>
-                <?php else: ?>
-                  <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-sm btn-primary" style="flex:1;">Buy Ticket</a>
-                <?php endif; ?>
-              <?php else: ?>
-                <button class="btn btn-sm btn-primary" disabled style="flex:1;">Sold Out</button>
-              <?php endif; ?>
-            </div>
-          </div>
-        </div>
-        <?php endforeach; ?>
-      </div>
-    <?php endif; ?>
-  </div>
-
   <!-- Map View -->
   <div id="events-map-view" class="map-view-container <?= $viewMode === 'map' ? 'visible' : '' ?>">
     <div id="events-map"></div>
