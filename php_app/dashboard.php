@@ -202,6 +202,38 @@ function customerBadgeClass(string $status): string {
     return 'badge-pending';
 }
 
+function customerStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'booking' => 'Booking',
+        'event' => 'Event',
+        'accommodation' => 'Accommodation',
+        'tour' => 'Tour',
+        'transport' => 'Transport',
+        'pending' => 'Pending',
+        'confirmed' => 'Confirmed',
+        'paid' => 'Paid',
+        'success' => 'Successful',
+        'resolved' => 'Resolved',
+        'cancelled' => 'Cancelled',
+        'failed' => 'Failed',
+        'refunded' => 'Refunded',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
+function customerStatusHint(string $status): string {
+    return match (strtolower(trim($status))) {
+        'pending' => 'This item is waiting for the next step.',
+        'confirmed' => 'It has been accepted and is being prepared.',
+        'paid', 'success' => 'Payment is complete.',
+        'resolved' => 'The request or ticket has been handled.',
+        'cancelled' => 'This item was cancelled.',
+        'failed' => 'The latest attempt did not complete.',
+        'refunded' => 'A refund has been issued.',
+        default => 'Current account status.',
+    };
+}
+
 require_once __DIR__ . '/includes/dashboard_shell.php';
 renderDashboardChromeStart([
     'role' => ROLE_CUSTOMER,
@@ -295,11 +327,12 @@ renderDashboardChromeStart([
               <div class="card" style="padding:1rem;display:flex;justify-content:space-between;gap:1rem;align-items:center;">
                 <div style="min-width:0;">
                   <div style="font-weight:700;"><?= e($booking['booking_title']) ?></div>
-                  <div class="text-xs text-muted"><?= e($booking['id']) ?> · <?= e(ucfirst($booking['booking_type'])) ?></div>
+                  <div class="text-xs text-muted"><?= e($booking['id']) ?> · <?= e(customerStatusLabel((string) $booking['booking_type'])) ?></div>
                 </div>
                 <div style="text-align:right;">
                   <div style="font-weight:700;"><?= formatMWK((float)$booking['grand_total']) ?></div>
-                  <span class="status-badge <?= customerBadgeClass($booking['booking_status']) ?>"><?= e(ucfirst($booking['booking_status'])) ?></span>
+                  <span class="status-badge <?= customerBadgeClass($booking['booking_status']) ?>"><?= e(customerStatusLabel((string) $booking['booking_status'])) ?></span>
+                  <div class="text-xs text-muted" style="margin-top:.3rem;max-width:18ch;"><?= e(customerStatusHint((string) $booking['booking_status'])) ?></div>
                 </div>
               </div>
             <?php endforeach; ?>
@@ -395,10 +428,13 @@ renderDashboardChromeStart([
                     <div style="font-weight:700;"><?= e($booking['booking_title']) ?></div>
                     <div class="text-xs text-muted"><?= e($booking['id']) ?></div>
                   </td>
-                  <td><?= e(ucfirst($booking['booking_type'])) ?></td>
+                  <td><?= e(customerStatusLabel((string) $booking['booking_type'])) ?></td>
                   <td class="text-xs text-muted"><?= e($booking['created_at']) ?></td>
                   <td style="font-weight:700;"><?= formatMWK((float)$booking['total_price']) ?></td>
-                  <td><span class="status-badge <?= customerBadgeClass($booking['booking_status']) ?>"><?= e(ucfirst($booking['booking_status'])) ?></span></td>
+                  <td>
+                    <span class="status-badge <?= customerBadgeClass($booking['booking_status']) ?>"><?= e(customerStatusLabel((string) $booking['booking_status'])) ?></span>
+                    <div class="text-xs text-muted" style="margin-top:.3rem;"><?= e(customerStatusHint((string) $booking['booking_status'])) ?></div>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
@@ -426,7 +462,7 @@ renderDashboardChromeStart([
                 <div style="font-weight:700;"><?= e($ticket['subject']) ?></div>
                 <div class="text-xs text-muted"><?= e($ticket['ticket_code']) ?> · <?= e($ticket['category']) ?></div>
               </div>
-              <span class="badge <?= customerBadgeClass($ticket['status']) ?>"><?= e(ucfirst($ticket['status'])) ?></span>
+              <span class="badge <?= customerBadgeClass($ticket['status']) ?>"><?= e(customerStatusLabel((string) $ticket['status'])) ?></span>
             </div>
           <?php endforeach; ?>
         </div>
@@ -495,12 +531,15 @@ renderDashboardChromeStart([
                   <td class="text-xs text-muted"><?= e($payment['created_at']) ?></td>
                   <td>
                     <div style="font-weight:700;"><?= e($payment['booking_title']) ?></div>
-                    <div class="text-xs text-muted"><?= e(ucfirst($payment['booking_type'])) ?></div>
+                    <div class="text-xs text-muted"><?= e(customerStatusLabel((string) $payment['booking_type'])) ?></div>
                   </td>
                   <td><?= e($payment['gateway_label']) ?></td>
                   <td class="text-xs font-mono"><?= e($payment['receipt_number']) ?></td>
                   <td style="font-weight:700;"><?= formatMWK((float)$payment['amount']) ?></td>
-                  <td><span class="badge <?= customerBadgeClass($payment['status']) ?>"><?= e($payment['status']) ?></span></td>
+                  <td>
+                    <span class="badge <?= customerBadgeClass($payment['status']) ?>"><?= e(customerStatusLabel((string) $payment['status'])) ?></span>
+                    <div class="text-xs text-muted" style="margin-top:.3rem;"><?= e(customerStatusHint((string) $payment['status'])) ?></div>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             </tbody>
@@ -532,7 +571,7 @@ renderDashboardChromeStart([
               <span style="font-size:1.5rem;"><?= $icon ?></span>
               <div>
                 <div style="font-weight:700;"><?= e($rv['item_title'] ?? $rv['item_id']) ?></div>
-                <div class="text-xs text-muted"><?= ucfirst(e($rv['item_type'])) ?> &middot; Viewed <?= e(date('M j, Y', strtotime($rv['viewed_at']))) ?></div>
+                <div class="text-xs text-muted"><?= e(customerStatusLabel((string) $rv['item_type'])) ?> · Viewed <?= e(date('M j, Y', strtotime($rv['viewed_at']))) ?></div>
               </div>
             </div>
             <a href="<?= BASE_URL ?>event-details.php?id=<?= urlencode($rv['item_id']) ?>" class="btn btn-secondary btn-sm">View Again</a>
@@ -577,7 +616,7 @@ renderDashboardChromeStart([
                 <?php foreach ($loyaltyHistory as $lp): ?>
                 <tr>
                   <td class="text-xs text-muted"><?= e(date('M j, Y', strtotime($lp['created_at']))) ?></td>
-                  <td><?= e($lp['description'] ?? ucfirst($lp['reason'])) ?></td>
+                  <td><?= e($lp['description'] ?? customerStatusLabel((string) $lp['reason'])) ?></td>
                   <td style="font-weight:700;color:<?= $lp['points'] >= 0 ? '#10b981' : '#ef4444' ?>;">
                     <?= $lp['points'] >= 0 ? '+' : '' ?><?= number_format($lp['points']) ?>
                   </td>

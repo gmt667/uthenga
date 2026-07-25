@@ -7,6 +7,18 @@ $activeNav = 'admin-system-monitor';
 
 require_once __DIR__ . '/includes/admin_header.php';
 
+if (!function_exists('systemMonitorStatusLabel')) {
+    function systemMonitorStatusLabel(bool $enabled): string {
+        return $enabled ? 'Enabled' : 'Disabled';
+    }
+}
+
+if (!function_exists('systemMonitorStatusHint')) {
+    function systemMonitorStatusHint(bool $enabled): string {
+        return $enabled ? 'The platform feature is active.' : 'The platform feature is not active.';
+    }
+}
+
 // 1. Get Database size
 $dbName = defined('DB_NAME') ? DB_NAME : (getenv('DB_NAME') ?: 'uthenga_db');
 $dbStats = dbQueryOne("
@@ -107,7 +119,12 @@ $tables = dbQuery("
       <div><span>Memory Limit</span><strong><?= e($memoryLimit) ?></strong></div>
       <div><span>Post Max Size</span><strong><?= e($postMaxSize) ?></strong></div>
       <div><span>Upload Max File Size</span><strong><?= e($uploadMaxFilesize) ?></strong></div>
-      <div><span>OPcache Status</span><strong><?= function_exists('opcache_get_status') && opcache_get_status() ? 'Enabled' : 'Disabled' ?></strong></div>
+      <?php $opcacheEnabled = function_exists('opcache_get_status') && opcache_get_status(); ?>
+      <div>
+        <span>OPcache Status</span>
+        <strong><?= e(systemMonitorStatusLabel($opcacheEnabled)) ?></strong>
+        <div class="text-xs text-muted" style="margin-top:.25rem;line-height:1.35;"><?= e(systemMonitorStatusHint($opcacheEnabled)) ?></div>
+      </div>
     </div>
   </section>
 

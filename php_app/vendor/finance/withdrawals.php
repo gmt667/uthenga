@@ -109,6 +109,17 @@ function uthenga_vendor_settlement_badge(string $status): string {
     }
 }
 
+function uthenga_vendor_settlement_label(string $status): string {
+    return match (strtolower(trim($status))) {
+        'pending' => 'Pending',
+        'processed' => 'Processed',
+        'approved' => 'Approved',
+        'rejected' => 'Rejected',
+        'failed' => 'Failed',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
 require_once __DIR__ . '/../../includes/dashboard_shell.php';
 renderDashboardChromeStart([
     'role' => currentRole(),
@@ -243,7 +254,7 @@ renderDashboardChromeStart([
                 <td><?= e($row['destination'] ?? 'N/A') ?></td>
                 <td style="font-weight:700;color:var(--clr-accent);"><?= formatMWK((float) ($row['amount'] ?? 0)) ?></td>
                 <td><?= formatMWK((float) ($row['charges_amount'] ?? 0)) ?></td>
-                <td><span class="badge <?= uthenga_vendor_settlement_badge((string) ($row['status'] ?? 'pending')) ?>"><?= e(ucfirst((string) ($row['status'] ?? 'pending'))) ?></span></td>
+                <td><span class="badge <?= uthenga_vendor_settlement_badge((string) ($row['status'] ?? 'pending')) ?>"><?= e(uthenga_vendor_settlement_label((string) ($row['status'] ?? 'pending'))) ?></span></td>
                 <td class="text-xs text-muted"><?= e(substr((string) ($row['created_at'] ?? ''), 0, 16)) ?></td>
               </tr>
             <?php endforeach; ?>
@@ -283,7 +294,7 @@ renderDashboardChromeStart([
                 <td><?= e($row['payout_method'] ?? 'N/A') ?></td>
                 <td style="font-weight:700;color:var(--clr-accent);"><?= formatMWK((float) ($row['amount'] ?? 0)) ?></td>
                 <td><?= formatMWK((float) ($row['charges_amount'] ?? 0)) ?></td>
-                <td><span class="badge <?= uthenga_vendor_settlement_badge((string) ($row['status'] ?? 'pending')) ?>"><?= e(ucfirst((string) ($row['status'] ?? 'pending'))) ?></span></td>
+                <td><span class="badge <?= uthenga_vendor_settlement_badge((string) ($row['status'] ?? 'pending')) ?>"><?= e(uthenga_vendor_settlement_label((string) ($row['status'] ?? 'pending'))) ?></span></td>
                 <td class="text-xs text-muted"><?= e(substr((string) ($row['processed_at'] ?? $row['created_at'] ?? ''), 0, 16)) ?></td>
               </tr>
             <?php endforeach; ?>

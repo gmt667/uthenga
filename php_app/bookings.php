@@ -27,6 +27,19 @@ function statusClass(string $status): string {
     if ($s === 'refunded') return 'status-refunded';
     return 'status-pending';
 }
+
+function bookingStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'pending' => 'Pending',
+        'confirmed' => 'Confirmed',
+        'paid' => 'Paid',
+        'success' => 'Successful',
+        'cancelled' => 'Cancelled',
+        'failed' => 'Failed',
+        'refunded' => 'Refunded',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -97,10 +110,10 @@ function statusClass(string $status): string {
             </div>
             <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
               <span class="status-badge <?= statusClass($bk['booking_status']) ?>">
-                <?= ucfirst(e($bk['booking_status'])) ?>
+                <?= e(bookingStatusLabel((string) $bk['booking_status'])) ?>
               </span>
               <span class="status-badge <?= statusClass($bk['payment_status']) ?>">
-                <?= e($bk['payment_status']) ?>
+                <?= e(bookingStatusLabel((string) $bk['payment_status'])) ?>
               </span>
               <span class="status-badge" style="background:rgba(6,182,212,0.12);color:var(--clr-primary);">
                 <?= e(strtoupper($ticketFormat)) ?>

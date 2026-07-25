@@ -124,6 +124,32 @@ function uthenga_settlement_badge(string $status): string {
     }
 }
 
+if (!function_exists('uthenga_settlement_label')) {
+    function uthenga_settlement_label(string $status): string {
+        return match (strtolower(trim($status))) {
+            'pending' => 'Pending',
+            'processed' => 'Processed',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+            'failed' => 'Failed',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+        };
+    }
+}
+
+if (!function_exists('uthenga_settlement_hint')) {
+    function uthenga_settlement_hint(string $status): string {
+        return match (strtolower(trim($status))) {
+            'pending' => 'The withdrawal request is waiting for review.',
+            'processed' => 'The request has been approved and paid.',
+            'approved' => 'The request was approved and is ready for payout.',
+            'rejected' => 'The request was not approved.',
+            'failed' => 'The payout attempt failed.',
+            default => 'Current settlement status.',
+        };
+    }
+}
+
 require_once __DIR__ . '/../includes/admin_header.php';
 ?>
 
@@ -206,7 +232,10 @@ require_once __DIR__ . '/../includes/admin_header.php';
               <td><?= e($row['destination'] ?? 'N/A') ?></td>
               <td style="font-weight:700;color:var(--clr-accent);"><?= formatMWK((float) ($row['amount'] ?? 0)) ?></td>
               <td><?= formatMWK((float) ($row['charges_amount'] ?? 0)) ?></td>
-              <td><span class="badge <?= uthenga_settlement_badge((string) ($row['status'] ?? 'pending')) ?>"><?= e(ucfirst((string) ($row['status'] ?? 'pending'))) ?></span></td>
+              <td>
+                <span class="badge <?= uthenga_settlement_badge((string) ($row['status'] ?? 'pending')) ?>"><?= e(uthenga_settlement_label((string) ($row['status'] ?? 'pending'))) ?></span>
+                <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(uthenga_settlement_hint((string) ($row['status'] ?? 'pending'))) ?></div>
+              </td>
               <td>
                 <?php if (in_array(strtolower((string) ($row['status'] ?? 'pending')), ['pending', 'approved'], true)): ?>
                   <form method="POST" action="" style="display:inline-flex;gap:.35rem;flex-wrap:wrap;align-items:center;">
@@ -263,7 +292,10 @@ require_once __DIR__ . '/../includes/admin_header.php';
               <td><?= e($businessName) ?></td>
               <td style="font-weight:700;color:var(--clr-accent);"><?= formatMWK((float) ($row['amount'] ?? 0)) ?></td>
               <td><?= formatMWK((float) ($row['charges_amount'] ?? 0)) ?></td>
-              <td><span class="badge <?= uthenga_settlement_badge((string) ($row['status'] ?? 'processed')) ?>"><?= e(ucfirst((string) ($row['status'] ?? 'processed'))) ?></span></td>
+              <td>
+                <span class="badge <?= uthenga_settlement_badge((string) ($row['status'] ?? 'processed')) ?>"><?= e(uthenga_settlement_label((string) ($row['status'] ?? 'processed'))) ?></span>
+                <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(uthenga_settlement_hint((string) ($row['status'] ?? 'processed'))) ?></div>
+              </td>
               <td class="text-xs text-muted"><?= e(substr((string) ($row['processed_at'] ?? $row['created_at'] ?? ''), 0, 16)) ?></td>
             </tr>
           <?php endforeach; ?>

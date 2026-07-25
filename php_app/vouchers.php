@@ -11,6 +11,16 @@ $voucherDetails = null;
 
 $userId = $_SESSION['user_id'] ?? null;
 
+function voucherStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        'redeemed' => 'Redeemed',
+        'expired' => 'Expired',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
 // ─── Handle Purchase ─────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['buy_voucher'])) {
     if (!validateCsrf()) {
@@ -155,7 +165,7 @@ $pageTitle = 'Gift Vouchers';
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
               <span class="text-muted">Status</span>
-              <span class="badge badge-<?= $voucherDetails['status'] === 'active' ? 'approved' : 'rejected' ?>"><?= e(ucfirst($voucherDetails['status'])) ?></span>
+              <span class="badge badge-<?= $voucherDetails['status'] === 'active' ? 'approved' : 'rejected' ?>"><?= e(voucherStatusLabel((string) $voucherDetails['status'])) ?></span>
             </div>
             <div style="display:flex; justify-content:space-between;">
               <span class="text-muted">Valid To</span>
@@ -178,7 +188,7 @@ $pageTitle = 'Gift Vouchers';
                 </div>
                 <div style="text-align:right;">
                   <strong style="color:#10b981;"><?= formatMWK((float)$gv['balance_mwk']) ?></strong>
-                  <div class="text-xs text-muted"><?= ucfirst($gv['status']) ?></div>
+                  <div class="text-xs text-muted"><?= e(voucherStatusLabel((string) $gv['status'])) ?></div>
                 </div>
               </div>
             <?php endforeach; ?>

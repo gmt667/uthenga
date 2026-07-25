@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../includes/shop_helpers.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 
 $txnRef    = trim($_GET['txn'] ?? '');
@@ -94,7 +95,8 @@ if ($ticketCode === '') {
 
 $ticketTargetId = trim((string)($booking['id'] ?? $txn['booking_id'] ?? ''));
 $ticketUrl = $ticketTargetId !== '' ? BASE_URL . 'ticket.php?id=' . urlencode($ticketTargetId) : '';
-$paymentMethod = $gatewayLabels[$gateway] ?? ($txn['gateway_name'] ?? ucfirst($gateway));
+$paymentMethodRaw = (string) ($txn['payment_method'] ?? $txn['gateway'] ?? $gateway);
+$paymentMethod = $gatewayLabels[$gateway] ?? uthenga_shop_payment_method_label($paymentMethodRaw !== '' ? $paymentMethodRaw : $gateway);
 $paymentAmount = (float)($txn['amount'] ?? 0);
 $paymentStatus = strtolower((string)($txn['status'] ?? 'success'));
 $scanFormat = strtolower(trim((string)($booking['details'] ?? '')));
@@ -383,6 +385,40 @@ $ticketImage = 'https://chart.googleapis.com/chart?chs=240x240&cht=qr&chl=' . ur
         letter-spacing: .08em;
       }
     }
+
+    @media (max-width: 320px) {
+      .payment-success-shell {
+        padding: 1rem 0 2.5rem;
+      }
+
+      .success-hero,
+      .success-body,
+      .ticket-body {
+        padding-left: .85rem;
+        padding-right: .85rem;
+      }
+
+      .success-title {
+        font-size: 1.25rem;
+      }
+
+      .summary-item {
+        padding: .75rem .8rem;
+      }
+
+      .status-pill {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .redirect-banner {
+        padding: .75rem .85rem;
+      }
+
+      .ticket-preview {
+        padding: .85rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -427,7 +463,7 @@ $ticketImage = 'https://chart.googleapis.com/chart?chs=240x240&cht=qr&chl=' . ur
                   <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M3.5 8.2l2.1 2.1 6.4-6.4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                   </svg>
-                  <?= e(ucfirst($paymentStatus)) ?>
+                  <?= e(uthenga_shop_status_label($paymentStatus)) ?>
                 </span>
               </div>
             </div>

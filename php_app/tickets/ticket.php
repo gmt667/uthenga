@@ -39,6 +39,18 @@ $ticketModeLabel = match ($ticketFormat) {
     'code' => 'Code Ticket',
     default => 'QR Ticket',
 };
+
+function ticketStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'active' => 'Active',
+        'pending' => 'Pending',
+        'partially_used' => 'Partially Used',
+        'fully_used' => 'Fully Used',
+        'cancelled' => 'Cancelled',
+        'refunded' => 'Refunded',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
 $downloadMode = (string) ($_GET['download'] ?? '');
 
 if ($downloadMode === 'pdf') {
@@ -425,7 +437,7 @@ if ($downloadMode === 'pdf') {
                 $class = 'status-used';
             }
           ?>
-          <span class="status-badge <?= $class ?>"><?= str_replace('_', ' ', $status) ?></span>
+          <span class="status-badge <?= $class ?>"><?= e(ticketStatusLabel($status)) ?></span>
         </div>
       </div>
     </div>

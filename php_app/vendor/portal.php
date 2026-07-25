@@ -75,6 +75,27 @@ $vendorPayoutTotals = !empty($vendorRecord['id']) && uthenga_table_exists('vendo
     ? (dbQueryOne("SELECT COALESCE(SUM(amount), 0) AS payout_total FROM vendor_payouts WHERE vendor_id = ? AND status = 'processed'", [(int)$vendorRecord['id']]) ?: ['payout_total' => 0])
     : ['payout_total' => 0];
 
+function vendorItemTypeLabel(string $type): string {
+    return match (strtolower(trim($type))) {
+        'event' => 'Event',
+        'property' => 'Property',
+        'tour' => 'Tour',
+        'transport' => 'Transport',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($type)))),
+    };
+}
+
+function vendorBookingStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'pending' => 'Pending',
+        'confirmed' => 'Confirmed',
+        'paid' => 'Paid',
+        'cancelled' => 'Cancelled',
+        'refunded' => 'Refunded',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
 $typeCounts = ['event' => 0, 'property' => 0, 'tour' => 0, 'transport' => 0];
 foreach ($allItems as $row) {
     $type = $row['type'] ?? 'event';
@@ -247,7 +268,7 @@ renderDashboardChromeStart([
           <tbody>
             <?php foreach ($allItems as $item): ?>
               <tr>
-                <td><span class="badge <?= e($item['badge_class'] ?? '') ?>"><?= e($item['type_label'] ?? ucfirst($item['type'] ?? 'Item')) ?></span></td>
+                <td><span class="badge <?= e($item['badge_class'] ?? '') ?>"><?= e($item['type_label'] ?? vendorItemTypeLabel((string) ($item['type'] ?? 'Item'))) ?></span></td>
                 <td><?= e($item['title'] ?? '') ?></td>
                 <td><?= e($item['location'] ?? '') ?></td>
                 <td><?= e($item['price_label'] ?? '') ?></td>
@@ -286,9 +307,9 @@ renderDashboardChromeStart([
             <?php foreach (array_slice($bookingRows, 0, 10) as $row): ?>
               <tr>
                 <td><?= e($row['booking_code'] ?? '') ?></td>
-                <td><?= e(ucfirst(str_replace('_', ' ', $row['item_type'] ?? ''))) ?>: <?= e($row['item_name'] ?? '') ?></td>
-                <td><?= e($row['booking_status'] ?? '') ?></td>
-                <td><?= e($row['payment_status'] ?? '') ?></td>
+                <td><?= e(vendorItemTypeLabel((string) ($row['item_type'] ?? ''))) ?>: <?= e($row['item_name'] ?? '') ?></td>
+                <td><?= e(vendorBookingStatusLabel((string) ($row['booking_status'] ?? ''))) ?></td>
+                <td><?= e(vendorBookingStatusLabel((string) ($row['payment_status'] ?? ''))) ?></td>
                 <td><?= formatMWK((float) ($row['grand_total'] ?? 0)) ?></td>
               </tr>
             <?php endforeach; ?>

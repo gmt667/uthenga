@@ -122,6 +122,19 @@ $referralLeaders = $hasReferralCodes ? dbQuery(
      LIMIT 5"
 ) : [];
 
+if (!function_exists('uthenga_marketing_audience_label')) {
+    function uthenga_marketing_audience_label(string $audience): string {
+        return match (strtolower(trim($audience))) {
+            'all' => 'All Subscribers',
+            'events' => 'Events Enthusiasts',
+            'travel' => 'Travelers & Stays',
+            'transport' => 'Transport Users',
+            'deals' => 'Deal Seekers',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($audience)))),
+        };
+    }
+}
+
 $marketingAds = $hasAds ? dbQuery(
     "SELECT * FROM advertisements
      WHERE ad_type NOT IN ('banner','popup','system')
@@ -410,7 +423,7 @@ $marketingAdsCount = $hasAds ? dbCount(
               <tr>
                 <td class="text-xs text-muted"><?= e(date('M j, Y', strtotime($c['sent_at'] ?? $c['created_at']))) ?></td>
                 <td><strong><?= e($c['subject']) ?></strong></td>
-                <td><span class="badge badge-pending"><?= e(ucfirst((string) $c['audience'])) ?></span></td>
+                <td><span class="badge badge-pending"><?= e(uthenga_marketing_audience_label((string) $c['audience'])) ?></span></td>
                 <td><strong><?= number_format((int) $c['sent_count']) ?></strong></td>
               </tr>
             <?php endforeach; ?>

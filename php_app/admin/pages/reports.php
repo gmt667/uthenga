@@ -8,6 +8,19 @@ require_once __DIR__ . '/../../includes/auth_check.php';
 
 requireAdmin();
 
+if (!function_exists('uthenga_reports_listing_label')) {
+    function uthenga_reports_listing_label(string $type): string {
+        return match (strtolower(trim($type))) {
+            'event' => 'Event',
+            'accommodation' => 'Accommodation',
+            'tour' => 'Tour',
+            'transport' => 'Transport',
+            'shop' => 'Shop',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($type)))),
+        };
+    }
+}
+
 function uthenga_reports_load_data(): array
 {
     $typeStats = dbQuery("
@@ -132,7 +145,7 @@ function uthenga_reports_render_pdf(array $data): void
           <?php foreach ($data['topListings'] as $row): ?>
             <tr>
               <td><?= htmlspecialchars($row['listing_title']) ?></td>
-              <td><?= htmlspecialchars(ucfirst($row['listing_type'])) ?></td>
+              <td><?= htmlspecialchars(uthenga_reports_listing_label((string) $row['listing_type'])) ?></td>
               <td class="text-center"><?= number_format($row['bookings_count']) ?></td>
               <td class="text-right"><?= htmlspecialchars(number_format((float) $row['total_revenue'], 2)) ?></td>
             </tr>
@@ -178,7 +191,7 @@ if (isset($_GET['export']) && in_array($_GET['export'], ['csv', 'xls', 'pdf'], t
     fputcsv($out, ['--- Top Performing Products/Listings ---'], $delimiter);
     fputcsv($out, ['Listing Title', 'Category', 'Bookings Count', 'Total Revenue (MWK)'], $delimiter);
     foreach ($reportData['topListings'] as $row) {
-        fputcsv($out, [$row['listing_title'], ucfirst($row['listing_type']), $row['bookings_count'], $row['total_revenue']], $delimiter);
+        fputcsv($out, [$row['listing_title'], uthenga_reports_listing_label((string) $row['listing_type']), $row['bookings_count'], $row['total_revenue']], $delimiter);
     }
 
     fclose($out);

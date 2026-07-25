@@ -47,6 +47,19 @@ if (!function_exists('securityStatusHint')) {
     }
 }
 
+if (!function_exists('securityAlertTypeLabel')) {
+    function securityAlertTypeLabel(string $type): string {
+        return match (strtolower(trim($type))) {
+            'login_attempt' => 'Login Attempt',
+            'password_reset' => 'Password Reset',
+            'suspicious_ip' => 'Suspicious IP',
+            'multiple_failures' => 'Multiple Failures',
+            'fraud_warning' => 'Fraud Warning',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($type)))),
+        };
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrf()) {
         $error = 'Security token mismatch. Please try again.';
@@ -222,7 +235,7 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
               <tr>
                 <td><strong style="color:<?= $riskColor ?>;font-size:1.1rem;"><?= (int) $fa['risk_score'] ?>%</strong></td>
                 <td>
-                  <strong><?= e(ucfirst(str_replace('_', ' ', $fa['alert_type']))) ?></strong>
+                  <strong><?= e(securityAlertTypeLabel((string) $fa['alert_type'])) ?></strong>
                   <div class="text-xs text-muted">User: <?= e($fa['user_name'] ?? 'Guest') ?></div>
                 </td>
                 <td class="text-xs text-muted">
@@ -284,7 +297,7 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
             <tr>
               <td class="text-xs text-muted"><?= e($la['created_at']) ?></td>
               <td><strong><?= e($la['user_name'] ?? 'System') ?></strong></td>
-              <td><span class="badge badge-pending"><?= e(ucfirst(str_replace('_', ' ', $la['alert_type']))) ?></span></td>
+              <td><span class="badge badge-pending"><?= e(securityAlertTypeLabel((string) ($la['alert_type'] ?? 'Alert'))) ?></span></td>
               <td class="text-xs text-muted"><?= e($la['user_agent'] ?? '') ?></td>
               <td class="text-xs font-mono"><?= e($la['ip_address'] ?? '') ?></td>
               <td>

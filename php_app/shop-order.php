@@ -535,7 +535,7 @@ renderDashboardChromeStart([
       <div class="section-label">Order Summary</div>
       <h2 style="margin-top:.3rem;"><?= e($order['customer_name']) ?></h2>
       <div class="detail-badges" style="margin-top:.75rem;">
-        <span class="detail-badge"><?= e($order['payment_method']) ?></span>
+        <span class="detail-badge"><?= e(uthenga_shop_payment_method_label((string) $order['payment_method'])) ?></span>
         <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></span>
         <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></span>
       </div>
