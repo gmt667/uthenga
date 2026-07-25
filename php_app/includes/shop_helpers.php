@@ -1473,6 +1473,238 @@ if (!function_exists('uthenga_shop_order_totals')) {
     }
 }
 
+if (!function_exists('uthenga_shop_pdf_ascii')) {
+    function uthenga_shop_pdf_ascii(string $text): string {
+        $text = trim($text);
+        if ($text === '') {
+            return '';
+        }
+
+        if (function_exists('iconv')) {
+            $converted = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+            if (is_string($converted) && $converted !== '') {
+                $text = $converted;
+            }
+        }
+
+        $text = preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/', '', $text) ?: '';
+        return $text;
+    }
+}
+
+if (!function_exists('uthenga_shop_pdf_escape')) {
+    function uthenga_shop_pdf_escape(string $text): string {
+        $text = uthenga_shop_pdf_ascii($text);
+        return str_replace(['\\', '(', ')', "\r"], ['\\\\', '\\(', '\\)', ''], $text);
+    }
+}
+
+if (!function_exists('uthenga_shop_pdf_wrap')) {
+    function uthenga_shop_pdf_wrap(string $text, int $maxChars): array {
+        $text = uthenga_shop_pdf_ascii($text);
+        if ($text === '') {
+            return [''];
+        }
+
+        $maxChars = max(20, $maxChars);
+        $wrapped = wordwrap($text, $maxChars, "\n", true);
+        return explode("\n", $wrapped);
+    }
+}
+
+if (!function_exists('uthenga_shop_pdf_text_block')) {
+    function uthenga_shop_pdf_text_block(array &$lines, float $x, float $y, string $text, int $fontSize = 11, string $font = 'F1'): float {
+        $lines[] = sprintf('BT /%s %d Tf %.2f %.2f Td (%s) Tj ET', $font, $fontSize, $x, $y, uthenga_shop_pdf_escape($text));
+        return $y - ($fontSize + 3);
+    }
+}
+
+if (!function_exists('uthenga_shop_pdf_multiline_block')) {
+    function uthenga_shop_pdf_multiline_block(array &$lines, float $x, float $y, string $text, int $fontSize = 11, int $maxChars = 80, string $font = 'F1'): float {
+        $wrapped = uthenga_shop_pdf_wrap($text, $maxChars);
+        foreach ($wrapped as $line) {
+            $y = uthenga_shop_pdf_text_block($lines, $x, $y, $line, $fontSize, $font);
+        }
+        return $y;
+    }
+}
+
+if (!function_exists('uthenga_shop_generate_receipt_pdf')) {
+    function uthenga_shop_generate_receipt_pdf(array $order, array $items, ?array $payment = null, ?array $deliveryStatus = null, ?array $rider = null): string {
+        $pageWidth = 595.28;
+        $pageHeight = 841.89;
+        $margin = 42.0;
+        $yStart = $pageHeight - $margin;
+        $pages = [];
+        $lines = [];
+
+        $newPage = static function () use (&$pages, &$lines): void {
+            if (!empty($lines)) {
+                $pages[] = $lines;
+            }
+            $lines = [];
+        };
+
+        $ensureSpace = static function (float &$y, float $needed) use (&$newPage, $margin): void {
+            if ($y - $needed < $margin) {
+                $newPage();
+                $y = 800.0;
+            }
+        };
+
+        $y = $yStart;
+        $orderNumber = (string) ($order['order_number'] ?? 'SO-RECEIPT');
+        $customerName = (string) ($order['customer_name'] ?? 'Customer');
+        $paymentLabel = (string) (($payment['provider'] ?? $payment['payment_method'] ?? $order['payment_method'] ?? 'N/A'));
+        $orderStatus = (string) ($order['order_status'] ?? 'pending');
+        $paymentStatus = (string) ($order['payment_status'] ?? 'pending');
+
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'UTHENGA SHOP RECEIPT', 18, 'F2');
+        $y -= 4;
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Receipt No: ' . $orderNumber, 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Customer: ' . $customerName, 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Date: ' . (string) ($order['placed_at'] ?? date('Y-m-d H:i:s')), 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Payment Method: ' . $paymentLabel, 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Status: ' . $orderStatus, 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Payment Status: ' . $paymentStatus, 11, 'F1');
+        $y -= 6;
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Summary', 13, 'F2');
+        $y -= 2;
+
+        foreach ($items as $item) {
+            $label = (string) ($item['product_name'] ?? $item['name'] ?? 'Item');
+            $quantity = (int) ($item['quantity'] ?? 1);
+            $amount = uthenga_shop_money((float) ($item['line_total'] ?? 0));
+            $leftText = $label . ' x ' . $quantity;
+            $wrappedLeft = uthenga_shop_pdf_wrap($leftText, 48);
+            $rowHeight = max(1, count($wrappedLeft)) * 14 + 2;
+            $ensureSpace($y, $rowHeight + 8);
+
+            $startY = $y;
+            foreach ($wrappedLeft as $idx => $line) {
+                $y = uthenga_shop_pdf_text_block($lines, $margin, $y, $line, 11, 'F1');
+            }
+            $rightY = $startY - 11;
+            $lines[] = sprintf('BT /F2 11 Tf %.2f %.2f Td (%s) Tj ET', 500.0, $rightY, uthenga_shop_pdf_escape($amount));
+            $y = min($y, $startY - $rowHeight);
+        }
+
+        $ensureSpace($y, 120);
+        $y -= 4;
+        $summaryRows = [
+            'Subtotal' => uthenga_shop_money((float) ($order['subtotal'] ?? 0)),
+            'Delivery Fee' => uthenga_shop_money((float) ($order['delivery_fee'] ?? 0)),
+            'Tax' => uthenga_shop_money((float) ($order['tax_amount'] ?? 0)),
+            'Discount' => '-' . uthenga_shop_money((float) ($order['discount_amount'] ?? 0)),
+            'Total' => uthenga_shop_money((float) ($order['total_amount'] ?? 0)),
+        ];
+
+        foreach ($summaryRows as $label => $value) {
+            $font = $label === 'Total' ? 'F2' : 'F1';
+            $fontSize = $label === 'Total' ? 12 : 11;
+            $y = uthenga_shop_pdf_text_block($lines, $margin, $y, $label, $fontSize, $font);
+            $lines[] = sprintf('BT /%s %d Tf %.2f %.2f Td (%s) Tj ET', $font, $fontSize, 500.0, $y + $fontSize + 3, uthenga_shop_pdf_escape($value));
+        }
+
+        $ensureSpace($y, 110);
+        $y -= 6;
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Delivery & Tracking', 13, 'F2');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Placed: ' . (string) ($order['placed_at'] ?? 'Pending'), 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Confirmed: ' . (string) ($order['confirmed_at'] ?? 'Pending'), 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Prepared: ' . (string) ($order['prepared_at'] ?? 'Pending'), 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Dispatched: ' . (string) ($order['dispatched_at'] ?? 'Pending'), 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Delivered: ' . (string) ($order['delivered_at'] ?? 'Pending'), 11, 'F1');
+
+        $address = (string) ($order['delivery_address'] ?? '');
+        if ($address !== '') {
+            $ensureSpace($y, 56);
+            $y -= 4;
+            $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Delivery Address', 13, 'F2');
+            $y = uthenga_shop_pdf_multiline_block($lines, $margin, $y, $address, 11, 72, 'F1');
+        }
+
+        if (!empty($order['delivery_instructions'])) {
+            $ensureSpace($y, 42);
+            $y -= 4;
+            $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Instructions', 13, 'F2');
+            $y = uthenga_shop_pdf_multiline_block($lines, $margin, $y, (string) $order['delivery_instructions'], 11, 72, 'F1');
+        }
+
+        if (!empty($order['preferred_delivery_time'])) {
+            $ensureSpace($y, 24);
+            $y -= 4;
+            $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Preferred Time: ' . (string) $order['preferred_delivery_time'], 11, 'F1');
+        }
+
+        if ($rider && !empty($rider['name'])) {
+            $ensureSpace($y, 34);
+            $y -= 4;
+            $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Rider', 13, 'F2');
+            $y = uthenga_shop_pdf_text_block($lines, $margin, $y, (string) $rider['name'], 11, 'F1');
+            if (!empty($rider['phone_number'])) {
+                $y = uthenga_shop_pdf_text_block($lines, $margin, $y, (string) $rider['phone_number'], 11, 'F1');
+            }
+            if (!empty($rider['bike_registration'])) {
+                $y = uthenga_shop_pdf_text_block($lines, $margin, $y, (string) $rider['bike_registration'], 11, 'F1');
+            }
+        }
+
+        $lines[] = sprintf('BT /F1 9 Tf %.2f %.2f Td (%s) Tj ET', $margin, 24.0, uthenga_shop_pdf_escape('Generated by Uthenga Shop'));
+        $pages[] = $lines;
+
+        $objects = [];
+        $objectId = 1;
+        $catalogId = $objectId++;
+        $pagesId = $objectId++;
+        $fontRegularId = $objectId++;
+        $fontBoldId = $objectId++;
+        $pageIds = [];
+        $contentIds = [];
+
+        foreach ($pages as $pageLines) {
+            $pageIds[] = $objectId++;
+            $contentIds[] = $objectId++;
+        }
+
+        $objects[$fontRegularId] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
+        $objects[$fontBoldId] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>';
+
+        foreach ($pages as $index => $pageLines) {
+            $content = implode("\n", $pageLines);
+            $contentStream = "BT\n/F1 11 Tf\nET\n" . $content;
+            $contentLength = strlen($contentStream);
+            $contentId = $contentIds[$index];
+            $pageId = $pageIds[$index];
+            $objects[$contentId] = "<< /Length {$contentLength} >>\nstream\n{$contentStream}\nendstream";
+            $objects[$pageId] = '<< /Type /Page /Parent ' . $pagesId . ' 0 R /MediaBox [0 0 ' . $pageWidth . ' ' . $pageHeight . "] /Resources << /Font << /F1 {$fontRegularId} 0 R /F2 {$fontBoldId} 0 R >> >> /Contents {$contentId} 0 R >>";
+        }
+
+        $kids = implode(' ', array_map(static fn($id) => $id . ' 0 R', $pageIds));
+        $objects[$pagesId] = '<< /Type /Pages /Kids [' . $kids . '] /Count ' . count($pageIds) . ' >>';
+        $objects[$catalogId] = '<< /Type /Catalog /Pages ' . $pagesId . ' 0 R >>';
+
+        ksort($objects);
+        $pdf = "%PDF-1.4\n";
+        $offsets = [0];
+        foreach ($objects as $id => $body) {
+            $offsets[$id] = strlen($pdf);
+            $pdf .= $id . " 0 obj\n" . $body . "\nendobj\n";
+        }
+
+        $xrefPos = strlen($pdf);
+        $maxId = max(array_keys($objects));
+        $pdf .= "xref\n0 " . ($maxId + 1) . "\n";
+        $pdf .= sprintf("%010d %05d f \n", 0, 65535);
+        for ($i = 1; $i <= $maxId; $i++) {
+            $offset = $offsets[$i] ?? 0;
+            $pdf .= sprintf("%010d %05d n \n", $offset, 0);
+        }
+        $pdf .= "trailer\n<< /Size " . ($maxId + 1) . ' /Root ' . $catalogId . " 0 R >>\nstartxref\n" . $xrefPos . "\n%%EOF";
+
+        return $pdf;
+    }
+}
+
 if (!function_exists('uthenga_shop_notify_user')) {
     function uthenga_shop_notify_user(string $userId, string $type, string $title, string $message): void {
         if (!uthenga_table_exists('notifications')) {

@@ -5,14 +5,17 @@
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/shop_helpers.php';
+require_once __DIR__ . '/../includes/auth_check.php';
+
+requireAdmin();
 
 $pageTitle = 'Shop Order';
 $activeNav = 'admin-shop';
-require_once __DIR__ . '/includes/admin_header.php';
 
 $orderId = (int) ($_GET['id'] ?? $_POST['order_id'] ?? 0);
 $order = $orderId > 0 ? dbQueryOne('SELECT * FROM shop_orders WHERE id = ? LIMIT 1', [$orderId]) : null;
 if (!$order) {
+    require_once __DIR__ . '/includes/admin_header.php';
     echo '<div class="container dashboard-content-frame" style="padding-top:2rem;padding-bottom:3rem;"><div class="glass-panel" style="padding:1.25rem;"><h2>Order not found</h2><p class="text-muted">The selected order could not be loaded.</p></div></div>';
     require_once __DIR__ . '/includes/admin_footer.php';
     exit;
@@ -21,6 +24,21 @@ if (!$order) {
 $message = '';
 $error = '';
 $riders = uthenga_shop_riders(false);
+$downloadMode = (string) ($_GET['download'] ?? '');
+
+if ($downloadMode === 'pdf') {
+    $items = uthenga_shop_order_items($orderId);
+    $payment = uthenga_shop_payment_by_order_id($orderId);
+    $delivery = uthenga_table_exists('shop_deliveries') ? dbQueryOne('SELECT * FROM shop_deliveries WHERE order_id = ? LIMIT 1', [$orderId]) : null;
+    $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_riders WHERE id = ? LIMIT 1', [(int) $delivery['rider_id']]) : null;
+    $safeOrderNumber = preg_replace('/[^A-Z0-9\-]/i', '', (string) $order['order_number']) ?: 'receipt';
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="uthenga-admin-order-' . $safeOrderNumber . '.pdf"');
+    echo uthenga_shop_generate_receipt_pdf($order, $items, $payment, $delivery, $rider);
+    exit;
+}
+
+require_once __DIR__ . '/includes/admin_header.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     try {
@@ -77,6 +95,7 @@ $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_ride
     <div class="dashboard-head-meta">
       <a href="<?= BASE_URL ?>admin/shop.php" class="btn btn-secondary btn-sm">Back to Shop</a>
       <a href="<?= BASE_URL ?>shop-order.php?order=<?= urlencode((string) $order['order_number']) ?>" class="btn btn-primary btn-sm">Open Receipt</a>
+      <a href="<?= BASE_URL ?>admin/shop-order.php?id=<?= (int) $orderId ?>&download=pdf" class="btn btn-secondary btn-sm">Print / PDF</a>
     </div>
   </div>
 

@@ -27,6 +27,8 @@ if (!empty($deliveryStatus['rider_id'])) {
 $success = !empty($_SESSION['shop_order_success']) && $_SESSION['shop_order_success'] === $orderNumber;
 unset($_SESSION['shop_order_success']);
 
+$downloadMode = (string) ($_GET['download'] ?? '');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     $action = (string) ($_POST['action'] ?? '');
     if ($action === 'cancel') {
@@ -35,6 +37,188 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
             redirect(BASE_URL . 'shop-order.php?order=' . urlencode($orderNumber));
         }
     }
+}
+
+if ($downloadMode !== '') {
+    $safeOrderNumber = preg_replace('/[^A-Z0-9\-]/i', '', $orderNumber) ?: 'receipt';
+    $downloadFile = 'uthenga-receipt-' . $safeOrderNumber . ($downloadMode === 'pdf' ? '.pdf' : '.html');
+    $paymentLabel = $payment['provider'] ?? $payment['payment_method'] ?? ($order['payment_method'] ?? 'N/A');
+    if ($downloadMode === 'pdf') {
+        header('Content-Type: application/pdf');
+        $pdf = uthenga_shop_generate_receipt_pdf($order, $items, $payment, $deliveryStatus, $rider);
+        header('Content-Disposition: attachment; filename="' . $downloadFile . '"');
+        echo $pdf;
+        exit;
+    }
+
+    header('Content-Type: text/html; charset=UTF-8');
+    header('Content-Disposition: attachment; filename="' . $downloadFile . '"');
+    ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receipt <?= e($order['order_number']) ?> | <?= APP_NAME ?></title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #fff;
+      --line: #dbe4ee;
+      --text: #102033;
+      --muted: #64748b;
+      --accent: #0ea5e9;
+      --success: #16a34a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #f8fafc, #eef3f8);
+      color: var(--text);
+    }
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(15, 23, 42, .08);
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+    .header { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap; }
+    .eyebrow {
+      display:inline-block;
+      color:var(--accent);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    h1, h2, h3, p { margin:0; }
+    h1 { font-size:28px; line-height:1.15; margin-bottom:6px; }
+    h2 { font-size:20px; margin-bottom:12px; }
+    .muted { color: var(--muted); line-height:1.5; }
+    .badges { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .badge {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#eff6ff;
+      color:#0369a1;
+      font-size:12px;
+      font-weight:700;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr);
+      gap:18px;
+    }
+    .lines { display:grid; gap:8px; }
+    .line {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:8px 0;
+      border-bottom:1px solid var(--line);
+    }
+    .line:last-child { border-bottom:0; font-weight:800; font-size:16px; }
+    .timeline { display:grid; gap:10px; margin-top:14px; }
+    .step {
+      border:1px solid var(--line);
+      background:#f8fbff;
+      border-radius:14px;
+      padding:12px 14px;
+    }
+    .step strong { display:block; margin-bottom:4px; }
+    .footer-note { color:var(--muted); font-size:13px; line-height:1.5; }
+    .receipt-id { font-size:13px; color:var(--muted); }
+    @media (max-width: 768px) {
+      .page { padding:14px; }
+      .card { padding:18px; border-radius:16px; }
+      .grid { grid-template-columns:1fr; }
+      .line { font-size:14px; }
+      h1 { font-size:22px; }
+    }
+    @media print {
+      body { background:#fff; }
+      .page { padding:0; }
+      .card { box-shadow:none; border-radius:0; page-break-inside:avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="header">
+        <div>
+          <div class="eyebrow">Receipt</div>
+          <h1>Uthenga Shop</h1>
+          <p class="muted">Order receipt for <?= e($order['customer_name']) ?></p>
+        </div>
+        <div class="receipt-id">
+          <strong>Receipt No:</strong> <?= e($order['order_number']) ?><br>
+          <strong>Order Date:</strong> <?= e($order['placed_at']) ?>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge"><?= e($paymentLabel) ?></span>
+        <span class="badge"><?= e($order['order_status']) ?></span>
+        <span class="badge"><?= e($order['payment_status']) ?></span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Order Summary</h2>
+        <p class="muted" style="margin-bottom:14px;">Customer: <?= e($order['customer_name']) ?></p>
+        <div class="lines">
+          <?php foreach ($items as $item): ?>
+            <div class="line"><span><?= e($item['product_name']) ?> x <?= (int) $item['quantity'] ?></span><strong><?= uthenga_shop_money((float) $item['line_total']) ?></strong></div>
+          <?php endforeach; ?>
+          <div class="line"><span>Subtotal</span><strong><?= uthenga_shop_money((float) $order['subtotal']) ?></strong></div>
+          <div class="line"><span>Delivery Fee</span><strong><?= uthenga_shop_money((float) $order['delivery_fee']) ?></strong></div>
+          <div class="line"><span>Discount</span><strong>-<?= uthenga_shop_money((float) $order['discount_amount']) ?></strong></div>
+          <div class="line"><span>Total</span><strong><?= uthenga_shop_money((float) $order['total_amount']) ?></strong></div>
+        </div>
+        <div style="margin-top:16px;" class="footer-note">
+          Generated from the live Uthenga shop order data.
+        </div>
+      </section>
+
+      <aside class="card">
+        <h2>Delivery & Tracking</h2>
+        <div class="timeline">
+          <div class="step"><strong>Placed</strong><span class="muted"><?= e($order['placed_at']) ?></span></div>
+          <div class="step"><strong>Confirmed</strong><span class="muted"><?= e($order['confirmed_at'] ?: 'Pending') ?></span></div>
+          <div class="step"><strong>Prepared</strong><span class="muted"><?= e($order['prepared_at'] ?: 'Pending') ?></span></div>
+          <div class="step"><strong>Dispatched</strong><span class="muted"><?= e($order['dispatched_at'] ?: 'Pending') ?></span></div>
+          <div class="step"><strong>Delivered</strong><span class="muted"><?= e($order['delivered_at'] ?: 'Pending') ?></span></div>
+        </div>
+        <div style="margin-top:16px;">
+          <h3 style="margin-bottom:8px;">Delivery Address</h3>
+          <p class="muted"><?= nl2br(e($order['delivery_address'])) ?></p>
+          <?php if (!empty($order['delivery_instructions'])): ?>
+            <p class="muted" style="margin-top:8px;"><strong>Instructions:</strong> <?= nl2br(e($order['delivery_instructions'])) ?></p>
+          <?php endif; ?>
+          <?php if (!empty($order['preferred_delivery_time'])): ?>
+            <p class="muted" style="margin-top:8px;"><strong>Preferred time:</strong> <?= e($order['preferred_delivery_time']) ?></p>
+          <?php endif; ?>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
+    <?php
+    exit;
 }
 
 require_once __DIR__ . '/includes/dashboard_shell.php';
@@ -339,11 +523,12 @@ renderDashboardChromeStart([
       <h1 class="page-title">Receipt <?= e($order['order_number']) ?></h1>
       <p class="text-muted">Invoice and delivery details for your Shop order.</p>
     </div>
-    <div class="dashboard-head-meta">
-      <a href="<?= BASE_URL ?>shop-orders.php" class="btn btn-secondary btn-sm">Back to Orders</a>
-      <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Print Receipt</button>
+      <div class="dashboard-head-meta">
+        <a href="<?= BASE_URL ?>shop-orders.php" class="btn btn-secondary btn-sm">Back to Orders</a>
+        <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Print Receipt</button>
+        <a href="<?= BASE_URL ?>shop-order.php?order=<?= urlencode($orderNumber) ?>&download=pdf" class="btn btn-secondary btn-sm">Download PDF</a>
+      </div>
     </div>
-  </div>
 
   <div class="receipt-grid">
     <section class="receipt-card">

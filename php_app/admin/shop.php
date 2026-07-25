@@ -533,6 +533,7 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
                     <?php endforeach; ?>
                   </select>
                   <button type="submit" class="btn btn-secondary btn-sm">Update</button>
+                  <a href="<?= BASE_URL ?>admin/shop-order.php?id=<?= (int) $order['id'] ?>&download=pdf" class="btn btn-sm btn-secondary">Print / PDF</a>
                   <a href="<?= BASE_URL ?>admin/shop-order.php?id=<?= (int) $order['id'] ?>" class="btn btn-sm btn-secondary">Open</a>
                 </form>
               </td>

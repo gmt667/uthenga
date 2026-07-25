@@ -134,6 +134,7 @@ renderDashboardChromeStart([
           </div>
           <div class="order-actions">
             <a href="<?= BASE_URL ?>shop-order.php?order=<?= urlencode((string) $order['order_number']) ?>" class="btn btn-primary btn-sm">Open Order</a>
+            <a href="<?= BASE_URL ?>shop-order.php?order=<?= urlencode((string) $order['order_number']) ?>&download=pdf" class="btn btn-secondary btn-sm">Print / PDF</a>
             <?php if (in_array(strtolower((string) $order['order_status']), ['pending', 'confirmed', 'preparing'], true)): ?>
               <form method="post" style="margin:0;">
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
