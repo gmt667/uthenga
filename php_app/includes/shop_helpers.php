@@ -833,12 +833,13 @@ if (!function_exists('uthenga_shop_cart_save_state')) {
         }
 
         $token = uthenga_shop_session_token();
-        dbExecute('DELETE FROM shop_cart_items WHERE user_id = ? OR session_token = ?', [$_SESSION['user_id'], $token]);
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
+        dbExecute('DELETE FROM shop_cart_items WHERE user_id = ? OR session_token = ?', [$userId > 0 ? $userId : null, $token]);
         foreach ($items as $productId => $item) {
             dbExecute(
                 'INSERT INTO shop_cart_items (user_id, session_token, product_id, quantity, unit_price) VALUES (?, ?, ?, ?, ?)',
                 [
-                    $_SESSION['user_id'],
+                    $userId > 0 ? $userId : null,
                     $token,
                     (int) $productId,
                     max(1, (int) ($item['quantity'] ?? 1)),
@@ -1134,9 +1135,10 @@ if (!function_exists('uthenga_shop_cart_sync_from_db')) {
         }
 
         $token = uthenga_shop_session_token();
+        $userId = (int) ($_SESSION['user_id'] ?? 0);
         $rows = dbQuery(
             'SELECT product_id, quantity, unit_price FROM shop_cart_items WHERE user_id = ? OR session_token = ?',
-            [$_SESSION['user_id'], $token]
+            [$userId > 0 ? $userId : null, $token]
         );
 
         if (empty($rows)) {
@@ -1250,6 +1252,50 @@ if (!function_exists('uthenga_shop_payment_methods_map')) {
             'airtel_money' => !empty($settings['airtel_money_enabled']) ? 'Airtel Money' : null,
             'paychangu' => $paychanguReady ? 'PayChangu' : null,
         ]);
+    }
+}
+
+if (!function_exists('uthenga_shop_payment_method_label')) {
+    function uthenga_shop_payment_method_label(string $method): string {
+        return match ($method) {
+            'cash_on_delivery' => 'Cash on Delivery',
+            'bank_transfer' => 'Bank Transfer',
+            'tnm_mpamba' => 'TNM Mpamba',
+            'airtel_money' => 'Airtel Money',
+            'paychangu' => 'PayChangu',
+            default => 'Cash on Delivery',
+        };
+    }
+}
+
+if (!function_exists('uthenga_shop_payment_method_state')) {
+    function uthenga_shop_payment_method_state(string $method): array {
+        $method = strtolower(trim($method));
+        return match ($method) {
+            'paychangu', 'tnm_mpamba', 'airtel_money' => [
+                'order_payment_status' => 'authorized',
+                'payment_status' => 'processing',
+                'provider' => uthenga_shop_payment_method_label($method),
+                'reference_prefix' => match ($method) {
+                    'paychangu' => 'PAYCHANGU-',
+                    'tnm_mpamba' => 'TNM-',
+                    'airtel_money' => 'AIRTEL-',
+                    default => 'SHOP-',
+                },
+            ],
+            'bank_transfer' => [
+                'order_payment_status' => 'pending',
+                'payment_status' => 'pending',
+                'provider' => 'Bank Transfer',
+                'reference_prefix' => 'BANK-',
+            ],
+            default => [
+                'order_payment_status' => 'pending',
+                'payment_status' => 'pending',
+                'provider' => 'Cash on Delivery',
+                'reference_prefix' => 'COD-',
+            ],
+        };
     }
 }
 
@@ -1423,7 +1469,7 @@ if (!function_exists('uthenga_shop_confirm_payment')) {
         }
 
         if (!empty($order['user_id'])) {
-            uthenga_shop_notify_user((string) $order['user_id'], 'shop', 'Payment Confirmed', 'Your order ' . ($order['order_number'] ?? '') . ' has been paid successfully.');
+            uthenga_shop_notify_user((string) (int) $order['user_id'], 'shop', 'Payment Confirmed', 'Your order ' . ($order['order_number'] ?? '') . ' has been paid successfully.');
         }
         uthenga_shop_notify_admins('Shop Payment Confirmed', 'Payment for order ' . ($order['order_number'] ?? '') . ' has been confirmed.');
     }
@@ -1558,6 +1604,10 @@ if (!function_exists('uthenga_shop_generate_receipt_pdf')) {
         $paymentLabel = (string) (($payment['provider'] ?? $payment['payment_method'] ?? $order['payment_method'] ?? 'N/A'));
         $orderStatus = (string) ($order['order_status'] ?? 'pending');
         $paymentStatus = (string) ($order['payment_status'] ?? 'pending');
+        $orderStatusLabel = uthenga_shop_status_label($orderStatus);
+        $paymentStatusLabel = uthenga_shop_status_label($paymentStatus);
+        $orderStatusHint = uthenga_shop_status_hint($orderStatus);
+        $paymentStatusHint = uthenga_shop_status_hint($paymentStatus);
 
         $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'UTHENGA SHOP RECEIPT', 18, 'F2');
         $y -= 4;
@@ -1565,8 +1615,10 @@ if (!function_exists('uthenga_shop_generate_receipt_pdf')) {
         $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Customer: ' . $customerName, 11, 'F1');
         $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Date: ' . (string) ($order['placed_at'] ?? date('Y-m-d H:i:s')), 11, 'F1');
         $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Payment Method: ' . $paymentLabel, 11, 'F1');
-        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Status: ' . $orderStatus, 11, 'F1');
-        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Payment Status: ' . $paymentStatus, 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Status: ' . $orderStatusLabel, 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Note: ' . $orderStatusHint, 10, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Payment Status: ' . $paymentStatusLabel, 11, 'F1');
+        $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Payment Note: ' . $paymentStatusHint, 10, 'F1');
         $y -= 6;
         $y = uthenga_shop_pdf_text_block($lines, $margin, $y, 'Order Summary', 13, 'F2');
         $y -= 2;
@@ -1758,6 +1810,52 @@ if (!function_exists('uthenga_shop_status_badge')) {
     }
 }
 
+if (!function_exists('uthenga_shop_status_label')) {
+    function uthenga_shop_status_label(string $status): string {
+        $status = strtolower(trim($status));
+        return match ($status) {
+            'pending' => 'Pending',
+            'processing' => 'Processing',
+            'authorized' => 'Authorized',
+            'paid' => 'Paid',
+            'confirmed' => 'Confirmed',
+            'preparing' => 'Preparing',
+            'assigned', 'assigned_to_rider' => 'Assigned to Rider',
+            'out_for_delivery' => 'Out for Delivery',
+            'delivered' => 'Delivered',
+            'cancelled' => 'Cancelled',
+            'failed' => 'Failed',
+            'refunded' => 'Refunded',
+            'partially_paid' => 'Partially Paid',
+            'completed' => 'Completed',
+            'draft' => 'Draft',
+            default => ucwords(str_replace(['_', '-'], ' ', $status)),
+        };
+    }
+}
+
+if (!function_exists('uthenga_shop_status_hint')) {
+    function uthenga_shop_status_hint(string $status): string {
+        $status = strtolower(trim($status));
+        return match ($status) {
+            'pending' => 'Waiting for confirmation or payment clearance.',
+            'processing' => 'Payment is being verified by the gateway.',
+            'authorized' => 'Payment has been approved and is awaiting final capture or staff confirmation.',
+            'paid' => 'Payment has been received.',
+            'confirmed' => 'Order has been confirmed by the shop.',
+            'preparing' => 'The order is being prepared for dispatch.',
+            'assigned', 'assigned_to_rider' => 'A rider has been assigned.',
+            'out_for_delivery' => 'The rider is currently on the way.',
+            'delivered' => 'The order has been completed successfully.',
+            'cancelled' => 'The order was cancelled.',
+            'failed' => 'The payment attempt failed.',
+            'refunded' => 'The payment was refunded.',
+            'partially_paid' => 'Only part of the total has been paid so far.',
+            default => 'Current system status.',
+        };
+    }
+}
+
 if (!function_exists('uthenga_shop_order_by_number')) {
     function uthenga_shop_order_by_number(string $orderNumber): ?array {
         if (!uthenga_table_exists('shop_orders')) {
@@ -1804,7 +1902,8 @@ if (!function_exists('uthenga_shop_cancel_order')) {
             return ['ok' => false, 'message' => 'Order not found.'];
         }
 
-        if ($userId !== '' && (string) ($order['user_id'] ?? '') !== $userId) {
+        $userIdInt = (int) $userId;
+        if ($userIdInt > 0 && (int) ($order['user_id'] ?? 0) !== $userIdInt) {
             return ['ok' => false, 'message' => 'You cannot cancel this order.'];
         }
 

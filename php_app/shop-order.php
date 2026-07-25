@@ -8,11 +8,11 @@ require_once __DIR__ . '/includes/shop_helpers.php';
 requireCustomer();
 
 $activeNav = 'shop';
-$userId = (string) ($_SESSION['user_id'] ?? '');
+$userId = (int) ($_SESSION['user_id'] ?? 0);
 $orderNumber = trim((string) ($_GET['order'] ?? ''));
 $order = $orderNumber !== '' ? uthenga_shop_order_by_number($orderNumber) : null;
 
-if (!$order || (string) ($order['user_id'] ?? '') !== $userId) {
+if (!$order || (int) ($order['user_id'] ?? 0) !== $userId) {
     redirect(BASE_URL . 'shop-orders.php');
 }
 
@@ -32,7 +32,7 @@ $downloadMode = (string) ($_GET['download'] ?? '');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     $action = (string) ($_POST['action'] ?? '');
     if ($action === 'cancel') {
-        $result = uthenga_shop_cancel_order((int) $order['id'], $userId);
+        $result = uthenga_shop_cancel_order((int) $order['id'], (string) $userId);
         if (!empty($result['ok'])) {
             redirect(BASE_URL . 'shop-order.php?order=' . urlencode($orderNumber));
         }

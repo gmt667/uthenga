@@ -17,6 +17,7 @@ $settings = uthenga_shop_settings();
 $totals = uthenga_shop_order_totals($cartItems);
 $methods = uthenga_shop_payment_methods();
 $user = currentUser() ?: [];
+$userId = (int) ($_SESSION['user_id'] ?? 0);
 $success = '';
 $error = '';
 
@@ -31,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $deliveryInstructions = trim((string) ($_POST['delivery_instructions'] ?? ''));
         $preferredDeliveryTime = trim((string) ($_POST['preferred_delivery_time'] ?? ''));
         $paymentMethod = trim((string) ($_POST['payment_method'] ?? 'cash_on_delivery'));
-        $paymentReference = uthenga_shop_payment_reference();
+        $paymentState = uthenga_shop_payment_method_state($paymentMethod);
+        $paymentReference = $paymentState['reference_prefix'] . strtoupper(bin2hex(random_bytes(4)));
 
         if (strlen($customerName) < 2) {
             $error = 'Please enter your full name.';
@@ -47,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Please choose a valid payment method.';
         } else {
             $orderNumber = uthenga_shop_order_number();
-            $userId = (string) ($_SESSION['user_id'] ?? '');
             $sessionToken = uthenga_shop_session_token();
 
             try {
@@ -60,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
                     [
                         $orderNumber,
-                        $userId !== '' ? $userId : null,
+                        $userId > 0 ? $userId : null,
                         $customerName,
                         $customerEmail,
                         $customerPhone,
@@ -74,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $totals['total'],
                         APP_CURRENCY,
                         $paymentMethod,
-                        'pending',
+                        $paymentState['order_payment_status'],
                         'pending',
                         'pending',
                         $sessionToken,
@@ -112,26 +113,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     [
                         $orderId,
                         $paymentMethod,
-                        $paymentMethod === 'paychangu'
-                            ? 'PayChangu'
-                            : ($paymentMethod === 'bank_transfer'
-                                ? 'Bank Transfer'
-                                : ($paymentMethod === 'tnm_mpamba'
-                                    ? 'TNM Mpamba'
-                                    : ($paymentMethod === 'airtel_money'
-                                        ? 'Airtel Money'
-                                        : 'Cash on Delivery'))),
-                        $paymentMethod === 'paychangu' ? $paymentReference : ($paymentMethod === 'bank_transfer' ? 'BANK-' . strtoupper(bin2hex(random_bytes(3))) : null),
+                        $paymentState['provider'],
+                        $paymentReference,
                         $totals['total'],
                         APP_CURRENCY,
-                        $paymentMethod === 'paychangu' ? 'processing' : 'pending',
-                        null,
+                        $paymentState['payment_status'],
+                        json_encode([
+                            'method' => $paymentMethod,
+                            'order_number' => $orderNumber,
+                            'payment_reference' => $paymentReference,
+                            'initial_state' => $paymentState,
+                        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
                         null,
                     ]
                 );
                 $paymentId = (int) dbLastId();
 
-                uthenga_shop_notify_user($userId !== '' ? $userId : (string) $_SESSION['user_id'], 'shop', 'Order Placed', 'Your order ' . $orderNumber . ' has been placed successfully.');
+                if ($userId > 0) {
+                    uthenga_shop_notify_user((string) $userId, 'shop', 'Order Placed', 'Your order ' . $orderNumber . ' has been placed successfully.');
+                }
                 uthenga_shop_notify_admins('New Shop Order', 'Order ' . $orderNumber . ' has been placed by ' . $customerName . '.');
 
                 if ($paymentMethod === 'paychangu') {
@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'order_number' => $orderNumber,
                         'total_amount' => $totals['total'],
                         'currency' => APP_CURRENCY,
-                        'user_id' => $userId !== '' ? $userId : null,
+                        'user_id' => $userId > 0 ? $userId : null,
                     ];
                     $paymentPayload = [
                         'id' => $paymentId,

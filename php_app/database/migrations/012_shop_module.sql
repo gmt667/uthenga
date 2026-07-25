@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS shop_product_images (
 
 CREATE TABLE IF NOT EXISTS shop_cart_items (
   id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id        VARCHAR(30) NULL,
+  user_id        BIGINT UNSIGNED NULL,
   session_token  VARCHAR(80) NOT NULL,
   product_id     BIGINT UNSIGNED NOT NULL,
   quantity       INT UNSIGNED NOT NULL DEFAULT 1,
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS delivery_riders (
   bike_registration VARCHAR(60) NULL,
   availability     ENUM('available','busy','offline','inactive') NOT NULL DEFAULT 'available',
   status           ENUM('active','inactive','suspended') NOT NULL DEFAULT 'active',
-  user_id          VARCHAR(30) NULL,
+  user_id          BIGINT UNSIGNED NULL,
   current_location VARCHAR(220) NULL,
   delivery_history_count INT UNSIGNED NOT NULL DEFAULT 0,
   notes            TEXT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS delivery_riders (
 CREATE TABLE IF NOT EXISTS shop_orders (
   id                     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   order_number          VARCHAR(36) NOT NULL,
-  user_id               VARCHAR(30) NULL,
+  user_id               BIGINT UNSIGNED NULL,
   customer_name         VARCHAR(150) NOT NULL,
   customer_email        VARCHAR(180) NOT NULL,
   customer_phone        VARCHAR(30) NOT NULL,

@@ -27,13 +27,13 @@ require_once __DIR__ . '/../config.php';
   window.addEventListener('load', finish, { once: true });
   window.addEventListener('pageshow', finish, { once: true });
   if (document.readyState === 'interactive' || document.readyState === 'complete') {
-    window.setTimeout(finish, 120);
+    window.setTimeout(finish, 60);
   } else {
     document.addEventListener('DOMContentLoaded', function () {
-      window.setTimeout(finish, 120);
+      window.setTimeout(finish, 60);
     }, { once: true });
   }
-  window.setTimeout(finish, 4000);
+  window.setTimeout(finish, 1800);
 })();
 </script>
 

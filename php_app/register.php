@@ -311,7 +311,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           class="form-control"
           placeholder="e.g. UTH12345"
           value="<?= e($refCodeVal) ?>"
+          autocomplete="off"
+        >
+      </div>
 
+      <button type="submit" class="btn btn-primary" id="register-submit" style="width:100%;margin-top:0.75rem;">
+        Finish Registration
+      </button>
     <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--clr-text-muted);">
       Already have an account?
       <a href="<?= BASE_URL ?>login.php" style="font-weight:600;">Sign in</a>

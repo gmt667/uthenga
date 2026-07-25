@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/shop_helpers.php';
 requireCustomer();
 
 $activeNav = 'shop';
-$userId = (string) ($_SESSION['user_id'] ?? '');
+$userId = (int) ($_SESSION['user_id'] ?? 0);
 $success = '';
 $error = '';
 
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     $orderId = (int) ($_POST['order_id'] ?? 0);
 
     if ($action === 'cancel') {
-        $result = uthenga_shop_cancel_order($orderId, $userId);
+        $result = uthenga_shop_cancel_order($orderId, (string) $userId);
         if (!empty($result['ok'])) {
             $success = $result['message'] ?? 'Order cancelled.';
         } else {
