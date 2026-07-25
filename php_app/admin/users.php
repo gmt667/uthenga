@@ -7,6 +7,22 @@ $activeNav = 'admin-users';
 
 require_once __DIR__ . '/includes/admin_header.php';
 
+if (!function_exists('adminManagementRoleLabel')) {
+    function adminManagementRoleLabel(string $role): string {
+        return match ($role) {
+            ROLE_SUPER_ADMIN => 'Super Administrator',
+            ROLE_ADMIN => 'Administrator',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($role)))),
+        };
+    }
+}
+
+if (!function_exists('adminManagementStatusLabel')) {
+    function adminManagementStatusLabel(bool $approved): string {
+        return $approved ? 'Active' : 'Inactive';
+    }
+}
+
 if (!function_exists('adminManagementEnsureSchema')) {
     function adminManagementEnsureSchema(): array {
         $hasPhone = true;
@@ -382,8 +398,8 @@ if (isset($_GET['export']) && in_array($_GET['export'], ['csv', 'xls', 'pdf'], t
                   <td><?= e($row['name']) ?></td>
                   <td><?= e($row['email']) ?></td>
                   <td><?= e($hasPhoneColumn ? ($row['phone'] ?? '') : '') ?></td>
-                  <td><?= e($row['role']) ?></td>
-                  <td><?= e($row['is_approved'] ? 'Active' : 'Inactive') ?></td>
+                  <td><?= e(adminManagementRoleLabel((string) $row['role'])) ?></td>
+                  <td><?= e(adminManagementStatusLabel((bool) $row['is_approved'])) ?></td>
                   <td><?= e($row['created_at'] ?? '') ?></td>
                   <td><?= e(implode('|', $rowPermissions)) ?></td>
                 </tr>
@@ -409,8 +425,8 @@ if (isset($_GET['export']) && in_array($_GET['export'], ['csv', 'xls', 'pdf'], t
             $row['name'],
             $row['email'],
             $hasPhoneColumn ? ($row['phone'] ?? '') : '',
-            $row['role'],
-            $row['is_approved'] ? 'Active' : 'Inactive',
+            adminManagementRoleLabel((string) $row['role']),
+            adminManagementStatusLabel((bool) $row['is_approved']),
             $row['created_at'] ?? '',
             implode('|', $rowPermissions),
         ], $isExcel ? "\t" : ',');
@@ -521,7 +537,6 @@ if (!empty($admins)) {
             <?php
               $perms = $adminPermissions[$admin['id']] ?? [];
               $permLabels = array_values(array_map(function($key) use ($permissionLabels) { return $permissionLabels[$key] ?? $key; }, $perms));
-              $statusText = $admin['is_approved'] ? 'Active' : 'Inactive';
               $rowData = [
                   'user_id' => $admin['id'],
                   'name' => $admin['name'],
@@ -542,7 +557,7 @@ if (!empty($admins)) {
                 <div class="text-xs"><?= e($admin['email']) ?></div>
                 <?php if ($hasPhoneColumn): ?><div class="text-xs text-muted"><?= e($admin['phone'] ?? 'No phone') ?></div><?php endif; ?>
               </td>
-              <td><span class="role-badge role-admin"><?= e($admin['role']) ?></span></td>
+              <td><span class="role-badge role-admin"><?= e(adminManagementRoleLabel((string) $admin['role'])) ?></span></td>
               <td>
                 <?php if (empty($permLabels)): ?>
                   <span class="text-xs text-muted">Inherited from role</span>
@@ -554,7 +569,7 @@ if (!empty($admins)) {
                   </div>
                 <?php endif; ?>
               </td>
-              <td><span class="badge <?= $admin['is_approved'] ? 'badge-approved' : 'badge-rejected' ?>"><?= e($statusText) ?></span></td>
+              <td><span class="badge <?= $admin['is_approved'] ? 'badge-approved' : 'badge-rejected' ?>"><?= e(adminManagementStatusLabel((bool) $admin['is_approved'])) ?></span></td>
               <td class="text-xs text-muted"><?= e(substr($admin['updated_at'] ?? $admin['created_at'], 0, 16)) ?></td>
               <td style="text-align:right;">
                 <div style="display:inline-flex;gap:0.45rem;justify-content:flex-end;flex-wrap:wrap;">

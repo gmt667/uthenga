@@ -116,8 +116,8 @@ $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_ride
         <div class="receipt-line"><span>Preferred Time</span><strong><?= e($order['preferred_delivery_time'] ?? 'Any time') ?></strong></div>
       </div>
       <div class="shop-admin-grid" style="margin-top:1rem;grid-template-columns:1fr 1fr;">
-        <div class="shop-admin-stat"><span>Status</span><strong><?= e($order['order_status']) ?></strong></div>
-        <div class="shop-admin-stat"><span>Payment</span><strong><?= e($order['payment_status']) ?></strong></div>
+        <div class="shop-admin-stat"><span>Status</span><strong><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></strong><small class="text-muted"><?= e(uthenga_shop_status_hint((string) $order['order_status'])) ?></small></div>
+        <div class="shop-admin-stat"><span>Payment</span><strong><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></strong><small class="text-muted"><?= e(uthenga_shop_status_hint((string) $order['payment_status'])) ?></small></div>
         <div class="shop-admin-stat"><span>Total</span><strong><?= uthenga_shop_money((float) $order['total_amount']) ?></strong></div>
         <div class="shop-admin-stat"><span>Placed</span><strong><?= e($order['placed_at']) ?></strong></div>
       </div>
@@ -127,8 +127,9 @@ $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_ride
           <div class="receipt-lines" style="margin-top:.65rem;">
             <div class="receipt-line"><span>Provider</span><strong><?= e($payment['provider'] ?? $payment['payment_method'] ?? 'N/A') ?></strong></div>
             <div class="receipt-line"><span>Reference</span><strong><?= e($payment['payment_reference'] ?? 'N/A') ?></strong></div>
-            <div class="receipt-line"><span>Gateway Status</span><strong><?= e($payment['payment_status'] ?? 'pending') ?></strong></div>
+            <div class="receipt-line"><span>Gateway Status</span><strong><?= e(uthenga_shop_status_label((string) ($payment['payment_status'] ?? 'pending'))) ?></strong></div>
           </div>
+          <p class="text-muted" style="margin-top:.65rem;"><?= e(uthenga_shop_status_hint((string) ($payment['payment_status'] ?? 'pending'))) ?></p>
         </div>
       <?php endif; ?>
     </section>
@@ -138,8 +139,8 @@ $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_ride
       <form method="post" class="grid" style="gap:1rem;">
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
         <input type="hidden" name="order_id" value="<?= (int) $orderId ?>">
-        <label class="form-group"><span class="form-label">Order Status</span><select class="form-control" name="order_status"><?php foreach (['pending','confirmed','preparing','assigned_to_rider','out_for_delivery','delivered','cancelled'] as $status): ?><option value="<?= e($status) ?>" <?= $order['order_status'] === $status ? 'selected' : '' ?>><?= e($status) ?></option><?php endforeach; ?></select></label>
-        <label class="form-group"><span class="form-label">Payment Status</span><select class="form-control" name="payment_status"><?php foreach (['pending','authorized','paid','failed','refunded','partially_paid'] as $status): ?><option value="<?= e($status) ?>" <?= $order['payment_status'] === $status ? 'selected' : '' ?>><?= e($status) ?></option><?php endforeach; ?></select></label>
+        <label class="form-group"><span class="form-label">Order Status</span><select class="form-control" name="order_status"><?php foreach (['pending','confirmed','preparing','assigned_to_rider','out_for_delivery','delivered','cancelled'] as $status): ?><option value="<?= e($status) ?>" <?= $order['order_status'] === $status ? 'selected' : '' ?>><?= e(uthenga_shop_status_label($status)) ?></option><?php endforeach; ?></select></label>
+        <label class="form-group"><span class="form-label">Payment Status</span><select class="form-control" name="payment_status"><?php foreach (['pending','authorized','paid','failed','refunded','partially_paid'] as $status): ?><option value="<?= e($status) ?>" <?= $order['payment_status'] === $status ? 'selected' : '' ?>><?= e(uthenga_shop_status_label($status)) ?></option><?php endforeach; ?></select></label>
         <label class="form-group"><span class="form-label">Assign Rider</span><select class="form-control" name="assigned_rider_id"><option value="0">Unassigned</option><?php foreach ($riders as $r): ?><option value="<?= (int) $r['id'] ?>" <?= (int) ($order['assigned_rider_id'] ?? 0) === (int) $r['id'] ? 'selected' : '' ?>><?= e($r['name']) ?></option><?php endforeach; ?></select></label>
         <button type="submit" class="btn btn-primary">Save Changes</button>
       </form>
@@ -147,7 +148,7 @@ $rider = !empty($delivery['rider_id']) ? dbQueryOne('SELECT * FROM delivery_ride
         <div style="margin-top:1rem;">
           <h3>Delivery Record</h3>
           <div class="receipt-lines">
-            <div class="receipt-line"><span>Status</span><strong><?= e($delivery['delivery_status']) ?></strong></div>
+            <div class="receipt-line"><span>Status</span><strong><?= e(uthenga_shop_status_label((string) $delivery['delivery_status'])) ?></strong></div>
             <div class="receipt-line"><span>Assigned</span><strong><?= e($delivery['assigned_at']) ?></strong></div>
             <div class="receipt-line"><span>Dispatched</span><strong><?= e($delivery['dispatched_at'] ?: 'Pending') ?></strong></div>
             <div class="receipt-line"><span>Delivered</span><strong><?= e($delivery['delivered_at'] ?: 'Pending') ?></strong></div>

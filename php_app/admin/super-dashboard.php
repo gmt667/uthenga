@@ -23,6 +23,47 @@ function superDashboardBadgeClass(string $status): string {
     };
 }
 
+function superDashboardStatusLabel(string $status): string {
+    $normalized = strtolower(trim($status));
+    return match ($normalized) {
+        'success' => 'Successful',
+        'paid' => 'Paid',
+        'pending' => 'Pending',
+        'confirmed' => 'Confirmed',
+        'completed' => 'Completed',
+        'resolved' => 'Resolved',
+        'closed' => 'Closed',
+        'approved' => 'Approved',
+        'active' => 'Active',
+        'authorized' => 'Authorized',
+        'cancelled' => 'Cancelled',
+        'failed' => 'Failed',
+        'rejected' => 'Rejected',
+        'suspended' => 'Suspended',
+        'open' => 'Open',
+        'in progress', 'in_progress' => 'In Progress',
+        'waiting_customer' => 'Waiting for Customer',
+        default => ucwords(str_replace(['_', '-'], ' ', $normalized)),
+    };
+}
+
+function superDashboardStatusHint(string $status): string {
+    $normalized = strtolower(trim($status));
+    return match ($normalized) {
+        'success', 'paid' => 'The payment or workflow completed successfully.',
+        'pending' => 'The item is waiting for the next action.',
+        'confirmed' => 'The booking or order has been confirmed.',
+        'completed', 'closed', 'resolved' => 'The item is finished and closed out.',
+        'approved', 'active' => 'This account or item is active and approved.',
+        'authorized' => 'The payment has been authorized and is awaiting capture or settlement.',
+        'cancelled', 'failed', 'rejected', 'suspended' => 'This item is no longer active.',
+        'open' => 'The item is still open and needs attention.',
+        'in progress', 'in_progress' => 'Work is currently in progress.',
+        'waiting_customer' => 'Waiting for the customer to respond or complete an action.',
+        default => 'Current system status.',
+    };
+}
+
 $hasSupportTickets = uthenga_table_exists('support_tickets');
 $hasUserSessions = uthenga_table_exists('user_sessions');
 $hasBookingItems = uthenga_table_exists('booking_items');
@@ -42,6 +83,8 @@ $counts = [
     'shopProducts' => uthenga_table_exists('shop_products') ? dbCount("SELECT COUNT(*) FROM shop_products WHERE deleted_at IS NULL") : 0,
     'shopOrders' => uthenga_table_exists('shop_orders') ? dbCount('SELECT COUNT(*) FROM shop_orders') : 0,
     'shopRevenue' => uthenga_table_exists('shop_orders') ? (dbQueryOne("SELECT COALESCE(SUM(total_amount),0) AS total FROM shop_orders WHERE LOWER(payment_status) IN ('paid','authorized','partially_paid')") ?: ['total' => 0]) : ['total' => 0],
+    'shopCarts' => uthenga_table_exists('shop_cart_items') ? dbQueryOne("SELECT COUNT(DISTINCT COALESCE(CAST(user_id AS CHAR), CONCAT('session:', session_token))) AS total FROM shop_cart_items") : ['total' => 0],
+    'shopCartItems' => uthenga_table_exists('shop_cart_items') ? dbCount('SELECT COUNT(*) FROM shop_cart_items') : 0,
 ];
 
 $recentBookings = dbQuery("
@@ -63,6 +106,14 @@ $recentTickets = $hasSupportTickets ? dbQuery("
     FROM support_tickets
     ORDER BY created_at DESC
     LIMIT 6
+") : [];
+$recentCartItems = uthenga_table_exists('shop_cart_items') ? dbQuery("
+    SELECT sci.*, sp.name AS product_name, sp.sku AS product_sku, u.name AS customer_name, u.email AS customer_email
+    FROM shop_cart_items sci
+    LEFT JOIN shop_products sp ON sp.id = sci.product_id
+    LEFT JOIN users u ON u.id = sci.user_id
+    ORDER BY sci.updated_at DESC, sci.id DESC
+    LIMIT 10
 ") : [];
 
 // Super Admin Analytics Calculations
@@ -217,7 +268,49 @@ $healthStatus = [
       <div class="presentation-stat"><span>Products</span><strong><?= number_format((int) $counts['shopProducts']) ?></strong></div>
       <div class="presentation-stat"><span>Orders</span><strong><?= number_format((int) $counts['shopOrders']) ?></strong></div>
       <div class="presentation-stat"><span>Revenue</span><strong><?= formatMWK((float) ($counts['shopRevenue']['total'] ?? 0)) ?></strong></div>
+      <div class="presentation-stat"><span>Active Carts</span><strong><?= number_format((int) ($counts['shopCarts']['total'] ?? 0)) ?></strong></div>
+      <div class="presentation-stat"><span>Cart Items</span><strong><?= number_format((int) $counts['shopCartItems']) ?></strong></div>
       <div class="presentation-stat"><span>Delivery Partners</span><strong><?= number_format((int) (uthenga_table_exists('delivery_riders') ? dbCount('SELECT COUNT(*) FROM delivery_riders') : 0)) ?></strong></div>
+    </div>
+  </div>
+
+  <div class="glass-panel" style="padding:1.25rem;margin-bottom:1.5rem;">
+    <div class="section-head">
+      <div>
+        <h3>Recent Cart Activity</h3>
+        <p class="text-xs text-muted">Live cart rows synced from session and signed-in customer carts.</p>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Cart Owner</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Updated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php if (empty($recentCartItems)): ?>
+            <tr><td colspan="4" class="text-muted">No active carts found.</td></tr>
+          <?php else: ?>
+            <?php foreach ($recentCartItems as $cartRow): ?>
+              <?php
+                $cartOwner = !empty($cartRow['customer_name'])
+                    ? (string) $cartRow['customer_name']
+                    : ('Session ' . substr((string) ($cartRow['session_token'] ?? ''), 0, 10));
+              ?>
+              <tr>
+                <td><?= e($cartOwner) ?><br><span class="text-xs text-muted"><?= e($cartRow['customer_email'] ?? $cartRow['session_token'] ?? 'N/A') ?></span></td>
+                <td><?= e($cartRow['product_name'] ?? 'Unknown product') ?><br><span class="text-xs text-muted"><?= e($cartRow['product_sku'] ?? '') ?></span></td>
+                <td><?= number_format((int) ($cartRow['quantity'] ?? 0)) ?></td>
+                <td class="text-xs text-muted"><?= e((string) ($cartRow['updated_at'] ?? $cartRow['created_at'] ?? '')) ?></td>
+              </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -269,8 +362,14 @@ $healthStatus = [
                 <tr>
                   <td><?= e($row['booking_code'] ?? '') ?></td>
                   <td><?= e($row['reference_name'] ?? '') ?></td>
-                  <td><span class="badge <?= superDashboardBadgeClass((string) ($row['booking_status'] ?? '')) ?>"><?= e($row['booking_status'] ?? '') ?></span></td>
-                  <td><span class="badge <?= superDashboardBadgeClass((string) ($row['payment_status'] ?? '')) ?>"><?= e($row['payment_status'] ?? '') ?></span></td>
+                  <td>
+                    <span class="badge <?= superDashboardBadgeClass((string) ($row['booking_status'] ?? '')) ?>"><?= e(superDashboardStatusLabel((string) ($row['booking_status'] ?? ''))) ?></span>
+                    <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(superDashboardStatusHint((string) ($row['booking_status'] ?? ''))) ?></div>
+                  </td>
+                  <td>
+                    <span class="badge <?= superDashboardBadgeClass((string) ($row['payment_status'] ?? '')) ?>"><?= e(superDashboardStatusLabel((string) ($row['payment_status'] ?? ''))) ?></span>
+                    <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(superDashboardStatusHint((string) ($row['payment_status'] ?? ''))) ?></div>
+                  </td>
                   <td><?= formatMWK((float) ($row['grand_total'] ?? 0)) ?></td>
                 </tr>
               <?php endforeach; ?>
@@ -329,7 +428,10 @@ $healthStatus = [
                   <td><?= e($ticket['ticket_code'] ?? '') ?></td>
                   <td><?= e($ticket['requester_name'] ?? '') ?></td>
                   <td><?= e($ticket['subject'] ?? '') ?></td>
-                  <td><span class="badge <?= superDashboardBadgeClass((string) ($ticket['status'] ?? '')) ?>"><?= e($ticket['status'] ?? '') ?></span></td>
+                  <td>
+                    <span class="badge <?= superDashboardBadgeClass((string) ($ticket['status'] ?? '')) ?>"><?= e(superDashboardStatusLabel((string) ($ticket['status'] ?? ''))) ?></span>
+                    <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(superDashboardStatusHint((string) ($ticket['status'] ?? ''))) ?></div>
+                  </td>
                 </tr>
               <?php endforeach; ?>
             <?php endif; ?>
@@ -358,7 +460,10 @@ $healthStatus = [
                 <tr>
                   <td><?= e($row['full_name'] ?? '') ?></td>
                   <td><?= e($row['email'] ?? '') ?></td>
-                  <td><span class="badge <?= superDashboardBadgeClass((string) ($row['account_status'] ?? '')) ?>"><?= e($row['account_status'] ?? '') ?></span></td>
+                  <td>
+                    <span class="badge <?= superDashboardBadgeClass((string) ($row['account_status'] ?? '')) ?>"><?= e(superDashboardStatusLabel((string) ($row['account_status'] ?? ''))) ?></span>
+                    <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(superDashboardStatusHint((string) ($row['account_status'] ?? ''))) ?></div>
+                  </td>
                   <td class="text-xs text-muted"><?= e($row['created_at'] ?? '') ?></td>
                 </tr>
               <?php endforeach; ?>

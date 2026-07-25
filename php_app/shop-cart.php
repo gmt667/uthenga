@@ -245,7 +245,7 @@ require_once __DIR__ . '/includes/header.php';
           <button type="submit" class="btn btn-secondary" style="width:100%;" <?= empty($cartItems) ? 'disabled' : '' ?>>Clear Cart</button>
         </form>
       </div>
-      <p class="text-xs text-muted" style="margin-top:1rem;">Delivery fees are calculated from shop settings and can be adjusted by administrators.</p>
+      <p class="text-xs text-muted" style="margin-top:1rem;line-height:1.45;">Delivery fees are calculated from shop settings and can be adjusted by administrators. Payment options are finalized on checkout with Cash on Delivery, Bank Transfer, TNM Mpamba, or Airtel Money.</p>
     </aside>
   </div>
 </div>

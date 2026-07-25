@@ -27,7 +27,7 @@ $themePreference = uthenga_theme_preference();
         aria-pressed="false"
         title="Toggle light and dark mode"
       >
-        <span class="theme-toggle-icon" aria-hidden="true"></span>
+        <span class="theme-toggle-icon" aria-hidden="true"><?= uthenga_public_icon_svg($themePreference === 'dark' ? 'moon' : 'sun') ?></span>
         <span class="theme-toggle-label">Dark</span>
       </button>
       <?php if ($isLoggedIn): ?>
@@ -72,7 +72,7 @@ $themePreference = uthenga_theme_preference();
         aria-pressed="false"
         title="Toggle light and dark mode"
       >
-        <span class="theme-toggle-icon" aria-hidden="true"></span>
+        <span class="theme-toggle-icon" aria-hidden="true"><?= uthenga_public_icon_svg($themePreference === 'dark' ? 'moon' : 'sun') ?></span>
         <span class="theme-toggle-label">Dark</span>
       </button>
 

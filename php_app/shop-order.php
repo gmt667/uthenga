@@ -170,8 +170,8 @@ if ($downloadMode !== '') {
       </div>
       <div class="badges">
         <span class="badge"><?= e($paymentLabel) ?></span>
-        <span class="badge"><?= e($order['order_status']) ?></span>
-        <span class="badge"><?= e($order['payment_status']) ?></span>
+        <span class="badge"><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></span>
+        <span class="badge"><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></span>
       </div>
     </div>
 
@@ -536,8 +536,12 @@ renderDashboardChromeStart([
       <h2 style="margin-top:.3rem;"><?= e($order['customer_name']) ?></h2>
       <div class="detail-badges" style="margin-top:.75rem;">
         <span class="detail-badge"><?= e($order['payment_method']) ?></span>
-        <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e($order['order_status']) ?></span>
-        <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e($order['payment_status']) ?></span>
+        <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></span>
+        <span class="detail-badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></span>
+      </div>
+      <div class="muted" style="margin-top:.65rem;line-height:1.45;">
+        <strong>Order:</strong> <?= e(uthenga_shop_status_hint((string) $order['order_status'])) ?><br>
+        <strong>Payment:</strong> <?= e(uthenga_shop_status_hint((string) $order['payment_status'])) ?>
       </div>
       <?php if ($payment): ?>
         <div class="glass-panel" style="padding:0.9rem;margin-top:1rem;">
@@ -545,8 +549,9 @@ renderDashboardChromeStart([
           <div class="receipt-lines" style="margin-top:.65rem;">
             <div class="receipt-line"><span>Provider</span><strong><?= e($payment['provider'] ?? $payment['payment_method'] ?? 'N/A') ?></strong></div>
             <div class="receipt-line"><span>Reference</span><strong><?= e($payment['payment_reference'] ?? 'N/A') ?></strong></div>
-            <div class="receipt-line"><span>Status</span><strong><?= e($payment['payment_status'] ?? 'pending') ?></strong></div>
+            <div class="receipt-line"><span>Status</span><strong><?= e(uthenga_shop_status_label((string) ($payment['payment_status'] ?? 'pending'))) ?></strong></div>
           </div>
+          <p class="muted" style="margin-top:.65rem;"><?= e(uthenga_shop_status_hint((string) ($payment['payment_status'] ?? 'pending'))) ?></p>
         </div>
       <?php endif; ?>
       <div style="margin-top:1rem;" class="receipt-lines">

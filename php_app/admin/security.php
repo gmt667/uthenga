@@ -17,6 +17,36 @@ $hasAuditLogs = uthenga_table_exists('audit_logs');
 $hasTwoFactor = uthenga_table_exists('two_factor_auth');
 $coreHealth = ($hasAuditLogs && $hasFraudAlerts && $hasLoginAlerts) ? 'Healthy' : 'Needs Migration';
 
+if (!function_exists('securityStatusLabel')) {
+    function securityStatusLabel(string $status): string {
+        return match (strtolower(trim($status))) {
+            'open' => 'Open',
+            'reviewed' => 'Reviewed',
+            'dismissed' => 'Dismissed',
+            'escalated' => 'Escalated',
+            'resolved' => 'Resolved',
+            'read' => 'Read',
+            'unread' => 'Unread',
+            default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+        };
+    }
+}
+
+if (!function_exists('securityStatusHint')) {
+    function securityStatusHint(string $status): string {
+        return match (strtolower(trim($status))) {
+            'open' => 'This item still needs attention.',
+            'reviewed' => 'The alert has been reviewed.',
+            'dismissed' => 'The alert was dismissed.',
+            'escalated' => 'The issue has been escalated for follow-up.',
+            'resolved' => 'The issue has been resolved.',
+            'read' => 'The alert has been seen.',
+            'unread' => 'The alert is waiting to be reviewed.',
+            default => 'Current security status.',
+        };
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrf()) {
         $error = 'Security token mismatch. Please try again.';
@@ -30,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'UPDATE fraud_alerts SET status = ?, reviewed_by = ?, reviewed_at = NOW() WHERE id = ?',
                 [$newStatus, $userId, $fraudId]
             );
-            $success = 'Fraud alert status updated to: ' . ucfirst($newStatus);
+            $success = 'Fraud alert status updated to: ' . securityStatusLabel($newStatus);
         }
     } elseif (isset($_POST['mark_anomaly_read'])) {
         $anomalyId = (int)($_POST['anomaly_id'] ?? 0);
@@ -201,8 +231,9 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
                 </td>
                 <td>
                   <span class="badge badge-<?= $fa['status'] === 'open' ? 'pending' : ($fa['status'] === 'dismissed' ? 'approved' : 'rejected') ?>">
-                    <?= e(ucfirst($fa['status'])) ?>
+                    <?= e(securityStatusLabel((string) $fa['status'])) ?>
                   </span>
+                  <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(securityStatusHint((string) $fa['status'])) ?></div>
                 </td>
                 <td>
                   <?php if ($fa['status'] === 'open'): ?>
@@ -265,8 +296,9 @@ $bruteForceAttempts = $hasAuditLogs ? dbQuery(
                     <button type="submit" class="btn btn-xs btn-primary">Mark read</button>
                   </form>
                 <?php else: ?>
-                  <span class="text-muted text-xs">Read</span>
+                  <span class="badge badge-approved"><?= e(securityStatusLabel('read')) ?></span>
                 <?php endif; ?>
+                <div class="text-xs text-muted" style="margin-top:.3rem;line-height:1.35;"><?= e(securityStatusHint((string) (empty($la['is_read']) ? 'unread' : 'read'))) ?></div>
               </td>
             </tr>
           <?php endforeach; ?>

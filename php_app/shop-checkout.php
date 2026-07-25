@@ -440,6 +440,9 @@ require_once __DIR__ . '/includes/header.php';
               <option value="<?= e($value) ?>"><?= e($label) ?></option>
             <?php endforeach; ?>
           </select>
+          <small class="text-muted" style="display:block;margin-top:.45rem;line-height:1.45;">
+            Cash on Delivery, Bank Transfer, TNM Mpamba, and Airtel Money are supported now.
+          </small>
         </label>
         <div class="product-actions">
           <button type="submit" class="btn btn-primary">Place Order</button>

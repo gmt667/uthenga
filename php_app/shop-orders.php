@@ -116,11 +116,15 @@ renderDashboardChromeStart([
               <div class="section-label">Order <?= e($order['order_number']) ?></div>
               <h3 style="margin-top:.3rem;"><?= uthenga_shop_money((float) $order['total_amount']) ?></h3>
               <div class="order-meta">
-                <span><?= e($order['payment_method']) ?></span>
-                <span class="badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e($order['order_status']) ?></span>
-                <span class="badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e($order['payment_status']) ?></span>
+                <span><?= e(uthenga_shop_payment_method_label((string) $order['payment_method'])) ?></span>
+                <span class="badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></span>
+                <span class="badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></span>
                 <span><?= e($order['placed_at']) ?></span>
               </div>
+              <p class="text-muted" style="margin-top:.55rem;line-height:1.45;">
+                <strong>Order:</strong> <?= e(uthenga_shop_status_hint((string) $order['order_status'])) ?><br>
+                <strong>Payment:</strong> <?= e(uthenga_shop_status_hint((string) $order['payment_status'])) ?>
+              </p>
             </div>
             <a href="<?= BASE_URL ?>shop-order.php?order=<?= urlencode((string) $order['order_number']) ?>" class="btn btn-secondary btn-sm">View Receipt</a>
           </div>

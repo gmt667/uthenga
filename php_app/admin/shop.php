@@ -262,6 +262,17 @@ $deletedProducts = uthenga_table_exists('shop_products')
 $orders = uthenga_table_exists('shop_orders')
     ? dbQuery("SELECT * FROM shop_orders ORDER BY placed_at DESC LIMIT 25")
     : [];
+$cartItems = uthenga_table_exists('shop_cart_items')
+    ? dbQuery("SELECT sci.*, sp.name AS product_name, sp.sku AS product_sku, sp.primary_image_url, u.name AS customer_name, u.email AS customer_email
+               FROM shop_cart_items sci
+               LEFT JOIN shop_products sp ON sp.id = sci.product_id
+               LEFT JOIN users u ON u.id = sci.user_id
+               ORDER BY sci.updated_at DESC, sci.id DESC
+               LIMIT 50")
+    : [];
+$cartSummary = uthenga_table_exists('shop_cart_items')
+    ? dbQueryOne("SELECT COUNT(*) AS total_items, COUNT(DISTINCT COALESCE(CAST(user_id AS CHAR), CONCAT('session:', session_token))) AS total_carts, COALESCE(SUM(quantity), 0) AS total_quantity FROM shop_cart_items")
+    : ['total_items' => 0, 'total_carts' => 0, 'total_quantity' => 0];
 $riders = uthenga_shop_riders(false);
 $riderNames = [];
 foreach ($riders as $rider) {
@@ -275,6 +286,9 @@ $metrics = [
     'low_stock' => uthenga_table_exists('shop_products') ? dbCount('SELECT COUNT(*) FROM shop_products WHERE stock_quantity <= low_stock_threshold') : 0,
     'deleted' => count($deletedProducts),
     'riders' => count($riders),
+    'cart_items' => (int) ($cartSummary['total_items'] ?? 0),
+    'cart_count' => (int) ($cartSummary['total_carts'] ?? 0),
+    'cart_quantity' => (int) ($cartSummary['total_quantity'] ?? 0),
 ];
 
 $section = trim((string) ($_GET['section'] ?? 'overview'));
@@ -328,6 +342,7 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
     <a href="#categories">Categories</a>
     <a href="#products">Products</a>
     <a href="#orders">Orders</a>
+    <a href="#carts">Carts</a>
     <a href="#riders">Riders</a>
     <?php if ($isSuperAdmin): ?><a href="#settings">Settings</a><?php endif; ?>
   </div>
@@ -509,7 +524,14 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
               <td><?= e($order['order_number']) ?><br><span class="text-xs text-muted"><?= e($order['placed_at']) ?></span></td>
               <td><?= e($order['customer_name']) ?><br><span class="text-xs text-muted"><?= e($order['customer_phone']) ?></span></td>
               <td><?= uthenga_shop_money((float) $order['total_amount']) ?></td>
-              <td><span class="badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e($order['order_status']) ?></span><br><span class="badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e($order['payment_status']) ?></span></td>
+              <td>
+                <span class="badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></span><br>
+                <span class="badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></span>
+                <div class="text-xs text-muted" style="margin-top:.35rem;line-height:1.35;">
+                  <?= e(uthenga_shop_status_hint((string) $order['order_status'])) ?><br>
+                  <?= e(uthenga_shop_status_hint((string) $order['payment_status'])) ?>
+                </div>
+              </td>
               <td><?= e($riderNames[(int) ($order['assigned_rider_id'] ?? 0)] ?? 'Unassigned') ?></td>
               <td>
                 <form method="post" class="shop-table-actions" style="margin:0;">
@@ -518,12 +540,12 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
                   <input type="hidden" name="order_id" value="<?= (int) $order['id'] ?>">
                   <select name="order_status" class="form-control" style="max-width:150px;">
                     <?php foreach (['pending','confirmed','preparing','assigned_to_rider','out_for_delivery','delivered','cancelled'] as $status): ?>
-                      <option value="<?= e($status) ?>" <?= $order['order_status'] === $status ? 'selected' : '' ?>><?= e($status) ?></option>
+                      <option value="<?= e($status) ?>" <?= $order['order_status'] === $status ? 'selected' : '' ?>><?= e(uthenga_shop_status_label($status)) ?></option>
                     <?php endforeach; ?>
                   </select>
                   <select name="payment_status" class="form-control" style="max-width:130px;">
                     <?php foreach (['pending','authorized','paid','failed','refunded','partially_paid'] as $status): ?>
-                      <option value="<?= e($status) ?>" <?= $order['payment_status'] === $status ? 'selected' : '' ?>><?= e($status) ?></option>
+                      <option value="<?= e($status) ?>" <?= $order['payment_status'] === $status ? 'selected' : '' ?>><?= e(uthenga_shop_status_label($status)) ?></option>
                     <?php endforeach; ?>
                   </select>
                   <select name="assigned_rider_id" class="form-control" style="max-width:160px;">
@@ -539,6 +561,46 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
               </td>
             </tr>
           <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="shop-card" id="carts">
+    <div class="section-head">
+      <div>
+        <h3>Shopping Carts</h3>
+        <p class="text-xs text-muted">View live carts saved in session and synced cart storage.</p>
+      </div>
+    </div>
+    <div class="shop-admin-grid" style="margin-bottom:1rem;">
+      <div class="shop-admin-stat"><span>Active Carts</span><strong><?= number_format((int) $metrics['cart_count']) ?></strong></div>
+      <div class="shop-admin-stat"><span>Cart Items</span><strong><?= number_format((int) $metrics['cart_items']) ?></strong></div>
+      <div class="shop-admin-stat"><span>Total Qty</span><strong><?= number_format((int) $metrics['cart_quantity']) ?></strong></div>
+      <div class="shop-admin-stat"><span>Latest Sync</span><strong><?= uthenga_table_exists('shop_cart_items') ? 'Live' : 'Unavailable' ?></strong></div>
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead><tr><th>Cart Owner</th><th>Product</th><th>Qty</th><th>Unit Price</th><th>Updated</th></tr></thead>
+        <tbody>
+          <?php if (empty($cartItems)): ?>
+            <tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--clr-text-muted);">No active cart rows found.</td></tr>
+          <?php else: ?>
+            <?php foreach ($cartItems as $cartRow): ?>
+              <?php
+                $cartOwner = !empty($cartRow['customer_name'])
+                    ? (string) $cartRow['customer_name']
+                    : ('Session ' . substr((string) ($cartRow['session_token'] ?? ''), 0, 10));
+              ?>
+              <tr>
+                <td><?= e($cartOwner) ?><br><span class="text-xs text-muted"><?= e($cartRow['customer_email'] ?? $cartRow['session_token'] ?? 'N/A') ?></span></td>
+                <td><?= e($cartRow['product_name'] ?? 'Unknown product') ?><br><span class="text-xs text-muted"><?= e($cartRow['product_sku'] ?? '') ?></span></td>
+                <td><?= number_format((int) ($cartRow['quantity'] ?? 0)) ?></td>
+                <td><?= uthenga_shop_money((float) ($cartRow['unit_price'] ?? 0)) ?></td>
+                <td class="text-xs text-muted"><?= e((string) ($cartRow['updated_at'] ?? $cartRow['created_at'] ?? '')) ?></td>
+              </tr>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>

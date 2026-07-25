@@ -103,6 +103,31 @@ function txStatusBadge(string $s): string {
     }
     return 'badge-pending';
 }
+
+function txStatusLabel(string $status): string {
+    return match (strtolower(trim($status))) {
+        'success' => 'Successful',
+        'paid' => 'Paid',
+        'pending' => 'Pending',
+        'failed' => 'Failed',
+        'refunded' => 'Refunded',
+        'processing' => 'Processing',
+        'authorized' => 'Authorized',
+        default => ucwords(str_replace(['_', '-'], ' ', strtolower(trim($status)))),
+    };
+}
+
+function txStatusHint(string $status): string {
+    return match (strtolower(trim($status))) {
+        'success', 'paid' => 'The transaction has cleared successfully.',
+        'pending' => 'The payment is waiting for confirmation.',
+        'processing' => 'The payment is being processed.',
+        'authorized' => 'The payment has been authorized and is awaiting capture or settlement.',
+        'failed' => 'The payment did not complete.',
+        'refunded' => 'The payment was returned to the customer.',
+        default => 'Current ledger status.',
+    };
+}
 ?>
 
 <div class="page-header">
@@ -157,7 +182,7 @@ function txStatusBadge(string $s): string {
     <input type="text" name="q" placeholder="Search transactions..." class="form-control" style="max-width:260px;" value="<?= e($search) ?>">
     <select name="status" class="form-control" style="max-width:160px;" onchange="this.form.submit()">
       <option value="all"     <?= $filterStatus === 'all'     ? 'selected' : '' ?>>All Statuses</option>
-      <option value="success" <?= $filterStatus === 'success' ? 'selected' : '' ?>>Success</option>
+      <option value="success" <?= $filterStatus === 'success' ? 'selected' : '' ?>>Successful</option>
       <option value="pending" <?= $filterStatus === 'pending' ? 'selected' : '' ?>>Pending</option>
       <option value="failed"  <?= $filterStatus === 'failed'  ? 'selected' : '' ?>>Failed</option>
       <option value="refunded"<?= $filterStatus === 'refunded'? 'selected' : '' ?>>Refunded</option>
@@ -198,8 +223,9 @@ function txStatusBadge(string $s): string {
             <td class="text-xs"><?= e($t['gateway_label'] ?? $t['gateway_name'] ?? $t['gateway'] ?? 'N/A') ?></td>
             <td>
               <span class="badge <?= txStatusBadge($t['status']) ?>">
-                <?= e($t['status']) ?>
+                <?= e(txStatusLabel((string) $t['status'])) ?>
               </span>
+              <div class="text-xs text-muted" style="margin-top:.35rem;line-height:1.35;"><?= e(txStatusHint((string) $t['status'])) ?></div>
             </td>
             <td class="text-xs text-muted"><?= e(substr($t['created_at'],0,16)) ?></td>
           </tr>

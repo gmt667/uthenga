@@ -2059,12 +2059,15 @@ html[data-theme="dark"] body {
   width: 1rem;
   height: 1rem;
   flex-shrink: 0;
+  line-height: 0;
+  color: inherit;
 }
 
 .theme-toggle-icon svg {
   width: 1rem;
   height: 1rem;
   display: block;
+  flex-shrink: 0;
 }
 
 .navbar-mobile-actions {
@@ -2190,7 +2193,7 @@ thead th,
     flex-wrap: nowrap;
     padding: 0;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .navbar-mobile-actions .btn {
@@ -2212,6 +2215,13 @@ thead th,
     padding: 0;
     gap: 0;
     justify-content: center;
+    display: inline-flex;
+  }
+
+  .navbar-mobile-actions .theme-toggle .theme-toggle-icon,
+  .navbar-mobile-actions .theme-toggle .theme-toggle-icon svg {
+    width: 14px;
+    height: 14px;
   }
 
   .navbar-mobile-actions .theme-toggle-label {
@@ -2883,6 +2893,12 @@ body.navbar-menu-open {
     height: 30px;
   }
 
+  .navbar-mobile-actions .theme-toggle .theme-toggle-icon,
+  .navbar-mobile-actions .theme-toggle .theme-toggle-icon svg {
+    width: 13px;
+    height: 13px;
+  }
+
   .hero-btns {
     flex-direction: column;
   }
@@ -2917,6 +2933,18 @@ body.navbar-menu-open {
   .navbar-mobile-actions .btn {
     padding: 0.16rem 0.28rem;
     font-size: 0.56rem;
+  }
+
+  .navbar-mobile-actions .theme-toggle {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+  }
+
+  .navbar-mobile-actions .theme-toggle .theme-toggle-icon,
+  .navbar-mobile-actions .theme-toggle .theme-toggle-icon svg {
+    width: 12px;
+    height: 12px;
   }
 
   .navbar-hamburger {
