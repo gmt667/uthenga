@@ -146,7 +146,10 @@ function statusClass(string $status): string {
             <img src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=<?= urlencode($bk['qr_code']) ?>&choe=UTF-8" alt="QR Code" style="margin: 0.5rem auto; display: block; border: 1px solid var(--clr-border); border-radius: 4px; padding: 0.5rem; background: #fff;">
             <div class="qr-string" style="font-family: monospace; font-size: 0.85rem; font-weight: bold; color: var(--clr-text-soft); margin-top: 0.5rem;"><?= e($bk['qr_code']) ?></div>
             <div class="text-xs text-muted" style="margin-top:0.5rem;">Keep this ticket open or return later. It will stay ready to be scanned.</div>
-            <a href="<?= BASE_URL ?>ticket.php?id=<?= e($bk['id']) ?>" target="_blank" class="btn btn-secondary btn-sm" style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.25rem;"><?= uthenga_public_icon_svg('share') ?> Open Ticket / Print / Share</a>
+            <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;">
+              <a href="<?= BASE_URL ?>ticket.php?id=<?= e($bk['id']) ?>" target="_blank" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:0.25rem;"><?= uthenga_public_icon_svg('share') ?> Open Ticket</a>
+              <a href="<?= BASE_URL ?>ticket.php?id=<?= e($bk['id']) ?>&download=pdf" target="_blank" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:0.25rem;"><?= uthenga_public_icon_svg('ticket') ?> Download PDF</a>
+            </div>
           </div>
           <?php if ($bk['transaction_id']): ?>
             <p class="text-xs text-muted" style="text-align:center;margin-top:0.75rem;">
