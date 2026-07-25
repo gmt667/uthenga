@@ -7,6 +7,8 @@
 $pageTitle = 'Gate Session';
 $activeNav = 'admin-gate';
 
+require_once __DIR__ . '/../includes/auth_check.php';
+requireAdmin();
 require_once __DIR__ . '/includes/admin_header.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -34,6 +36,65 @@ if ($selectedEventId) {
         );
     }
 }
+
+if (isset($_GET['download']) && $_GET['download'] === 'pdf' && $selectedEvent) {
+    $safeTitle = preg_replace('/[^A-Z0-9\-]+/i', '-', (string) ($selectedEvent['title'] ?? 'gate-session')) ?: 'gate-session';
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="uthenga-gate-session-' . $safeTitle . '.pdf"');
+
+    $sessionLabel = $activeSession ? ('Session ID: ' . $activeSession['id']) : 'No active session';
+    $statsLines = [
+        'UTHENGA GATE SESSION',
+        'Event: ' . (string) ($selectedEvent['title'] ?? ''),
+        'Location: ' . (string) ($selectedEvent['location'] ?? ''),
+        $sessionLabel,
+        'Status: ' . (string) ($activeSession['status'] ?? 'inactive'),
+        'Tickets Sold: ' . (string) (count($events) ? 'Available in dashboard' : 'N/A'),
+        'Gate Note: Use the live gate dashboard for scan operations.',
+    ];
+
+    $text = implode("\n", $statsLines);
+    if (function_exists('iconv')) {
+        $converted = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        if (is_string($converted) && $converted !== '') {
+            $text = $converted;
+        }
+    }
+    $text = preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/', '', $text) ?: '';
+    $contentLines = [];
+    $y = 780;
+    foreach (explode("\n", $text) as $line) {
+        $escaped = str_replace(['\\', '(', ')', "\r"], ['\\\\', '\\(', '\\)', ''], $line);
+        $contentLines[] = 'BT /F1 12 Tf 48 ' . $y . ' Td (' . $escaped . ') Tj ET';
+        $y -= 20;
+        if ($y < 60) {
+            break;
+        }
+    }
+    $contentStream = implode("\n", $contentLines);
+    $objects = [
+        1 => '<< /Type /Catalog /Pages 2 0 R >>',
+        2 => '<< /Type /Pages /Kids [4 0 R] /Count 1 >>',
+        3 => '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+        4 => '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>',
+        5 => "<< /Length " . strlen($contentStream) . " >>\nstream\n" . $contentStream . "\nendstream",
+    ];
+    $pdf = "%PDF-1.4\n";
+    $offsets = [0];
+    foreach ($objects as $id => $body) {
+        $offsets[$id] = strlen($pdf);
+        $pdf .= $id . " 0 obj\n" . $body . "\nendobj\n";
+    }
+    $xrefPos = strlen($pdf);
+    $pdf .= "xref\n0 6\n";
+    $pdf .= sprintf("%010d %05d f \n", 0, 65535);
+    for ($i = 1; $i <= 5; $i++) {
+        $pdf .= sprintf("%010d %05d n \n", $offsets[$i] ?? 0, 0);
+    }
+    $pdf .= "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" . $xrefPos . "\n%%EOF";
+    echo $pdf;
+    exit;
+}
 ?>
 
 <div class="page-header">
@@ -42,10 +103,11 @@ if ($selectedEventId) {
     <p class="text-muted">Scan QR codes, validate tickets, and monitor entry in real time.</p>
   </div>
   <?php if ($selectedEvent && $activeSession): ?>
-    <div style="display:flex;gap:0.75rem;align-items:center;">
+    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
       <span class="badge" style="background:<?= $activeSession['status'] === 'active' ? 'var(--clr-green)' : 'var(--clr-accent)' ?>;color:#000;padding:0.4rem 1rem;border-radius:20px;font-weight:700;font-size:0.82rem;">
         <?= $activeSession['status'] === 'active' ? uthenga_public_icon_svg('check') . ' SESSION ACTIVE' : admin_icon_svg('clock') . ' SESSION PAUSED' ?>
       </span>
+      <a href="<?= BASE_URL ?>admin/gate_session.php?event_id=<?= urlencode((string) $selectedEventId) ?>&download=pdf" class="btn btn-sm btn-secondary"><?= admin_icon_svg('download') ?> Print / PDF</a>
     </div>
   <?php endif; ?>
 </div>

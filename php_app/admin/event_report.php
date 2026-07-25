@@ -7,6 +7,8 @@
 $pageTitle = 'Event Report';
 $activeNav = 'admin-event-report';
 
+require_once __DIR__ . '/../includes/auth_check.php';
+requireAdmin();
 require_once __DIR__ . '/includes/admin_header.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -148,6 +150,70 @@ if ($selectedId) {
         $soldPct       = $totalCapacity > 0 ? round(($totalSold / $totalCapacity) * 100, 1) : 0;
     }
 }
+
+if (isset($_GET['download']) && $_GET['download'] === 'pdf' && $event) {
+    $safeTitle = preg_replace('/[^A-Z0-9\-]+/i', '-', (string) ($event['title'] ?? 'event-report')) ?: 'event-report';
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="uthenga-event-report-' . $safeTitle . '.pdf"');
+
+    $pdfLines = [
+        'UTHENGA EVENT REPORT',
+        'Event: ' . (string) ($event['title'] ?? ''),
+        'Venue: ' . (string) ($event['location'] ?? ''),
+        'Generated: ' . date('Y-m-d H:i:s'),
+        'Tickets Sold: ' . number_format($totalSold),
+        'Scanned / Attended: ' . number_format($totalScanned),
+        'No Shows: ' . number_format($noShows),
+        'Revenue: ' . formatMWK($revenue),
+        'Attendance Rate: ' . $attendancePct . '%',
+        'Tickets Sold %: ' . $soldPct . '%',
+        'Cancellations: ' . number_format((int) ($stats['cancelled_count'] ?? 0)),
+        'Total Bookings: ' . number_format((int) ($stats['total_bookings'] ?? 0)),
+    ];
+
+    $text = implode("\n", $pdfLines);
+    if (function_exists('iconv')) {
+        $converted = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        if (is_string($converted) && $converted !== '') {
+            $text = $converted;
+        }
+    }
+    $text = preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/', '', $text) ?: '';
+    $contentLines = [];
+    $y = 780;
+    foreach (explode("\n", $text) as $line) {
+        $escaped = str_replace(['\\', '(', ')', "\r"], ['\\\\', '\\(', '\\)', ''], $line);
+        $contentLines[] = 'BT /F1 12 Tf 48 ' . $y . ' Td (' . $escaped . ') Tj ET';
+        $y -= 20;
+        if ($y < 60) {
+            break;
+        }
+    }
+
+    $contentStream = implode("\n", $contentLines);
+    $objects = [
+        1 => '<< /Type /Catalog /Pages 2 0 R >>',
+        2 => '<< /Type /Pages /Kids [4 0 R] /Count 1 >>',
+        3 => '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+        4 => '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>',
+        5 => "<< /Length " . strlen($contentStream) . " >>\nstream\n" . $contentStream . "\nendstream",
+    ];
+    $pdf = "%PDF-1.4\n";
+    $offsets = [0];
+    foreach ($objects as $id => $body) {
+        $offsets[$id] = strlen($pdf);
+        $pdf .= $id . " 0 obj\n" . $body . "\nendobj\n";
+    }
+    $xrefPos = strlen($pdf);
+    $pdf .= "xref\n0 6\n";
+    $pdf .= sprintf("%010d %05d f \n", 0, 65535);
+    for ($i = 1; $i <= 5; $i++) {
+        $pdf .= sprintf("%010d %05d n \n", $offsets[$i] ?? 0, 0);
+    }
+    $pdf .= "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" . $xrefPos . "\n%%EOF";
+    echo $pdf;
+    exit;
+}
 ?>
 
 <div class="page-header">
@@ -159,7 +225,7 @@ if ($selectedId) {
     <div class="dashboard-head-meta" id="report-export-btns">
       <a href="?event_id=<?= urlencode($selectedId) ?>&export=csv" class="btn btn-sm btn-secondary" id="export-csv-btn"><?= admin_icon_svg('download') ?> Export CSV</a>
       <a href="?event_id=<?= urlencode($selectedId) ?>&export=excel" class="btn btn-sm btn-secondary" id="export-excel-btn"><?= admin_icon_svg('file') ?> Export Excel</a>
-      <button class="btn btn-sm btn-secondary" id="export-pdf-btn" onclick="window.print()"><?= admin_icon_svg('report') ?> Print / PDF</button>
+      <a href="?event_id=<?= urlencode($selectedId) ?>&download=pdf" class="btn btn-sm btn-secondary" id="export-pdf-btn"><?= admin_icon_svg('report') ?> Print / PDF</a>
     </div>
   <?php endif; ?>
 </div>

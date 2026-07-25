@@ -39,6 +39,69 @@ $ticketModeLabel = match ($ticketFormat) {
     'code' => 'Code Ticket',
     default => 'QR Ticket',
 };
+$downloadMode = (string) ($_GET['download'] ?? '');
+
+if ($downloadMode === 'pdf') {
+    $safeTitle = preg_replace('/[^A-Z0-9\-]+/i', '-', (string) ($bk['listing_title'] ?? 'ticket')) ?: 'ticket';
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="uthenga-ticket-' . $safeTitle . '.pdf"');
+    $ticketLines = [
+        'UTHENGA ENTRY TICKET',
+        'Event: ' . (string) ($bk['listing_title'] ?? ''),
+        'Ticket Code: ' . $ticketCode,
+        'Customer: ' . (string) ($bk['customer_name'] ?? ''),
+        'Email: ' . (string) ($bk['customer_email'] ?? ''),
+        'Location: ' . (string) ($listing['location'] ?? 'Venue Details'),
+        'Date: ' . (string) ($listingMeta['date'] ?? 'TBC'),
+        'Time: ' . (string) ($listingMeta['time'] ?? 'TBC'),
+        'Ticket Type: ' . (string) ($details['ticket_type'] ?? 'Standard'),
+        'Quantity: ' . (string) ((int) $bk['quantity'] . ' Ticket' . ((int) $bk['quantity'] > 1 ? 's' : '')),
+        'Used: ' . (string) ((int) $bk['tickets_used'] . ' / ' . (int) $bk['quantity']),
+        'Status: ' . (string) ($bk['ticket_status'] ?? 'active'),
+        'Gate Instruction: Present this ticket at the venue for scanning.',
+    ];
+
+    $pdfText = function_exists('iconv') ? @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', implode("\n", $ticketLines)) : implode("\n", $ticketLines);
+    $pdfText = preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/', '', (string) $pdfText) ?: '';
+    $pdfText = str_replace(['\\', '(', ')', "\r"], ['\\\\', '\\(', '\\)', ''], $pdfText);
+    $contentLines = [];
+    $y = 780;
+    foreach (explode("\n", $pdfText) as $line) {
+        $contentLines[] = 'BT /F1 12 Tf 48 ' . $y . ' Td (' . $line . ') Tj ET';
+        $y -= 20;
+        if ($y < 60) {
+            break;
+        }
+    }
+
+    $objects = [];
+    $catalogId = 1;
+    $pagesId = 2;
+    $fontId = 3;
+    $pageId = 4;
+    $contentId = 5;
+    $contentStream = implode("\n", $contentLines);
+    $objects[$fontId] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
+    $objects[$contentId] = "<< /Length " . strlen($contentStream) . " >>\nstream\n" . $contentStream . "\nendstream";
+    $objects[$pageId] = '<< /Type /Page /Parent ' . $pagesId . ' 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 ' . $fontId . ' 0 R >> >> /Contents ' . $contentId . ' 0 R >>';
+    $objects[$pagesId] = '<< /Type /Pages /Kids [' . $pageId . ' 0 R] /Count 1 >>';
+    $objects[$catalogId] = '<< /Type /Catalog /Pages ' . $pagesId . ' 0 R >>';
+    $pdf = "%PDF-1.4\n";
+    $offsets = [0];
+    foreach ($objects as $id => $body) {
+        $offsets[$id] = strlen($pdf);
+        $pdf .= $id . " 0 obj\n" . $body . "\nendobj\n";
+    }
+    $xrefPos = strlen($pdf);
+    $pdf .= "xref\n0 6\n";
+    $pdf .= sprintf("%010d %05d f \n", 0, 65535);
+    for ($i = 1; $i <= 5; $i++) {
+        $pdf .= sprintf("%010d %05d n \n", $offsets[$i] ?? 0, 0);
+    }
+    $pdf .= "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" . $xrefPos . "\n%%EOF";
+    echo $pdf;
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -313,6 +376,7 @@ $ticketModeLabel = match ($ticketFormat) {
     <div class="ticket-meta">Location: <?= e($listing['location'] ?? 'Venue Details') ?></div>
     <div class="ticket-actions">
       <button onclick="window.print()" class="ticket-action-btn primary" type="button">Print / PDF</button>
+      <a href="?id=<?= urlencode((string) $bk['id']) ?>&download=pdf" class="ticket-action-btn">Download PDF</a>
       <button id="share-ticket-btn" class="ticket-action-btn" type="button">Share</button>
       <button id="copy-ticket-btn" class="ticket-action-btn soft" type="button">Copy Code</button>
     </div>
