@@ -18,26 +18,6 @@ $themePreference = uthenga_theme_preference();
   <div class="navbar-inner">
     <?php $logoSize = 'md'; $logoLink = true; require __DIR__ . '/logo.php'; ?>
 
-    <div class="navbar-mobile-actions" aria-label="Mobile actions">
-      <button
-        type="button"
-        class="btn btn-sm btn-secondary btn-icon theme-toggle"
-        data-theme-toggle
-        aria-label="Toggle light and dark mode"
-        aria-pressed="false"
-        title="Toggle light and dark mode"
-      >
-        <span class="theme-toggle-icon" aria-hidden="true"><?= uthenga_public_icon_svg($themePreference === 'dark' ? 'moon' : 'sun') ?></span>
-        <span class="theme-toggle-label">Dark</span>
-      </button>
-      <?php if ($isLoggedIn): ?>
-        <a href="<?= BASE_URL . ($userRole === ROLE_CUSTOMER ? 'dashboard.php' : (in_array($userRole, ADMIN_ROLES, true) ? ($userRole === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') : 'vendor/dashboard.php')) ?>" class="btn btn-sm btn-primary">Dashboard</a>
-      <?php else: ?>
-        <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-secondary">Sign In</a>
-        <a href="<?= BASE_URL ?>register.php" class="btn btn-sm btn-primary">Register</a>
-      <?php endif; ?>
-    </div>
-
     <button
       type="button"
       class="navbar-hamburger"
@@ -64,18 +44,6 @@ $themePreference = uthenga_theme_preference();
     </ul>
 
     <div class="navbar-actions" id="navbar-actions">
-      <button
-        type="button"
-        class="btn btn-sm btn-secondary btn-icon theme-toggle"
-        data-theme-toggle
-        aria-label="Toggle light and dark mode"
-        aria-pressed="false"
-        title="Toggle light and dark mode"
-      >
-        <span class="theme-toggle-icon" aria-hidden="true"><?= uthenga_public_icon_svg($themePreference === 'dark' ? 'moon' : 'sun') ?></span>
-        <span class="theme-toggle-label">Dark</span>
-      </button>
-
       <?php if ($isLoggedIn): ?>
         <div class="profile-dropdown">
           <button class="profile-dropdown-btn" id="profile-dropdown-trigger" aria-haspopup="true" aria-expanded="false" type="button">
@@ -105,6 +73,17 @@ $themePreference = uthenga_theme_preference();
           </div>
         </div>
       <?php else: ?>
+        <button
+          type="button"
+          class="btn btn-sm btn-secondary btn-icon theme-toggle"
+          data-theme-toggle
+          aria-label="Toggle light and dark mode"
+          aria-pressed="false"
+          title="Toggle light and dark mode"
+        >
+          <span class="theme-toggle-icon" aria-hidden="true"><?= uthenga_public_icon_svg($themePreference === 'dark' ? 'moon' : 'sun') ?></span>
+          <span class="theme-toggle-label">Dark</span>
+        </button>
         <a href="<?= BASE_URL ?>vendor/register.php" class="btn btn-sm btn-ghost" id="nav-become-vendor">Vendor</a>
         <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-secondary" id="nav-login">Sign In</a>
         <a href="<?= BASE_URL ?>register.php" class="btn btn-sm btn-primary" id="nav-register">Register</a>

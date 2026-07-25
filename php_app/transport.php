@@ -134,7 +134,7 @@ function getPrice(array $listing): string {
     <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;"><?= uthenga_public_icon_svg('bus') ?> Coaches & Shuttles</h1>
     <p style="color: var(--clr-text-soft); margin-bottom: 1.5rem;">Compare inter-city coaches, direct airport transfers, and private rentals in Malawi.</p>
     
-    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <div class="directory-hero-actions">
       <a href="transport.php" class="btn btn-sm btn-primary">Coaches & Buses</a>
       <a href="airport-transfer.php" class="btn btn-sm btn-secondary"><?= uthenga_public_icon_svg('plane') ?> Airport Transfers</a>
       <a href="car-rental.php" class="btn btn-sm btn-secondary"><?= uthenga_public_icon_svg('car') ?> Car Rentals</a>

@@ -213,18 +213,10 @@ if (!empty($listings)) {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Find concerts, festivals, cultural celebrations and sports events in Malawi. Book your event tickets on Uthenga.">
-  <meta name="base-url" content="<?= BASE_URL ?>">
-  <meta name="csrf-token" content="<?= e($_SESSION['csrf_token'] ?? '') ?>">
-  <title><?= e($pageTitle) ?> | <?= APP_NAME ?></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+<?php require_once __DIR__ . '/includes/header.php'; ?>
+<!-- Leaflet CSS for Map View -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
   <!-- Leaflet CSS for Map View -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <style>
@@ -611,9 +603,6 @@ if (!empty($listings)) {
       .map-view-container { height: 300px; }
     }
   </style>
-</head>
-<body>
-<?php require_once __DIR__ . '/includes/navbar.php'; ?>
 
 <!-- ─── Hero Slider ─── -->
 <?php if (!empty($sliderEvents)): ?>
@@ -815,25 +804,20 @@ if (!empty($listings)) {
             <div class="ticket-img-wrap">
               <img src="<?= e($listing['image']) ?>" alt="<?= e($listing['title']) ?>" class="ticket-img" loading="lazy">
               <div class="ticket-img-overlay"></div>
-              <span class="card-badge badge-event" style="position:absolute; top:10px; left:10px; z-index:5;">🎟️ EVENT</span>
+              <span class="card-badge badge-event" style="position:absolute; top:10px; left:10px; z-index:5; display:inline-flex; align-items:center; gap:0.25rem;"><?= uthenga_public_icon_svg('ticket') ?> Event</span>
               <?php if (!empty($listing['is_trending'])): ?>
-                <span class="card-badge badge-trending" style="position:absolute; top:10px; right:10px; z-index:5; background: linear-gradient(135deg, #ff416c, #ff4b2b);">🔥 Trending</span>
+                <span class="card-badge badge-trending" style="position:absolute; top:10px; right:10px; z-index:5; background: linear-gradient(135deg, #ff416c, #ff4b2b); display:inline-flex; align-items:center; gap:0.25rem;"><?= uthenga_public_icon_svg('sparkles') ?> Trending</span>
               <?php elseif ($listing['featured']): ?>
-                <span class="card-badge badge-featured" style="position:absolute; top:10px; right:10px; z-index:5; background: linear-gradient(135deg, #ffb703, #fb8500); color:#000;">⭐ Featured</span>
+                <span class="card-badge badge-featured" style="position:absolute; top:10px; right:10px; z-index:5; background: linear-gradient(135deg, #ffb703, #fb8500); color:#000; display:inline-flex; align-items:center; gap:0.25rem;"><?= uthenga_public_icon_svg('star') ?> Featured</span>
               <?php endif; ?>
               <div class="ticket-date-badge">
-                📅 <?= e($meta['date'] ?? 'TBC') ?> <?php if (!empty($meta['time'])): ?>· <?= e($meta['time']) ?><?php endif; ?>
+                <?= uthenga_public_icon_svg('calendar') ?> <?= e($meta['date'] ?? 'TBC') ?> <?php if (!empty($meta['time'])): ?>· <?= e($meta['time']) ?><?php endif; ?>
               </div>
             </div>
             <div class="ticket-body">
               <span class="ticket-cat-badge"><?= e($meta['category'] ?? 'Event Pass') ?></span>
               <h3 class="ticket-title"><?= e($listing['title']) ?></h3>
-              <div class="ticket-location">📍 <?= e($listing['location']) ?></div>
-              
-              <div class="flex items-center gap-1" style="margin-bottom: 0.5rem;">
-                <span class="stars"><?= renderStars((float)$listing['rating']) ?></span>
-                <span class="text-xs text-muted">(<?= e($listing['rating']) ?>)</span>
-              </div>
+              <div class="ticket-location"><?= uthenga_public_icon_svg('pin') ?> <?= e($listing['location']) ?></div>
 
               <?php if (!empty($listing['description'])): ?>
                 <?php
@@ -842,7 +826,7 @@ if (!empty($listings)) {
                   $needsEllipsis = function_exists('mb_strlen') ? mb_strlen($desc) > 110 : strlen($desc) > 110;
                 ?>
                 <p style="font-size: 0.8rem; color: rgba(255,255,255,0.7); margin-bottom: 0.75rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                  <?= e($shortDesc) ?><?= $needsEllipsis ? '…' : '' ?>
+                  <?= e($shortDesc) ?><?= $needsEllipsis ? '...' : '' ?>
                 </p>
               <?php endif; ?>
 
@@ -850,10 +834,10 @@ if (!empty($listings)) {
 
               <?php if ($totalAvail > 0): ?>
                 <div class="ticket-stock-bar <?= $isLowStock ? 'low' : '' ?>">
-                  🎟️ <?= number_format($totalAvail) ?> tickets available<?= $isLowStock ? ' — Selling Fast!' : '' ?>
+                  <?= uthenga_public_icon_svg('ticket') ?> <?= number_format($totalAvail) ?> tickets available<?= $isLowStock ? ' - Selling Fast!' : '' ?>
                 </div>
               <?php else: ?>
-                <div class="ticket-stock-bar low" style="color:#ff4d6d;">❌ Sold Out</div>
+                <div class="ticket-stock-bar low" style="color:#ff4d6d; display:inline-flex; align-items:center; gap:0.25rem;"><?= uthenga_public_icon_svg('x') ?> Sold Out</div>
               <?php endif; ?>
             </div>
             <div class="ticket-footer">
@@ -862,9 +846,9 @@ if (!empty($listings)) {
                 <?php if (isLoggedIn()): ?>
                   <button class="btn btn-sm btn-primary"
                     onclick="openBookingModal('<?= e($listing['id']) ?>','event','<?= addslashes(e($listing['title'])) ?>',<?= (float)($meta['standardTicketPrice'] ?? 0) ?>,<?= (float)($meta['vipTicketPrice'] ?? 0) ?>); if (window.trackEventMetric) { window.trackEventMetric('<?= e($listing['id']) ?>', 'click'); }"
-                    style="flex:1.2; border-radius:10px; justify-content:center; background: linear-gradient(135deg, #ff6b35, #f72585); border:none;">🎟️ Buy Ticket</button>
+                    style="flex:1.2; border-radius:10px; justify-content:center; background: linear-gradient(135deg, #ff6b35, #f72585); border:none; display:inline-flex; align-items:center; gap:0.35rem;"><?= uthenga_public_icon_svg('ticket') ?> Buy Ticket</button>
                 <?php else: ?>
-                  <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-sm btn-primary" style="flex:1.2; border-radius:10px; justify-content:center; background: linear-gradient(135deg, #ff6b35, #f72585); border:none;">🎟️ Buy Ticket</a>
+                  <a href="<?= BASE_URL ?>login.php?redirect=<?= urlencode($_SERVER['REQUEST_URI']) ?>" class="btn btn-sm btn-primary" style="flex:1.2; border-radius:10px; justify-content:center; background: linear-gradient(135deg, #ff6b35, #f72585); border:none; display:inline-flex; align-items:center; gap:0.35rem;"><?= uthenga_public_icon_svg('ticket') ?> Buy Ticket</a>
                 <?php endif; ?>
               <?php else: ?>
                 <button class="btn btn-sm btn-primary" disabled style="flex:1.2; border-radius:10px; justify-content:center;">Sold Out</button>
@@ -889,7 +873,7 @@ if (!empty($listings)) {
   <div class="modal">
     <div class="modal-header">
       <h3 id="bk-modal-title">Book Ticket</h3>
-      <button class="modal-close" onclick="closeModal('booking-modal')">✕</button>
+      <button class="modal-close" onclick="closeModal('booking-modal')"><?= uthenga_public_icon_svg('x') ?></button>
     </div>
     <form method="POST" action="<?= BASE_URL ?>request_api.php" id="booking-form">
       <div class="modal-body">
@@ -939,7 +923,7 @@ if (!empty($listings)) {
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" onclick="closeModal('booking-modal')">Cancel</button>
-        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment →</button>
+        <button type="button" id="proceed-to-payment" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:0.35rem;">Continue to Payment <?= uthenga_public_icon_svg('chevron-right') ?></button>
       </div>
     </form>
   </div>
@@ -949,10 +933,10 @@ if (!empty($listings)) {
   <div class="modal">
     <div class="modal-header">
       <h3>Confirm Payment</h3>
-      <button class="modal-close" onclick="closeModal('payment-modal')">✕</button>
+      <button class="modal-close" onclick="closeModal('payment-modal')"><?= uthenga_public_icon_svg('x') ?></button>
     </div>
     <div class="modal-body" style="text-align:center;">
-      <div style="font-size:3rem;margin-bottom:1rem;">ðŸ’³</div>
+      <div style="font-size:3rem;margin-bottom:1rem;"><?= uthenga_public_icon_svg('wallet') ?></div>
       <h4 id="pm-title" style="margin-bottom:0.5rem;"></h4>
       <div style="font-size:2rem;font-weight:800;color:var(--clr-accent);margin-bottom:0.5rem;" id="pm-total">MK 0</div>
       <div class="text-sm text-muted">via <strong id="pm-gateway"></strong></div>
@@ -960,13 +944,13 @@ if (!empty($listings)) {
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" onclick="closeModal('payment-modal')">Back</button>
-      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary">✓ Pay Now</button>
+      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:0.35rem;"><?= uthenga_public_icon_svg('check') ?> Pay Now</button>
     </div>
   </div>
 </div>
 
 <div id="booking-success" style="display:none;position:fixed;bottom:2rem;right:2rem;background:var(--clr-surface);border:1px solid var(--clr-green);border-radius:var(--radius-lg);padding:1.5rem;max-width:340px;box-shadow:var(--shadow-lg);z-index:300;">
-  <div style="font-size:1.5rem;margin-bottom:0.5rem;">ðŸŽ‰</div>
+  <div style="font-size:1.5rem;margin-bottom:0.5rem;"><?= uthenga_public_icon_svg('sparkles') ?></div>
   <h4 style="color:var(--clr-green);margin-bottom:0.25rem;">Booking Confirmed!</h4>
   <div class="text-sm text-muted" style="margin-bottom:0.75rem;">ID: <strong id="success-booking-id" class="text-accent"></strong></div>
   <div class="qr-block"><div class="text-xs text-muted" style="margin-bottom:0.5rem;">Digital Ticket</div><div class="qr-string" id="success-qr-code"></div></div>
@@ -1089,7 +1073,7 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
 
     var icon = L.divIcon({
       className: '',
-      html: '<div style="background:var(--clr-accent,#f59e0b);color:#000;border-radius:50% 50% 50% 0;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.4);border:2px solid rgba(0,0,0,0.15);">ðŸŽ«</div>',
+      html: '<div style="background:var(--clr-accent,#f59e0b);color:#000;border-radius:50% 50% 50% 0;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.4);border:2px solid rgba(0,0,0,0.15);">Ticket</div>',
       iconSize: [34, 34],
       iconAnchor: [17, 34]
     });
@@ -1098,11 +1082,11 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
       if (!ev.lat || !ev.lng) return;
       var imgTag = ev.image ? '<img src="' + ev.image + '" alt="" class="map-popup-img">' : '';
       var buyBtn = IS_LOGGED_IN
-        ? '<button class="map-popup-btn" onclick="openBookingModal(\'' + ev.id + '\',\'event\',\'' + ev.title.replace(/'/g, "\\'") + '\',0,0)">ðŸŽ« Buy Ticket</button>'
-        : '<a class="map-popup-btn" href="' + (ev.buyUrl || '#') + '">ðŸŽ« Sign In to Book</a>';
+        ? '<button class="map-popup-btn" onclick="openBookingModal(\'' + ev.id + '\',\'event\',\'' + ev.title.replace(/'/g, "\\'") + '\',0,0)">Buy Ticket</button>'
+        : '<a class="map-popup-btn" href="' + (ev.buyUrl || '#') + '">Sign In to Book</a>';
       var popupHtml = '<div style="min-width:200px;">' + imgTag +
         '<div class="map-popup-title">' + ev.title + '</div>' +
-        '<div class="map-popup-venue">ðŸ“ ' + ev.venue + '</div>' +
+        '<div class="map-popup-venue">Location: ' + ev.venue + '</div>' +
         '<div class="map-popup-venue">📅 ' + ev.date + '</div>' +
         '<div class="map-popup-price">' + ev.price + '</div>' +
         '<div style="display:flex;gap:0.4rem;">' +
