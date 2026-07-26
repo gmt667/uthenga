@@ -232,15 +232,15 @@ renderDashboardChromeStart([
 ?>
 <style>
   .receipt-shell { padding:2rem 0 3rem; }
-  .receipt-card { padding:1.5rem; border:1px solid var(--clr-border); border-radius:24px; background:var(--clr-surface); box-shadow: var(--shadow-md); }
-  .receipt-grid { display:grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap:1.25rem; }
-  .receipt-lines { display:grid; gap:.55rem; }
-  .receipt-line { display:flex; justify-content:space-between; gap:1rem; padding:.35rem 0; border-bottom:1px solid var(--clr-border); }
+  .receipt-card { padding:1.65rem; border:1px solid var(--clr-border); border-radius:24px; background:var(--clr-surface); box-shadow: var(--shadow-md); }
+  .receipt-grid { display:grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap:1.4rem; }
+  .receipt-lines { display:grid; gap:.65rem; }
+  .receipt-line { display:flex; justify-content:space-between; gap:1rem; padding:.45rem 0; border-bottom:1px solid var(--clr-border); line-height:1.35; }
   .receipt-line:last-child { border-bottom:none; }
-  .timeline { display:grid; gap:.7rem; }
-  .timeline-step { padding:.75rem 1rem; border:1px solid var(--clr-border); border-radius:16px; background:var(--clr-surface2); }
+  .timeline { display:grid; gap:.85rem; }
+  .timeline-step { padding:.85rem 1rem; border:1px solid var(--clr-border); border-radius:16px; background:var(--clr-surface2); line-height:1.35; }
   .timeline-step strong { display:block; }
-  .print-bar { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1rem; }
+  .print-bar { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:1.15rem; }
   @media (max-width: 960px) { .receipt-grid { grid-template-columns:1fr; } }
   @media (max-width: 768px) {
     .receipt-shell {
@@ -248,26 +248,26 @@ renderDashboardChromeStart([
     }
 
     .receipt-card {
-      padding: 1rem;
+      padding: 1.05rem;
       border-radius: 20px;
     }
 
     .receipt-grid {
-      gap: 1rem;
+      gap: 1.1rem;
     }
 
     .receipt-line {
       gap: .65rem;
-      padding: .3rem 0;
+      padding: .38rem 0;
       font-size: .88rem;
     }
 
     .timeline {
-      gap: .55rem;
+      gap: .65rem;
     }
 
     .timeline-step {
-      padding: .65rem .85rem;
+      padding: .72rem .9rem;
       border-radius: 14px;
     }
 
@@ -294,7 +294,7 @@ renderDashboardChromeStart([
   }
   @media (max-width: 480px) {
     .receipt-card {
-      padding: .9rem;
+      padding: .95rem;
       border-radius: 18px;
     }
 
@@ -304,7 +304,7 @@ renderDashboardChromeStart([
     }
 
     .receipt-line {
-      font-size: .82rem;
+      font-size: .83rem;
     }
 
     .detail-badges {
@@ -326,7 +326,7 @@ renderDashboardChromeStart([
     }
 
     .receipt-card {
-      padding: .75rem;
+      padding: .8rem;
       border-radius: 16px;
     }
 
@@ -363,21 +363,21 @@ renderDashboardChromeStart([
 
     .receipt-line {
       gap: .5rem;
-      padding: .24rem 0;
-      font-size: .76rem;
-    }
-
-    .receipt-line strong {
+      padding: .28rem 0;
       font-size: .78rem;
     }
 
+    .receipt-line strong {
+      font-size: .8rem;
+    }
+
     .detail-badge {
-      padding: .18rem .42rem;
-      font-size: .62rem;
+      padding: .2rem .45rem;
+      font-size: .64rem;
     }
 
     .timeline-step {
-      padding: .55rem .7rem;
+      padding: .6rem .75rem;
       border-radius: 12px;
     }
 
@@ -450,7 +450,7 @@ renderDashboardChromeStart([
     }
 
     .receipt-card {
-      padding: .7rem;
+      padding: .75rem;
       border-radius: 14px;
     }
 
@@ -489,16 +489,16 @@ renderDashboardChromeStart([
     }
 
     .receipt-line {
-      padding: .22rem 0;
-      font-size: .72rem;
-    }
-
-    .receipt-line strong {
+      padding: .24rem 0;
       font-size: .74rem;
     }
 
+    .receipt-line strong {
+      font-size: .76rem;
+    }
+
     .timeline-step {
-      padding: .5rem .62rem;
+      padding: .55rem .68rem;
     }
 
     .timeline-step strong {

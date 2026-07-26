@@ -1753,9 +1753,25 @@ select.form-control { cursor: pointer; }
     grid-template-columns: 1fr 1fr !important;
     grid-template-rows: auto auto !important;
     gap: 0.75rem !important;
+    padding: 1rem !important;
   }
   .malawi-bg-card {
-    min-height: 210px;
+    min-height: 380px;
+    border-radius: 24px;
+  }
+  .malawi-stat {
+    min-height: 104px;
+    padding: 1rem !important;
+    border-radius: 18px !important;
+    background: rgba(15,23,42,0.26) !important;
+    border-color: rgba(255,255,255,0.16) !important;
+  }
+  .malawi-stat-value {
+    font-size: 1.55rem !important;
+    color: #fff;
+  }
+  .malawi-stat-label {
+    color: rgba(255,255,255,0.82) !important;
   }
   
   /* Footer layout */
@@ -1820,10 +1836,22 @@ select.form-control { cursor: pointer; }
     height: 32px;
   }
   .malawi-bg-card {
-    min-height: 180px;
+    min-height: 280px;
   }
   .malawi-bg-stats {
     grid-template-columns: 1fr 1fr !important;
+    padding: 0.85rem !important;
+    gap: 0.6rem !important;
+  }
+  .malawi-stat {
+    min-height: 92px;
+    padding: 0.85rem !important;
+  }
+  .malawi-stat-value {
+    font-size: 1.35rem !important;
+  }
+  .malawi-stat-label {
+    font-size: 0.68rem !important;
   }
 
   /* Hero slide adjustments */
@@ -3060,6 +3088,84 @@ html, body {
   padding: 2rem;
 }
 
+.malawi-bg-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+  border-radius: 30px;
+  background: #0f172a;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 24px 60px rgba(15,23,42,0.2);
+  isolation: isolate;
+}
+
+.malawi-bg-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 900ms ease, transform 1400ms ease;
+  z-index: 0;
+}
+
+.malawi-bg-slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.malawi-bg-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.12) 0%, rgba(15, 23, 42, 0.32) 42%, rgba(15, 23, 42, 0.75) 100%),
+    linear-gradient(135deg, rgba(14, 165, 233, 0.10) 0%, rgba(234, 88, 12, 0.08) 100%);
+}
+
+.malawi-bg-stats {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-content: end;
+  width: 100%;
+  height: 100%;
+  padding: 1.25rem;
+}
+
+.malawi-stat {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 128px;
+  padding: 1.35rem 1.25rem;
+  border-radius: 24px;
+  background: rgba(15,23,42,0.28);
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 34px rgba(15,23,42,0.18);
+}
+
+.malawi-stat-value {
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+}
+
+.malawi-stat-label {
+  margin-top: 0.45rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+}
+
 .hero-btns,
 .slide-btns,
 .shop-toolbar,
@@ -3086,6 +3192,100 @@ html, body {
   min-width: 0;
 }
 
+.shop-hero-grid {
+  gap: 1rem;
+}
+
+.shop-hero-card,
+.shop-side-card,
+.detail-panel,
+.cart-summary,
+.checkout-panel,
+.checkout-summary {
+  padding: 1.25rem;
+}
+
+.shop-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.shop-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.shop-hero-actions .btn {
+  min-height: 44px;
+}
+
+.shop-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.shop-stat {
+  padding: 0.85rem 0.95rem;
+  border-radius: 18px;
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+}
+
+.shop-stat span {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clr-text-soft);
+}
+
+.shop-stat strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1rem;
+}
+
+.product-grid,
+.related-grid {
+  gap: 0.9rem;
+}
+
+.product-card {
+  border-radius: 20px;
+}
+
+.product-image img {
+  aspect-ratio: 1 / 1;
+}
+
+.product-body {
+  padding: 0.95rem;
+}
+
+.product-title {
+  line-height: 1.25;
+}
+
+.product-meta {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.product-footer {
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.product-footer .btn,
+.product-footer form {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 @media (max-width: 768px) {
   .container {
     width: min(100%, calc(100% - 1.5rem));
@@ -3100,25 +3300,25 @@ html, body {
   }
 
   .malawi-bg-stats {
-    gap: 0.5rem !important;
+    gap: 0.75rem !important;
   }
 
   .malawi-stat {
-    padding: 0.85rem !important;
-    border-radius: 16px !important;
+    padding: 1.05rem !important;
+    border-radius: 19px !important;
     border: 1px solid var(--clr-border) !important;
     background: rgba(255,255,255,0.72) !important;
     backdrop-filter: blur(8px);
   }
 
   .malawi-stat-value {
-    font-size: 1.25rem !important;
+    font-size: 1.45rem !important;
     line-height: 1;
   }
 
   .malawi-stat-label {
-    font-size: 0.68rem !important;
-    letter-spacing: 0.08em;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.1em;
   }
 
   .navbar-inner {
@@ -3333,7 +3533,7 @@ html, body {
   }
 
   .shop-hero-card {
-    padding: 1.1rem;
+    padding: 1rem;
   }
 
   .shop-hero-actions {
@@ -3367,6 +3567,37 @@ html, body {
 
   .navbar-actions .theme-toggle-label {
     display: none !important;
+  }
+
+  .shop-hero-stats {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .shop-stat {
+    padding: 0.8rem 0.85rem;
+    border-radius: 16px;
+  }
+
+  .shop-hero-actions .btn {
+    width: 100%;
+  }
+
+  .product-grid,
+  .related-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .product-card {
+    border-radius: 18px;
+  }
+
+  .product-body {
+    padding: 0.85rem;
+  }
+
+  .product-footer {
+    gap: 0.5rem;
   }
 }
 

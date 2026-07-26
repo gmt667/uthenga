@@ -12,25 +12,38 @@ $activeNav = 'transport';
 $driverId = (int)($_GET['id'] ?? 0);
 
 // Populate mock driver if none exist
-$driverCount = dbCount("SELECT COUNT(*) FROM driver_profiles");
-if ($driverCount === 0) {
-    // Get users with role Vendor or Customer
-    $users = dbQuery("SELECT id, full_name, email FROM users LIMIT 3");
-    if (!empty($users)) {
-        $vendor = dbQueryOne("SELECT id FROM vendors LIMIT 1");
-        $vendorId = $vendor ? (int)$vendor['id'] : 1;
-        
-        $names = ['Chimwemwe Phiri', 'Limbani Banda', 'Wongani Msiska'];
-        $licenses = ['LL-9831A', 'BT-7721B', 'MZ-1122C'];
-        
-        foreach ($users as $idx => $u) {
-            $code = 'DRV-' . rand(100, 999);
-            $name = $names[$idx % count($names)];
-            dbExecute("INSERT INTO driver_profiles (user_id, vendor_id, driver_code, license_number, license_class, years_experience, bio, photo_url, rating_average, rating_count, total_trips, is_verified, status) 
-                       VALUES (?, ?, ?, ?, 'Class PG', ?, ?, ?, 4.8, 12, 142, 1, 'active')",
-                      [$u['id'], $vendorId, $code, $licenses[$idx], 5 + $idx, "Professional driver with over " . (5 + $idx) . " years of experience navigating Malawi inter-city roads.", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&fit=crop&q=60", 4 + ($idx * 0.4)]);
+try {
+    $driverCount = dbCount("SELECT COUNT(*) FROM driver_profiles");
+    if ($driverCount === 0) {
+        // Bootstrap a few sample drivers only when the table is empty.
+        $users = dbQuery("SELECT id, full_name, email FROM users LIMIT 3");
+        if (!empty($users)) {
+            $vendor = dbQueryOne("SELECT id FROM vendors ORDER BY id ASC LIMIT 1");
+            $vendorId = $vendor ? (int) $vendor['id'] : null;
+
+            $names = ['Chimwemwe Phiri', 'Limbani Banda', 'Wongani Msiska'];
+            $licenses = ['LL-9831A', 'BT-7721B', 'MZ-1122C'];
+
+            foreach ($users as $idx => $u) {
+                $code = 'DRV-' . rand(100, 999);
+                dbExecute(
+                    "INSERT INTO driver_profiles (user_id, vendor_id, driver_code, license_number, license_class, years_experience, bio, photo_url, rating_average, rating_count, total_trips, is_verified, status)
+                     VALUES (?, ?, ?, ?, 'Class PG', ?, ?, ?, 4.8, 12, 142, 1, 'active')",
+                    [
+                        (int) $u['id'],
+                        $vendorId,
+                        $code,
+                        $licenses[$idx] ?? ('DRV-' . $code),
+                        5 + $idx,
+                        "Professional driver with over " . (5 + $idx) . " years of experience navigating Malawi inter-city roads.",
+                        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&fit=crop&q=60",
+                    ]
+                );
+            }
         }
     }
+} catch (Throwable $bootstrapError) {
+    // Keep the page usable even if seed data cannot be inserted.
 }
 
 $driver = null;
