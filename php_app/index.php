@@ -3,6 +3,7 @@
  * Uthenga - Clean Home Page
  */
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/malawi_locations.php';
 
 $pageTitle = 'Explore Malawi';
 $activeNav = 'home';
@@ -251,13 +252,21 @@ $popularCategories = [
       <div class="malawi-bg-card" id="malawi-bg-card">
 
         <?php
-        $malawiSlides = [
-          'https://images.unsplash.com/photo-1612892483236-52d32a0e0ac1?w=700&fit=crop&q=80',
-          'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=700&fit=crop&q=80',
-          'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=700&fit=crop&q=80',
-          'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=700&fit=crop&q=80',
-          'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=700&fit=crop&q=80',
-        ];
+        $malawiSlides = [];
+        if (function_exists('uthenga_malawi_featured_cities')) {
+          foreach (uthenga_malawi_featured_cities() as $city) {
+            if (!empty($city['image'])) {
+              $malawiSlides[] = $city['image'];
+            }
+          }
+        }
+        if (count($malawiSlides) < 5) {
+          $malawiSlides = array_merge($malawiSlides, [
+            'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=900&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=900&fit=crop&q=80',
+          ]);
+        }
+        $malawiSlides = array_slice(array_values(array_unique($malawiSlides)), 0, 5);
         foreach ($malawiSlides as $i => $url): ?>
           <div class="malawi-bg-slide <?= $i === 0 ? 'active' : '' ?>"
                style="background-image:url('<?= e($url) ?>')"></div>
