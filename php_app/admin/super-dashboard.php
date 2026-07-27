@@ -179,7 +179,150 @@ $healthStatus = [
 ?>
 
 <style>
+  .super-dashboard-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+    gap: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 28px;
+    border: 1px solid var(--clr-border);
+    background:
+      radial-gradient(circle at top left, rgba(245, 158, 11, 0.12), transparent 34%),
+      radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 30%),
+      linear-gradient(180deg, var(--clr-surface) 0%, color-mix(in srgb, var(--clr-surface) 86%, var(--clr-surface2)) 100%);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .super-dashboard-hero-copy {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .super-dashboard-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: fit-content;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--clr-accent);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .super-dashboard-hero h1 {
+    margin: 0.55rem 0 0.75rem;
+    font-size: clamp(1.8rem, 2.6vw, 2.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .super-dashboard-hero p {
+    max-width: 68ch;
+    color: var(--clr-text-muted);
+    margin: 0;
+  }
+
+  .super-dashboard-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+
+  .super-dashboard-hero-actions .btn {
+    min-height: 40px;
+  }
+
+  .super-dashboard-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  .super-dashboard-status-card {
+    padding: 1rem;
+    border-radius: 20px;
+    border: 1px solid var(--clr-border);
+    background: color-mix(in srgb, var(--clr-surface) 88%, var(--clr-surface2));
+    min-height: 104px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .super-dashboard-status-card span {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--clr-text-muted);
+  }
+
+  .super-dashboard-status-card strong {
+    font-size: 1.15rem;
+    line-height: 1.1;
+  }
+
+  .super-dashboard-status-list {
+    margin-top: 0.8rem;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .super-dashboard-status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 18px;
+    border: 1px solid var(--clr-border);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .super-dashboard-status-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+    flex: none;
+    box-shadow: 0 0 0 4px rgba(255,255,255,0.03);
+  }
+
+  .super-dashboard-status-item strong {
+    display: block;
+    font-size: 0.88rem;
+  }
+
+  .super-dashboard-status-item span {
+    display: block;
+    font-size: 0.74rem;
+    color: var(--clr-text-muted);
+    margin-top: 0.1rem;
+  }
+
   @media (max-width: 768px) {
+    .super-dashboard-hero {
+      grid-template-columns: 1fr;
+      padding: 1.1rem;
+      border-radius: 24px;
+    }
+
+    .super-dashboard-status-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .super-dashboard-status-card {
+      min-height: 92px;
+      padding: 0.9rem;
+    }
+
     .dashboard-head-meta {
       width: 100%;
       display: grid;
@@ -212,30 +355,80 @@ $healthStatus = [
       -webkit-overflow-scrolling: touch;
     }
   }
+
+  @media (max-width: 480px) {
+    .super-dashboard-status-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .super-dashboard-hero h1 {
+      font-size: 1.65rem;
+    }
+  }
 </style>
 
 <div class="container dashboard-content-frame" style="padding-top:2rem;padding-bottom:3rem;">
-  <div class="page-header">
-    <div>
-      <h1 class="page-title" style="display:flex;align-items:center;gap:0.55rem;"><?= admin_icon_svg('shield') ?><span>Super Admin Command Center</span></h1>
-      <p class="text-muted">High-level operations dashboard and platform administration metrics.</p>
-    </div>
-    <div class="dashboard-head-meta">
-      <a href="<?= BASE_URL ?>admin/analytics.php" class="btn btn-primary btn-sm">Platform Analytics</a>
-      <a href="<?= BASE_URL ?>admin/system-monitor.php" class="btn btn-secondary btn-sm">System Monitor</a>
-      <a href="<?= BASE_URL ?>admin/audit-logs.php" class="btn btn-secondary btn-sm">System Audit Logs</a>
-      <a href="<?= BASE_URL ?>admin/shop.php" class="btn btn-secondary btn-sm">Global Shop Management</a>
-    </div>
-  </div>
+  <section class="super-dashboard-hero" aria-label="Super admin overview">
+    <div class="super-dashboard-hero-copy">
+      <div>
+        <div class="super-dashboard-kicker"><?= admin_icon_svg('shield') ?> Super Admin Control Room</div>
+        <h1>Manage the full Uthenga platform from one polished command center.</h1>
+        <p>
+          Monitor revenue, bookings, users, support, and shop operations across the platform. This view is built for fast decisions, cleaner oversight, and a smoother day-to-day admin workflow.
+        </p>
+      </div>
 
-  <div class="glass-panel" style="padding:1.25rem;margin-bottom:1.5rem;">
-    <div class="presentation-grid">
-      <div class="presentation-stat"><span>Total Users</span><strong><?= number_format((int) $counts['users']) ?></strong></div>
-      <div class="presentation-stat"><span>Registered Vendors</span><strong><?= number_format((int) $counts['vendors']) ?></strong></div>
-      <div class="presentation-stat"><span>Total Bookings</span><strong><?= number_format((int) $counts['bookings']) ?></strong></div>
-      <div class="presentation-stat"><span>Gross Revenue</span><strong><?= formatMWK((float) ($counts['revenue']['total'] ?? 0)) ?></strong></div>
+      <div class="super-dashboard-hero-actions">
+        <a href="<?= BASE_URL ?>admin/analytics.php" class="btn btn-primary btn-sm">Platform Analytics</a>
+        <a href="<?= BASE_URL ?>admin/system-monitor.php" class="btn btn-secondary btn-sm">System Monitor</a>
+        <a href="<?= BASE_URL ?>admin/audit-logs.php" class="btn btn-secondary btn-sm">Audit Logs</a>
+        <a href="<?= BASE_URL ?>admin/shop.php" class="btn btn-secondary btn-sm">Global Shop Management</a>
+      </div>
+
+      <div class="super-dashboard-status-list">
+        <div class="super-dashboard-status-item">
+          <span class="super-dashboard-status-dot" style="background:#10b981;"></span>
+          <div>
+            <strong>Database online</strong>
+            <span>Core data services are reachable.</span>
+          </div>
+        </div>
+        <div class="super-dashboard-status-item">
+          <span class="super-dashboard-status-dot" style="background:#38bdf8;"></span>
+          <div>
+            <strong>Sessions active</strong>
+            <span><?= e($healthStatus['sessions']) ?></span>
+          </div>
+        </div>
+        <div class="super-dashboard-status-item">
+          <span class="super-dashboard-status-dot" style="background:#f59e0b;"></span>
+          <div>
+            <strong>Platform core</strong>
+            <span><?= e($healthStatus['system']) ?></span>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+
+    <div class="super-dashboard-status-grid">
+      <div class="super-dashboard-status-card">
+        <span>Total Users</span>
+        <strong><?= number_format((int) $counts['users']) ?></strong>
+      </div>
+      <div class="super-dashboard-status-card">
+        <span>Registered Vendors</span>
+        <strong><?= number_format((int) $counts['vendors']) ?></strong>
+      </div>
+      <div class="super-dashboard-status-card">
+        <span>Total Bookings</span>
+        <strong><?= number_format((int) $counts['bookings']) ?></strong>
+      </div>
+      <div class="super-dashboard-status-card">
+        <span>Gross Revenue</span>
+        <strong><?= formatMWK((float) ($counts['revenue']['total'] ?? 0)) ?></strong>
+      </div>
+    </div>
+  </section>
 
   <div class="glass-panel" style="padding:1.25rem;margin-bottom:1.5rem;">
     <div class="section-head">
