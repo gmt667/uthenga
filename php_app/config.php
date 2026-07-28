@@ -217,7 +217,7 @@ define('SUPPORT_CONTACT', [
 define('PAYCHANGU_API_BASE_URL', uthenga_env('PAYCHANGU_API_BASE_URL', 'https://api.paychangu.com'));
 define('PAYCHANGU_PUBLIC_KEY', uthenga_env('PAYCHANGU_PUBLIC_KEY', uthenga_env('PAYCHANGU_KEY', '')));
 define('PAYCHANGU_SECRET_KEY', uthenga_env('PAYCHANGU_SECRET_KEY', ''));
-define('PAYCHANGU_INIT_PATH', uthenga_env('PAYCHANGU_INIT_PATH', '/api/v1/checkout'));
+define('PAYCHANGU_INIT_PATH', uthenga_env('PAYCHANGU_INIT_PATH', '/payment'));
 define('PAYCHANGU_RETURN_URL', uthenga_env('PAYCHANGU_RETURN_URL', BASE_URL . 'payments/paychangu-callback.php'));
 define('PAYCHANGU_CALLBACK_URL', uthenga_env('PAYCHANGU_CALLBACK_URL', BASE_URL . 'payments/paychangu-callback.php'));
 define('PAYCHANGU_WEBHOOK_SIGNATURE_HEADER', 'HTTP_X_PAYCHANGU_SIGNATURE');
