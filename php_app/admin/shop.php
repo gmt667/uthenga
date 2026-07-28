@@ -260,7 +260,25 @@ $deletedProducts = uthenga_table_exists('shop_products')
     ? dbQuery("SELECT p.*, c.name AS category_name, s.name AS supplier_name, w.name AS warehouse_name FROM shop_products p LEFT JOIN shop_categories c ON c.id = p.category_id LEFT JOIN shop_suppliers s ON s.id = p.supplier_id LEFT JOIN shop_warehouses w ON w.id = p.warehouse_id WHERE p.deleted_at IS NOT NULL ORDER BY p.deleted_at DESC LIMIT 15")
     : [];
 $orders = uthenga_table_exists('shop_orders')
-    ? dbQuery("SELECT * FROM shop_orders ORDER BY placed_at DESC LIMIT 25")
+    ? dbQuery("
+        SELECT
+            o.*,
+            p.payment_reference AS gateway_payment_reference,
+            p.payment_status AS gateway_payment_status,
+            p.provider AS gateway_provider
+        FROM shop_orders o
+        LEFT JOIN (
+            SELECT sp1.*
+            FROM shop_payments sp1
+            INNER JOIN (
+                SELECT order_id, MAX(id) AS max_id
+                FROM shop_payments
+                GROUP BY order_id
+            ) latest ON latest.max_id = sp1.id
+        ) p ON p.order_id = o.id
+        ORDER BY o.placed_at DESC
+        LIMIT 25
+    ")
     : [];
 $cartItems = uthenga_table_exists('shop_cart_items')
     ? dbQuery("SELECT sci.*, sp.name AS product_name, sp.sku AS product_sku, sp.primary_image_url, u.name AS customer_name, u.email AS customer_email
@@ -301,6 +319,8 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
   .shop-card { padding:1.25rem; border:1px solid var(--clr-border); border-radius:24px; background:var(--clr-surface); margin-bottom:1rem; }
   .shop-form-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:.9rem; }
   .shop-table-actions { display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+  .shop-payment-stack { display:grid; gap:.3rem; }
+  .shop-payment-stack .badge { width: fit-content; }
   .shop-section-nav { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem; }
   .shop-section-nav a { padding:.45rem .8rem; border:1px solid var(--clr-border); border-radius:999px; background:var(--clr-surface); color:var(--clr-text-soft); font-size:.82rem; font-weight:700; }
   .shop-section-nav a.active { background: var(--clr-accent); color: #fff; border-color: transparent; }
@@ -517,7 +537,7 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
     </div>
     <div class="table-responsive">
       <table class="admin-table">
-        <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Status</th><th>Rider</th><th>Actions</th></tr></thead>
+        <thead><tr><th>Order</th><th>Customer</th><th>Total</th><th>Payment</th><th>Rider</th><th>Actions</th></tr></thead>
         <tbody>
           <?php foreach ($orders as $order): ?>
             <tr>
@@ -525,11 +545,19 @@ $section = trim((string) ($_GET['section'] ?? 'overview'));
               <td><?= e($order['customer_name']) ?><br><span class="text-xs text-muted"><?= e($order['customer_phone']) ?></span></td>
               <td><?= uthenga_shop_money((float) $order['total_amount']) ?></td>
               <td>
-                <span class="badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></span><br>
-                <span class="badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></span>
-                <div class="text-xs text-muted" style="margin-top:.35rem;line-height:1.35;">
-                  <?= e(uthenga_shop_status_hint((string) $order['order_status'])) ?><br>
-                  <?= e(uthenga_shop_status_hint((string) $order['payment_status'])) ?>
+                <div class="shop-payment-stack">
+                  <span class="badge <?= uthenga_shop_status_badge((string) $order['payment_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['payment_status'])) ?></span>
+                  <span class="badge <?= uthenga_shop_status_badge((string) $order['order_status']) ?>"><?= e(uthenga_shop_status_label((string) $order['order_status'])) ?></span>
+                  <?php if (!empty($order['gateway_payment_reference'])): ?>
+                    <span class="text-xs text-muted" style="line-height:1.35;">Ref: <?= e((string) $order['gateway_payment_reference']) ?></span>
+                    <span class="text-xs text-muted" style="line-height:1.35;">Gateway: <?= e((string) ($order['gateway_provider'] ?? 'Shop Gateway')) ?></span>
+                  <?php else: ?>
+                    <span class="text-xs text-muted" style="line-height:1.35;">No gateway record yet.</span>
+                  <?php endif; ?>
+                  <div class="text-xs text-muted" style="margin-top:.15rem;line-height:1.35;">
+                    <?= e(uthenga_shop_status_hint((string) $order['payment_status'])) ?><br>
+                    <?= e(uthenga_shop_status_hint((string) $order['order_status'])) ?>
+                  </div>
                 </div>
               </td>
               <td><?= e($riderNames[(int) ($order['assigned_rider_id'] ?? 0)] ?? 'Unassigned') ?></td>

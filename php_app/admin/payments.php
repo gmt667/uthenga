@@ -89,6 +89,28 @@ $totalVendorEarnings = uthenga_table_exists('commissions') ? dbQueryOne("SELECT 
 $pendingSettlements = uthenga_table_exists('vendor_wallets') ? dbQueryOne("SELECT COALESCE(SUM(pending_balance),0) AS total FROM vendor_wallets") : ['total' => 0];
 $processedPayouts = uthenga_table_exists('vendor_payouts') ? dbQueryOne("SELECT COALESCE(SUM(amount),0) AS total FROM vendor_payouts WHERE status = 'processed'") : ['total' => 0];
 $refundTotals = uthenga_table_exists('refunds') ? dbQueryOne("SELECT COALESCE(SUM(amount),0) AS total FROM refunds WHERE LOWER(status) IN ('processed','approved')") : ['total' => 0];
+$shopPaymentsTotal = uthenga_table_exists('shop_payments') ? dbQueryOne("SELECT COALESCE(SUM(amount),0) AS total FROM shop_payments WHERE LOWER(payment_status) IN ('paid','processing','authorized','pending')") : ['total' => 0];
+$shopPaymentsCount = uthenga_table_exists('shop_payments') ? dbCount("SELECT COUNT(*) FROM shop_payments") : 0;
+$shopPaidCount = uthenga_table_exists('shop_payments') ? dbCount("SELECT COUNT(*) FROM shop_payments WHERE LOWER(payment_status) = 'paid'") : 0;
+$shopProcessingCount = uthenga_table_exists('shop_payments') ? dbCount("SELECT COUNT(*) FROM shop_payments WHERE LOWER(payment_status) = 'processing'") : 0;
+
+$shopPayments = [];
+if (uthenga_table_exists('shop_payments')) {
+    $shopPayments = dbQuery("
+        SELECT
+            p.*,
+            o.order_number,
+            o.customer_name,
+            o.customer_email,
+            o.customer_phone,
+            o.order_status,
+            o.fulfillment_status
+        FROM shop_payments p
+        INNER JOIN shop_orders o ON o.id = p.order_id
+        ORDER BY p.created_at DESC
+        LIMIT 25
+    ");
+}
 
 function txStatusBadge(string $s): string {
     $val = strtolower($s);
@@ -128,6 +150,17 @@ function txStatusHint(string $status): string {
         default => 'Current ledger status.',
     };
 }
+
+function shopPaymentStatusBadge(string $status): string {
+    $value = strtolower(trim($status));
+    return match ($value) {
+        'paid' => 'badge-approved',
+        'processing', 'pending', 'authorized' => 'badge-pending',
+        'failed' => 'badge-cancelled',
+        'refunded' => 'badge-refunded',
+        default => 'badge-pending',
+    };
+}
 ?>
 
 <div class="page-header">
@@ -146,6 +179,13 @@ function txStatusHint(string $status): string {
   <div class="stat-card"><div class="stat-icon stat-icon-blue"><?= admin_icon_svg('store') ?></div><div><div class="stat-value"><?= formatMWK((float)($totalVendorEarnings['total'] ?? 0)) ?></div><div class="stat-label">Vendor Earnings</div></div></div>
   <div class="stat-card"><div class="stat-icon stat-icon-yellow"><?= admin_icon_svg('clock') ?></div><div><div class="stat-value"><?= formatMWK((float)($pendingSettlements['total'] ?? 0)) ?></div><div class="stat-label">Pending Settlements</div></div></div>
   <div class="stat-card"><div class="stat-icon stat-icon-purple"><?= admin_icon_svg('report') ?></div><div><div class="stat-value"><?= formatMWK((float)($processedPayouts['total'] ?? 0)) ?></div><div class="stat-label">Processed Payouts</div></div></div>
+</div>
+
+<div class="grid grid-cols-4 gap-2" style="margin-bottom:1.5rem;">
+  <div class="stat-card"><div class="stat-icon stat-icon-green"><?= admin_icon_svg('credit-card') ?></div><div><div class="stat-value"><?= formatMWK((float)($shopPaymentsTotal['total'] ?? 0)) ?></div><div class="stat-label">Shop Payments</div></div></div>
+  <div class="stat-card"><div class="stat-icon stat-icon-blue"><?= admin_icon_svg('cart') ?></div><div><div class="stat-value"><?= number_format((int) $shopPaymentsCount) ?></div><div class="stat-label">Shop Transactions</div></div></div>
+  <div class="stat-card"><div class="stat-icon stat-icon-yellow"><?= admin_icon_svg('wallet') ?></div><div><div class="stat-value"><?= number_format((int) $shopPaidCount) ?></div><div class="stat-label">Paid Orders</div></div></div>
+  <div class="stat-card"><div class="stat-icon stat-icon-purple"><?= admin_icon_svg('clock') ?></div><div><div class="stat-value"><?= number_format((int) $shopProcessingCount) ?></div><div class="stat-label">Processing</div></div></div>
 </div>
 
 <?php if ($message): ?><div class="alert alert-success">Success: <?= e($message) ?></div><?php endif; ?>
@@ -251,6 +291,55 @@ function txStatusHint(string $status): string {
   <?php endif; ?>
   
   <p class="text-xs text-muted" style="text-align:center;margin-top:1rem;">Showing <?= count($txns) ?> of <?= number_format($totalCount) ?> transactions</p>
+</div>
+
+<div class="glass-panel animate-in" style="padding: 1.5rem; margin-top: 1.5rem;">
+  <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.45rem;"><?= admin_icon_svg('cart') ?><span>Shop Payments</span></h3>
+  <p class="text-muted" style="margin-top:-0.25rem;margin-bottom:1rem;">Live shop payment records from the Uthenga drinks store, including PayChangu, Cash on Delivery, bank transfer, and mobile money statuses.</p>
+
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Customer</th>
+          <th>Reference</th>
+          <th>Method</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Paid At</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if (empty($shopPayments)): ?>
+          <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--clr-text-muted);">No shop payments found.</td></tr>
+        <?php else: ?>
+          <?php foreach ($shopPayments as $payment): ?>
+            <tr>
+              <td>
+                <a href="<?= BASE_URL ?>admin/shop-order.php?id=<?= (int) $payment['order_id'] ?>" style="font-weight:700;"><?= e($payment['order_number']) ?></a><br>
+                <span class="text-xs text-muted"><?= e((string) ($payment['order_status'] ?? 'pending')) ?> · <?= e((string) ($payment['fulfillment_status'] ?? 'pending')) ?></span>
+              </td>
+              <td>
+                <?= e($payment['customer_name'] ?? 'N/A') ?><br>
+                <span class="text-xs text-muted"><?= e($payment['customer_email'] ?? '') ?></span>
+              </td>
+              <td class="text-xs font-mono"><?= e($payment['payment_reference'] ?? 'N/A') ?></td>
+              <td class="text-xs"><?= e(uthenga_shop_payment_method_label((string) ($payment['payment_method'] ?? 'cash_on_delivery'))) ?></td>
+              <td style="font-weight:700;color:var(--clr-accent);"><?= formatMWK((float) ($payment['amount'] ?? 0)) ?></td>
+              <td>
+                <span class="badge <?= shopPaymentStatusBadge((string) ($payment['payment_status'] ?? 'pending')) ?>">
+                  <?= e(uthenga_shop_status_label((string) ($payment['payment_status'] ?? 'pending'))) ?>
+                </span>
+                <div class="text-xs text-muted" style="margin-top:.35rem;line-height:1.35;"><?= e(uthenga_shop_status_hint((string) ($payment['payment_status'] ?? 'pending'))) ?></div>
+              </td>
+              <td class="text-xs text-muted"><?= e((string) ($payment['paid_at'] ?? $payment['created_at'] ?? '')) ?></td>
+            </tr>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <?php
