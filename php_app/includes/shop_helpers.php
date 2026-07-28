@@ -1334,7 +1334,7 @@ if (!function_exists('uthenga_shop_payment_by_order_id')) {
 
 if (!function_exists('uthenga_shop_paychangu_initialize')) {
     function uthenga_shop_paychangu_initialize(array $order, array $payment, string $customerEmail, string $customerName, string $phone): array {
-        $apiKey = PAYCHANGU_PUBLIC_KEY !== '' ? PAYCHANGU_PUBLIC_KEY : PAYCHANGU_SECRET_KEY;
+        $apiKey = PAYCHANGU_SECRET_KEY !== '' ? PAYCHANGU_SECRET_KEY : PAYCHANGU_PUBLIC_KEY;
         if ($apiKey === '') {
             return ['success' => false, 'message' => 'PayChangu credentials are not configured.'];
         }

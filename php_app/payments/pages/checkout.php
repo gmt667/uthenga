@@ -46,7 +46,7 @@ if (!$booking && isset($_GET['amount'])) {
 }
 
 // Gateway config (from .env)
-$paychanguKey  = uthenga_env('PAYCHANGU_SECRET_KEY', '');
+$paychanguKey  = uthenga_env('PAYCHANGU_PUBLIC_KEY', uthenga_env('PAYCHANGU_KEY', uthenga_env('PAYCHANGU_SECRET_KEY', '')));
 $airtelKey     = uthenga_env('AIRTEL_API_KEY', '');
 $tnmKey        = uthenga_env('TNM_API_KEY', '');
 $cardEnabled   = (bool)uthenga_env('CARD_PAYMENTS_ENABLED', false);
@@ -103,7 +103,7 @@ function uthenga_checkout_update_transaction(string $txnRef, array $data): void 
 }
 
 function uthenga_paychangu_initialize(array $txn, array $booking, string $userEmail, string $userName, string $phone): array {
-    $apiKey = PAYCHANGU_PUBLIC_KEY !== '' ? PAYCHANGU_PUBLIC_KEY : PAYCHANGU_SECRET_KEY;
+    $apiKey = PAYCHANGU_SECRET_KEY !== '' ? PAYCHANGU_SECRET_KEY : PAYCHANGU_PUBLIC_KEY;
     if ($apiKey === '') {
         return ['success' => false, 'message' => 'PayChangu credentials are not configured.'];
     }
@@ -424,7 +424,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="alert" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b;padding:1.25rem;border-radius:var(--radius-md);margin-bottom:1.5rem;">
       <strong>Payment gateways not yet configured.</strong>
       To enable payments, add your gateway API keys to the <code>.env</code> file:<br>
-      <code>PAYCHANGU_SECRET_KEY=...</code>, <code>AIRTEL_API_KEY=...</code>, <code>TNM_API_KEY=...</code>
+      <code>PAYCHANGU_PUBLIC_KEY=...</code>, <code>PAYCHANGU_SECRET_KEY=...</code>, <code>AIRTEL_API_KEY=...</code>, <code>TNM_API_KEY=...</code>
     </div>
   <?php endif; ?>
 
