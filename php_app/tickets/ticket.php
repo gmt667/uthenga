@@ -1,6 +1,7 @@
 ﻿<?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../includes/tie/TicketTemplates.php';
 
 if (!isLoggedIn()) {
     redirect(BASE_URL . 'login.php');
@@ -29,7 +30,7 @@ $listingMeta = $listing ? json_decode($listing['meta'], true) : [];
 $details = json_decode($bk['details'], true) ?? [];
 $ticketBackground = $listing['image'] ?? 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=1400&fit=crop&q=80';
 $ticketCity = trim($listing['location'] ?? 'Malawi');
-$ticketCode = trim((string)($bk['ticket_code'] ?? $bk['qr_code'] ?? $bk['id']));
+$ticketCode = trim((string)($bk['qr_code'] ?? $bk['booking_code'] ?? $bk['id']));
 $ticketFormat = strtolower(trim((string)($details['ticket_format'] ?? $listingMeta['ticketCodeFormat'] ?? $listingMeta['ticket_code_format'] ?? $listingMeta['scanFormat'] ?? $listingMeta['scan_format'] ?? 'qr')));
 if (!in_array($ticketFormat, ['qr', 'barcode', 'code'], true)) {
     $ticketFormat = 'qr';
@@ -114,6 +115,73 @@ if ($downloadMode === 'pdf') {
     echo $pdf;
     exit;
 }
+
+// ── Per-ticket entries (each ticket gets its own unique QR code) ──────
+$eventTickets = [];
+if (uthenga_table_exists('event_tickets')) {
+    $eventTickets = dbQuery("SELECT id, qr_token, verification_signature, holder_name, status, checked_in_at FROM event_tickets WHERE booking_id = ? ORDER BY id ASC", [$bookingId]);
+}
+$quantity = max(1, (int) ($bk['quantity'] ?? 1));
+$tickets = [];
+if (!empty($eventTickets)) {
+    foreach ($eventTickets as $et) {
+        $tickets[] = [
+            'id' => (string) $et['id'],
+            'qr_payload' => $et['qr_token']
+                ? 'UTHENGA|' . $et['id'] . '|' . $et['qr_token'] . '|' . ($et['verification_signature'] ?? '')
+                : $et['id'],
+            'holder' => trim((string) ($et['holder_name'] ?? '')) ?: (string) ($bk['customer_name'] ?? ''),
+            'status' => $et['status'] ?? '',
+        ];
+    }
+} else {
+    for ($i = 1; $i <= $quantity; $i++) {
+        $code = $quantity > 1 ? $ticketCode . '-' . str_pad((string) $i, 3, '0', STR_PAD_LEFT) : $ticketCode;
+        $tickets[] = [
+            'id' => $code,
+            'qr_payload' => $code,
+            'holder' => (string) ($bk['customer_name'] ?? ''),
+            'status' => '',
+        ];
+    }
+}
+
+$template = strtolower((string) ($details['ticket_template'] ?? $listingMeta['ticketTemplate'] ?? 'general'));
+if (!in_array($template, ['vip', 'vvip', 'early_bird', 'general', 'group', 'season'], true)) {
+    $ticketTypeLower = strtolower((string) ($details['ticket_type'] ?? ''));
+    $template = $ticketTypeLower === 'vip' || $ticketTypeLower === 'vvip' ? $ticketTypeLower : 'general';
+}
+
+$ticketType = (string) ($details['ticket_type'] ?? 'Standard');
+$ticketNameShort = strtoupper(preg_replace('/[^A-Z0-9 ]/', '', $ticketType)) ?: 'TICKET';
+$perks = [];
+$perkIcons = [];
+switch ($template) {
+    case 'vip': $perks = ['VIP LOUNGE', 'FRONT ROW SEATING', 'NETWORKING ACCESS', 'WELCOME DRINK']; $ticketNameShort = 'VIP PASS'; break;
+    case 'vvip': $perks = ['BACKSTAGE ACCESS', 'VIP PARKING', 'GOURMET DINNER', 'MEET & GREET']; $perkIcons = ['mic', 'car', 'utensils', 'group']; $ticketNameShort = 'VVIP PASS'; break;
+    case 'early_bird': $perks = ['EARLY BIRD PRICE', 'ENTRY INCLUDED']; $ticketNameShort = 'EARLY BIRD'; break;
+    case 'group': $perks = ['GROUP ADMISSION', 'GROUP ACCESS AREA']; $ticketNameShort = 'GROUP PASS'; break;
+    case 'season': $perks = []; $ticketNameShort = 'SEASON PASS'; break;
+    default: $perks = ['ENTRY INCLUDED', 'ALL DAY ACCESS'];
+}
+
+$statusRaw = strtolower(trim((string) ($bk['ticket_status'] ?? 'active')));
+$statusCls = in_array($statusRaw, ['fully_used', 'cancelled', 'refunded'], true) ? 'used' : 'active';
+
+$renderArgs = [
+    'template' => $template,
+    'event_title' => strtoupper((string) ($bk['listing_title'] ?? 'EVENT')),
+    'tagline' => trim((string) ($listingMeta['tagline'] ?? ($template === 'early_bird' ? 'Feel the Beat. Live the Moment.' : ''))),
+    'date' => strtoupper(trim((string) ($listingMeta['date'] ?? 'TBC'))),
+    'time' => strtoupper(trim((string) ($listingMeta['time'] ?? 'TBC'))),
+    'venue' => strtoupper(trim((string) ($listing['venue_name'] ?? $listing['location'] ?? 'VENUE'))),
+    'city' => strtoupper(trim((string) ($listing['location'] ?? 'MALAWI'))),
+    'ticket_name' => $ticketNameShort,
+        'perks' => $perks,
+        'perk_icons' => $perkIcons,
+        'badge' => 'ADMIT ONE',
+    'extra' => $template === 'group' ? '5' : null,
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,7 +189,7 @@ if ($downloadMode === 'pdf') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ticket - <?= e($bk['listing_title']) ?> | <?= APP_NAME ?></title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --clr-bg: #f3f4f6;
@@ -131,273 +199,120 @@ if ($downloadMode === 'pdf') {
       --clr-border: #e5e7eb;
       --clr-accent: #e63946;
     }
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
       background:
-        linear-gradient(180deg, rgba(15,23,42,0.78), rgba(15,23,42,0.5)),
+        linear-gradient(180deg, rgba(15,23,42,0.85), rgba(15,23,42,0.55)),
         url('<?= e($ticketBackground) ?>') center/cover fixed;
       color: var(--clr-text);
       margin: 0;
       padding: 2rem 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
-    .ticket-container {
-      background: rgba(255,255,255,0.95);
-      max-width: 500px;
-      width: 100%;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-      border: 1px solid var(--clr-border);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
+    .ticket-page { max-width: 560px; margin: 0 auto; }
+    .ticket-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.1rem; color: #fff; gap: .75rem; flex-wrap: wrap;
     }
-    .ticket-actions {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-      margin: 1rem 0 1.25rem;
+    .ticket-topbar .tbl-logo { height: 30px; width: auto; opacity: .98; filter: drop-shadow(0 2px 8px rgba(0,0,0,.3)); }
+    .ticket-topbar .tbl-title { font-size: .95rem; font-weight: 800; letter-spacing: .02em; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
+    .ticket-topbar .tbl-side { display: flex; align-items: center; gap: .6rem; }
+    .tkt-status {
+      font-size: .62rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase;
+      padding: .32rem .7rem; border-radius: 999px;
     }
+    .tkt-status.active { background: rgba(16,185,129,.92); color: #04301f; }
+    .tkt-status.used { background: rgba(239,68,68,.92); color: #3f0707; }
+    .ticket-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: 1.2rem 0; }
     .ticket-action-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      padding: 0.8rem 1rem;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 0.86rem;
-      border: 1px solid var(--clr-border);
-      background: #fff;
-      color: var(--clr-text);
-      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+      padding: .72rem .6rem; border-radius: 12px; text-decoration: none; font-weight: 700;
+      font-size: .78rem; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.1);
+      color: #fff; cursor: pointer; backdrop-filter: blur(6px);
+      transition: background .15s ease, transform .1s ease;
     }
-    .ticket-action-btn.primary {
-      background: var(--clr-accent);
-      color: #fff;
-      border-color: transparent;
-    }
-    .ticket-action-btn.soft {
-      background: rgba(230,57,70,0.08);
-      color: var(--clr-accent);
-      border-color: rgba(230,57,70,0.15);
-    }
+    .ticket-action-btn:hover { background: rgba(255,255,255,.2); }
+    .ticket-action-btn.primary { background: var(--clr-accent); border-color: transparent; }
+    .ticket-action-btn.primary:hover { background: #d32f3c; }
+    .ticket-action-btn.soft { background: rgba(255,255,255,.06); }
     .ticket-note {
-      margin: 0 0 1.25rem;
-      padding: 0.85rem 1rem;
-      border-radius: 12px;
-      background: rgba(15,23,42,0.04);
-      border: 1px solid rgba(15,23,42,0.08);
-      color: var(--clr-text-muted);
-      font-size: 0.88rem;
+      margin: 0 0 1.1rem; padding: .85rem 1rem; border-radius: 12px;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.85); font-size: .84rem; backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap;
     }
-    .ticket-display {
-      display: grid;
-      place-items: center;
-      padding: 1rem 0 0.5rem;
+    .ticket-note strong { color: #fff; }
+    .ticket-stack { display: grid; gap: 1.1rem; }
+    .ticket-card { position: relative; }
+    .ticket-card + .ticket-card::before {
+      content: 'NEXT TICKET ↓'; position: absolute; top: -1.55rem; left: 50%; transform: translateX(-50%);
+      font-size: .58rem; font-weight: 900; letter-spacing: .22em; color: rgba(255,255,255,.55);
     }
-    .ticket-code-card {
-      width: 100%;
-      max-width: 320px;
-      padding: 1rem;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(15,23,42,0.03), rgba(230,57,70,0.05));
-      border: 1px solid rgba(15,23,42,0.08);
-      text-align: center;
+    .ticket-info {
+      background: #fff; border-radius: 16px; padding: 1.1rem 1.25rem; margin-top: 1.1rem;
+      box-shadow: 0 18px 40px rgba(15,23,42,.16);
     }
-    .ticket-code-text {
-      font-family: monospace;
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: 0.18em;
-      word-break: break-all;
-    }
-    .ticket-header {
-      background:
-        linear-gradient(135deg, rgba(230,57,70,0.92), rgba(15,23,42,0.88)),
-        url('<?= e($ticketBackground) ?>') center/cover;
-      color: #fff;
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .ticket-hero-note {
-      margin-top: 0.5rem;
-      font-size: 0.82rem;
-      color: rgba(255,255,255,0.88);
-    }
-    .ticket-body {
-      padding: 2rem;
-    }
-    .ticket-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      margin: 0 0 0.5rem 0;
-    }
-    .ticket-meta {
-      font-size: 0.85rem;
-      color: var(--clr-text-muted);
-      margin-bottom: 1.5rem;
-    }
-    .info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
-    }
-    .info-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--clr-text-muted);
-      margin-bottom: 0.25rem;
-    }
-    .info-value {
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-    .qr-section {
-      text-align: center;
-      border-top: 2px dashed var(--clr-border);
-      padding-top: 1.5rem;
-      margin-top: 1.5rem;
-    }
-    .qr-code-img {
-      width: 180px;
-      height: 180px;
-      border: 1px solid var(--clr-border);
-      padding: 0.5rem;
-      background: #fff;
-      border-radius: 8px;
-    }
-    .barcode-svg {
-      width: 100%;
-      max-width: 320px;
-      height: 120px;
-      background: #fff;
-      border: 1px solid var(--clr-border);
-      border-radius: 8px;
-      padding: 0.5rem;
-    }
-    .ticket-code {
-      font-family: monospace;
-      font-size: 1rem;
-      font-weight: bold;
-      color: var(--clr-text);
-      margin-top: 0.75rem;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .status-active { background: #d1fae5; color: #065f46; }
-    .status-used { background: #fee2e2; color: #991b1b; }
-    .btn-print {
-      display: block;
-      width: 100%;
-      text-align: center;
-      padding: 0.75rem;
-      background: var(--clr-text);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      border-radius: 8px;
-      margin-top: 1.5rem;
-      cursor: pointer;
-      border: none;
-    }
-    @media (max-width: 640px) {
-      body {
-        padding: 1rem .65rem;
-      }
-
-      .ticket-container {
-        border-radius: 14px;
-      }
-
-      .ticket-header,
-      .ticket-body {
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-
-      .ticket-actions {
-        grid-template-columns: 1fr;
-      }
-
-      .info-grid {
-        grid-template-columns: 1fr;
-        gap: .85rem;
-      }
-
-      .ticket-code-text {
-        font-size: 1rem;
-        letter-spacing: .12em;
-      }
-
-      .qr-code-img {
-        width: 160px;
-        height: 160px;
-      }
-    }
-
-    @media (max-width: 420px) {
-      .ticket-header {
-        padding-top: 1.25rem;
-        padding-bottom: 1.25rem;
-      }
-
-      .ticket-title {
-        font-size: 1.1rem;
-      }
-
-      .ticket-meta {
-        font-size: .8rem;
-      }
-
-      .ticket-action-btn {
-        font-size: .8rem;
-        padding: .72rem .85rem;
-      }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem 1.2rem; }
+    .info-label { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--clr-text-muted); margin-bottom: .22rem; }
+    .info-value { font-size: .84rem; font-weight: 700; color: var(--clr-text); word-break: break-word; }
+    .ticket-foot { text-align: center; margin-top: 1.4rem; color: rgba(255,255,255,.55); font-size: .7rem; font-weight: 600; letter-spacing: .04em; }
+    .ticket-foot a { color: rgba(255,255,255,.85); }
+    @media (max-width: 520px) {
+      body { padding: 1.2rem .65rem; }
+      .ticket-actions { grid-template-columns: 1fr 1fr; }
+      .info-grid { grid-template-columns: 1fr; gap: .7rem; }
     }
     @media print {
-      body { background: #fff; padding: 0; }
-      .ticket-container { box-shadow: none; border: none; }
-      .ticket-actions { display: none; }
-      .btn-print { display: none; }
+      body { background: #fff !important; padding: 0; }
+      .ticket-topbar, .ticket-actions, .ticket-note, .ticket-info, .ticket-foot { display: none !important; }
+      .ticket-stack { gap: 0; }
+      .ticket-card + .ticket-card { break-before: page; margin-top: 0 !important; }
+      .ticket-card + .ticket-card::before { display: none; }
+      .ticket-page { max-width: 100%; }
+      .uth-tk { box-shadow: none; border-radius: 0; }
     }
   </style>
+  <style><?= uthenga_ticket_render_css() ?></style>
 </head>
 <body>
-
-<div class="ticket-container">
-  <div class="ticket-header">
-    <div style="font-size: 0.85rem; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase;">OFFICIAL ENTRY TICKET</div>
-    <div class="ticket-code" style="color: #fff; margin-top: 0.25rem; font-size: 1.2rem;"><?= e($bk['ticket_code'] ?: 'TKT-' . $bk['id']) ?></div>
-    <div class="ticket-hero-note"><?= e($ticketCity) ?></div>
+<div class="ticket-page">
+  <div class="ticket-topbar">
+    <img class="tbl-logo" src="<?= e(BASE_URL) ?>assets/images/logo-light.png" alt="<?= e(APP_NAME) ?>" onerror="this.style.display='none'">
+    <span class="tbl-title"><?= e($bk['listing_title']) ?></span>
+    <span class="tbl-side">
+      <span class="tkt-status <?= $statusCls ?>"><?= e(ticketStatusLabel($statusRaw)) ?></span>
+    </span>
   </div>
 
-  <div class="ticket-body">
-    <h1 class="ticket-title"><?= e($bk['listing_title']) ?></h1>
-    <div class="ticket-meta">Location: <?= e($listing['location'] ?? 'Venue Details') ?></div>
-    <div class="ticket-actions">
-      <button onclick="window.print()" class="ticket-action-btn primary" type="button">Print / PDF</button>
-      <a href="?id=<?= urlencode((string) $bk['id']) ?>&download=pdf" class="ticket-action-btn">Download PDF</a>
-      <button id="share-ticket-btn" class="ticket-action-btn" type="button">Share</button>
-      <button id="copy-ticket-btn" class="ticket-action-btn soft" type="button">Copy Code</button>
-    </div>
+  <div class="ticket-note">
+    <span>Keep this ticket ready in your bookings — print, share, or present for scanning at the venue.</span>
+    <strong><?= e($ticketModeLabel) ?></strong>
+  </div>
 
-    <div class="ticket-note">
-      Keep this ticket ready in your bookings. You can print it, share it, or present it for scanning at the venue.
-      <strong style="display:block;color:var(--clr-text);margin-top:0.35rem;"><?= e($ticketModeLabel) ?></strong>
-    </div>
+  <div class="ticket-actions">
+    <button onclick="window.print()" class="ticket-action-btn primary" type="button">Print / PDF</button>
+    <a href="?id=<?= urlencode((string) $bk['id']) ?>&download=pdf" class="ticket-action-btn">Download PDF</a>
+    <button id="share-ticket-btn" class="ticket-action-btn soft" type="button">Share</button>
+    <button id="copy-ticket-btn" class="ticket-action-btn soft" type="button">Copy Code</button>
+  </div>
 
+  <div class="ticket-stack">
+    <?php foreach ($tickets as $i => $tk): ?>
+      <?php
+        $args = $renderArgs;
+        $args['ticket_id'] = $tk['id'];
+        $args['qr_payload'] = $tk['qr_payload'];
+        $args['holder'] = $tk['holder'];
+        $args['row'] = $quantity > 1 ? '' : (string) ($details['row'] ?? '');
+        $args['seat'] = $quantity > 1 ? str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) : (string) ($details['seat'] ?? '');
+      ?>
+      <div class="ticket-card" data-index="<?= $i ?>"><?= uthenga_ticket_render($args) ?></div>
+    <?php endforeach; ?>
+  </div>
+
+  <div class="ticket-info">
     <div class="info-grid">
       <div>
         <div class="info-label">Customer Name</div>
@@ -405,7 +320,7 @@ if ($downloadMode === 'pdf') {
       </div>
       <div>
         <div class="info-label">Customer Email</div>
-        <div class="info-value" style="font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><?= e($bk['customer_email']) ?></div>
+        <div class="info-value" style="font-size:.78rem;"><?= e($bk['customer_email']) ?></div>
       </div>
       <div>
         <div class="info-label">Date</div>
@@ -417,7 +332,7 @@ if ($downloadMode === 'pdf') {
       </div>
       <div>
         <div class="info-label">Ticket Type</div>
-        <div class="info-value"><?= e($details['ticket_type'] ?? 'Standard') ?></div>
+        <div class="info-value"><?= e($ticketType) ?></div>
       </div>
       <div>
         <div class="info-label">Quantity</div>
@@ -425,102 +340,63 @@ if ($downloadMode === 'pdf') {
       </div>
       <div>
         <div class="info-label">Used count</div>
-        <div class="info-value"><?= (int)$bk['tickets_used'] ?> / <?= (int)$bk['quantity'] ?> scanned</div>
+        <div class="info-value"><?= (int)($bk['tickets_used'] ?? 0) ?> / <?= (int)$bk['quantity'] ?> scanned</div>
       </div>
       <div>
-        <div class="info-label">Ticket Status</div>
-        <div>
-          <?php
-            $status = strtolower($bk['ticket_status'] ?: 'active');
-            $class = 'status-active';
-            if ($status === 'fully_used' || $status === 'cancelled') {
-                $class = 'status-used';
-            }
-          ?>
-          <span class="status-badge <?= $class ?>"><?= e(ticketStatusLabel($status)) ?></span>
-        </div>
+        <div class="info-label">Booking Ref</div>
+        <div class="info-value" style="font-family:ui-monospace,Menlo,monospace;font-size:.78rem;"><?= e($bk['booking_code'] ?? $bk['id']) ?></div>
       </div>
     </div>
+  </div>
 
-    <div class="qr-section">
-      <div class="ticket-display">
-        <?php if ($ticketFormat === 'barcode'): ?>
-          <svg id="ticket-barcode" class="barcode-svg" aria-label="Ticket barcode"></svg>
-          <div style="font-size: 0.8rem; color: var(--clr-text-muted); margin-top: 0.5rem;">Present the barcode to the gate officer for scanning.</div>
-        <?php elseif ($ticketFormat === 'code'): ?>
-          <div class="ticket-code-card">
-            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--clr-text-muted);font-weight:700;margin-bottom:0.5rem;">Scan / Verify Code</div>
-            <div class="ticket-code-text"><?= e($ticketCode) ?></div>
-          </div>
-          <div style="font-size: 0.8rem; color: var(--clr-text-muted); margin-top: 0.5rem;">Show this code to the gate officer for manual verification or scanning.</div>
-        <?php else: ?>
-          <img src="https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=<?= urlencode($ticketCode) ?>&choe=UTF-8" alt="Ticket QR Code" class="qr-code-img">
-          <div style="font-size: 0.8rem; color: var(--clr-text-muted); margin-top: 0.5rem;">Present this QR code to the gate officer for scanning.</div>
-        <?php endif; ?>
-      </div>
-      <div style="font-size: 0.78rem; color: var(--clr-text-muted); margin-top: 0.75rem;">Ticket ID: <span style="font-family:monospace;"><?= e($ticketCode) ?></span></div>
-    </div>
-
-    <button onclick="window.print()" class="btn-print">Print Ticket</button>
+  <div class="ticket-foot">
+    <?= e(APP_NAME) ?> · <?= e($ticketCity) ?> — Powered by the Uthenga Marketplace
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script src="<?= e(BASE_URL) ?>assets/js/qrcode-generator.js"></script>
 <script>
-const ticketCode = <?= json_encode($ticketCode) ?>;
-const ticketFormat = <?= json_encode($ticketFormat) ?>;
+(function () {
+  const ticketCode = <?= json_encode($ticketCode) ?>;
 
-const shareBtn = document.getElementById('share-ticket-btn');
-const copyBtn = document.getElementById('copy-ticket-btn');
-
-if (ticketFormat === 'barcode') {
-  try {
-    JsBarcode('#ticket-barcode', ticketCode, {
-      format: 'CODE128',
-      lineColor: '#111827',
-      background: '#ffffff',
-      width: 2,
-      height: 60,
-      margin: 10,
-      displayValue: true,
-      fontSize: 18
-    });
-  } catch (err) {
-    console.error('Barcode render failed', err);
+  function renderQr(el) {
+    const payload = String(el.getAttribute('data-qr') || '').trim();
+    if (!payload) { el.querySelector('.uth-tk-qr-inner').textContent = 'NO CODE'; return; }
+    try {
+      const qr = qrcode(0, 'M');
+      qr.addData(payload);
+      qr.make();
+      el.querySelector('.uth-tk-qr-inner').innerHTML = qr.createSvgTag(3, 0);
+    } catch (err) {
+      el.querySelector('.uth-tk-qr-inner').textContent = 'QR ERROR';
+    }
   }
-}
+  document.querySelectorAll('.uth-tk-qr').forEach(renderQr);
 
-if (shareBtn) {
-  shareBtn.addEventListener('click', async () => {
-    const shareData = {
-      title: <?= json_encode($bk['listing_title']) ?>,
-      text: 'Your Uthenga ticket is ready for <?= json_encode($ticketCity) ?>. Code: ' + ticketCode,
-      url: window.location.href
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        alert('Ticket link copied to clipboard.');
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  });
-}
+  const shareBtn = document.getElementById('share-ticket-btn');
+  const copyBtn = document.getElementById('copy-ticket-btn');
 
-if (copyBtn) {
-  copyBtn.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(ticketCode);
-      alert('Ticket code copied.');
-    } catch (err) {
-      alert('Could not copy the code. Please copy it manually.');
-    }
-  });
-}
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async () => {
+      const shareData = {
+        title: <?= json_encode($bk['listing_title']) ?>,
+        text: 'Your Uthenga ticket is ready. Code: ' + ticketCode,
+        url: window.location.href
+      };
+      try {
+        if (navigator.share) { await navigator.share(shareData); }
+        else { await navigator.clipboard.writeText(window.location.href); alert('Ticket link copied to clipboard.'); }
+      } catch (err) { /* dismissed */ }
+    });
+  }
+
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(ticketCode); alert('Ticket code copied.'); }
+      catch (err) { alert('Could not copy the code. Please copy it manually.'); }
+    });
+  }
+})();
 </script>
-
 </body>
 </html>
