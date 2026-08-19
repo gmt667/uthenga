@@ -122,18 +122,35 @@ function uthenga_ticket_render(array $t): string
     $notches = '<span class="uth-tk-notch top"></span><span class="uth-tk-notch bottom"></span>';
 
     if ($template === 'vip') {
-        $h = '<div class="uth-tk vip">';
-        $h .= '<div class="uth-tk-main vip-bg">' . $brandBlock;
-        $h .= '<div class="uth-tk-event"><h2>' . $pv('event_title', $t['event_title']) . '</h2><p class="uth-tk-tagline">' . $pv('tagline', $t['tagline']) . '</p></div>';
-        $h .= $metaRow . $perkRow;
-        $h .= '<div class="uth-tk-hex"><i class="uth-ic-crown">c</i><strong>VIP</strong><span>PASS</span></div>';
-        $h .= '<p class="uth-tk-holder">' . $pv('holder', $t['holder']) . '</p>';
+        $h = '<article class="ticket-legacy">';
+        $h .= '<div class="leg-main vip-bg" style="padding-right:150px;">';
+        $h .= '<div class="leg-logo"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>';
+        $h .= '<h2 class="leg-title">' . $pv('event_title', $t['event_title']) . '</h2>';
+        $h .= '<p class="leg-tagline" style="color:#eab308;">' . $pv('tagline', $t['tagline']) . '</p>';
+        $h .= '<div class="leg-meta" style="color:#cbd5e1;">';
+        $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt"></i></span><span>' . $pv('date', $t['date']) . '</span></div>';
+        $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-clock"></i></span><span>' . $pv('time', $t['time']) . '</span></div>';
+        $h .= '<div class="leg-flex"><span class="leg-ic"><i class="fas fa-map-marker-alt"></i></span><span>' . $pv('venue', $t['venue']) . '</span></div>';
+        $h .= ($t['city'] !== '' ? '<div class="leg-flex" style="padding-left:20px;"><span>' . $pv('city', $t['city']) . '</span></div>' : '');
         $h .= '</div>';
-        $h .= '<div class="uth-tk-stub vip-stub">' . $notches;
-        $h .= '<h3>' . $pv('ticket_name', $t['ticket_name']) . '</h3>' . $idBlock;
-        $h .= '<div class="uth-tk-rowseat"><span><i>ROW</i><b>' . $pv('row', $t['row']) . '</b></span><span><i>SEAT</i><b>' . $pv('seat', $t['seat']) . '</b></span></div>';
-        $h .= $qrBlock . '<p class="uth-tk-admit">' . $pv('badge', $t['badge']) . '</p>';
-        $h .= '</div></div>';
+        $h .= '<div class="leg-perks" style="color:#eab308;">';
+        foreach (array_slice($t['perks'] ?: ['VIP LOUNGE', 'FRONT ROW SEATING', 'NETWORKING ACCESS', 'WELCOME DRINK'], 0, 4) as $pk => $pvText) {
+            $h .= '<div><i class="' . ($pk === 0 ? 'fas fa-couch' : ($pk === 1 ? 'fas fa-chair' : ($pk === 2 ? 'fas fa-network-wired' : 'fas fa-glass-cheers'))) . '"></i>' . $e($pvText) . '</div>';
+        }
+        $h .= '</div>';
+        $h .= '<div class="leg-hex"><div><i class="fas fa-crown"></i><b>VIP</b><span>PASS</span></div></div>';
+        $h .= '</div>';
+        $h .= '<div class="leg-stub ticket-stub-border" style="background:#3d2787;color:#fff;">';
+        $h .= '<span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>';
+        $h .= '<div><h3>' . $pv('ticket_name', $t['ticket_name']) . '</h3>';
+        $h .= '<p class="leg-id-lbl">Ticket ID</p><p class="leg-id">' . $e($t['ticket_id']) . '</p>';
+        $h .= '<div class="leg-rowseat"><div><i>ROW</i><b>' . $pv('row', $t['row']) . '</b></div><div><i>SEAT</i><b>' . $pv('seat', $t['seat']) . '</b></div></div>';
+        $h .= '</div>';
+        $h .= '<div class="leg-qr">' . $qrBlock . '</div>';
+        $h .= '<p class="leg-admit">' . $pv('badge', $t['badge']) . '</p>';
+        $h .= '</div>';
+        $h .= '<span class="scalloped-edge"></span>';
+        $h .= '</article>';
         return $h;
     }
 
@@ -153,71 +170,167 @@ function uthenga_ticket_render(array $t): string
     }
 
     if ($template === 'early_bird') {
-        $h = '<div class="uth-tk early-bird">';
-        $h .= '<div class="uth-tk-main eb-main">' . $brandBlock;
-        $h .= '<div class="uth-tk-event"><h2>' . $e($t['event_title']) . '</h2><p class="uth-tk-tagline">' . $e($t['tagline']) . '</p></div>';
-        $h .= $metaRow . $perkRow . '<p class="uth-tk-holder">' . $e($t['holder']) . '</p>';
+        $h = '<article class="ticket-legacy">';
+        $h .= '<div class="leg-main" style="padding-right:150px;">';
+        $h .= '<div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>';
+        $h .= '<h2 class="leg-title" style="color:#15803d;">Early Bird</h2>';
+        $h .= '<h3 class="leg-sub-title">' . $pv('event_title', $t['event_title']) . '</h3>';
+        $h .= '<p class="leg-tagline" style="color:#16a34a;font-style:italic;font-weight:600;">' . $pv('tagline', $t['tagline']) . '</p>';
+        $h .= '<div class="leg-meta" style="color:#4b5563;font-weight:500;">';
+        $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#16a34a;"></i></span><span>' . $pv('date', $t['date']) . '</span></div>';
+        $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#16a34a;"></i></span><span>' . $pv('time', $t['time']) . '</span></div>';
+        $h .= '<div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#16a34a;"></i></span><span>' . $pv('venue', $t['venue']) . ($t['city'] !== '' ? '<div>' . $pv('city', $t['city']) . '</div>' : '') . '</span></div>';
         $h .= '</div>';
-        $h .= '<div class="uth-tk-bg eb-bg"></div>';
-        $h .= '<div class="uth-tk-badge eb-badge"><small>Discount</small><b>30%</b><small>Off</small></div>';
-        $h .= '<div class="uth-tk-stub eb-stub">' . $notches;
-        $h .= '<h3>' . $e($t['ticket_name']) . '</h3>' . $idBlock;
-        $h .= $qrBlock . '<p class="uth-tk-admit">' . $pv('badge', $t['badge']) . '</p>';
-        $h .= '</div></div>';
+        $h .= '</div>';
+        $h .= '<span class="early-bird-bg leg-deco"></span>';
+        $h .= '<div class="leg-disc"><span>Discount</span><b>30%</b><span>Off</span></div>';
+        $h .= '<div class="leg-stub ticket-stub-border-dark" style="background:#fff;color:#1f2937;">';
+        $h .= '<span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>';
+        $h .= '<div><h3 style="color:#047857;">' . $pv('ticket_name', $t['ticket_name']) . '</h3>';
+        $h .= '<p class="leg-id-lbl" style="color:#6b7280;">Ticket ID</p><p class="leg-id" style="color:#1f2937;">' . $e($t['ticket_id']) . '</p></div>';
+        $h .= '<div class="leg-qr">' . $qrBlock . '</div>';
+        $h .= '<p class="leg-admit" style="color:#1f2937;">' . $pv('badge', $t['badge']) . '</p>';
+        $h .= '</div>';
+        $h .= '<span class="scalloped-edge"></span>';
+        $h .= '</article>';
         return $h;
     }
 
     if ($template === 'group') {
-        $h = '<div class="uth-tk group">';
-        $h .= '<div class="uth-tk-main grp-main">' . $brandBlock;
-        $h .= '<div class="uth-tk-event"><h2>' . $e($t['event_title']) . '</h2><p class="uth-tk-tagline">' . $e($t['tagline']) . '</p></div>';
-        $h .= $metaRow . $perkRow . '<p class="uth-tk-group-note">ADMIT ' . $e($t['extra'] ?: '5') . ' PEOPLE</p><p class="uth-tk-holder">' . $e($t['holder']) . '</p>';
+        $h = '<article class="ticket-legacy">';
+        $h .= '<div class="leg-main" style="padding-right:120px;">';
+        $h .= '<div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>';
+        $h .= '<h2 class="leg-title" style="color:#7F00FF;">Group Pass</h2>';
+        $h .= '<h3 class="leg-sub-title">' . $pv('event_title', $t['event_title']) . '</h3>';
+        $h .= '<div class="leg-meta" style="color:#4b5563;font-weight:500;">';
+        $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#7F00FF;"></i></span><span>' . $pv('date', $t['date']) . '</span></div>';
+        $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#7F00FF;"></i></span><span>' . $pv('time', $t['time']) . '</span></div>';
+        $h .= '<div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#7F00FF;"></i></span><span>' . $pv('venue', $t['venue']) . ($t['city'] !== '' ? '<div>' . $pv('city', $t['city']) . '</div>' : '') . '</span></div>';
+        $h .= '<div class="leg-flex" style="font-weight:800;color:#7F00FF;"><span class="leg-ic"><i class="fas fa-users"></i></span><span>ADMIT ' . $pv('extra', $t['extra'] ?: '5') . ' PEOPLE</span></div>';
         $h .= '</div>';
-        $h .= '<div class="uth-tk-bg grp-bg"></div>';
-        $h .= '<div class="uth-tk-stub grp-stub">' . $notches;
-        $h .= '<h3>' . $pv('ticket_name', $t['ticket_name']) . '</h3><small class="uth-tk-stub-sub">(' . $pv('extra', $t['extra'] ?: '5') . ' PEOPLE)</small>' . $idBlock;
-        $h .= $qrBlock . '<p class="uth-tk-admit">ADMIT ' . $pv('extra', $t['extra'] ?: '5') . ' PEOPLE</p>';
-        $h .= '</div></div>';
+        $h .= '</div>';
+        $h .= '<span class="group-bg leg-deco"></span>';
+        $h .= '<div class="leg-stub ticket-stub-border" style="background:#7F00FF;color:#fff;">';
+        $h .= '<span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>';
+        $h .= '<div><h3>GROUP PASS</h3><p class="leg-id-lbl">(' . $pv('extra', $t['extra'] ?: '5') . ' PEOPLE)</p>';
+        $h .= '<p class="leg-id-lbl">Ticket ID</p><p class="leg-id">' . $e($t['ticket_id']) . '</p></div>';
+        $h .= '<div class="leg-qr">' . $qrBlock . '</div>';
+        $h .= '<p class="leg-admit">ADMIT ' . $pv('extra', $t['extra'] ?: '5') . ' PEOPLE</p>';
+        $h .= '</div>';
+        $h .= '<span class="scalloped-edge"></span>';
+        $h .= '</article>';
         return $h;
     }
 
     if ($template === 'season') {
         $notes = '';
         if (!empty($t['notes'])) {
-            $notes = '<div class="uth-tk-notes">' . implode('', array_map(fn($n) => '<span>' . $e($n) . '</span>', $t['notes'])) . '</div>';
+            foreach ($t['notes'] as $n) {
+                $notes .= '<span><i class="fas fa-check" style="color:#c0392b;"></i>' . $e($n) . '</span>';
+            }
         }
-        $h = '<div class="uth-tk season">';
-        $h .= '<div class="uth-tk-main sn-main">' . $brandBlock;
-        $h .= '<div class="uth-tk-event"><h2>' . $e($t['event_title']) . '</h2><p class="uth-tk-tagline">' . $e($t['tagline']) . '</p></div>';
-        $h .= $notes . '<p class="uth-tk-holder">' . $e($t['holder']) . '</p>';
+        $h = '<article class="ticket-legacy">';
+        $h .= '<div class="leg-main" style="justify-content:center;">';
+        $h .= '<div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>';
+        $h .= '<h2 class="leg-title" style="font-size:18px;color:#c0392b;">' . $pv('event_title', $t['event_title']) . '</h2>';
+        $h .= '<h3 class="leg-sub-title" style="margin-bottom:10px;">' . $pv('tagline', $t['tagline']) . '</h3>';
+        $h .= '<div class="leg-checks">' . $notes . '</div>';
         $h .= '</div>';
-        $h .= '<div class="uth-tk-stub sn-mid">' . $notches;
-        $h .= '<span class="uth-tk-vline">VALID FROM</span><b>' . $pv('valid_from', $t['valid_from']) . '</b>';
-        $h .= '<span class="uth-tk-vline">TO</span><b>' . $pv('valid_to', $t['valid_to']) . '</b>' . $idBlock;
+        $h .= '<div class="leg-stub ticket-stub-border" style="background:#c0392b;color:#fff;justify-content:center;">';
+        $h .= '<span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>';
+        $h .= '<p class="leg-id-lbl" style="margin-bottom:2px;">VALID FROM</p><p class="leg-valid">' . $pv('valid_from', $t['valid_from']) . '</p>';
+        $h .= '<p class="leg-id-lbl" style="margin-bottom:2px;">TO</p><p class="leg-valid" style="margin-bottom:12px;">' . $pv('valid_to', $t['valid_to']) . '</p>';
+        $h .= '<p class="leg-id-lbl">TICKET ID</p><p class="leg-id">' . $e($t['ticket_id']) . '</p>';
         $h .= '</div>';
-        $h .= '<div class="uth-tk-stub sn-stub">' . $notches;
-        $h .= $qrBlock . '<p class="uth-tk-admit">' . $pv('badge', $t['badge']) . '</p>';
-        $h .= '</div></div>';
+        $h .= '<div class="leg-stub ticket-stub-border" style="background:#922b21;color:#fff;">';
+        $h .= '<span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>';
+        $h .= '<div class="leg-qr">' . $qrBlock . '</div>';
+        $h .= '<p class="leg-admit">' . $pv('badge', $t['badge']) . '</p>';
+        $h .= '</div>';
+        $h .= '<span class="scalloped-edge"></span>';
+        $h .= '</article>';
         return $h;
     }
 
     // general (default)
-    $h = '<div class="uth-tk general">';
-    $h .= '<div class="uth-tk-main ga-main">' . $brandBlock;
-    $h .= '<div class="uth-tk-event"><h2>' . $e($t['event_title']) . '</h2><p class="uth-tk-tagline">' . $e($t['tagline']) . '</p></div>';
-    $h .= $metaRow . $perkRow . '<p class="uth-tk-holder">' . $e($t['holder']) . '</p>';
+    $h = '<article class="ticket-legacy">';
+    $h .= '<div class="leg-main" style="padding-right:120px;">';
+    $h .= '<div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>';
+    $h .= '<h2 class="leg-title" style="color:#0052D4;">General<br>Admission</h2>';
+    $h .= '<h3 class="leg-sub-title">' . $pv('event_title', $t['event_title']) . '</h3>';
+    $h .= '<div class="leg-meta" style="color:#4b5563;font-weight:500;">';
+    $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#0052D4;"></i></span><span>' . $pv('date', $t['date']) . '</span></div>';
+    $h .= '<div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#0052D4;"></i></span><span>' . $pv('time', $t['time']) . '</span></div>';
+    $h .= '<div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#0052D4;"></i></span><span>' . $pv('venue', $t['venue']) . ($t['city'] !== '' ? '<div>' . $pv('city', $t['city']) . '</div>' : '') . '</span></div>';
     $h .= '</div>';
-    $h .= '<div class="uth-tk-bg ga-bg"></div>';
-    $h .= '<div class="uth-tk-stub ga-stub">' . $notches;
-    $h .= '<h3>' . $e($t['ticket_name']) . '</h3>' . $idBlock;
-    $h .= $qrBlock . '<p class="uth-tk-admit">' . $pv('badge', $t['badge']) . '</p>';
-    $h .= '</div></div>';
+    $h .= '</div>';
+    $h .= '<span class="ga-bg leg-deco"></span>';
+    $h .= '<div class="leg-stub ticket-stub-border" style="background:#0052D4;color:#fff;">';
+    $h .= '<span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>';
+    $h .= '<div><h3>GENERAL<br>ADMISSION</h3>';
+    $h .= '<p class="leg-id-lbl">Ticket ID</p><p class="leg-id">' . $e($t['ticket_id']) . '</p></div>';
+    $h .= '<div class="leg-qr">' . $qrBlock . '</div>';
+    $h .= '<p class="leg-admit">' . $pv('badge', $t['badge']) . '</p>';
+    $h .= '</div>';
+    $h .= '<span class="scalloped-edge"></span>';
+    $h .= '</article>';
     return $h;
 }
 
 function uthenga_ticket_render_css(): string
 {
     return <<<'CSS'
+.ticket-legacy{--tk-notch-bg:#f5f5f5;display:flex;width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;position:relative;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 18px 40px rgba(15,23,42,.16);color:#111827;min-height:208px;font-family:'Inter',-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+.ticket-legacy *{box-sizing:border-box}
+.ticket-legacy .leg-main{flex:1;min-width:0;padding:16px;position:relative;z-index:1;display:flex;flex-direction:column;color:#fff}
+.ticket-legacy .leg-logo{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ticket-legacy .leg-logo i{font-size:14px}
+.ticket-legacy .leg-logo span{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1.2}
+.ticket-legacy .leg-logo b{font-weight:400;font-size:8px;letter-spacing:2px;display:block}
+.ticket-legacy .leg-title{font-size:20px;font-weight:900;line-height:1.12;margin:0 0 4px;text-transform:uppercase}
+.ticket-legacy .leg-sub-title{font-size:13px;font-weight:700;color:#111827;margin:0 0 4px;text-transform:uppercase}
+.ticket-legacy .leg-tagline{font-size:12px;font-weight:500;margin:0 0 14px}
+.ticket-legacy .leg-meta{display:flex;flex-direction:column;gap:4px;font-size:10px;font-weight:500;line-height:1.4}
+.ticket-legacy .leg-flex{display:flex;align-items:center;gap:8px}
+.ticket-legacy .leg-ic{width:14px;text-align:center;margin-right:2px}
+.ticket-legacy .leg-perks{display:flex;gap:14px;flex-wrap:wrap;margin-top:auto;padding-top:8px;font-size:8px;font-weight:700;letter-spacing:.4px;border-top:1px solid rgba(255,255,255,.2)}
+.ticket-legacy .leg-perks div{display:flex;align-items:center;gap:4px}
+.ticket-legacy .leg-hex{position:absolute;top:50%;right:32px;transform:translateY(-50%);width:80px;height:96px;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#facc15,#eab308);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.ticket-legacy .leg-hex>div{background:#1a153a;width:90%;height:90%;clip-path:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ticket-legacy .leg-hex i{color:#eab308;font-size:17px;margin-bottom:3px}
+.ticket-legacy .leg-hex b{color:#eab308;font-size:19px;font-weight:900;line-height:1}
+.ticket-legacy .leg-hex span{color:#eab308;font-size:11px;font-weight:600;letter-spacing:2px}
+.ticket-legacy .leg-deco{position:absolute;top:0;bottom:0;width:50%;right:0;z-index:0;opacity:.9}
+.ticket-legacy .leg-disc{position:absolute;top:50%;right:5.5rem;transform:translateY(-50%);z-index:2;width:56px;height:56px;border-radius:50%;background:#fff;border:2px solid #22c55e;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2px;box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.ticket-legacy .leg-disc span{font-size:7px;font-weight:800;color:#14532d;text-transform:uppercase;letter-spacing:.5px}
+.ticket-legacy .leg-disc b{font-size:16px;font-weight:900;color:#16a34a;line-height:1.1}
+.ticket-legacy .leg-checks{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px;font-size:10px;font-weight:700;color:#374151}
+.ticket-legacy .leg-checks span{display:flex;align-items:center;gap:6px}
+.ticket-legacy .leg-stub{width:96px;flex:none;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;padding:13px 10px;position:relative;border-radius:0 12px 12px 0}
+.ticket-legacy .leg-stub h3{font-size:12px;font-weight:700;letter-spacing:.3px;line-height:1.3;margin:0 0 8px;text-transform:uppercase}
+.ticket-legacy .leg-stub .leg-id-lbl{font-size:7px;text-transform:uppercase;letter-spacing:1px;opacity:.78;margin:3px 0 2px;font-weight:700}
+.ticket-legacy .leg-stub .leg-id{font-size:9px;font-family:'JetBrains Mono',ui-monospace,Menlo,monospace;font-weight:700;margin:0 0 6px;word-break:break-all}
+.ticket-legacy .leg-stub .leg-rowseat{display:flex;justify-content:space-between;gap:8px;font-size:10px;margin:0 0 8px;padding:0 2px;width:100%}
+.ticket-legacy .leg-stub .leg-rowseat i{font-style:normal;display:block;font-size:8px;opacity:.75;letter-spacing:1px}
+.ticket-legacy .leg-stub .leg-rowseat b{display:block;font-weight:800}
+.ticket-legacy .leg-stub .leg-valid{font-size:11px;font-weight:800;margin:0 0 2px;line-height:1.3}
+.ticket-legacy .leg-qr{background:#fff;border-radius:4px;padding:3px;width:62px;height:62px;margin:0 auto 6px;flex:none;display:flex;align-items:center;justify-content:center}
+.ticket-legacy .leg-qr .qr-placeholder{width:100%;height:100%;border-radius:2px}
+.ticket-legacy .leg-qr .uth-tk-qr{width:100%;height:100%;padding:0;background:transparent;border-radius:0;margin:0}
+.ticket-legacy .leg-qr .uth-tk-qr .uth-tk-qr-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.ticket-legacy .leg-admit{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin:0}
+.ticket-legacy .ticket-stub-border{border-left:2px dashed rgba(255,255,255,.4)}
+.ticket-legacy .ticket-stub-border-dark{border-left:2px dashed rgba(0,0,0,.2)}
+.ticket-legacy .notch-left{position:absolute;width:20px;height:20px;border-radius:50%;z-index:10;background:var(--tk-notch-bg)}
+.ticket-legacy .notch-top{top:-10px;left:-10px}
+.ticket-legacy .notch-bottom{bottom:-10px;left:-10px}
+.ticket-legacy .scalloped-edge{position:absolute;right:0;top:0;bottom:0;width:8px;z-index:11;background-image:radial-gradient(circle at 8px 10px,var(--tk-notch-bg) 8px,transparent 8.5px);background-size:16px 20px;background-repeat:repeat-y}
+.ticket-legacy .vip-bg{background:linear-gradient(135deg,#0f0c29 0%,#302b63 50%,#24243e 100%);color:#fff}
+.ticket-legacy .early-bird-bg{background:linear-gradient(135deg,#11998e 0%,#38ef7d 100%);clip-path:polygon(0 0,100% 0,100% 100%,20% 100%)}
+.ticket-legacy .ga-bg{background:linear-gradient(135deg,#0052D4 0%,#4364F7 50%,#6FB1FC 100%);clip-path:polygon(0 0,100% 0,100% 100%,30% 100%)}
+.ticket-legacy .group-bg{background:linear-gradient(135deg,#7F00FF 0%,#E100FF 100%);clip-path:polygon(10% 0,100% 0,100% 100%,0% 100%)}
+.ticket-legacy .season-bg{background:#c0392b;color:#fff}
+.ticket-legacy .qr-placeholder{background:repeating-linear-gradient(45deg,#000,#000 2px,#fff 2px,#fff 4px)}
 .uth-tk{position:relative;display:flex;width:100%;max-width:520px;min-height:228px;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 18px 40px rgba(15,23,42,.16);font-family:'Inter',-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;margin:0 auto}
 .uth-tk *{box-sizing:border-box}
 .uth-tk-main{flex:1;min-width:0;padding:1.15rem 1.25rem;position:relative;z-index:1;display:flex;flex-direction:column}

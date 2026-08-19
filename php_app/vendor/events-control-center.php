@@ -78,6 +78,7 @@ $userRoleLabel = 'Event Organizer';
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/events-control-center.css?v=<?= rawurlencode(APP_VERSION) ?>-12">
   <script src="<?= BASE_URL ?>assets/js/qrcode-generator.js"></script>
@@ -324,6 +325,8 @@ $userRoleLabel = 'Event Organizer';
     .ew-tk-ivp .dp .t-stub{background:linear-gradient(180deg,#f97316,#ea580c)}
     @media (max-width:640px){ .ew-tk-ivp .ticket{grid-template-columns:1fr 108px} .ew-tk-ivp .dp .dayhex{display:none} .ew-tk-ivp .meta{grid-template-columns:auto} }
     <?= uthenga_ticket_render_css() ?>
+    .ticket-legacy { --tk-notch-bg: var(--ecc-surface-2, #1e293b); }
+    .ew-pv-slide .ticket-legacy { box-shadow: 0 10px 26px rgba(0,0,0,.4); }
   </style>
 
 </head>
@@ -4861,10 +4864,14 @@ $userRoleLabel = 'Event Organizer';
     var date = data.date || '18 AUG 2026';
     var time = data.time || '08:00 AM - 06:00 PM';
     var venue = data.venue || 'SUNBIRD CAPITAL HOTEL, LILONGWE, MALAWI';
+    var city = data.city || '';
     var ticketId = data.ticketId || 'UTH-VIP-004821';
     var row = data.row || 'A';
     var seat = data.seat || '01';
     var admit = data.admit || 'ADMIT ONE';
+    var validFrom = data.validFrom || '01 JAN 2026';
+    var validTo = data.validTo || '31 DEC 2026';
+    var cityLine = city ? '<div style="padding-left:20px;"><span>' + tkEsc(city) + '</span></div>' : '';
 
     var cat = String(catKey || catName || '').toUpperCase().replace(/[^A-Z]/g, '_');
 
@@ -4880,120 +4887,158 @@ $userRoleLabel = 'Event Organizer';
     else if (cat.indexOf('GENERAL') !== -1 || cat.indexOf('STANDARD') !== -1) tplClass = 'uthenga-tpl-general';
 
     if (tplClass === 'uthenga-tpl-vip') {
-      return '<article class="ticket vip" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">VIP PASS</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <p class="tagline">' + tkEsc(sub) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
-        '  </ul>' +
-        '  <div class="perks"><span><i class="fas fa-crown"></i> VIP Lounge</span><span><i class="fas fa-chair"></i> Front Row Seating</span><span><i class="fas fa-network-wired"></i> Networking Access</span><span><i class="fas fa-glass-cheers"></i> Welcome Drink</span></div>' +
-        '  <div class="badge"><span class="crown"><i class="fas fa-crown"></i></span><b>VIP</b><span>PASS</span></div>' +
+      return '<article class="ticket-legacy">' +
+        '<div class="leg-main vip-bg" style="padding-right:150px;">' +
+        '  <div class="leg-logo"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
+        '  <h2 class="leg-title">' + tkEsc(title) + '</h2>' +
+        '  <p class="leg-tagline" style="color:#eab308;">' + tkEsc(sub) + '</p>' +
+        '  <div class="leg-meta" style="color:#cbd5e1;">' +
+        '    <div><span class="leg-ic"><i class="far fa-calendar-alt"></i></span><span>' + tkEsc(date) + '</span></div>' +
+        '    <div><span class="leg-ic"><i class="far fa-clock"></i></span><span>' + tkEsc(time) + '</span></div>' +
+        '    <div><span class="leg-ic"><i class="fas fa-map-marker-alt"></i></span><span>' + tkEsc(venue) + '</span></div>' +
+        cityLine +
+        '  </div>' +
+        '  <div class="leg-perks" style="color:#eab308;">' +
+        '    <div><i class="fas fa-couch"></i> VIP LOUNGE</div>' +
+        '    <div><i class="fas fa-chair"></i> FRONT ROW SEATING</div>' +
+        '    <div><i class="fas fa-network-wired"></i> NETWORKING ACCESS</div>' +
+        '    <div><i class="fas fa-glass-cheers"></i> WELCOME DRINK</div>' +
+        '  </div>' +
+        '  <div class="leg-hex">' +
+        '    <div><i class="fas fa-crown"></i><b>VIP</b><span>PASS</span></div>' +
+        '  </div>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">VIP PASS</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="rowseat"><span>ROW<b>' + tkEsc(row) + '</b></span><span>SEAT<b>' + tkEsc(seat) + '</b></span></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
+        '<div class="leg-stub ticket-stub-border" style="background:#3d2787;color:#fff;">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3>' + tkEsc(catName) + '</h3>' +
+        '    <p class="leg-id-lbl">Ticket ID</p>' +
+        '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+        '    <div class="leg-rowseat"><div><i>ROW</i><b>' + tkEsc(row) + '</b></div><div><i>SEAT</i><b>' + tkEsc(seat) + '</b></div></div>' +
+        '  </div>' +
+        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
+        '  <p class="leg-admit">' + tkEsc(admit) + '</p>' +
         '</div>' +
+        '<span class="scalloped-edge"></span>' +
         '</article>';
     }
 
     if (tplClass === 'uthenga-tpl-earlybird') {
-      return '<article class="ticket eb" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">EARLY BIRD</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <p class="tagline">' + tkEsc(sub) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
-        '  </ul>' +
-        '  <div class="disc"><small>DISCOUNT</small><b>30%</b><i>OFF</i></div>' +
+      return '<article class="ticket-legacy">' +
+        '<div class="leg-main" style="padding-right:150px;">' +
+        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
+        '  <h2 class="leg-title" style="color:#15803d;">Early Bird</h2>' +
+        '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
+        '  <p class="leg-tagline" style="color:#16a34a;font-style:italic;font-weight:600;">' + tkEsc(sub) + '</p>' +
+        '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
+        '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#16a34a;"></i></span><span>' + tkEsc(date) + '</span></div>' +
+        '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#16a34a;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
+        '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#16a34a;"></i></span>' +
+        '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
+        '  </div>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">EARLY BIRD</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
+        '<span class="early-bird-bg leg-deco"></span>' +
+        '<div class="leg-disc"><span>Discount</span><b>30%</b><span>Off</span></div>' +
+        '<div class="leg-stub ticket-stub-border-dark" style="background:#fff;color:#1f2937;">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3 style="color:#047857;">EARLY BIRD</h3>' +
+        '    <p class="leg-id-lbl" style="color:#6b7280;">Ticket ID</p>' +
+        '    <p class="leg-id" style="color:#1f2937;">' + tkEsc(ticketId) + '</p>' +
+        '  </div>' +
+        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
+        '  <p class="leg-admit" style="color:#1f2937;">' + tkEsc(admit) + '</p>' +
         '</div>' +
+        '<span class="scalloped-edge"></span>' +
         '</article>';
     }
 
     if (tplClass === 'uthenga-tpl-general') {
-      return '<article class="ticket ga" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">GENERAL<br>ADMISSION</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
-        '  </ul>' +
+      return '<article class="ticket-legacy">' +
+        '<div class="leg-main" style="padding-right:120px;">' +
+        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
+        '  <h2 class="leg-title" style="color:#0052D4;">General<br>Admission</h2>' +
+        '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
+        '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
+        '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#0052D4;"></i></span><span>' + tkEsc(date) + '</span></div>' +
+        '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#0052D4;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
+        '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#0052D4;"></i></span>' +
+        '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
+        '  </div>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">GENERAL ADMISSION</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
+        '<span class="ga-bg leg-deco"></span>' +
+        '<div class="leg-stub ticket-stub-border" style="background:#0052D4;color:#fff;">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3>GENERAL<br>ADMISSION</h3>' +
+        '    <p class="leg-id-lbl">Ticket ID</p>' +
+        '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+        '  </div>' +
+        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
+        '  <p class="leg-admit">' + tkEsc(admit) + '</p>' +
         '</div>' +
+        '<span class="scalloped-edge"></span>' +
         '</article>';
     }
 
     if (tplClass === 'uthenga-tpl-group') {
-      return '<article class="ticket gp" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">GROUP PASS</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-users"></i></span> ADMIT 5 PEOPLE</li>' +
-        '  </ul>' +
+      return '<article class="ticket-legacy">' +
+        '<div class="leg-main" style="padding-right:120px;">' +
+        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
+        '  <h2 class="leg-title" style="color:#7F00FF;">Group Pass</h2>' +
+        '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
+        '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
+        '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#7F00FF;"></i></span><span>' + tkEsc(date) + '</span></div>' +
+        '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#7F00FF;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
+        '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#7F00FF;"></i></span>' +
+        '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
+        '    <div class="leg-flex" style="font-weight:800;color:#7F00FF;"><span class="leg-ic"><i class="fas fa-users"></i></span><span>ADMIT 5 PEOPLE</span></div>' +
+        '  </div>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">GROUP PASS<br><span style="font-size:10px;font-weight:600">(5 PEOPLE)</span></div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">Admit 5</div>' +
+        '<span class="group-bg leg-deco"></span>' +
+        '<div class="leg-stub ticket-stub-border" style="background:#7F00FF;color:#fff;">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3>GROUP PASS</h3>' +
+        '    <p class="leg-id-lbl">(5 PEOPLE)</p>' +
+        '    <p class="leg-id-lbl">Ticket ID</p>' +
+        '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+        '  </div>' +
+        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
+        '  <p class="leg-admit">ADMIT 5 PEOPLE</p>' +
         '</div>' +
+        '<span class="scalloped-edge"></span>' +
         '</article>';
     }
 
     if (tplClass === 'uthenga-tpl-season') {
-      return '<article class="ticket sp" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">SEASON PASS 2026</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <div class="checks">' +
-        '    <span><i class="fas fa-check ck"></i> All Music Events</span>' +
-        '    <span><i class="fas fa-check ck"></i> All Workshops</span>' +
-        '    <span><i class="fas fa-check ck"></i> All Conferences</span>' +
-        '    <span><i class="fas fa-check ck"></i> Priority Booking</span>' +
+      return '<article class="ticket-legacy">' +
+        '<div class="leg-main" style="justify-content:center;padding:16px;">' +
+        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
+        '  <h2 class="leg-title" style="font-size:18px;color:#c0392b;">Season Pass 2026</h2>' +
+        '  <h3 class="leg-sub-title" style="margin-bottom:10px;">' + tkEsc(title) + '</h3>' +
+        '  <div class="leg-checks">' +
+        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> All Music Events</span>' +
+        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> All Workshops</span>' +
+        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> All Conferences</span>' +
+        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> Priority Booking</span>' +
         '  </div>' +
         '</div>' +
-        '<div class="mid">' +
-        '  <span class="lbl">VALID FROM</span>' +
-        '  <span class="dates">01 JAN 2026</span>' +
-        '  <span class="to">TO</span>' +
-        '  <span class="dates">31 DEC 2026</span>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
+        '<div class="leg-stub ticket-stub-border" style="background:#c0392b;color:#fff;justify-content:center;">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <p class="leg-id-lbl" style="margin-bottom:2px;">VALID FROM</p>' +
+        '  <p class="leg-valid">' + tkEsc(validFrom) + '</p>' +
+        '  <p class="leg-id-lbl" style="margin-bottom:2px;">TO</p>' +
+        '  <p class="leg-valid" style="margin-bottom:12px;">' + tkEsc(validTo) + '</p>' +
+        '  <p class="leg-id-lbl">TICKET ID</p>' +
+        '  <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
+        '<div class="leg-stub ticket-stub-border" style="background:#922b21;color:#fff;">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
+        '  <p class="leg-admit">ADMIT ONE</p>' +
         '</div>' +
+        '<span class="scalloped-edge"></span>' +
         '</article>';
     }
 
@@ -5103,23 +5148,30 @@ $userRoleLabel = 'Event Organizer';
     }
 
     // Default General Admission
-    return '<article class="ticket ga" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-      '<div class="t-main">' +
-      '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-      '  <h2 class="t-title">GENERAL<br>ADMISSION</h2>' +
-      '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-      '  <ul class="meta">' +
-      '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-      '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-      '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
-      '  </ul>' +
+    return '<article class="ticket-legacy">' +
+      '<div class="leg-main" style="padding-right:120px;">' +
+      '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
+      '  <h2 class="leg-title" style="color:#0052D4;">General<br>Admission</h2>' +
+      '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
+      '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
+      '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#0052D4;"></i></span><span>' + tkEsc(date) + '</span></div>' +
+      '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#0052D4;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
+      '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#0052D4;"></i></span>' +
+      '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
+      '  </div>' +
       '</div>' +
-      '<div class="t-stub">' +
-      '  <div class="stub-title">GENERAL ADMISSION</div>' +
-      '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-      '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-      '  <div class="admit">' + tkEsc(admit) + '</div>' +
+      '<span class="ga-bg leg-deco"></span>' +
+      '<div class="leg-stub ticket-stub-border" style="background:#0052D4;color:#fff;">' +
+      '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+      '  <div>' +
+      '    <h3>GENERAL<br>ADMISSION</h3>' +
+      '    <p class="leg-id-lbl">Ticket ID</p>' +
+      '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+      '  </div>' +
+      '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
+      '  <p class="leg-admit">' + tkEsc(admit) + '</p>' +
       '</div>' +
+      '<span class="scalloped-edge"></span>' +
       '</article>';
   };
 
