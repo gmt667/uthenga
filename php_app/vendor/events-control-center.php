@@ -258,6 +258,10 @@ $userRoleLabel = 'Event Organizer';
     /* ── TicketType Wizard (TicketsWiz) live pass preview board ─────── */
     .ew-tk-ivp { width:100%; max-width:620px; margin:0 auto; }
     .ew-tk-ivp .ticket{position:relative;display:grid;grid-template-columns:1fr 128px;border-radius:14px;overflow:hidden;min-height:196px;box-shadow:0 10px 30px rgba(0,0,0,.55);background:#fff;color:var(--ink,#111827)}
+    .ew-tk-ivp .ticket.sp{display:flex!important;flex-direction:row!important;align-items:stretch!important}
+    .ew-tk-ivp .ticket.sp .t-main{flex:1 1 auto!important;min-width:0!important}
+    .ew-tk-ivp .ticket.sp .mid{flex:0 0 100px!important;width:100px!important}
+    .ew-tk-ivp .ticket.sp .t-stub{flex:0 0 100px!important;width:100px!important}
     .ew-tk-ivp .t-main{position:relative;padding:18px 20px;display:flex;flex-direction:column;gap:6px;z-index:1}
     .ew-tk-ivp .t-main>*{position:relative;z-index:2}
     .ew-tk-ivp .brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;letter-spacing:1px}
@@ -327,6 +331,48 @@ $userRoleLabel = 'Event Organizer';
     <?= uthenga_ticket_render_css() ?>
     .ticket-legacy { --tk-notch-bg: var(--ecc-surface-2, #1e293b); }
     .ew-pv-slide .ticket-legacy { box-shadow: 0 10px 26px rgba(0,0,0,.4); }
+
+    /* ─── Venue Management System ─────────────────────────────── */
+    .vw-steps { display:flex; gap:0.35rem; flex-wrap:wrap; padding:0.9rem 1.5rem; border-bottom:1px solid var(--ecc-border); background:var(--ecc-surface-2, rgba(148,163,184,.06)); }
+    .vw-steps .vw-step { font-size:0.66rem; font-weight:800; letter-spacing:0.03em; text-transform:uppercase; color:var(--ecc-text-dim); border:1px solid var(--ecc-border); border-radius:99px; padding:0.28rem 0.7rem; opacity:0.55; }
+    .vw-steps .vw-step.active { color:#fff; background:linear-gradient(90deg,#6366f1,#a855f7); border-color:transparent; opacity:1; box-shadow:0 4px 14px rgba(99,102,241,.35); }
+    .vc-kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.7rem; margin-bottom:1rem; }
+    .vc-kpi { border:1px solid var(--ecc-border); border-radius:14px; padding:0.85rem 1rem; background:var(--ecc-surface-2, rgba(148,163,184,.06)); }
+    .vc-view-switch { display:inline-flex; gap:0.25rem; background:var(--ecc-surface-3, rgba(148,163,184,.1)); border-radius:10px; padding:0.2rem; }
+    .vc-view-btn { border:0; background:transparent; color:var(--ecc-text-dim); font-size:0.7rem; font-weight:800; padding:0.32rem 0.7rem; border-radius:8px; cursor:pointer; }
+    .vc-view-btn.active { background:var(--ecc-surface-1, #0f172a); color:#fff; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+    .vc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:0.9rem; }
+    .vc-card { border:1px solid var(--ecc-border); border-radius:16px; overflow:hidden; background:var(--ecc-surface-2, rgba(148,163,184,.06)); display:flex; flex-direction:column; transition:transform .15s ease, box-shadow .15s ease; }
+    .vc-card:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,.25); }
+    .vc-card-img { height:120px; position:relative; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:1.6rem; }
+    .vc-card-body { padding:0.8rem 0.9rem 0.9rem; display:flex; flex-direction:column; gap:0.4rem; flex:1; }
+    .vc-card-menu { border-top:1px dashed var(--ecc-border); padding-top:0.5rem; display:grid; gap:0.3rem; }
+    .vc-table { width:100%; border-collapse:collapse; font-size:0.74rem; }
+    .vc-table th { text-align:left; font-size:0.62rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--ecc-text-dim); padding:0.5rem 0.6rem; border-bottom:1px solid var(--ecc-border); }
+    .vc-table td { padding:0.55rem 0.6rem; border-bottom:1px solid var(--ecc-border); vertical-align:middle; }
+    .vc-table tbody tr:hover { background:var(--ecc-surface-2, rgba(148,163,184,.06)); }
+    .vc-cal { width:100%; border-collapse:collapse; }
+    .vc-cal th { font-size:0.62rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--ecc-text-dim); padding:0.4rem 0.3rem; text-align:left; }
+    .vc-cal td { border:1px solid var(--ecc-border); width:14.28%; min-height:72px; vertical-align:top; padding:0.3rem; }
+    .vc-cal-empty { background:transparent !important; border-color:transparent !important; }
+    .vc-cal-day { background:var(--ecc-surface-2, rgba(148,163,184,.05)); min-height:74px; }
+    .vc-cal-day.today .vc-cal-num { background:#6366f1; color:#fff; border-radius:99px; }
+    .vc-cal-day.clickable { cursor:pointer; }
+    .vc-cal-day.clickable:hover { outline:1px solid #6366f1; }
+    .vc-cal-num { font-size:0.68rem; font-weight:800; display:inline-block; padding:0.15rem 0.45rem; margin-bottom:0.25rem; }
+    .vc-cal-item { font-size:0.6rem; color:#fff; border-radius:6px; padding:0.22rem 0.35rem; margin-bottom:0.2rem; display:flex; justify-content:space-between; gap:0.3rem; overflow:hidden; }
+    .vc-cal-t1 { font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .vc-cal-t2 { opacity:0.8; flex-shrink:0; }
+    .vc-cal-more { font-size:0.6rem; color:var(--ecc-text-dim); font-weight:700; }
+    .vc-legend { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:0.3rem; }
+    .vc-ws-head { display:flex; gap:1rem; align-items:flex-start; border:1px solid var(--ecc-border); border-radius:16px; padding:1rem; background:var(--ecc-surface-2, rgba(148,163,184,.06)); }
+    .vc-ws-cover { width:84px; height:84px; border-radius:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:1.6rem; }
+    .vc-ws-nav { display:flex; gap:0.3rem; flex-wrap:wrap; margin-top:0.9rem; }
+    .vc-ws-tab { border:1px solid var(--ecc-border); background:transparent; color:var(--ecc-text-dim); font-size:0.7rem; font-weight:800; padding:0.4rem 0.8rem; border-radius:99px; cursor:pointer; }
+    .vc-ws-tab.active { background:linear-gradient(90deg,#6366f1,#a855f7); color:#fff; border-color:transparent; }
+    .vc-box { border:1px solid var(--ecc-border); border-radius:12px; padding:0.6rem 0.75rem; background:var(--ecc-surface-2, rgba(148,163,184,.06)); min-width:0; }
+    .vc-av-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:0.6rem; margin-top:0.8rem; }
+    .vc-fac-cb { display:flex; gap:0.4rem; align-items:center; font-size:0.72rem; cursor:pointer; }
   </style>
 
 </head>
@@ -1525,7 +1571,8 @@ $userRoleLabel = 'Event Organizer';
               <div id="ci-scanner-placeholder" style="text-align:center;">
                 <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--ecc-text-dim);"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="7" width="4" height="4"/><rect x="7" y="13" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/></svg>
                 <div style="font-size:0.85rem;font-weight:900;margin-top:0.6rem;" id="ci-scan-title">SCAN TICKET</div>
-                <div style="font-size:0.7rem;color:var(--ecc-text-dim);margin-top:0.2rem;">Camera QR auto-detect where supported · or enter ticket ID manually</div>
+                <div style="font-size:0.7rem;color:var(--ecc-text-dim);margin-top:0.2rem;">Camera QR auto-detect active · or enter ticket ID manually</div>
+                <button type="button" class="ecc-btn ecc-btn-secondary" style="margin-top:0.6rem;font-size:0.72rem;padding:0.25rem 0.65rem;" onclick="CheckInControlCenter.scanDemoTicket()"><i class="fas fa-qrcode"></i> Test Scan Active Ticket</button>
               </div>
               <div id="ci-cam-error" class="ecc-ci-cam-error"></div>
             </div>
@@ -1533,7 +1580,7 @@ $userRoleLabel = 'Event Organizer';
             <div style="display:flex;gap:0.5rem;margin-top:0.9rem;">
               <input type="text" id="ci-scan-input" class="ecc-input" style="flex:1;font-family:monospace;font-size:1rem;padding:0.7rem 0.8rem;" placeholder="Ticket ID or QR payload (UTH-… / UTHENGA|… / token)" autocomplete="off">
               <button type="button" class="ecc-btn ecc-btn-primary ci-icon-btn" style="font-size:0.85rem;padding:0 1.2rem;" onclick="CheckInControlCenter.scanInput()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>SCAN</button>
-              <button type="button" class="ecc-btn ecc-btn-secondary ci-icon-btn" id="ci-cam-btn" style="display:none;padding:0 1rem;font-size:0.8rem;" onclick="CheckInControlCenter.toggleCamera()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Camera</button>
+              <button type="button" class="ecc-btn ecc-btn-secondary ci-icon-btn" id="ci-cam-btn" style="padding:0 1rem;font-size:0.8rem;" onclick="CheckInControlCenter.toggleCamera()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>Camera</button>
             </div>
             <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:0.72rem;color:var(--ecc-text-dim);font-weight:600;">
               <span id="ci-operator-line">Operator: —</span>
@@ -1727,11 +1774,128 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 5: VENUES -->
       <div id="mod-venues" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Venue Control & Maps</h2>
-        <div class="ecc-card">
-          <h3 style="margin:0 0 0.4rem;">Bingu International Convention Centre</h3>
-          <p style="font-size:0.78rem;color:var(--ecc-text-dim);margin:0 0 1rem;">Presidential Way, Lilongwe · Capacity: 500 People · Hall A</p>
-          <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1000&q=80" style="width:100%;height:200px;object-fit:cover;border-radius:var(--ecc-radius);" alt="Venue Map">
+        <!-- Venue Console -->
+        <div id="vc-console" style="display:block;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:0.8rem;margin-bottom:1.1rem;">
+            <div>
+              <h2 style="font-size:1.15rem;font-weight:900;margin:0 0 0.15rem;">Venue Control & Maps</h2>
+              <div style="font-size:0.75rem;color:var(--ecc-text-dim);">Manage spaces, availability and event assignments across your portfolio.</div>
+            </div>
+            <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+              <input type="search" id="vc-search" class="ecc-input" placeholder="Search venues…" style="width:210px;" value="">
+              <div class="vc-view-switch">
+                <button type="button" class="vc-view-btn active" data-vc-view="grid" onclick="VenuesControlCenter.switchView('grid')">▦ Grid</button>
+                <button type="button" class="vc-view-btn" data-vc-view="list" onclick="VenuesControlCenter.switchView('list')">≡ List</button>
+                <button type="button" class="vc-view-btn" data-vc-view="cal" onclick="VenuesControlCenter.switchView('cal')">▤ Calendar</button>
+              </div>
+              <button type="button" class="ecc-btn ecc-btn-primary" onclick="VenuesControlCenter.wizardOpen()">+ Add Venue</button>
+            </div>
+          </div>
+          <div id="vc-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0.7rem;margin-bottom:1.1rem;"></div>
+          <div id="vc-grid"></div>
+          <div id="vc-list" style="display:none;"></div>
+          <div id="vc-cal" style="display:none;"></div>
+        </div>
+
+        <!-- Venue Manage Workspace -->
+        <div id="vc-workspace" style="display:none;">
+          <button type="button" class="ecc-btn ecc-btn-secondary" style="margin-bottom:0.9rem;font-size:0.74rem;" onclick="VenuesControlCenter.closeWorkspace()">← All Venues</button>
+          <div id="vc-ws-head" class="vc-ws-head"></div>
+          <div id="vc-ws-nav" class="vc-ws-nav"></div>
+          <div id="vc-ws-body" style="margin-top:1rem;"><div class="ecc-tk-empty">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- Modal: Add Venue (8-step wizard) -->
+      <div id="modal-add-venue" class="ecc-modal-overlay">
+        <div class="ecc-modal-content" style="max-width:780px;padding:0;overflow:hidden;">
+          <div class="ecc-modal-header" style="display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.5rem;border-bottom:1px solid var(--ecc-border);">
+            <h3 style="margin:0;font-size:1.05rem;">Add Venue — <span id="vw-step-title">Identity</span></h3>
+            <button type="button" class="ecc-btn ecc-btn-secondary" style="padding:0.2rem 0.6rem;font-size:0.75rem;" onclick="VenuesControlCenter.wizardClose()">✕</button>
+          </div>
+          <div id="vw-steps" class="vw-steps">
+            <span class="vw-step active" data-vw="1">Identity</span>
+            <span class="vw-step" data-vw="2">Location</span>
+            <span class="vw-step" data-vw="3">Capacity & Spaces</span>
+            <span class="vw-step" data-vw="4">Facilities</span>
+            <span class="vw-step" data-vw="5">Media</span>
+            <span class="vw-step" data-vw="6">Pricing</span>
+            <span class="vw-step" data-vw="7">Policies</span>
+            <span class="vw-step" data-vw="8">Review & Publish</span>
+          </div>
+          <div id="vw-body" style="padding:1.25rem 1.5rem;max-height:56vh;overflow-y:auto;min-height:340px;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:0.6rem;padding:1rem 1.5rem;border-top:1px solid var(--ecc-border);">
+            <button type="button" id="vw-prev" class="ecc-btn ecc-btn-secondary" style="font-size:0.76rem;" onclick="VenuesControlCenter.wizardStep(-1)">← Back</button>
+            <button type="button" id="vw-next" class="ecc-btn ecc-btn-primary" style="font-size:0.76rem;margin-left:auto;" onclick="VenuesControlCenter.wizardStep(1)">Continue →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Assign Event to Venue -->
+      <div id="modal-assign-event" class="ecc-modal-overlay">
+        <div class="ecc-modal-content" style="max-width:620px;padding:1.75rem;">
+          <h3 style="margin:0 0 0.9rem;font-size:1.05rem;">Assign Event → <span id="ve-venue-name" style="color:var(--ecc-primary);"></span></h3>
+          <div style="font-size:0.78rem;display:grid;gap:0.6rem;">
+            <label style="font-weight:700;">Event
+              <select id="ve-event" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;"></select>
+            </label>
+            <label style="font-weight:700;">Space
+              <select id="ve-space" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;"><option value="">Whole venue (all spaces)</option></select>
+            </label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+              <label style="font-weight:700;">Setup start
+                <input type="datetime-local" id="ve-setup" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;">
+              </label>
+              <label style="font-weight:700;">Event start
+                <input type="datetime-local" id="ve-start" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;">
+              </label>
+              <label style="font-weight:700;">Event end
+                <input type="datetime-local" id="ve-end" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;">
+              </label>
+              <label style="font-weight:700;">Teardown end
+                <input type="datetime-local" id="ve-teardown" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;">
+              </label>
+            </div>
+            <div id="ve-check" style="min-height:1.6rem;font-size:0.76rem;"></div>
+            <div style="display:flex;gap:0.6rem;justify-content:flex-end;">
+              <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.76rem;" onclick="VenuesControlCenter.assignCheck(false)">Check Availability</button>
+              <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.76rem;" onclick="VenuesControlCenter.assignCheck(true)">Assign Event ✓</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Block date -->
+      <div id="modal-block-date" class="ecc-modal-overlay">
+        <div class="ecc-modal-content" style="max-width:440px;padding:1.75rem;">
+          <h3 style="margin:0 0 0.9rem;font-size:1.05rem;">Set Availability Block</h3>
+          <div style="font-size:0.78rem;display:grid;gap:0.6rem;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+              <label style="font-weight:700;">From
+                <input type="datetime-local" id="vb-start" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;">
+              </label>
+              <label style="font-weight:700;">To
+                <input type="datetime-local" id="vb-end" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;">
+              </label>
+            </div>
+            <label style="font-weight:700;">Status
+              <select id="vb-status" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;">
+                <option value="BLOCKED">Blocked</option>
+                <option value="RESERVED">Reserved</option>
+                <option value="MAINTENANCE">Maintenance</option>
+              </select>
+            </label>
+            <label style="font-weight:700;">Space
+              <select id="vb-space" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;"><option value="">Whole venue</option></select>
+            </label>
+            <label style="font-weight:700;">Reason
+              <input type="text" id="vb-reason" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;" placeholder="e.g. Annual maintenance">
+            </label>
+            <div style="display:flex;gap:0.6rem;justify-content:flex-end;margin-top:0.4rem;">
+              <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.76rem;" onclick="closeEccModal('modal-block-date')">Cancel</button>
+              <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.76rem;" onclick="VenuesControlCenter.blockSubmit()">Set Block</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2518,6 +2682,7 @@ $userRoleLabel = 'Event Organizer';
 
     var target = document.getElementById('mod-' + modId);
     if (target) target.classList.add('active');
+    if (window.onEccModuleShow) window.onEccModuleShow(modId);
   };
 
   window.openEccModal = function(id) {
@@ -3151,31 +3316,40 @@ $userRoleLabel = 'Event Organizer';
 
     /* ── Camera QR scanning ────────────────────────────────── */
     cameraSupported: function() {
-      return 'BarcodeDetector' in window && navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia;
+      return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
     },
 
     setupCamera: function() {
       var btn = document.getElementById('ci-cam-btn');
-      if (!btn || !this.cameraSupported()) return;
+      if (!btn) return;
       btn.style.display = 'inline-flex';
       try {
-        this.state.detector = new BarcodeDetector({ formats: ['qr_code'] });
-      } catch (e) {
-        btn.style.display = 'none';
-      }
+        if ('BarcodeDetector' in window) {
+          this.state.detector = new BarcodeDetector({ formats: ['qr_code'] });
+        }
+      } catch (e) {}
+    },
+
+    scanDemoTicket: function() {
+      var code = 'UTH-VIP-004821';
+      var input = document.getElementById('ci-scan-input');
+      if (input) input.value = code;
+      this.submitScan(code);
     },
 
     toggleCamera: function() {
       if (this.state.cameraOn) { this.stopCamera(); return; }
       var self = this;
-      if (!this.state.detector) {
-        window.eccNotify('Camera QR detection is not supported in this browser — enter the ticket ID manually.');
-        return;
-      }
       var btn = document.getElementById('ci-cam-btn');
       var hint = document.getElementById('ci-scan-hint');
       if (btn) btn.classList.add('active');
       if (hint) hint.textContent = 'Point the ticket QR at the camera…';
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        window.eccNotify('Camera device not available on this context — enter ticket ID or use Test Scan.');
+        return;
+      }
+
       navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } })
         .then(function(stream) {
           self.state.camStream = stream;
@@ -3196,7 +3370,7 @@ $userRoleLabel = 'Event Organizer';
           var err = document.getElementById('ci-cam-error');
           if (err) {
             err.style.display = 'block';
-            err.textContent = 'Camera unavailable' + (e && e.name ? ' (' + e.name + ')' : '') + ' — type the ticket ID instead.';
+            err.textContent = 'Camera stream active / type ticket ID or click Test Scan below.';
           }
           if (btn) btn.classList.remove('active');
           if (hint) hint.textContent = 'Position ticket QR in frame or type the ticket ID';
@@ -4602,6 +4776,30 @@ $userRoleLabel = 'Event Organizer';
       h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.74rem;padding:0.3rem 0.7rem;" onclick="AttendeesControlCenter.openMessageModal(\'' + tkEsc(a.ticket_id) + '\')">✉ Message</button>';
       h += '</div></div>';
 
+      // ── Assigned ticket (scannable) ─────────────────────────────
+      var qrSvg = '';
+      if (typeof qrcode !== 'undefined' && a.qr_payload) {
+        try {
+          var qr = qrcode(0, 'M');
+          qr.addData(String(a.qr_payload));
+          qr.make();
+          qrSvg = qr.createSvgTag(2, 0);
+        } catch (e) {}
+      }
+      var ticketStatusCls = (a.attendance_status === 'EXPECTED') ? 'green' : ((a.attendance_status === 'CHECKED_IN') ? 'blue' : (attCls === 'rose' ? 'rose' : 'amber'));
+      var ticketStatusTxt = (a.attendance_status === 'EXPECTED') ? 'READY' : ((a.attendance_status === 'CHECKED_IN') ? 'USED' : (a.attendance_status === 'EXITED' ? 'EXITED' : String(a.attendance_status || 'ISSUED')));
+      h += '<div style="background:linear-gradient(135deg,var(--ecc-primary),#7c3aed);border-radius:12px;padding:1rem;color:#fff;display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">';
+      h += '<div style="width:76px;height:76px;background:#fff;border-radius:10px;padding:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">';
+      h += qrSvg ? qrSvg : '<div style="font-size:1.9rem;line-height:1;">🎟</div>';
+      h += '</div>';
+      h += '<div style="flex:1;min-width:0;">';
+      h += '<div style="font-size:0.6rem;letter-spacing:0.1em;opacity:0.85;font-weight:800;">ASSIGNED TICKET · SCAN AT ENTRANCE</div>';
+      h += '<div style="font-size:1.05rem;font-weight:900;margin:0.15rem 0 0.1rem;word-break:break-all;">' + tkEsc(a.ticket_id) + '</div>';
+      h += '<div style="font-size:0.72rem;opacity:0.92;">' + tkEsc(a.ticket_type_name) + (a.category ? ' · ' + tkEsc(a.category) : '') + (a.ticket_description ? ' · ' + tkEsc(String(a.ticket_description).slice(0, 60)) + (String(a.ticket_description).length > 60 ? '…' : '') : '') + '</div>';
+      h += '<div style="margin-top:0.4rem;"><span class="ecc-pill" style="background:rgba(255,255,255,0.18);color:#fff;border:none;font-size:0.6rem;">' + ticketStatusTxt + '</span>';
+      h += '<span class="ecc-pill" style="background:rgba(255,255,255,0.18);color:#fff;border:none;font-size:0.6rem;margin-left:0.35rem;">' + tkMoney(a.price) + '</span></div>';
+      h += '</div></div>';
+
       h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;font-size:0.78rem;margin-bottom:1rem;">';
       h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">EMAIL</div>' + tkEsc(a.email || '—') + '</div>';
       h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">PHONE</div>' + tkEsc(a.phone || '—') + '</div>';
@@ -4610,7 +4808,9 @@ $userRoleLabel = 'Event Organizer';
       h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">PRICE</div>' + tkMoney(a.price) + '</div>';
       h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">PAYMENT</div>' + tkStatusPill(a.payment_gateway === 'Complimentary' ? 'Complimentary' : a.payment_status) + '</div>';
       h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">BOOKING</div>' + tkEsc(a.booking_id || '—') + '</div>';
+      h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">TRANSACTION</div>' + tkEsc(a.transaction_id || '—') + '</div>';
       h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">REGISTERED</div>' + tkDateTime(a.registered_at) + '</div>';
+      h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;grid-column:1 / -1;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">TICKET DESCRIPTION</div>' + tkEsc(a.ticket_description || '—') + '</div>';
       if (a.checked_in_at) {
         h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">CHECKED IN</div>' + tkDateTime(a.checked_in_at) + (a.checked_in_gate ? ' · ' + tkEsc(a.checked_in_gate) : '') + '</div>';
         h += '<div style="background:var(--ecc-surface-2);border-radius:8px;padding:0.55rem 0.7rem;"><div style="font-size:0.64rem;color:var(--ecc-text-dim);font-weight:700;">ACCESS ZONES</div>' + (a.access_zones && a.access_zones.length ? tkEsc(a.access_zones.join(', ')) : 'General admission') + '</div>';
@@ -4855,6 +5055,19 @@ $userRoleLabel = 'Event Organizer';
   AttendeesControlCenter.init();
 
   /* ── Tickets Wizard Controller ─────────────────────────────── */
+  window.generateQrSvg = function(codeStr) {
+    var code = String(codeStr || 'UTH-VIP-004821').trim();
+    if (typeof qrcode !== 'undefined') {
+      try {
+        var qr = qrcode(0, 'M');
+        qr.addData(code);
+        qr.make();
+        return qr.createSvgTag(3, 0);
+      } catch (e) {}
+    }
+    return '<div class="qr-placeholder" style="width:100%;height:100%;"></div>';
+  };
+
   /* ── 10 Ticket Design Templates Renderer ─────────────────────── */
   window.renderTicketTemplate = function(catKey, data) {
     data = data || {};
@@ -4873,7 +5086,7 @@ $userRoleLabel = 'Event Organizer';
     var validTo = data.validTo || '31 DEC 2026';
     var cityLine = city ? '<div style="padding-left:20px;"><span>' + tkEsc(city) + '</span></div>' : '';
 
-    var cat = String(catKey || catName || '').toUpperCase().replace(/[^A-Z]/g, '_');
+    var cat = String(catKey || catName || '').toUpperCase().replace(/[^A-Z0-9]/g, '_');
 
     var tplClass = 'uthenga-tpl-vip';
     if (cat.indexOf('VVIP') !== -1) tplClass = 'uthenga-tpl-vvip';
@@ -4886,293 +5099,347 @@ $userRoleLabel = 'Event Organizer';
     else if (cat.indexOf('DAY') !== -1) tplClass = 'uthenga-tpl-daypass';
     else if (cat.indexOf('GENERAL') !== -1 || cat.indexOf('STANDARD') !== -1) tplClass = 'uthenga-tpl-general';
 
+    var qrMarkup = window.generateQrSvg(ticketId);
+
     if (tplClass === 'uthenga-tpl-vip') {
-      return '<article class="ticket-legacy">' +
-        '<div class="leg-main vip-bg" style="padding-right:150px;">' +
-        '  <div class="leg-logo"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
-        '  <h2 class="leg-title">' + tkEsc(title) + '</h2>' +
-        '  <p class="leg-tagline" style="color:#eab308;">' + tkEsc(sub) + '</p>' +
-        '  <div class="leg-meta" style="color:#cbd5e1;">' +
-        '    <div><span class="leg-ic"><i class="far fa-calendar-alt"></i></span><span>' + tkEsc(date) + '</span></div>' +
-        '    <div><span class="leg-ic"><i class="far fa-clock"></i></span><span>' + tkEsc(time) + '</span></div>' +
-        '    <div><span class="leg-ic"><i class="fas fa-map-marker-alt"></i></span><span>' + tkEsc(venue) + '</span></div>' +
-        cityLine +
+      return '<div class="ew-tk-ivp">' + '<article class="ticket vip" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:linear-gradient(120deg,rgba(234,179,8,0.12) 0%,transparent 40%),linear-gradient(300deg,rgba(234,179,8,0.15) 0%,transparent 35%),linear-gradient(160deg,#09061c,#150f38 60%,#0a0720);color:#fff;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#eab308;"></span><small style="color:#eab308;font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '    <div style="margin-left:auto;background:linear-gradient(135deg, #facc15 0%, #ca8a04 100%);color:#110c2a;font-weight:900;font-size:0.65rem;padding:3px 10px;border-radius:6px;display:flex;align-items:center;gap:4px;box-shadow:0 2px 8px rgba(234,179,8,0.3);">' +
+        '      <i class="fas fa-crown" style="color:#110c2a;font-size:0.7rem;"></i> <span>VIP PASS</span>' +
+        '    </div>' +
         '  </div>' +
-        '  <div class="leg-perks" style="color:#eab308;">' +
-        '    <div><i class="fas fa-couch"></i> VIP LOUNGE</div>' +
-        '    <div><i class="fas fa-chair"></i> FRONT ROW SEATING</div>' +
-        '    <div><i class="fas fa-network-wired"></i> NETWORKING ACCESS</div>' +
-        '    <div><i class="fas fa-glass-cheers"></i> WELCOME DRINK</div>' +
-        '  </div>' +
-        '  <div class="leg-hex">' +
-        '    <div><i class="fas fa-crown"></i><b>VIP</b><span>PASS</span></div>' +
+        '  <h2 class="t-title" style="font-size:1.35rem;font-weight:900;line-height:1.15;margin:0;color:#ffffff;text-transform:uppercase;">' + tkEsc(title) + '</h2>' +
+        '  <p class="t-sub" style="font-size:0.75rem;font-weight:700;color:#f3f4f6;margin:0.2rem 0 0.4rem 0;">' + tkEsc(sub) + '</p>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#cbd5e1;display:flex;flex-direction:column;gap:0.2rem;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#eab308;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#eab308;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#eab308;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
+        '  </ul>' +
+        '  <div class="perks" style="display:flex;gap:0.5rem;margin-top:0.4rem;font-size:0.55rem;color:#eab308;border-top:1px solid rgba(234,179,8,0.3);padding-top:0.3rem;">' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-couch"></i> VIP Lounge</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-chair"></i> Front Row</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-network-wired"></i> Networking</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-glass-cheers"></i> Welcome Drink</span>' +
         '  </div>' +
         '</div>' +
-        '<div class="leg-stub ticket-stub-border" style="background:#3d2787;color:#fff;">' +
+        '<div class="t-stub" style="width:110px;background:#1b0e45;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(234,179,8,0.4);">' +
         '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
         '  <div>' +
-        '    <h3>' + tkEsc(catName) + '</h3>' +
-        '    <p class="leg-id-lbl">Ticket ID</p>' +
-        '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
-        '    <div class="leg-rowseat"><div><i>ROW</i><b>' + tkEsc(row) + '</b></div><div><i>SEAT</i><b>' + tkEsc(seat) + '</b></div></div>' +
+        '    <h3 class="stub-title" style="font-size:0.65rem;font-weight:800;color:#facc15;margin:0 0 0.2rem 0;">VIP PASS</h3>' +
+        '    <p class="tid" style="font-size:0.5rem;text-transform:uppercase;color:#cbd5e1;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.4rem 0;">' + tkEsc(ticketId) + '</p>' +
+        '    <div class="rowseat" style="display:flex;justify-content:space-between;font-size:0.55rem;margin-bottom:0.4rem;padding:0 2px;">' +
+        '      <span>ROW<b style="display:block;font-size:0.7rem;font-weight:800;">' + tkEsc(row) + '</b></span>' +
+        '      <span>SEAT<b style="display:block;font-size:0.7rem;font-weight:800;">' + tkEsc(seat) + '</b></span>' +
+        '    </div>' +
         '  </div>' +
-        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
-        '  <p class="leg-admit">' + tkEsc(admit) + '</p>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;color:#facc15;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
         '</div>' +
-        '<span class="scalloped-edge"></span>' +
-        '</article>';
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-earlybird') {
-      return '<article class="ticket-legacy">' +
-        '<div class="leg-main" style="padding-right:150px;">' +
-        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
-        '  <h2 class="leg-title" style="color:#15803d;">Early Bird</h2>' +
-        '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
-        '  <p class="leg-tagline" style="color:#16a34a;font-style:italic;font-weight:600;">' + tkEsc(sub) + '</p>' +
-        '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
-        '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#16a34a;"></i></span><span>' + tkEsc(date) + '</span></div>' +
-        '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#16a34a;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
-        '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#16a34a;"></i></span>' +
-        '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
+      return '<div class="ew-tk-ivp">' + '<article class="ticket eb" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#0b3846;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#0b3846;"></span><small style="font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#15803d;margin:0;text-transform:uppercase;">EARLY BIRD</h2>' +
+        '  <h3 style="font-size:0.8rem;font-weight:700;color:#111827;margin:0.25rem 0;text-transform:uppercase;">' + tkEsc(title) + '</h3>' +
+        '  <p class="tagline" style="font-size:0.7rem;color:#16a34a;margin-bottom:0.75rem;font-style:italic;font-weight:600;">' + tkEsc(sub) + '</p>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;font-weight:500;display:flex;flex-direction:column;gap:0.25rem;max-width:65%;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#16a34a;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#16a34a;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#16a34a;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
+        '  </ul>' +
+        '  <div class="early-bird-bg" style="position:absolute;top:0;bottom:0;right:0;width:50%;background:linear-gradient(135deg, #11998e 0%, #38ef7d 100%);clip-path:polygon(0 0, 100% 0, 100% 100%, 20% 100%);opacity:0.9;z-index:1;pointer-events:none;"></div>' +
+        '  <div class="eb-disc-badge" style="position:absolute;top:50%;right:110px;transform:translateY(-50%);width:56px;height:56px;background:#fff;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:2;border:2px solid #22c55e;">' +
+        '    <span style="font-size:7px;font-weight:700;color:#14532d;text-transform:uppercase;">Discount</span>' +
+        '    <span style="font-size:13px;font-weight:900;color:#16a34a;line-height:1;">30%</span>' +
+        '    <span style="font-size:7px;font-weight:700;color:#14532d;text-transform:uppercase;">Off</span>' +
         '  </div>' +
         '</div>' +
-        '<span class="early-bird-bg leg-deco"></span>' +
-        '<div class="leg-disc"><span>Discount</span><b>30%</b><span>Off</span></div>' +
-        '<div class="leg-stub ticket-stub-border-dark" style="background:#fff;color:#1f2937;">' +
+        '<div class="t-stub" style="width:110px;background:#fff;color:#1f2937;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(0,0,0,0.15);">' +
         '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
         '  <div>' +
-        '    <h3 style="color:#047857;">EARLY BIRD</h3>' +
-        '    <p class="leg-id-lbl" style="color:#6b7280;">Ticket ID</p>' +
-        '    <p class="leg-id" style="color:#1f2937;">' + tkEsc(ticketId) + '</p>' +
+        '    <h3 style="font-size:0.65rem;font-weight:800;color:#15803d;margin:0 0 0.4rem 0;">EARLY BIRD</h3>' +
+        '    <p style="font-size:0.5rem;text-transform:uppercase;color:#6b7280;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.5rem 0;">' + tkEsc(ticketId) + '</p>' +
         '  </div>' +
-        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
-        '  <p class="leg-admit" style="color:#1f2937;">' + tkEsc(admit) + '</p>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#f3f4f6;padding:4px;border-radius:4px;border:1px solid #e5e7eb;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;color:#1f2937;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
         '</div>' +
-        '<span class="scalloped-edge"></span>' +
-        '</article>';
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-general') {
-      return '<article class="ticket-legacy">' +
-        '<div class="leg-main" style="padding-right:120px;">' +
-        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
-        '  <h2 class="leg-title" style="color:#0052D4;">General<br>Admission</h2>' +
-        '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
-        '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
-        '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#0052D4;"></i></span><span>' + tkEsc(date) + '</span></div>' +
-        '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#0052D4;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
-        '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#0052D4;"></i></span>' +
-        '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
+      return '<div class="ew-tk-ivp">' + '<article class="ticket ga" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#0b3846;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#0b3846;"></span><small style="font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
         '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#0052D4;margin:0;line-height:1.1;text-transform:uppercase;">GENERAL<br>ADMISSION</h2>' +
+        '  <h3 style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.4rem 0 0.75rem 0;text-transform:uppercase;">' + tkEsc(title) + '</h3>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;font-weight:500;display:flex;flex-direction:column;gap:0.25rem;max-width:65%;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#0052D4;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#0052D4;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#0052D4;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
+        '  </ul>' +
+        '  <div class="ga-bg" style="position:absolute;top:0;bottom:0;right:0;width:50%;background:linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%);clip-path:polygon(0 0, 100% 0, 100% 100%, 30% 100%);opacity:0.9;z-index:1;pointer-events:none;"></div>' +
         '</div>' +
-        '<span class="ga-bg leg-deco"></span>' +
-        '<div class="leg-stub ticket-stub-border" style="background:#0052D4;color:#fff;">' +
+        '<div class="t-stub" style="width:110px;background:#0052D4;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
         '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
         '  <div>' +
-        '    <h3>GENERAL<br>ADMISSION</h3>' +
-        '    <p class="leg-id-lbl">Ticket ID</p>' +
-        '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+        '    <h3 style="font-size:0.6rem;font-weight:800;margin:0 0 0.3rem 0;line-height:1.2;">GENERAL<br>ADMISSION</h3>' +
+        '    <p style="font-size:0.5rem;text-transform:uppercase;opacity:0.8;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.5rem 0;">' + tkEsc(ticketId) + '</p>' +
         '  </div>' +
-        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
-        '  <p class="leg-admit">' + tkEsc(admit) + '</p>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
         '</div>' +
-        '<span class="scalloped-edge"></span>' +
-        '</article>';
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-group') {
-      return '<article class="ticket-legacy">' +
-        '<div class="leg-main" style="padding-right:120px;">' +
-        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
-        '  <h2 class="leg-title" style="color:#7F00FF;">Group Pass</h2>' +
-        '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
-        '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
-        '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#7F00FF;"></i></span><span>' + tkEsc(date) + '</span></div>' +
-        '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#7F00FF;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
-        '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#7F00FF;"></i></span>' +
-        '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
-        '    <div class="leg-flex" style="font-weight:800;color:#7F00FF;"><span class="leg-ic"><i class="fas fa-users"></i></span><span>ADMIT 5 PEOPLE</span></div>' +
+      return '<div class="ew-tk-ivp">' + '<article class="ticket gp" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#0b3846;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#0b3846;"></span><small style="font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
         '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#7F00FF;margin:0;text-transform:uppercase;">Group Pass</h2>' +
+        '  <h3 style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.3rem 0 0.6rem 0;text-transform:uppercase;">' + tkEsc(title) + '</h3>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;font-weight:500;display:flex;flex-direction:column;gap:0.25rem;max-width:65%;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#7F00FF;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#7F00FF;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#7F00FF;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;font-weight:800;color:#7F00FF;"><span class="mi"><i class="fas fa-users"></i></span> ADMIT 5 PEOPLE</li>' +
+        '  </ul>' +
+        '  <div class="group-bg" style="position:absolute;top:0;bottom:0;right:0;width:50%;background:linear-gradient(135deg, #7F00FF 0%, #E100FF 100%);clip-path:polygon(10% 0, 100% 0, 100% 100%, 0% 100%);opacity:0.9;z-index:1;pointer-events:none;"></div>' +
         '</div>' +
-        '<span class="group-bg leg-deco"></span>' +
-        '<div class="leg-stub ticket-stub-border" style="background:#7F00FF;color:#fff;">' +
+        '<div class="t-stub" style="width:110px;background:#7F00FF;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
         '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
         '  <div>' +
-        '    <h3>GROUP PASS</h3>' +
-        '    <p class="leg-id-lbl">(5 PEOPLE)</p>' +
-        '    <p class="leg-id-lbl">Ticket ID</p>' +
-        '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+        '    <h3 style="font-size:0.65rem;font-weight:800;margin:0 0 0.15rem 0;">GROUP PASS</h3>' +
+        '    <p style="font-size:0.5rem;margin:0 0 0.3rem 0;opacity:0.9;">(5 PEOPLE)</p>' +
+        '    <p style="font-size:0.5rem;text-transform:uppercase;opacity:0.8;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.5rem 0;">' + tkEsc(ticketId) + '</p>' +
         '  </div>' +
-        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
-        '  <p class="leg-admit">ADMIT 5 PEOPLE</p>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;margin-top:0.4rem;">ADMIT 5 PEOPLE</div>' +
         '</div>' +
-        '<span class="scalloped-edge"></span>' +
-        '</article>';
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-season') {
-      return '<article class="ticket-legacy">' +
-        '<div class="leg-main" style="justify-content:center;padding:16px;">' +
-        '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
-        '  <h2 class="leg-title" style="font-size:18px;color:#c0392b;">Season Pass 2026</h2>' +
-        '  <h3 class="leg-sub-title" style="margin-bottom:10px;">' + tkEsc(title) + '</h3>' +
-        '  <div class="leg-checks">' +
-        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> All Music Events</span>' +
-        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> All Workshops</span>' +
-        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> All Conferences</span>' +
-        '    <span><i class="fas fa-check" style="color:#c0392b;"></i> Priority Booking</span>' +
+      return '<div class="ew-tk-ivp">' + '<article class="ticket sp" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;display:flex;flex-direction:column;justify-content:center;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#0b3846;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#0b3846;"></span><small style="font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.25rem;font-weight:900;color:#c0392b;margin:0;text-transform:uppercase;">SEASON PASS 2026</h2>' +
+        '  <h3 style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.2rem 0 0.6rem 0;text-transform:uppercase;">' + tkEsc(title) + '</h3>' +
+        '  <div class="checks" style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;font-size:0.6rem;font-weight:700;color:#1f2937;">' +
+        '    <span style="display:flex;align-items:center;gap:0.3rem;"><i class="fas fa-check" style="color:#c0392b;"></i> All Music Events</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.3rem;"><i class="fas fa-check" style="color:#c0392b;"></i> All Workshops</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.3rem;"><i class="fas fa-check" style="color:#c0392b;"></i> All Conferences</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.3rem;"><i class="fas fa-check" style="color:#c0392b;"></i> Priority Booking</span>' +
         '  </div>' +
         '</div>' +
-        '<div class="leg-stub ticket-stub-border" style="background:#c0392b;color:#fff;justify-content:center;">' +
+        '<div class="mid" style="width:100px;background:#c0392b;color:#fff;padding:0.75rem;display:flex;flex-direction:column;justify-content:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
         '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
-        '  <p class="leg-id-lbl" style="margin-bottom:2px;">VALID FROM</p>' +
-        '  <p class="leg-valid">' + tkEsc(validFrom) + '</p>' +
-        '  <p class="leg-id-lbl" style="margin-bottom:2px;">TO</p>' +
-        '  <p class="leg-valid" style="margin-bottom:12px;">' + tkEsc(validTo) + '</p>' +
-        '  <p class="leg-id-lbl">TICKET ID</p>' +
-        '  <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+        '  <p style="font-size:0.5rem;opacity:0.8;margin:0 0 0.1rem 0;">VALID FROM</p>' +
+        '  <p style="font-size:0.6rem;font-weight:800;margin:0 0 0.25rem 0;">' + tkEsc(validFrom) + '</p>' +
+        '  <p style="font-size:0.5rem;opacity:0.8;margin:0 0 0.1rem 0;">TO</p>' +
+        '  <p style="font-size:0.6rem;font-weight:800;margin:0 0 0.25rem 0;">' + tkEsc(validTo) + '</p>' +
+        '  <p style="font-size:0.5rem;opacity:0.8;margin:0;">TICKET ID</p>' +
+        '  <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0;">' + tkEsc(ticketId) + '</p>' +
         '</div>' +
-        '<div class="leg-stub ticket-stub-border" style="background:#922b21;color:#fff;">' +
+        '<div class="t-stub" style="width:100px;background:#922b21;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
         '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
-        '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
-        '  <p class="leg-admit">ADMIT ONE</p>' +
+        '  <div class="qr" style="width:64px;height:64px;background:#fff;padding:4px;border-radius:4px;margin-bottom:0.4rem;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;">' + tkEsc(admit) + '</div>' +
         '</div>' +
-        '<span class="scalloped-edge"></span>' +
-        '</article>';
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-vvip') {
       return '<div class="ew-tk-ivp">' + '<article class="ticket vvip" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">VVIP EXPERIENCE</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:linear-gradient(135deg,#17130a 0%,#0d0b06 60%,#151007 100%);color:#fff;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#e8b64c;"></span><small style="color:#e8b64c;font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#e8b64c;margin:0;text-transform:uppercase;">VVIP EXPERIENCE</h2>' +
+        '  <p class="t-sub" style="font-size:0.75rem;font-weight:700;color:#f3f4f6;margin:0.2rem 0 0.6rem 0;">' + tkEsc(title) + '</p>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#e5e7eb;display:flex;flex-direction:column;gap:0.25rem;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#e8b64c;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#e8b64c;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#e8b64c;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
         '  </ul>' +
-        '  <div class="perks"><span><i class="fas fa-microphone"></i> Backstage Access</span><span><i class="fas fa-car"></i> VIP Parking</span><span><i class="fas fa-utensils"></i> Gourmet Dinner</span><span><i class="fas fa-handshake"></i> Meet &amp; Greet</span></div>' +
+        '  <div class="perks" style="display:flex;gap:0.6rem;margin-top:0.6rem;font-size:0.55rem;color:#e8c877;border-top:1px solid rgba(232,182,76,0.3);padding-top:0.4rem;">' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-microphone"></i> Backstage Access</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-car"></i> VIP Parking</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-utensils"></i> Gourmet Dinner</span>' +
+        '    <span style="display:flex;align-items:center;gap:0.25rem;"><i class="fas fa-handshake"></i> Meet &amp; Greet</span>' +
+        '  </div>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">VVIP PASS</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="rowseat"><span>ROW<b>AA</b></span><span>SEAT<b>01</b></span></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
-'</article></div>';
+        '<div class="t-stub" style="width:110px;background:#0f0d08;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(232,182,76,0.4);">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3 class="stub-title" style="font-size:0.65rem;font-weight:800;color:#e8b64c;margin:0 0 0.2rem 0;">VVIP PASS</h3>' +
+        '    <p class="tid" style="font-size:0.5rem;text-transform:uppercase;color:#9ca3af;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.4rem 0;">' + tkEsc(ticketId) + '</p>' +
+        '    <div class="rowseat" style="display:flex;justify-content:space-between;font-size:0.55rem;margin-bottom:0.4rem;padding:0 2px;">' +
+        '      <span>ROW<b style="display:block;font-size:0.7rem;font-weight:800;">AA</b></span>' +
+        '      <span>SEAT<b style="display:block;font-size:0.7rem;font-weight:800;">01</b></span>' +
+        '    </div>' +
+        '  </div>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;color:#e8b64c;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
+        '</div>' +
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-student') {
       return '<div class="ew-tk-ivp">' + '<article class="ticket st" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">STUDENT PASS</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-graduation-cap"></i></span> VALID STUDENT ID REQUIRED</li>' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#0d9488;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#0d9488;"></span><small style="font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#0d9488;margin:0;text-transform:uppercase;">STUDENT PASS</h2>' +
+        '  <p class="t-sub" style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.2rem 0 0.6rem 0;">' + tkEsc(title) + '</p>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;display:flex;flex-direction:column;gap:0.25rem;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#0d9488;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#0d9488;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#0d9488;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;font-weight:800;color:#0d9488;"><span class="mi"><i class="fas fa-graduation-cap"></i></span> VALID STUDENT ID REQUIRED</li>' +
         '  </ul>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">STUDENT PASS</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
-'</article></div>';
+        '<div class="t-stub" style="width:110px;background:#0d9488;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3 style="font-size:0.65rem;font-weight:800;margin:0 0 0.2rem 0;">STUDENT PASS</h3>' +
+        '    <p style="font-size:0.5rem;text-transform:uppercase;opacity:0.8;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.4rem 0;">' + tkEsc(ticketId) + '</p>' +
+        '  </div>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
+        '</div>' +
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-complimentary') {
       return '<div class="ew-tk-ivp">' + '<article class="ticket cp" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">COMPLIMENTARY<br>PASS</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#10b981;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#10b981;"></span><small style="font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.3rem;font-weight:900;color:#10b981;margin:0;line-height:1.1;text-transform:uppercase;">COMPLIMENTARY<br>PASS</h2>' +
+        '  <p class="t-sub" style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.2rem 0 0.6rem 0;">' + tkEsc(title) + '</p>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;display:flex;flex-direction:column;gap:0.25rem;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#10b981;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#10b981;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#10b981;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
         '  </ul>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">COMPLIMENTARY</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
-'</article></div>';
+        '<div class="t-stub" style="width:110px;background:#10b981;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3 style="font-size:0.6rem;font-weight:800;margin:0 0 0.2rem 0;">COMPLIMENTARY</h3>' +
+        '    <p style="font-size:0.5rem;text-transform:uppercase;opacity:0.8;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.4rem 0;">' + tkEsc(ticketId) + '</p>' +
+        '  </div>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
+        '</div>' +
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-exhibitor') {
       return '<div class="ew-tk-ivp">' + '<article class="ticket ex" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">EXHIBITOR PASS</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <ul class="meta one-col">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-tag"></i></span> ACCESS TO EXHIBITION AREA ONLY</li>' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#f59e0b;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#f59e0b;"></span><small style="color:#f59e0b;font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#f59e0b;margin:0;text-transform:uppercase;">EXHIBITOR PASS</h2>' +
+        '  <p class="t-sub" style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.2rem 0 0.6rem 0;">' + tkEsc(title) + '</p>' +
+        '  <ul class="meta one-col" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;display:flex;flex-direction:column;gap:0.25rem;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#f59e0b;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#f59e0b;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#f59e0b;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;margin-top:0.4rem;font-weight:800;color:#f59e0b;"><span class="mi"><i class="fas fa-tag"></i></span> ACCESS TO EXHIBITION AREA ONLY</li>' +
         '  </ul>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">EXHIBITOR</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
-'</article></div>';
+        '<div class="t-stub" style="width:110px;background:#f59e0b;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3 style="font-size:0.65rem;font-weight:800;margin:0 0 0.2rem 0;">EXHIBITOR</h3>' +
+        '    <p style="font-size:0.5rem;text-transform:uppercase;opacity:0.8;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.4rem 0;">' + tkEsc(ticketId) + '</p>' +
+        '  </div>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
+        '</div>' +
+        '</article></div>';
     }
 
     if (tplClass === 'uthenga-tpl-daypass') {
+      var dayNum = data.day || data.dayNumber || (cat.match(/\d+/) ? cat.match(/\d+/)[0] : '1');
       return '<div class="ew-tk-ivp">' + '<article class="ticket dp" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
-        '<div class="t-main">' +
-        '  <div class="brand"><span class="gear"><span><i class="fas fa-cog"></i></span></span><span>UTHENGA<small>EVENTS</small></span></div>' +
-        '  <h2 class="t-title">DAY PASS</h2>' +
-        '  <p class="t-sub">' + tkEsc(title) + '</p>' +
-        '  <ul class="meta">' +
-        '    <li><span class="mi"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
-        '    <li><span class="mi"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
-        '    <li><span class="mi"><i class="fas fa-map-marker-alt"></i></span> ' + tkEsc(venue) + '</li>' +
+        '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem 75px 1rem 1rem;flex:1;">' +
+        '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#f97316;">' +
+        '    <span class="uthenga-tk-logo-img" style="color:#f97316;"></span><small style="color:#f97316;font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
+        '  </div>' +
+        '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#f97316;margin:0;text-transform:uppercase;">DAY PASS</h2>' +
+        '  <h3 style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.2rem 0 0.6rem 0;text-transform:uppercase;word-break:break-word;">' + tkEsc(title) + '</h3>' +
+        '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;display:flex;flex-direction:column;gap:0.25rem;">' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#f97316;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+        '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#f97316;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+        '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#f97316;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
         '  </ul>' +
-        '  <div class="dayhex"><small>DAY</small><b>2</b></div>' +
+        '  <div class="dayhex" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;width:54px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(249,115,22,0.12);border:1.5px solid #f97316;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);color:#f97316;font-weight:900;"><small style="font-size:7.5px;letter-spacing:1px;">DAY</small><b style="font-size:18px;line-height:1;">' + tkEsc(dayNum) + '</b></div>' +
         '</div>' +
-        '<div class="t-stub">' +
-        '  <div class="stub-title">DAY PASS</div>' +
-        '  <div class="tid">Ticket ID<b>' + tkEsc(ticketId) + '</b></div>' +
-        '  <div class="qr"><div class="w-full h-full qr-placeholder" style="width:100%;height:100%;"></div></div>' +
-        '  <div class="admit">' + tkEsc(admit) + '</div>' +
-'</article></div>';
+        '<div class="t-stub" style="width:110px;background:#f97316;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
+        '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
+        '  <div>' +
+        '    <h3 style="font-size:0.65rem;font-weight:800;margin:0 0 0.2rem 0;">DAY PASS (' + tkEsc(dayNum) + ')</h3>' +
+        '    <p style="font-size:0.5rem;text-transform:uppercase;opacity:0.8;margin:0;">Ticket ID</p>' +
+        '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.4rem 0;">' + tkEsc(ticketId) + '</p>' +
+        '  </div>' +
+        '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+        '  <div class="admit" style="font-size:0.55rem;font-weight:800;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
+        '</div>' +
+        '</article></div>';
     }
 
     // Default General Admission
-    return '<article class="ticket-legacy">' +
-      '<div class="leg-main" style="padding-right:120px;">' +
-      '  <div class="leg-logo" style="color:#0b3846;"><i class="fas fa-certificate"></i><span>Uthenga<b>Events</b></span></div>' +
-      '  <h2 class="leg-title" style="color:#0052D4;">General<br>Admission</h2>' +
-      '  <h3 class="leg-sub-title">' + tkEsc(title) + '</h3>' +
-      '  <div class="leg-meta" style="color:#4b5563;font-weight:500;">' +
-      '    <div><div class="leg-flex"><span class="leg-ic"><i class="far fa-calendar-alt" style="color:#0052D4;"></i></span><span>' + tkEsc(date) + '</span></div>' +
-      '    <div class="leg-flex"><span class="leg-ic"><i class="far fa-clock" style="color:#0052D4;"></i></span><span>' + tkEsc(time) + '</span></div></div>' +
-      '    <div class="leg-flex" style="align-items:flex-start;"><span class="leg-ic"><i class="fas fa-map-marker-alt" style="color:#0052D4;"></i></span>' +
-      '      <span><div>' + tkEsc(venue) + '</div>' + (city ? '<div>' + tkEsc(city) + '</div>' : '') + '</span></div>' +
+    return '<div class="ew-tk-ivp">' + '<article class="ticket ga" style="width:100%;max-width:620px;margin:0 auto;box-sizing:border-box;">' +
+      '<div class="t-main" style="position:relative;overflow:hidden;background:#fff;color:#1f2937;padding:1rem;flex:1;">' +
+      '  <div class="brand" style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;color:#0b3846;">' +
+      '    <span class="uthenga-tk-logo-img" style="color:#0b3846;"></span><small style="font-weight:800;font-size:0.65rem;letter-spacing:0.05em;margin-left:4px;">EVENTS</small>' +
       '  </div>' +
+      '  <h2 class="t-title" style="font-size:1.4rem;font-weight:900;color:#0052D4;margin:0;line-height:1.1;text-transform:uppercase;">GENERAL<br>ADMISSION</h2>' +
+      '  <h3 style="font-size:0.75rem;font-weight:700;color:#111827;margin:0.4rem 0 0.75rem 0;text-transform:uppercase;">' + tkEsc(title) + '</h3>' +
+      '  <ul class="meta" style="list-style:none;padding:0;margin:0;font-size:0.65rem;color:#4b5563;font-weight:500;display:flex;flex-direction:column;gap:0.25rem;max-width:65%;">' +
+      '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#0052D4;"><i class="far fa-calendar-alt"></i></span> ' + tkEsc(date) + '</li>' +
+      '    <li style="display:flex;align-items:center;gap:0.4rem;"><span class="mi" style="color:#0052D4;"><i class="far fa-clock"></i></span> ' + tkEsc(time) + '</li>' +
+      '    <li style="display:flex;align-items:flex-start;gap:0.4rem;"><span class="mi" style="color:#0052D4;margin-top:2px;"><i class="fas fa-map-marker-alt"></i></span> <span>' + tkEsc(venue) + (city ? '<br>' + tkEsc(city) : '') + '</span></li>' +
+      '  </ul>' +
+      '  <div class="ga-bg" style="position:absolute;top:0;bottom:0;right:0;width:50%;background:linear-gradient(135deg, #0052D4 0%, #4364F7 50%, #6FB1FC 100%);clip-path:polygon(0 0, 100% 0, 100% 100%, 30% 100%);opacity:0.9;z-index:1;pointer-events:none;"></div>' +
       '</div>' +
-      '<span class="ga-bg leg-deco"></span>' +
-      '<div class="leg-stub ticket-stub-border" style="background:#0052D4;color:#fff;">' +
+      '<div class="t-stub" style="width:110px;background:#0052D4;color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:0.75rem;text-align:center;position:relative;border-left:2px dashed rgba(255,255,255,0.4);">' +
       '  <span class="notch-left notch-top"></span><span class="notch-left notch-bottom"></span>' +
       '  <div>' +
-      '    <h3>GENERAL<br>ADMISSION</h3>' +
-      '    <p class="leg-id-lbl">Ticket ID</p>' +
-      '    <p class="leg-id">' + tkEsc(ticketId) + '</p>' +
+      '    <h3 style="font-size:0.6rem;font-weight:800;margin:0 0 0.3rem 0;line-height:1.2;">GENERAL<br>ADMISSION</h3>' +
+      '    <p style="font-size:0.5rem;text-transform:uppercase;opacity:0.8;margin:0;">Ticket ID</p>' +
+      '    <p style="font-size:0.55rem;font-family:monospace;font-weight:700;margin:0 0 0.5rem 0;">' + tkEsc(ticketId) + '</p>' +
       '  </div>' +
-      '  <div class="leg-qr"><div class="qr-placeholder"></div></div>' +
-      '  <p class="leg-admit">' + tkEsc(admit) + '</p>' +
+      '  <div class="qr" style="width:64px;height:64px;margin:0 auto;background:#fff;padding:4px;border-radius:4px;" data-ticket-id="' + tkEsc(ticketId) + '">' + qrMarkup + '</div>' +
+      '  <div class="admit" style="font-size:0.55rem;font-weight:800;margin-top:0.4rem;">' + tkEsc(admit) + '</div>' +
       '</div>' +
-      '<span class="scalloped-edge"></span>' +
-      '</article>';
+      '</article></div>';
   };
 
   window.TicketsWiz = {
@@ -6036,10 +6303,6 @@ $userRoleLabel = 'Event Organizer';
   }
 
   window.EventsWorkspace.goToStep = function(n) {
-    if (n > state.currentStep) {
-      window.eccNotify('Complete earlier steps first.');
-      return;
-    }
     setStepUi(n);
   };
   window.EventsWorkspace.nextStep = function() {
@@ -6981,6 +7244,8 @@ save().then(function(res) {
   });
 })();
 </script>
+<script src="<?= BASE_URL ?>assets/js/tie-location.js"></script>
+<script src="<?= BASE_URL ?>assets/js/venues-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/main.js"></script>
 </body>
 </html>

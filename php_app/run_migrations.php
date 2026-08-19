@@ -12,6 +12,7 @@ if (php_sapi_name() !== 'cli' && !in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
+require_once __DIR__ . '/config.php';
 
 $isWeb = (php_sapi_name() !== 'cli');
 $nl    = $isWeb ? '<br>' : "\n";
@@ -34,57 +35,23 @@ function out(string $msg, string $type = 'info'): void {
     flush();
 }
 
-// ── Attempt DB connection ──────────────────────────────────────────────────────
-$appDb   = getenv('UTHENGA_DB_NAME') ?: getenv('DB_NAME') ?: 'uthenga_db';
-$appUser = getenv('UTHENGA_DB_USER') ?: 'uthenga_user';
-$appPass = getenv('UTHENGA_DB_PASS') ?: '';
-$combos = [
-    ['host' => 'localhost', 'user' => $appUser, 'pass' => $appPass],
-    ['host' => 'localhost', 'user' => 'root',   'pass' => ''],
-    ['host' => 'localhost', 'user' => 'root',   'pass' => 'root'],
-    ['host' => '127.0.0.1', 'user' => $appUser, 'pass' => $appPass],
-    ['host' => '127.0.0.1', 'user' => 'root',   'pass' => ''],
-];
-
-$conn      = null;
-$connected = false;
-
-foreach ($combos as $c) {
-    try {
-        $dsn  = "mysql:host={$c['host']};dbname={$appDb};charset=utf8mb4";
-        $conn = new PDO($dsn, $c['user'], $c['pass'], [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]);
-        out("✅ Connected: user={$c['user']} @ {$c['host']}", 'ok');
-        $connected = true;
-        break;
-    } catch (PDOException $e) {
-        // try next combo
-    }
-}
-
-// If DB doesn't exist yet, try without dbname to create it
-if (!$connected) {
-    out("⚠ Could not connect to {$appDb}. Trying to create it...", 'warn');
-    foreach ($combos as $c) {
-        try {
-            $dsn  = "mysql:host={$c['host']};charset=utf8mb4";
-            $conn = new PDO($dsn, $c['user'], $c['pass'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-            $conn->exec("CREATE DATABASE IF NOT EXISTS {$appDb} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-            $conn->exec("USE {$appDb}");
-            out("✅ Database created and selected: user={$c['user']} @ {$c['host']}", 'ok');
-            $connected = true;
-            break;
-        } catch (PDOException $e) {
-            // try next
-        }
-    }
-}
-
-if (!$connected || !$conn) {
-    out("❌ FATAL: Could not connect to MySQL with any credential combo.", 'err');
-    out("Please verify XAMPP MySQL is running and your credentials.", 'warn');
+// ── Connect only to the configured application database ───────────────────────
+// Do not fall back to root/default databases or silently create a second
+// database. config.php loads config.local.php and the XAMPP socket settings.
+$appDb = DB_NAME;
+$dsn = DB_SOCKET !== ''
+    ? 'mysql:unix_socket=' . DB_SOCKET . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET
+    : 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
+$conn = null;
+try {
+    $conn = new PDO($dsn, DB_USER, DB_PASS, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+    out('✅ Connected to configured database: ' . $appDb, 'ok');
+} catch (PDOException $error) {
+    out('❌ FATAL: Could not connect to configured database ' . $appDb . '.', 'err');
+    out('Check config.local.php and ensure XAMPP MySQL is running. No database was created or changed.', 'warn');
     if ($isWeb) echo "</body></html>";
     exit(1);
 }
@@ -126,6 +93,29 @@ $migrations = [
     '008_feature_enhancements.sql'              => $base . '008_feature_enhancements.sql',
     '009_marketing_security_phase.sql'          => $base . '009_marketing_security_phase.sql',
     '010_microsoft_oauth.sql'                   => $base . '010_microsoft_oauth.sql',
+    '014_tie_location_provenance.sql'           => $base . '014_tie_location_provenance.sql',
+    '015_tie_vendor_coordinate_governance.sql'  => $base . '015_tie_vendor_coordinate_governance.sql',
+    '016_tie_trip_planning.sql'                 => $base . '016_tie_trip_planning.sql',
+    '017_tie_booking_orchestration.sql'         => $base . '017_tie_booking_orchestration.sql',
+    '018_tie_payment_intents.sql'               => $base . '018_tie_payment_intents.sql',
+    '019_tie_inventory_holds.sql'               => $base . '019_tie_inventory_holds.sql',
+    '020_tie_journey_notifications.sql'         => $base . '020_tie_journey_notifications.sql',
+    '021_tie_realtime_transport_coordination.sql' => $base . '021_tie_realtime_transport_coordination.sql',
+    '022_tie_vendor_service_profiles.sql'        => $base . '022_tie_vendor_service_profiles.sql',
+    '023_tie_driver_transport_sessions.sql'      => $base . '023_tie_driver_transport_sessions.sql',
+    '024_tie_vendor_service_lifecycle.sql'       => $base . '024_tie_vendor_service_lifecycle.sql',
+    '025_tie_accommodation_operations.sql'        => $base . '025_tie_accommodation_operations.sql',
+    '026_tie_observability.sql'                    => $base . '026_tie_observability.sql',
+    '027_enterprise_accommodation.sql'             => $base . '027_enterprise_accommodation.sql',
+    '028_accommodation_unit_blocks.sql'             => $base . '028_accommodation_unit_blocks.sql',
+    '029_accommodation_production_invariants.sql'   => $base . '029_accommodation_production_invariants.sql',
+    '030_tie_notification_delivery.sql'             => $base . '030_tie_notification_delivery.sql',
+    '031_tie_payment_reconciliation.sql'             => $base . '031_tie_payment_reconciliation.sql',
+    '032_accommodation_operational_workspaces.sql'   => $base . '032_accommodation_operational_workspaces.sql',
+    '033_accommodation_property_workspace.sql'        => $base . '033_accommodation_property_workspace.sql',
+    '034_tie_events_operations.sql'                   => $base . '034_tie_events_operations.sql',
+    '035_tie_venue_management.sql'                    => $base . '035_tie_venue_management.sql',
+    '036_tie_venue_assignment_availability.sql'       => $base . '036_tie_venue_assignment_availability.sql',
 ];
 
 out("", 'info');
