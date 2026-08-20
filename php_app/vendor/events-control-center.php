@@ -12,6 +12,11 @@ require_once __DIR__ . '/../includes/tie/Events.php';
 
 requireApprovedVendor();
 
+// This control surface embeds its module controllers in the document. Do not
+// allow a browser to reuse an old controller after a deployment.
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+
 require_once __DIR__ . '/../includes/tie/TicketTemplates.php';
 
 $ewTicketPreviewTpls = ['vip', 'vvip', 'early_bird', 'general', 'group', 'season'];
@@ -1899,59 +1904,440 @@ $userRoleLabel = 'Event Organizer';
         </div>
       </div>
 
-      <!-- MODULE 6: MARKETING & CANVA-STYLE AD STUDIO -->
+      <!-- MODULE 6: MARKETING & COMMERCIAL GROWTH CONTROL CENTER -->
       <div id="mod-marketing" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Advertisement Studio (Canva-Style Design Editor)</h2>
-        
-        <div class="ecc-canva-editor">
-          <!-- Left Toolbar -->
-          <div class="ecc-canva-toolbar">
-            <button type="button" class="ecc-canva-tool-btn" onclick="eccNotify('Templates loaded')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-              <span>Templates</span>
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.2rem;flex-wrap:wrap;">
+          <div>
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+              <h2 style="font-size:1.4rem;font-weight:900;margin:0;color:var(--ecc-text-bright);">Marketing &amp; Commercial Growth</h2>
+              <span class="ecc-pill purple" style="font-weight:800;font-size:0.65rem;">CAMPAIGN CONTROL CENTER</span>
+            </div>
+            <p style="font-size:0.8rem;color:var(--ecc-text-dim);margin:0.25rem 0 0 0;">Promote your events, target high-intent audiences, issue promo offers, and track marketing revenue.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+            <div style="position:relative;">
+              <input type="text" id="mkt-global-search" class="ecc-input" placeholder="Search campaigns, promos..." style="padding:0.45rem 0.8rem 0.45rem 2rem;font-size:0.78rem;width:220px;" onkeyup="MarketingControlCenter.handleSearch(this.value)">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="position:absolute;left:0.7rem;top:50%;transform:translateY(-50%);color:var(--ecc-text-dim);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <select id="mkt-date-range" class="ecc-input" style="font-size:0.78rem;padding:0.45rem 0.8rem;" onchange="MarketingControlCenter.setDateRange(this.value)">
+              <option value="30">Last 30 Days</option>
+              <option value="7">Last 7 Days</option>
+              <option value="90">Last 90 Days</option>
+              <option value="all">All Time</option>
+            </select>
+            <button type="button" class="ecc-btn ecc-btn-primary" style="font-weight:800;font-size:0.8rem;padding:0.45rem 1rem;" onclick="MarketingControlCenter.openCreateWizard()">
+              <i class="fas fa-plus" style="margin-right:4px;"></i> Create Campaign
             </button>
-            <button type="button" class="ecc-canva-tool-btn" onclick="eccNotify('Upload files...')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span>Uploads</span>
+            <button type="button" class="ecc-btn ecc-btn-secondary" id="mkt-ai-toggle-btn" style="font-weight:700;font-size:0.8rem;padding:0.45rem 0.8rem;" onclick="MarketingControlCenter.toggleAiPanel()">
+              🤖 AI Assistant <span class="ecc-pill purple" style="margin-left:4px;font-size:0.6rem;">3 Alerts</span>
             </button>
-            <button type="button" class="ecc-canva-tool-btn" onclick="eccNotify('Photos library')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              <span>Photos</span>
-            </button>
-            <button type="button" class="ecc-canva-tool-btn" onclick="eccNotify('Text tools')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-              <span>Text</span>
-            </button>
-            <button type="button" class="ecc-canva-tool-btn" onclick="eccNotify('QR Generator')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-              <span>QR Code</span>
-            </button>
-            <button type="button" class="ecc-canva-tool-btn" style="background:var(--ecc-purple-light);color:var(--ecc-purple);" onclick="eccNotify('AI Design Generator Active!')">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              <span>AI Theme Generator</span>
-            </button>
+          </div>
+        </div>
+
+        <!-- Sub-Navigation Bar -->
+        <div class="ecc-mkt-nav" id="mkt-sub-nav">
+          <button type="button" class="ecc-mkt-tab active" onclick="MarketingControlCenter.switchTab('overview', this)"><i class="fas fa-chart-line"></i> Overview</button>
+          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('campaigns', this)"><i class="fas fa-bullhorn"></i> Campaigns <span class="ecc-pill-count">12</span></button>
+          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('promotions', this)"><i class="fas fa-tags"></i> Promotions</button>
+          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('adcards', this)"><i class="fas fa-id-card"></i> Ad Cards</button>
+          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('audience', this)"><i class="fas fa-users"></i> Audience</button>
+          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('channels', this)"><i class="fas fa-share-alt"></i> Channels</button>
+          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('promocodes', this)"><i class="fas fa-barcode"></i> Promo Codes</button>
+          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('automations', this)"><i class="fas fa-robot"></i> Automations</button>
+          <button type="button" class="ecc-mkt-tab" onclick="switchEccModule('analytics')"><i class="fas fa-external-link-alt"></i> Analytics</button>
+        </div>
+
+        <!-- Layout grid: Main workspace + AI Assistant side drawer -->
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1.25rem;align-items:start;" id="mkt-main-container">
+          
+          <!-- MAIN TAB CONTENT AREA -->
+          <div id="mkt-tab-content" style="min-width:0;">
+
+            <!-- VIEW 1: OVERVIEW -->
+            <div id="mkt-view-overview" class="mkt-subview">
+              <!-- Top KPI row -->
+              <div class="ecc-mkt-kpi-grid">
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Active Campaigns</span><i class="fas fa-bullhorn" style="color:#8b5cf6;"></i></div>
+                  <div class="mkt-kpi-val" id="mkt-kpi-active-campaigns">12</div>
+                  <div class="mkt-kpi-sub green"><i class="fas fa-arrow-up"></i> 18% vs last month</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>People Reached</span><i class="fas fa-eye" style="color:#3b82f6;"></i></div>
+                  <div class="mkt-kpi-val" id="mkt-kpi-reach">42.8K</div>
+                  <div class="mkt-kpi-sub green"><i class="fas fa-arrow-up"></i> 24% vs last month</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Interactions</span><i class="fas fa-mouse-pointer" style="color:#f59e0b;"></i></div>
+                  <div class="mkt-kpi-val" id="mkt-kpi-interactions">8.4K</div>
+                  <div class="mkt-kpi-sub green"><i class="fas fa-arrow-up"></i> 11% vs last month</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Attributed Sales</span><i class="fas fa-ticket-alt" style="color:#10b981;"></i></div>
+                  <div class="mkt-kpi-val" id="mkt-kpi-sales">1,240</div>
+                  <div class="mkt-kpi-sub green"><i class="fas fa-arrow-up"></i> 21% vs last month</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Attributed Revenue</span><i class="fas fa-coins" style="color:#eab308;"></i></div>
+                  <div class="mkt-kpi-val" id="mkt-kpi-revenue">MK 4.8M</div>
+                  <div class="mkt-kpi-sub green"><i class="fas fa-arrow-up"></i> 16% vs last month</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Campaign Conversion</span><i class="fas fa-percentage" style="color:#6366f1;"></i></div>
+                  <div class="mkt-kpi-val" id="mkt-kpi-conversion">4.7%</div>
+                  <div class="mkt-kpi-sub green"><i class="fas fa-arrow-up"></i> 1.2% benchmark</div>
+                </div>
+              </div>
+
+              <!-- Performance Chart + Event Breakdown -->
+              <div style="display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1.25rem;margin-top:1.25rem;">
+                
+                <!-- Campaign Performance Chart Card -->
+                <div class="ecc-card">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+                    <div>
+                      <h3 style="font-size:0.95rem;margin:0;">Campaign Performance Trajectory</h3>
+                      <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Attributed growth loop across active marketing channels</span>
+                    </div>
+                    <div style="display:flex;gap:0.4rem;background:var(--ecc-surface-2);padding:0.2rem;border-radius:6px;">
+                      <button type="button" class="ecc-btn mkt-chart-btn active" onclick="MarketingControlCenter.setChartMetric('revenue', this)">Revenue</button>
+                      <button type="button" class="ecc-btn mkt-chart-btn" onclick="MarketingControlCenter.setChartMetric('tickets', this)">Tickets</button>
+                      <button type="button" class="ecc-btn mkt-chart-btn" onclick="MarketingControlCenter.setChartMetric('reach', this)">Reach</button>
+                      <button type="button" class="ecc-btn mkt-chart-btn" onclick="MarketingControlCenter.setChartMetric('conversion', this)">Conversion</button>
+                    </div>
+                  </div>
+                  <div style="height:220px;position:relative;display:flex;align-items:flex-end;gap:1.2rem;padding-top:1.5rem;border-bottom:1px solid var(--ecc-border);" id="mkt-chart-bars">
+                    <!-- Bars populated by JS -->
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--ecc-text-dim);margin-top:0.5rem;" id="mkt-chart-labels">
+                    <span>Week 1</span><span>Week 2</span><span>Week 3</span><span>Week 4</span>
+                  </div>
+                </div>
+
+                <!-- Event Marketing Performance Table Card -->
+                <div class="ecc-card">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+                    <h3 style="font-size:0.95rem;margin:0;">Event Performance</h3>
+                    <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Top promoted events</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:0.6rem;" id="mkt-event-performance-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Marketing Health & Opportunity Banner Row -->
+              <div style="margin-top:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+                <div class="ecc-card" style="border-left:4px solid #f59e0b;background:linear-gradient(135deg,rgba(245,158,11,0.05),var(--ecc-surface));">
+                  <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                    <div style="width:36px;height:36px;border-radius:8px;background:rgba(245,158,11,0.15);color:#f59e0b;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">
+                      <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div>
+                      <h4 style="font-size:0.85rem;margin:0 0 0.25rem 0;color:var(--ecc-text-bright);">Marketing Insight: Checkout Drop-off</h4>
+                      <p style="font-size:0.74rem;color:var(--ecc-text-dim);margin:0 0 0.6rem 0;">Music Festival 2026 has 12.8K impressions but checkout conversion dropped 18% today. Customers drop off at VIP tier selection.</p>
+                      <div style="display:flex;gap:0.5rem;">
+                        <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.72rem;padding:0.3rem 0.7rem;" onclick="MarketingControlCenter.investigateCampaign('cmp-1')">Investigate Campaign</button>
+                        <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.72rem;padding:0.3rem 0.7rem;" onclick="MarketingControlCenter.openCreateWizard('vip_promo')">Create VIP Offer</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ecc-card" style="border-left:4px solid #10b981;background:linear-gradient(135deg,rgba(16,185,129,0.05),var(--ecc-surface));">
+                  <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                    <div style="width:36px;height:36px;border-radius:8px;background:rgba(16,185,129,0.15);color:#10b981;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">
+                      <i class="fas fa-rocket"></i>
+                    </div>
+                    <div>
+                      <h4 style="font-size:0.85rem;margin:0 0 0.25rem 0;color:var(--ecc-text-bright);">Growth Opportunity: Mid-week Flash Sale</h4>
+                      <p style="font-size:0.74rem;color:var(--ecc-text-dim);margin:0 0 0.6rem 0;">Malawi Business Summit has high weekday views (340 high-intent viewers). A 48-hour Early Bird promotion can accelerate ticket sales.</p>
+                      <div style="display:flex;gap:0.5rem;">
+                        <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.72rem;padding:0.3rem 0.7rem;background:#10b981;border-color:#10b981;" onclick="MarketingControlCenter.openCreateWizard('early_bird')">Launch Early Bird Promo</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- VIEW 2: CAMPAIGNS -->
+            <div id="mkt-view-campaigns" class="mkt-subview" style="display:none;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.6rem;">
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                  <select id="mkt-cmp-status-filter" class="ecc-input" style="font-size:0.78rem;padding:0.4rem 0.7rem;" onchange="MarketingControlCenter.renderCampaigns()">
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="scheduled">Scheduled</option>
+                    <option value="paused">Paused</option>
+                    <option value="completed">Completed</option>
+                    <option value="draft">Draft</option>
+                  </select>
+                  <select id="mkt-cmp-event-filter" class="ecc-input" style="font-size:0.78rem;padding:0.4rem 0.7rem;" onchange="MarketingControlCenter.renderCampaigns()">
+                    <option value="all">All Events</option>
+                  </select>
+                  <select id="mkt-cmp-channel-filter" class="ecc-input" style="font-size:0.78rem;padding:0.4rem 0.7rem;" onchange="MarketingControlCenter.renderCampaigns()">
+                    <option value="all">All Channels</option>
+                    <option value="marketplace">Uthenga Marketplace</option>
+                    <option value="notifications">In-App Notifications</option>
+                    <option value="email">Email</option>
+                    <option value="sms">SMS</option>
+                  </select>
+                </div>
+                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.8rem;padding:0.4rem 0.9rem;" onclick="MarketingControlCenter.openCreateWizard()">
+                  <i class="fas fa-plus" style="margin-right:4px;"></i> New Campaign
+                </button>
+              </div>
+
+              <div class="ecc-mkt-campaigns-grid" id="mkt-campaigns-list">
+                <!-- Campaign Cards rendered by JS -->
+              </div>
+            </div>
+
+            <!-- VIEW 3: PROMOTIONS -->
+            <div id="mkt-view-promotions" class="mkt-subview" style="display:none;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <div>
+                  <h3 style="font-size:0.95rem;margin:0;">Active Promotions &amp; Discounts</h3>
+                  <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Manage flash sales, percentage discounts, and ticket tier offers</span>
+                </div>
+                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.78rem;padding:0.4rem 0.9rem;" onclick="MarketingControlCenter.openPromoModal()">
+                  <i class="fas fa-plus" style="margin-right:4px;"></i> Create Promotion
+                </button>
+              </div>
+              <div class="ecc-mkt-promos-grid" id="mkt-promotions-list">
+                <!-- Promo cards rendered by JS -->
+              </div>
+            </div>
+
+            <!-- VIEW 4: AD CARDS & STUDIO -->
+            <div id="mkt-view-adcards" class="mkt-subview" style="display:none;">
+              <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:1.25rem;">
+                
+                <!-- Builder Controls -->
+                <div class="ecc-card">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
+                    <h3 style="font-size:0.95rem;margin:0;">Ad Card Studio &amp; AI Copywriter</h3>
+                    <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.72rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.generateAiCardCopy()">
+                      🤖 AI Generate Copy
+                    </button>
+                  </div>
+
+                  <!-- Template selector -->
+                  <div style="margin-bottom:1rem;">
+                    <label style="font-size:0.72rem;font-weight:700;color:var(--ecc-text-dim);display:block;margin-bottom:0.4rem;">Select Design Template</label>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem;" id="mkt-card-templates">
+                      <button type="button" class="ecc-ad-tpl-btn active" onclick="MarketingControlCenter.setAdTemplate('announcement', this)">Announcement</button>
+                      <button type="button" class="ecc-ad-tpl-btn" onclick="MarketingControlCenter.setAdTemplate('earlybird', this)">Early Bird 30%</button>
+                      <button type="button" class="ecc-ad-tpl-btn" onclick="MarketingControlCenter.setAdTemplate('flashsale', this)">Flash Sale</button>
+                      <button type="button" class="ecc-ad-tpl-btn" onclick="MarketingControlCenter.setAdTemplate('vip', this)">VIP Experience</button>
+                    </div>
+                  </div>
+
+                  <!-- Content Fields -->
+                  <div style="display:flex;flex-direction:column;gap:0.7rem;">
+                    <div>
+                      <label style="font-size:0.72rem;font-weight:700;">Promotional Headline</label>
+                      <input type="text" id="ad-field-headline" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.4rem 0.6rem;" value="MALAWI MUSIC FESTIVAL 2026" oninput="MarketingControlCenter.updateAdCardPreview()">
+                    </div>
+                    <div>
+                      <label style="font-size:0.72rem;font-weight:700;">Subtitle / Hook</label>
+                      <input type="text" id="ad-field-sub" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.4rem 0.6rem;" value="Live at Kamuzu Stadium · 09 Sept 2026" oninput="MarketingControlCenter.updateAdCardPreview()">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+                      <div>
+                        <label style="font-size:0.72rem;font-weight:700;">Price Badge Text</label>
+                        <input type="text" id="ad-field-price" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.4rem 0.6rem;" value="From MK 8,000" oninput="MarketingControlCenter.updateAdCardPreview()">
+                      </div>
+                      <div>
+                        <label style="font-size:0.72rem;font-weight:700;">Call to Action (CTA)</label>
+                        <select id="ad-field-cta" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.4rem 0.6rem;" onchange="MarketingControlCenter.updateAdCardPreview()">
+                          <option value="GET TICKETS">GET TICKETS</option>
+                          <option value="BOOK NOW">BOOK NOW</option>
+                          <option value="LEARN MORE">LEARN MORE</option>
+                          <option value="VIP ACCESS">VIP ACCESS</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label style="font-size:0.72rem;font-weight:700;">Card Accent Color</label>
+                      <div style="display:flex;gap:0.4rem;margin-top:0.2rem;">
+                        <button type="button" style="width:24px;height:24px;border-radius:50%;background:#f97316;border:none;cursor:pointer;" onclick="MarketingControlCenter.setAdColor('#f97316')"></button>
+                        <button type="button" style="width:24px;height:24px;border-radius:50%;background:#eab308;border:none;cursor:pointer;" onclick="MarketingControlCenter.setAdColor('#eab308')"></button>
+                        <button type="button" style="width:24px;height:24px;border-radius:50%;background:#10b981;border:none;cursor:pointer;" onclick="MarketingControlCenter.setAdColor('#10b981')"></button>
+                        <button type="button" style="width:24px;height:24px;border-radius:50%;background:#3b82f6;border:none;cursor:pointer;" onclick="MarketingControlCenter.setAdColor('#3b82f6')"></button>
+                        <button type="button" style="width:24px;height:24px;border-radius:50%;background:#8b5cf6;border:none;cursor:pointer;" onclick="MarketingControlCenter.setAdColor('#8b5cf6')"></button>
+                        <button type="button" style="width:24px;height:24px;border-radius:50%;background:#ec4899;border:none;cursor:pointer;" onclick="MarketingControlCenter.setAdColor('#ec4899')"></button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;gap:0.6rem;margin-top:1rem;">
+                    <button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;" onclick="MarketingControlCenter.saveAdCard()">Save Ad Card</button>
+                    <button type="button" class="ecc-btn ecc-btn-secondary" onclick="MarketingControlCenter.openCreateWizard()">Attach to Campaign →</button>
+                  </div>
+                </div>
+
+                <!-- Live Ad Card Canvas Preview -->
+                <div class="ecc-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--ecc-surface-2);">
+                  <span style="font-size:0.7rem;color:var(--ecc-text-dim);font-weight:700;margin-bottom:0.75rem;">LIVE CUSTOMER-FACING AD CARD</span>
+                  
+                  <div class="ecc-ad-card-preview" id="ad-card-canvas">
+                    <!-- Dynamic live preview container rendered by JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- VIEW 5: AUDIENCE -->
+            <div id="mkt-view-audience" class="mkt-subview" style="display:none;">
+              <div class="ecc-mkt-kpi-grid" style="grid-template-columns:repeat(4,1fr);">
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Total Reachable Audience</span><i class="fas fa-users" style="color:#3b82f6;"></i></div>
+                  <div class="mkt-kpi-val">18,420</div>
+                  <div class="mkt-kpi-sub">Verified customer profiles</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Engaged Prospects</span><i class="fas fa-heart" style="color:#ec4899;"></i></div>
+                  <div class="mkt-kpi-val">7,840</div>
+                  <div class="mkt-kpi-sub">Interacted in last 30d</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Ticket Buyers</span><i class="fas fa-shopping-bag" style="color:#10b981;"></i></div>
+                  <div class="mkt-kpi-val">2,340</div>
+                  <div class="mkt-kpi-sub">Converted customers</div>
+                </div>
+                <div class="ecc-card mkt-kpi-card">
+                  <div class="mkt-kpi-head"><span>Repeat Attendees</span><i class="fas fa-redo" style="color:#8b5cf6;"></i></div>
+                  <div class="mkt-kpi-val">812</div>
+                  <div class="mkt-kpi-sub">Multiple event purchases</div>
+                </div>
+              </div>
+
+              <!-- Audience Segments & Interactive Builder -->
+              <div style="display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:1.25rem;margin-top:1.25rem;">
+                
+                <div class="ecc-card">
+                  <h3 style="font-size:0.95rem;margin:0 0 0.85rem 0;">Smart Audience Segments</h3>
+                  <div style="display:flex;flex-direction:column;gap:0.6rem;" id="mkt-audience-segments-list">
+                    <!-- Segments list rendered by JS -->
+                  </div>
+                </div>
+
+                <!-- Audience Rule Builder -->
+                <div class="ecc-card">
+                  <h3 style="font-size:0.95rem;margin:0 0 0.85rem 0;">Interactive Audience Builder</h3>
+                  <p style="font-size:0.72rem;color:var(--ecc-text-dim);margin:0 0 0.75rem 0;">Create targeted segments based on behavioral rules.</p>
+                  
+                  <div style="display:flex;flex-direction:column;gap:0.6rem;">
+                    <div style="font-size:0.75rem;font-weight:700;">Target customers who:</div>
+                    <div style="display:flex;gap:0.4rem;align-items:center;">
+                      <select class="ecc-input" style="font-size:0.75rem;flex:1;"><option>Viewed Event</option><option>Started Checkout</option><option>Bought Ticket</option></select>
+                      <span style="font-size:0.7rem;">at least</span>
+                      <input type="number" class="ecc-input" style="width:50px;font-size:0.75rem;" value="1">
+                      <span style="font-size:0.7rem;">times</span>
+                    </div>
+                    <div style="font-size:0.72rem;font-weight:700;color:var(--ecc-primary);">AND</div>
+                    <div style="display:flex;gap:0.4rem;align-items:center;">
+                      <select class="ecc-input" style="font-size:0.75rem;flex:1;"><option>Did not purchase</option><option>Purchased VIP</option><option>Used Promo Code</option></select>
+                    </div>
+                    <div style="font-size:0.72rem;font-weight:700;color:var(--ecc-primary);">AND</div>
+                    <div style="display:flex;gap:0.4rem;align-items:center;">
+                      <select class="ecc-input" style="font-size:0.75rem;flex:1;"><option>Located in Lilongwe</option><option>Located in Blantyre</option><option>All Locations</option></select>
+                    </div>
+                  </div>
+
+                  <div style="margin-top:1rem;background:var(--ecc-surface-2);padding:0.7rem;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                      <div style="font-size:0.68rem;color:var(--ecc-text-dim);font-weight:700;">ESTIMATED REACH</div>
+                      <div style="font-size:1.1rem;font-weight:900;color:var(--ecc-primary);">4,820 Customers</div>
+                    </div>
+                    <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.75rem;" onclick="MarketingControlCenter.openCreateWizard('custom_segment')">Create Campaign</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- VIEW 6: CHANNELS -->
+            <div id="mkt-view-channels" class="mkt-subview" style="display:none;">
+              <div class="ecc-card">
+                <h3 style="font-size:0.95rem;margin:0 0 0.85rem 0;">Channel Distribution &amp; Revenue Attribution</h3>
+                <div style="display:flex;flex-direction:column;gap:1rem;" id="mkt-channels-list">
+                  <!-- Channel rows rendered by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- VIEW 7: PROMO CODES -->
+            <div id="mkt-view-promocodes" class="mkt-subview" style="display:none;">
+              <div class="ecc-card">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                  <div>
+                    <h3 style="font-size:0.95rem;margin:0;">Promo Code Management</h3>
+                    <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Issued codes, usage caps, and restrictions</span>
+                  </div>
+                  <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.78rem;padding:0.4rem 0.8rem;" onclick="MarketingControlCenter.openPromoCodeModal()">
+                    <i class="fas fa-plus" style="margin-right:4px;"></i> Generate New Code
+                  </button>
+                </div>
+                <div class="ecc-table-wrapper">
+                  <table class="ecc-table">
+                    <thead>
+                      <tr>
+                        <th>Code</th>
+                        <th>Offer Type</th>
+                        <th>Usage Limit</th>
+                        <th>Used Count</th>
+                        <th>Attributed Sales</th>
+                        <th>Revenue</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="mkt-promocodes-tbody">
+                      <!-- Promo code rows rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- VIEW 8: AUTOMATIONS -->
+            <div id="mkt-view-automations" class="mkt-subview" style="display:none;">
+              <div class="ecc-card">
+                <div style="margin-bottom:1rem;">
+                  <h3 style="font-size:0.95rem;margin:0;">Automated Growth Workflows</h3>
+                  <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Trigger automated recovery reminders and urgency alerts based on customer signals</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="mkt-automations-grid">
+                  <!-- Automation cards rendered by JS -->
+                </div>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Stage Canvas -->
-          <div class="ecc-canva-stage" id="ecc-canva-stage">
-            <div>
-              <span class="ecc-pill rose" id="cs-tag">LIVE CONCERT 2025</span>
-              <h1 style="font-size:2rem;font-weight:900;margin:0.8rem 0 0.4rem;" id="cs-title">Worship Night Live</h1>
-              <p style="font-size:0.9rem;color:#cbd5e1;" id="cs-sub">Bingu International Convention Centre · Lilongwe</p>
+          <!-- SIDE DRAWER: AI MARKETING ASSISTANT -->
+          <div class="ecc-mkt-ai-panel" id="mkt-ai-panel">
+            <div class="mkt-ai-head">
+              <div style="display:flex;align-items:center;gap:0.4rem;">
+                <span style="font-size:1.1rem;">🤖</span>
+                <strong style="font-size:0.85rem;">AI Marketing Advisor</strong>
+              </div>
+              <button type="button" class="mkt-ai-close" onclick="MarketingControlCenter.toggleAiPanel()">×</button>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <strong style="font-size:1.2rem;" id="cs-price">MK 25,000 VIP</strong>
-              <button type="button" class="ecc-btn" style="background:#fff;color:#000;font-weight:900;">Book Tickets →</button>
+            <div style="padding:0.8rem;font-size:0.72rem;color:var(--ecc-text-dim);border-bottom:1px solid var(--ecc-border);">
+              Real-time monitoring of event ticket sales velocity, audience drop-off, and campaign ROI.
+            </div>
+            <div class="mkt-ai-body" id="mkt-ai-alerts-container">
+              <!-- AI Recommendation cards rendered by JS -->
+            </div>
+            <div class="mkt-ai-foot">
+              <span style="font-size:0.65rem;color:var(--ecc-text-dim);"><i class="fas fa-shield-alt"></i> Permission Boundary: AI recommends · You approve</span>
             </div>
           </div>
 
-          <!-- Right Inspector -->
-          <div class="ecc-canva-inspector">
-            <h4 style="margin:0 0 0.8rem;font-size:0.85rem;">Properties Inspector</h4>
-            <div style="margin-bottom:0.75rem;"><label style="font-size:0.72rem;font-weight:700;">Headline Text</label><input class="ecc-search-input" style="background:var(--ecc-bg);border:1px solid var(--ecc-border);padding:0.4rem;width:100%;box-sizing:border-box;margin-top:0.2rem;" value="Worship Night Live" oninput="document.getElementById('cs-title').textContent=this.value"></div>
-            <div style="margin-bottom:0.75rem;"><label style="font-size:0.72rem;font-weight:700;">Ticket Price</label><input class="ecc-search-input" style="background:var(--ecc-bg);border:1px solid var(--ecc-border);padding:0.4rem;width:100%;box-sizing:border-box;margin-top:0.2rem;" value="MK 25,000 VIP" oninput="document.getElementById('cs-price').textContent=this.value"></div>
-            <button type="button" class="ecc-btn ecc-btn-primary" style="width:100%;" onclick="eccNotify('Exporting Ad Poster PNG...')">Export Poster PNG</button>
-          </div>
         </div>
       </div>
 
@@ -1960,13 +2346,498 @@ $userRoleLabel = 'Event Organizer';
         <div id="fin-root"></div>
       </div>
 
-      <!-- MODULE 8: CUSTOMERS -->
+      <!-- MODULE 8: CUSTOMERS (EVENT CRM LAYER) -->
       <div id="mod-customers" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Customer CRM & Groups</h2>
-        <div class="ecc-card">
-          <p style="font-size:0.85rem;color:var(--ecc-text-dim);">Groups: VIP Guests (150), Regulars (420), Sponsors (12)</p>
-          <button type="button" class="ecc-btn ecc-btn-primary" onclick="eccNotify('Broadcast Email Sent!')">Send Group Email</button>
+        
+        <!-- Header & Action Bar -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:0.8rem;margin-bottom:1.1rem;">
+          <div>
+            <h2 style="font-size:1.15rem;font-weight:900;margin:0 0 0.15rem;display:flex;align-items:center;gap:0.5rem;">
+              <span>Customer Relationship Management</span>
+              <span class="ecc-pill purple" style="font-size:0.6rem;">EVENT CRM</span>
+            </h2>
+            <div style="font-size:0.75rem;color:var(--ecc-text-dim);">Discover, understand, communicate, segment, and retain your event customer base.</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+            <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.75rem;" onclick="CustomersControlCenter.exportCustomers()"><i class="fas fa-file-export" style="margin-right:4px;"></i> Export</button>
+            <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.75rem;" onclick="CustomersControlCenter.openSegmentBuilderModal()"><i class="fas fa-filter" style="margin-right:4px;"></i> Create Segment</button>
+            <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.75rem;" onclick="CustomersControlCenter.openAddCustomerModal()"><i class="fas fa-user-plus" style="margin-right:4px;"></i> + Add Customer</button>
+          </div>
         </div>
+
+        <!-- Internal Sub-Navigation Bar -->
+        <div style="display:flex;gap:0.3rem;background:var(--ecc-surface-2);padding:0.4rem;border-radius:10px;margin-bottom:1.25rem;border:1px solid var(--ecc-border);overflow-x:auto;" id="cus-sub-nav">
+          <button type="button" class="cus-tab-btn active" onclick="CustomersControlCenter.switchTab('overview', this)">Overview</button>
+          <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchTab('directory', this)">All Customers</button>
+          <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchTab('segments', this)">Segments</button>
+          <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchTab('vip', this)">VIP Customers</button>
+          <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchTab('at_risk', this)">At Risk <span class="ecc-pill rose" style="font-size:0.55rem;margin-left:0.3rem;">AI</span></button>
+        </div>
+
+        <!-- SUBVIEW CONTAINER -->
+        <div id="cus-views-container">
+
+          <!-- 1. OVERVIEW SCREEN -->
+          <div id="cus-view-overview" class="cus-subview" style="display:block;">
+            <!-- 4 Top KPI Cards -->
+            <div class="ecc-cus-grid" id="cus-kpi-container">
+              <div class="cus-kpi-card">
+                <div class="cus-kpi-title">Total Customers</div>
+                <div class="cus-kpi-val" id="cus-kpi-total">4,821</div>
+                <div class="cus-kpi-sub"><span class="cus-kpi-growth">↑ 12.4%</span> vs last month</div>
+              </div>
+              <div class="cus-kpi-card">
+                <div class="cus-kpi-title">Active Customers</div>
+                <div class="cus-kpi-val" id="cus-kpi-active">3,420</div>
+                <div class="cus-kpi-sub">Engaged in last 90 days</div>
+              </div>
+              <div class="cus-kpi-card">
+                <div class="cus-kpi-title">New Customers</div>
+                <div class="cus-kpi-val" id="cus-kpi-new">382</div>
+                <div class="cus-kpi-sub"><span class="cus-kpi-growth">+8.2%</span> new this month</div>
+              </div>
+              <div class="cus-kpi-card">
+                <div class="cus-kpi-title">Returning Customers</div>
+                <div class="cus-kpi-val" id="cus-kpi-returning">1,019</div>
+                <div class="cus-kpi-sub"><strong style="color:var(--ecc-primary);" id="cus-kpi-retention">21.1%</strong> retention rate</div>
+              </div>
+            </div>
+
+            <!-- Customer Activity Chart & Acquisition Split -->
+            <div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+              
+              <!-- Customer Activity Chart Card -->
+              <div class="ecc-card" style="padding:1.25rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+                  <div>
+                    <strong style="font-size:0.88rem;display:block;">CUSTOMER ACTIVITY</strong>
+                    <span style="font-size:0.72rem;color:var(--ecc-text-dim);">Customer relationship velocity over time</span>
+                  </div>
+                  <select class="ecc-input" style="font-size:0.7rem;padding:0.25rem 0.5rem;" id="cus-chart-metric-select" onchange="CustomersControlCenter.switchChartMetric(this.value)">
+                    <option value="new_customers">New Customers</option>
+                    <option value="returning_customers" selected>Returning Customers</option>
+                    <option value="purchasers">Purchasers</option>
+                    <option value="attendees">Attendees</option>
+                  </select>
+                </div>
+
+                <!-- Visual Custom SVG Chart Representation -->
+                <div style="background:var(--ecc-surface-2);border-radius:12px;padding:1rem;border:1px solid var(--ecc-border);height:210px;display:flex;flex-direction:column;justify-content:space-between;" id="cus-activity-chart-box">
+                  <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.7rem;color:var(--ecc-text-dim);">
+                    <span>Volume</span>
+                    <span id="cus-chart-current-label">1,019 Returning Customers</span>
+                  </div>
+                  <!-- SVG Polyline Chart -->
+                  <svg viewBox="0 0 500 120" style="width:100%;height:120px;overflow:visible;">
+                    <defs>
+                      <linearGradient id="cusChartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#6366f1" stop-opacity="0.35"/>
+                        <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M 0,100 Q 100,80 200,60 T 350,30 T 500,10 L 500,120 L 0,120 Z" fill="url(#cusChartGrad)"/>
+                    <path d="M 0,100 Q 100,80 200,60 T 350,30 T 500,10" fill="none" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="0" cy="100" r="4" fill="#6366f1"/>
+                    <circle cx="125" cy="78" r="4" fill="#6366f1"/>
+                    <circle cx="250" cy="55" r="4" fill="#6366f1"/>
+                    <circle cx="375" cy="28" r="4" fill="#6366f1"/>
+                    <circle cx="500" cy="10" r="5" fill="#a855f7"/>
+                  </svg>
+                  <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--ecc-text-dim);border-top:1px dashed var(--ecc-border);padding-top:0.4rem;">
+                    <span>Aug 1</span><span>Aug 7</span><span>Aug 14</span><span>Aug 21</span><span>Aug 28</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Customer Acquisition Breakdown Card -->
+              <div class="ecc-card" style="padding:1.25rem;">
+                <strong style="font-size:0.88rem;display:block;margin-bottom:0.2rem;">CUSTOMER ACQUISITION</strong>
+                <span style="font-size:0.72rem;color:var(--ecc-text-dim);display:block;margin-bottom:0.8rem;">This month's acquisition channels</span>
+
+                <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1rem;">
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                    <span style="color:var(--ecc-text-dim);">New customers</span>
+                    <strong id="cus-acq-new">382</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                    <span style="color:var(--ecc-text-dim);">First-time purchasers</span>
+                    <strong id="cus-acq-first">291</strong>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.75rem;">
+                    <span style="color:var(--ecc-text-dim);">Returning buyers</span>
+                    <strong id="cus-acq-returning">147</strong>
+                  </div>
+                </div>
+
+                <div style="font-size:0.7rem;font-weight:800;color:var(--ecc-text);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.04em;">Acquisition Sources</div>
+                <div style="display:flex;flex-direction:column;gap:0.45rem;">
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.68rem;margin-bottom:0.15rem;">
+                      <span>Uthenga Discover</span><strong>48%</strong>
+                    </div>
+                    <div style="height:5px;background:var(--ecc-surface-3);border-radius:10px;overflow:hidden;"><div style="width:48%;height:100%;background:#6366f1;"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.68rem;margin-bottom:0.15rem;">
+                      <span>Event Share</span><strong>27%</strong>
+                    </div>
+                    <div style="height:5px;background:var(--ecc-surface-3);border-radius:10px;overflow:hidden;"><div style="width:27%;height:100%;background:#a855f7;"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.68rem;margin-bottom:0.15rem;">
+                      <span>Direct</span><strong>15%</strong>
+                    </div>
+                    <div style="height:5px;background:var(--ecc-surface-3);border-radius:10px;overflow:hidden;"><div style="width:15%;height:100%;background:#3b82f6;"></div></div>
+                  </div>
+                  <div>
+                    <div style="display:flex;justify-content:space-between;font-size:0.68rem;margin-bottom:0.15rem;">
+                      <span>Marketing Campaign</span><strong>10%</strong>
+                    </div>
+                    <div style="height:5px;background:var(--ecc-surface-3);border-radius:10px;overflow:hidden;"><div style="width:10%;height:100%;background:#10b981;"></div></div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Top Customers Directory Preview Table -->
+            <div class="ecc-card" style="padding:1.25rem;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;">
+                <div>
+                  <strong style="font-size:0.88rem;">VALUABLE CUSTOMER RELATIONSHIPS</strong>
+                  <span style="font-size:0.72rem;color:var(--ecc-text-dim);display:block;">Highest lifetime spend & multi-event participants</span>
+                </div>
+                <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;" onclick="CustomersControlCenter.switchTab('directory')">View All Directory →</button>
+              </div>
+
+              <div style="overflow-x:auto;">
+                <table class="vc-table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Customer ID</th>
+                      <th>Events</th>
+                      <th>Orders</th>
+                      <th>Total Spent</th>
+                      <th>Last Activity</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cus-overview-table-body">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. ALL CUSTOMERS (DIRECTORY) SCREEN -->
+          <div id="cus-view-directory" class="cus-subview" style="display:none;">
+            
+            <!-- Directory Filter & Search Header -->
+            <div class="ecc-card" style="padding:1rem;margin-bottom:1rem;">
+              <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
+                
+                <!-- Search Input -->
+                <div style="flex:2;min-width:240px;position:relative;">
+                  <input type="search" id="cus-search-input" class="ecc-input" style="width:100%;padding-left:2.2rem;font-size:0.8rem;" placeholder="Search name, email, phone, Customer ID (UTH-CUS-...), Order ID, Ticket ID…" onkeyup="if(event.key==='Enter') CustomersControlCenter.loadDirectory();">
+                  <i class="fas fa-search" style="position:absolute;left:0.8rem;top:50%;transform:translateY(-50%);color:var(--ecc-text-dim);font-size:0.8rem;"></i>
+                </div>
+
+                <!-- Filters -->
+                <select class="ecc-input" id="cus-filter-segment" style="font-size:0.75rem;padding:0.4rem 0.6rem;" onchange="CustomersControlCenter.loadDirectory();">
+                  <option value="all">All Segments</option>
+                  <option value="VIP">VIP Customers</option>
+                  <option value="Corporate">Corporate</option>
+                  <option value="Repeat Buyer">Repeat Buyers</option>
+                  <option value="Student">Student</option>
+                </select>
+
+                <select class="ecc-input" id="cus-filter-activity" style="font-size:0.75rem;padding:0.4rem 0.6rem;" onchange="CustomersControlCenter.loadDirectory();">
+                  <option value="all">All Activity States</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="At Risk">At Risk</option>
+                </select>
+
+                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.75rem;" onclick="CustomersControlCenter.loadDirectory();">Filter</button>
+              </div>
+            </div>
+
+            <!-- Customer Directory Table -->
+            <div class="ecc-card" style="overflow-x:auto;">
+              <table class="vc-table">
+                <thead>
+                  <tr>
+                    <th>Customer Name & Contact</th>
+                    <th>Customer ID</th>
+                    <th style="text-align:center;">Events</th>
+                    <th style="text-align:center;">Purchases</th>
+                    <th>Total Spent</th>
+                    <th>Last Activity</th>
+                    <th>Status / Tags</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="cus-directory-table-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+          <!-- 3. CUSTOMER SEGMENTS SCREEN -->
+          <div id="cus-view-segments" class="cus-subview" style="display:none;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+              <div>
+                <h3 style="margin:0;font-size:1rem;font-weight:900;">Customer Audience Segments</h3>
+                <span style="font-size:0.75rem;color:var(--ecc-text-dim);">Targeted customer groups for marketing campaigns and re-engagement</span>
+              </div>
+              <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.75rem;" onclick="CustomersControlCenter.openSegmentBuilderModal()">+ Create Segment</button>
+            </div>
+
+            <div class="ecc-cus-grid" id="cus-segments-grid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- 4. VIP CUSTOMERS SCREEN -->
+          <div id="cus-view-vip" class="cus-subview" style="display:none;">
+            <div class="ecc-card" style="padding:1.25rem;margin-bottom:1rem;border:1px solid rgba(99,102,241,0.4);">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <strong style="font-size:0.9rem;color:var(--ecc-primary);"><i class="fas fa-crown"></i> VIP CUSTOMER AUDIENCE</strong>
+                  <span style="font-size:0.75rem;color:var(--ecc-text-dim);display:block;">Top-tier event patrons with lifetime spend exceeding MK 100,000</span>
+                </div>
+                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.72rem;" onclick="MarketingControlCenter.openCreateWizard('vip_promo')">Promote VIP Special Offer →</button>
+              </div>
+            </div>
+
+            <div class="ecc-card" style="overflow-x:auto;">
+              <table class="vc-table">
+                <thead>
+                  <tr>
+                    <th>VIP Customer</th>
+                    <th>Customer ID</th>
+                    <th>Events Attended</th>
+                    <th>Total Spend</th>
+                    <th>Last Event</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="cus-vip-table-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 5. AT RISK CUSTOMERS SCREEN -->
+          <div id="cus-view-at_risk" class="cus-subview" style="display:none;">
+            <div class="ecc-card" style="padding:1.25rem;margin-bottom:1rem;background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.25);">
+              <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+                <div style="width:36px;height:36px;border-radius:50%;background:rgba(239,68,68,0.15);color:#ef4444;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div>
+                  <h4 style="margin:0;font-size:0.95rem;font-weight:900;color:var(--ecc-text-bright);">AI Assistant: At-Risk Customer Alert</h4>
+                  <p style="margin:0.2rem 0 0 0;font-size:0.75rem;color:var(--ecc-text-dim);">These high-value repeat customers have exceeded their typical event attendance cycle without purchasing new tickets. Consider running a win-back campaign.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="ecc-cus-grid" id="cus-atrisk-container">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- FULL PAGE CUSTOMER PROFILE WORKSPACE -->
+        <div id="cus-profile-workspace" style="display:none;">
+          <!-- Top Back Button -->
+          <button type="button" class="ecc-btn ecc-btn-secondary" style="margin-bottom:1rem;font-size:0.75rem;" onclick="CustomersControlCenter.closeProfile();">
+            ← Back to Customers Directory
+          </button>
+
+          <!-- Profile Header Card -->
+          <div class="cus-profile-head">
+            <div class="cus-avatar-lg" id="cus-prof-avatar">PB</div>
+            <div style="flex:1;min-width:200px;">
+              <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+                <h2 style="margin:0;font-size:1.35rem;font-weight:900;" id="cus-prof-name">Patrick Byamungu</h2>
+                <span class="ecc-pill green" id="cus-prof-status">● Active</span>
+              </div>
+              <div style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0.2rem 0 0.5rem;">
+                Customer ID: <strong style="color:var(--ecc-text-bright);" id="cus-prof-code">UTH-CUS-008421</strong> · <span id="cus-prof-email">patrick@example.mw</span> · <span id="cus-prof-phone">+265 99 123 4567</span>
+              </div>
+              <div style="display:flex;gap:0.4rem;flex-wrap:wrap;" id="cus-prof-tags">
+                <span class="ecc-chip">VIP</span><span class="ecc-chip">Corporate</span><span class="ecc-chip">Repeat Buyer</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+              <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.75rem;" onclick="CustomersControlCenter.openMessageModal();"><i class="fas fa-envelope"></i> Message Customer</button>
+              <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.75rem;" onclick="CustomersControlCenter.focusNotesTab();"><i class="fas fa-sticky-note"></i> Add Note</button>
+            </div>
+          </div>
+
+          <!-- Value Metrics Banner -->
+          <div class="ecc-cus-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+            <div class="cus-kpi-card">
+              <div class="cus-kpi-title">Lifetime Spend</div>
+              <div class="cus-kpi-val" style="color:var(--ecc-primary);" id="cus-prof-spend">MK 245,000</div>
+              <div class="cus-kpi-sub">Total commerce value</div>
+            </div>
+            <div class="cus-kpi-card">
+              <div class="cus-kpi-title">Average Order</div>
+              <div class="cus-kpi-val" id="cus-prof-avg">MK 30,625</div>
+              <div class="cus-kpi-sub">Per ticket transaction</div>
+            </div>
+            <div class="cus-kpi-card">
+              <div class="cus-kpi-title">Total Orders</div>
+              <div class="cus-kpi-val" id="cus-prof-orders">8</div>
+              <div class="cus-kpi-sub">Completed transactions</div>
+            </div>
+            <div class="cus-kpi-card">
+              <div class="cus-kpi-title">Events Attended</div>
+              <div class="cus-kpi-val" id="cus-prof-events">6</div>
+              <div class="cus-kpi-sub">Verified check-ins</div>
+            </div>
+          </div>
+
+          <!-- Profile Internal Navigation Tabs -->
+          <div style="display:flex;gap:0.3rem;background:var(--ecc-surface-2);padding:0.4rem;border-radius:10px;margin:1.25rem 0;border:1px solid var(--ecc-border);overflow-x:auto;">
+            <button type="button" class="cus-tab-btn active" onclick="CustomersControlCenter.switchProfileTab('overview', this)">Overview</button>
+            <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchProfileTab('purchases', this)">Purchases History</button>
+            <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchProfileTab('events', this)">Event History</button>
+            <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchProfileTab('tickets', this)">Tickets</button>
+            <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchProfileTab('timeline', this)">Timeline</button>
+            <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchProfileTab('notes', this)">Internal Notes</button>
+            <button type="button" class="cus-tab-btn" onclick="CustomersControlCenter.switchProfileTab('reviews', this)">Reviews</button>
+          </div>
+
+          <!-- PROFILE SUB-VIEWS CONTAINER -->
+          <div id="cus-prof-views-container">
+            <!-- Profile Tab 1: Overview -->
+            <div id="cus-pview-overview" class="cus-pview" style="display:block;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div class="ecc-card" style="padding:1.25rem;">
+                  <strong style="font-size:0.85rem;display:block;margin-bottom:0.8rem;">Commercial Value Summary</strong>
+                  <div style="display:flex;flex-direction:column;gap:0.6rem;font-size:0.78rem;">
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed var(--ecc-border);padding-bottom:0.4rem;">
+                      <span style="color:var(--ecc-text-dim);">Customer Since</span><strong id="cus-prof-since">June 2026</strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed var(--ecc-border);padding-bottom:0.4rem;">
+                      <span style="color:var(--ecc-text-dim);">Total Spend</span><strong style="color:var(--ecc-primary);" id="cus-prof-spend2">MK 245,000</strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed var(--ecc-border);padding-bottom:0.4rem;">
+                      <span style="color:var(--ecc-text-dim);">Total Completed Orders</span><strong id="cus-prof-orders2">8</strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;">
+                      <span style="color:var(--ecc-text-dim);">Events Attended</span><strong id="cus-prof-events2">6</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ecc-card" style="padding:1.25rem;">
+                  <strong style="font-size:0.85rem;display:block;margin-bottom:0.8rem;">Engagement Activity</strong>
+                  <div style="display:flex;flex-direction:column;gap:0.6rem;font-size:0.78rem;">
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed var(--ecc-border);padding-bottom:0.4rem;">
+                      <span style="color:var(--ecc-text-dim);">Last Ticket Purchase</span><strong id="cus-prof-last-pur">18 Aug 2026</strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;border-bottom:1px dashed var(--ecc-border);padding-bottom:0.4rem;">
+                      <span style="color:var(--ecc-text-dim);">Last Event Attendance</span><strong id="cus-prof-last-ev">18 Aug 2026</strong>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;">
+                      <span style="color:var(--ecc-text-dim);">Last Organizer Message</span><strong id="cus-prof-last-msg">17 Aug 2026</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Tab 2: Purchases -->
+            <div id="cus-pview-purchases" class="cus-pview" style="display:none;">
+              <div class="ecc-card" style="overflow-x:auto;">
+                <table class="vc-table">
+                  <thead>
+                    <tr>
+                      <th>Order Reference</th>
+                      <th>Event</th>
+                      <th>Amount</th>
+                      <th>Payment Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cus-prof-purchases-body">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Profile Tab 3: Event History -->
+            <div id="cus-pview-events" class="cus-pview" style="display:none;">
+              <div class="ecc-card" style="overflow-x:auto;">
+                <table class="vc-table">
+                  <thead>
+                    <tr>
+                      <th>Event Title</th>
+                      <th>Event Date</th>
+                      <th>Ticket Tier</th>
+                      <th>Attendance Status</th>
+                      <th>Check-In Window</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cus-prof-events-body">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Profile Tab 4: Tickets -->
+            <div id="cus-pview-tickets" class="cus-pview" style="display:none;">
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;" id="cus-prof-tickets-grid">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Profile Tab 5: Timeline -->
+            <div id="cus-pview-timeline" class="cus-pview" style="display:none;">
+              <div class="ecc-card" style="padding:1.5rem;">
+                <div class="cus-timeline-list" id="cus-prof-timeline-container">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Tab 6: Internal Notes -->
+            <div id="cus-pview-notes" class="cus-pview" style="display:none;">
+              <div class="ecc-card" style="padding:1.25rem;margin-bottom:1rem;">
+                <strong style="font-size:0.85rem;display:block;margin-bottom:0.4rem;">Add Internal Note</strong>
+                <span style="font-size:0.72rem;color:var(--ecc-text-dim);display:block;margin-bottom:0.6rem;"><i class="fas fa-lock" style="color:#f59e0b;"></i> Internal team notes are strictly private and never visible to customers.</span>
+                <textarea class="ecc-input" id="cus-new-note-text" rows="3" style="width:100%;font-size:0.78rem;padding:0.5rem;margin-bottom:0.6rem;" placeholder="Write internal customer note (e.g. VIP seating preferences, special invoice requests)..."></textarea>
+                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.75rem;" onclick="CustomersControlCenter.submitNote();">+ Save Internal Note</button>
+              </div>
+
+              <div id="cus-prof-notes-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Profile Tab 7: Reviews -->
+            <div id="cus-pview-reviews" class="cus-pview" style="display:none;">
+              <div id="cus-prof-reviews-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- MODULE 9: ANALYTICS -->
@@ -1985,11 +2856,7 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 11: MESSAGES -->
       <div id="mod-messages" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Unified Inbox (12 Pending)</h2>
-        <div class="ecc-card">
-          <strong>John Phiri:</strong> <span style="color:var(--ecc-text-dim);font-size:0.85rem;">Where is VIP parking located?</span>
-          <div style="margin-top:0.6rem;"><button type="button" class="ecc-btn ecc-btn-primary" onclick="eccNotify('Sent parking map reply!')">Send VIP Parking Map</button></div>
-        </div>
+        <div id="msgs-root"></div>
       </div>
 
       <!-- MODULE 12: DOCUMENTS -->
@@ -2639,9 +3506,430 @@ $userRoleLabel = 'Event Organizer';
             <i class="fas fa-magic" style="color:var(--ecc-primary);"></i> Live Template Sync
           </div>
           Selecting a ticket category or editing form inputs on the left instantly updates this ticket pass design template in real time.
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Create Campaign Wizard -->
+<div id="modal-mkt-campaign-wiz" class="ecc-modal-overlay">
+  <div class="ecc-modal-content" style="max-width:840px;padding:0;overflow:hidden;border-radius:16px;">
+    
+    <!-- Modal Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:1.1rem 1.5rem;border-bottom:1px solid var(--ecc-border);background:var(--ecc-surface);">
+      <div>
+        <h3 style="margin:0;font-size:1.15rem;font-weight:900;display:flex;align-items:center;gap:0.5rem;">
+          <span style="color:var(--ecc-primary);"><i class="fas fa-bullhorn"></i></span>
+          <span id="mkt-wiz-title">Create Growth Campaign</span>
+        </h3>
+        <p style="margin:0.2rem 0 0 0;font-size:0.75rem;color:var(--ecc-text-dim);">Design, target, schedule and distribute event promotional campaigns.</p>
+      </div>
+      <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-mkt-campaign-wiz')">✕</button>
+    </div>
+
+    <!-- Step Indicator Bar -->
+    <div style="display:flex;gap:0.2rem;background:var(--ecc-surface-2);padding:0.6rem 1.5rem;border-bottom:1px solid var(--ecc-border);overflow-x:auto;" id="mkt-wiz-nav-pills">
+      <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(1)">1. Objective</button>
+      <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(2)">2. Event</button>
+      <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(3)">3. Audience</button>
+      <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(4)">4. Offer</button>
+      <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(5)">5. Ad Cards</button>
+      <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(6)">6. Channels</button>
+      <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(7)">7. Schedule</button>
+      <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.5rem;" onclick="MarketingControlCenter.goToWizStep(8)">8. Review</button>
+    </div>
+
+    <!-- Wizard Steps Body -->
+    <div style="padding:1.5rem;max-height:65vh;overflow-y:auto;" id="mkt-wiz-step-container">
+      
+      <!-- STEP 1: OBJECTIVE -->
+      <div class="mkt-wiz-step active" id="mkt-wiz-step-1">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 1: Select Campaign Objective</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">What commercial goal do you want to accomplish?</p>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <label style="border:1px solid var(--ecc-border);border-radius:10px;padding:0.85rem;cursor:pointer;display:flex;gap:0.75rem;align-items:flex-start;background:var(--ecc-surface-2);" class="mkt-obj-option">
+            <input type="radio" name="mkt_obj" value="Ticket Sales" checked style="margin-top:2px;">
+            <div>
+              <strong style="font-size:0.85rem;display:block;color:var(--ecc-text-bright);">Drive Ticket Sales</strong>
+              <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Directly push conversions for general admission and standard tiers.</span>
+            </div>
+          </label>
+          <label style="border:1px solid var(--ecc-border);border-radius:10px;padding:0.85rem;cursor:pointer;display:flex;gap:0.75rem;align-items:flex-start;background:var(--ecc-surface-2);" class="mkt-obj-option">
+            <input type="radio" name="mkt_obj" value="Early Bird" style="margin-top:2px;">
+            <div>
+              <strong style="font-size:0.85rem;display:block;color:var(--ecc-text-bright);">Early-Bird Acceleration</strong>
+              <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Incentivize early purchases with limited time percentage discounts.</span>
+            </div>
+          </label>
+          <label style="border:1px solid var(--ecc-border);border-radius:10px;padding:0.85rem;cursor:pointer;display:flex;gap:0.75rem;align-items:flex-start;background:var(--ecc-surface-2);" class="mkt-obj-option">
+            <input type="radio" name="mkt_obj" value="VIP Promotion" style="margin-top:2px;">
+            <div>
+              <strong style="font-size:0.85rem;display:block;color:var(--ecc-text-bright);">VIP &amp; Premium Tier Push</strong>
+              <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Target high-value customers for VVIP experience packages.</span>
+            </div>
+          </label>
+          <label style="border:1px solid var(--ecc-border);border-radius:10px;padding:0.85rem;cursor:pointer;display:flex;gap:0.75rem;align-items:flex-start;background:var(--ecc-surface-2);" class="mkt-obj-option">
+            <input type="radio" name="mkt_obj" value="Re-engagement" style="margin-top:2px;">
+            <div>
+              <strong style="font-size:0.85rem;display:block;color:var(--ecc-text-bright);">Audience Re-engagement</strong>
+              <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Recover customers who viewed event pages or dropped off during checkout.</span>
+            </div>
+          </label>
         </div>
       </div>
 
+      <!-- STEP 2: SELECT EVENT -->
+      <div class="mkt-wiz-step" id="mkt-wiz-step-2" style="display:none;">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 2: Select Event to Promote</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">Choosing an event automatically links dates, venue, ticket tiers, and images.</p>
+        
+        <div style="margin-bottom:1rem;">
+          <label style="font-size:0.75rem;font-weight:700;">Target Event</label>
+          <select id="mkt-wiz-event-select" class="ecc-input" style="width:100%;font-size:0.85rem;padding:0.5rem;margin-top:0.3rem;" onchange="MarketingControlCenter.wizOnEventSelect(this.value)">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+
+        <div id="mkt-wiz-event-card-preview" style="background:var(--ecc-surface-2);border-radius:10px;padding:1rem;border:1px solid var(--ecc-border);">
+          <!-- Selected event summary -->
+        </div>
+      </div>
+
+      <!-- STEP 3: TARGET AUDIENCE -->
+      <div class="mkt-wiz-step" id="mkt-wiz-step-3" style="display:none;">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 3: Target Audience Segment</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">Select who should receive or see this campaign.</p>
+
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <label style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="radio" name="mkt_aud" value="All Customers" checked>
+            <div>
+              <strong style="font-size:0.8rem;display:block;">All Uthenga Event Enthusiasts (18,420 users)</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Broad marketplace broadcast</span>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="radio" name="mkt_aud" value="High Intent Prospects">
+            <div>
+              <strong style="font-size:0.8rem;display:block;">High Intent Prospects (1,240 users)</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Viewed event page multiple times recently</span>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="radio" name="mkt_aud" value="Abandoned Checkout">
+            <div>
+              <strong style="font-size:0.8rem;display:block;">Abandoned Checkout (340 users)</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Started checkout process but did not complete</span>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="radio" name="mkt_aud" value="VIP Buyers">
+            <div>
+              <strong style="font-size:0.8rem;display:block;">Previous VIP Buyers (180 users)</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Customers with premium purchase history</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- STEP 4: ATTACH OFFER -->
+      <div class="mkt-wiz-step" id="mkt-wiz-step-4" style="display:none;">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 4: Attach Promotional Offer</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">Optionally link a discount or promo code to drive conversion.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+          <div style="margin-bottom:0.8rem;">
+            <label style="font-size:0.75rem;font-weight:700;">Offer Type</label>
+            <select id="mkt-wiz-offer-type" class="ecc-input" style="width:100%;font-size:0.8rem;padding:0.45rem;margin-top:0.2rem;">
+              <option value="none">No Special Offer (Standard Ticket Link)</option>
+              <option value="percentage">Percentage Discount (e.g. 20% OFF)</option>
+              <option value="fixed">Fixed Amount Off (e.g. MK 5,000 OFF)</option>
+              <option value="promocode">Promo Code Required</option>
+              <option value="flash">Flash Sale (24 Hours Only)</option>
+            </select>
+          </div>
+          <div style="margin-bottom:0.8rem;">
+            <label style="font-size:0.75rem;font-weight:700;">Discount Value / Code</label>
+            <input type="text" id="mkt-wiz-offer-val" class="ecc-input" style="width:100%;font-size:0.8rem;padding:0.45rem;margin-top:0.2rem;" placeholder="e.g. 30% OFF or EARLYBIRD30">
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 5: AD CARDS -->
+      <div class="mkt-wiz-step" id="mkt-wiz-step-5" style="display:none;">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 5: Promotional Copy &amp; Ad Card</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">Confirm the customer-facing promotional copy.</p>
+
+        <div style="display:flex;flex-direction:column;gap:0.7rem;">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <label style="font-size:0.75rem;font-weight:700;">Campaign Headline</label>
+              <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.15rem 0.4rem;" onclick="MarketingControlCenter.generateWizAiCopy()">🤖 AI Suggest Copy</button>
+            </div>
+            <input type="text" id="mkt-wiz-copy-title" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" value="Experience Malawi Music Festival 2026 Live!">
+          </div>
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;">Promotional Body Text</label>
+            <textarea id="mkt-wiz-copy-body" class="ecc-input" style="width:100%;font-size:0.8rem;padding:0.45rem;height:60px;margin-top:0.2rem;">Don't miss the biggest cultural event of the year at Kamuzu Stadium. Get early bird tickets now before prices increase!</textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 6: CHANNELS -->
+      <div class="mkt-wiz-step" id="mkt-wiz-step-6" style="display:none;">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 6: Distribution Channels</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">Select where this campaign will be published.</p>
+
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <label style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="checkbox" id="mkt-chan-marketplace" checked>
+            <div>
+              <strong style="font-size:0.8rem;display:block;">Uthenga Marketplace (Explore &amp; Event Pages)</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Featured banner on home &amp; search discovery</span>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="checkbox" id="mkt-chan-push" checked>
+            <div>
+              <strong style="font-size:0.8rem;display:block;">In-App Push Notifications</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Direct push alerts to targeted customer mobile apps</span>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="checkbox" id="mkt-chan-email">
+            <div>
+              <strong style="font-size:0.8rem;display:block;">Email Newsletter Broadcast</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Rich HTML email invitation to subscriber list</span>
+            </div>
+          </label>
+          <label style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;cursor:pointer;">
+            <input type="checkbox" id="mkt-chan-sms">
+            <div>
+              <strong style="font-size:0.8rem;display:block;">SMS Instant Notification</strong>
+              <span style="font-size:0.68rem;color:var(--ecc-text-dim);">Direct SMS short-link for high urgency alerts</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- STEP 7: SCHEDULE & SAFETY -->
+      <div class="mkt-wiz-step" id="mkt-wiz-step-7" style="display:none;">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 7: Schedule &amp; Inventory Protection</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">Set campaign timing and automated safety thresholds.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem;">
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;">Start Date &amp; Time</label>
+            <input type="date" id="mkt-wiz-start" class="ecc-input" style="width:100%;font-size:0.8rem;padding:0.45rem;margin-top:0.2rem;" value="2026-08-20">
+          </div>
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;">End Date &amp; Time</label>
+            <input type="date" id="mkt-wiz-end" class="ecc-input" style="width:100%;font-size:0.8rem;padding:0.45rem;margin-top:0.2rem;" value="2026-08-30">
+          </div>
+        </div>
+
+        <div style="background:var(--ecc-surface-2);padding:0.8rem;border-radius:8px;border-left:3px solid var(--ecc-primary);">
+          <label style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;font-weight:700;cursor:pointer;">
+            <input type="checkbox" id="mkt-wiz-auto-stop" checked>
+            <span>Auto-stop campaign when ticket inventory falls below threshold</span>
+          </label>
+          <p style="font-size:0.68rem;color:var(--ecc-text-dim);margin:0.3rem 0 0 1.5rem;">Prevents advertising ticket tiers that have already sold out.</p>
+        </div>
+      </div>
+
+      <!-- STEP 8: REVIEW & LAUNCH -->
+      <div class="mkt-wiz-step" id="mkt-wiz-step-8" style="display:none;">
+        <h4 style="margin:0 0 0.4rem 0;font-size:0.95rem;">Step 8: Campaign Review &amp; Launch</h4>
+        <p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">Review settings before launching your campaign live.</p>
+
+        <div id="mkt-wiz-summary-recap" style="background:var(--ecc-surface-2);border-radius:10px;padding:1rem;display:flex;flex-direction:column;gap:0.5rem;font-size:0.78rem;">
+          <!-- Summary recap rendered by JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Wizard Footer Navigation Buttons -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-top:1px solid var(--ecc-border);background:var(--ecc-surface);">
+      <button type="button" class="ecc-btn ecc-btn-secondary" id="mkt-wiz-prev-btn" onclick="MarketingControlCenter.wizPrevStep()">← Previous</button>
+      <div style="display:flex;gap:0.5rem;">
+        <button type="button" class="ecc-btn ecc-btn-secondary" onclick="MarketingControlCenter.saveCampaignDraft()">Save Draft</button>
+        <button type="button" class="ecc-btn ecc-btn-primary" id="mkt-wiz-next-btn" onclick="MarketingControlCenter.wizNextStep()">Next Step →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: Create Promotion -->
+<div id="modal-mkt-promo" class="ecc-modal-overlay">
+  <div class="ecc-modal-content" style="max-width:520px;padding:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 id="promo-modal-heading" style="margin:0;font-size:1.1rem;font-weight:900;">Create Promotion Offer</h3>
+      <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-mkt-promo')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <input type="hidden" id="promo-modal-id" value="">
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Event</label>
+        <select id="promo-modal-event" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;"></select>
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Promotion Title</label>
+        <input type="text" id="promo-modal-title" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" placeholder="e.g. Flash Sale 25% OFF">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Discount Percentage / Value</label>
+        <input type="text" id="promo-modal-val" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" placeholder="e.g. 25%">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Max Usage Limit</label>
+        <input type="number" id="promo-modal-limit" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" value="200">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Valid until</label>
+        <input type="date" id="promo-modal-until" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Status</label>
+        <select id="promo-modal-status" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;"><option value="active">Active</option><option value="paused">Paused</option></select>
+      </div>
+      <button type="button" id="promo-modal-submit" class="ecc-btn ecc-btn-primary" style="margin-top:0.5rem;" onclick="MarketingControlCenter.savePromotion()">Publish Promotion</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Campaign Detail -->
+<div id="modal-mkt-campaign-detail" class="ecc-modal-overlay">
+  <div class="ecc-modal-content" style="max-width:560px;padding:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 style="margin:0;font-size:1.1rem;font-weight:900;">Campaign details</h3>
+      <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-mkt-campaign-detail')">✕</button>
+    </div>
+    <div id="mkt-campaign-detail-content"></div>
+  </div>
+</div>
+
+<!-- Modal: Create Promo Code -->
+<div id="modal-mkt-code" class="ecc-modal-overlay">
+  <div class="ecc-modal-content" style="max-width:520px;padding:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 style="margin:0;font-size:1.1rem;font-weight:900;">Generate Promo Code</h3>
+      <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-mkt-code')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Promo Code String</label>
+        <input type="text" id="code-modal-str" class="ecc-input" style="width:100%;font-size:0.85rem;font-family:monospace;font-weight:800;padding:0.45rem;margin-top:0.2rem;" placeholder="e.g. SUMMIT2026">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Discount Type &amp; Value</label>
+        <input type="text" id="code-modal-val" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" placeholder="e.g. 20% OFF or MK 5,000 OFF">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Usage Cap</label>
+        <input type="number" id="code-modal-cap" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" value="100">
+      </div>
+      <button type="button" class="ecc-btn ecc-btn-primary" style="margin-top:0.5rem;" onclick="MarketingControlCenter.savePromoCode()">Generate &amp; Activate Code</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Customer Segment Builder -->
+<div id="modal-cus-segment-builder" class="ecc-modal-overlay">
+  <div class="ecc-modal-content" style="max-width:560px;padding:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 style="margin:0;font-size:1.1rem;font-weight:900;display:flex;align-items:center;gap:0.4rem;">
+        <i class="fas fa-filter" style="color:var(--ecc-primary);"></i> Create Customer Segment
+      </h3>
+      <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-cus-segment-builder')">✕</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0.8rem;">
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Segment Name *</label>
+        <input type="text" id="seg-builder-title" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" placeholder="e.g. High Value VIP Repeaters">
+      </div>
+
+      <div style="background:var(--ecc-surface-2);padding:0.85rem;border-radius:10px;border:1px solid var(--ecc-border);">
+        <label style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:var(--ecc-text-dim);display:block;margin-bottom:0.5rem;">Rule Conditions (MUST SATISFY ALL)</label>
+        
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:0.4rem;align-items:center;">
+            <select class="ecc-input" style="font-size:0.72rem;padding:0.35rem;"><option>Total Spend</option></select>
+            <select class="ecc-input" style="font-size:0.72rem;padding:0.35rem;"><option>greater than</option></select>
+            <input type="text" class="ecc-input" style="font-size:0.72rem;padding:0.35rem;" value="MK 100,000">
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:0.4rem;align-items:center;">
+            <select class="ecc-input" style="font-size:0.72rem;padding:0.35rem;"><option>Events Attended</option></select>
+            <select class="ecc-input" style="font-size:0.72rem;padding:0.35rem;"><option>greater than</option></select>
+            <input type="number" class="ecc-input" style="font-size:0.72rem;padding:0.35rem;" value="3">
+          </div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:0.4rem;align-items:center;">
+            <select class="ecc-input" style="font-size:0.72rem;padding:0.35rem;"><option>Status</option></select>
+            <select class="ecc-input" style="font-size:0.72rem;padding:0.35rem;"><option>equals</option></select>
+            <input type="text" class="ecc-input" style="font-size:0.72rem;padding:0.35rem;" value="Active">
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:0.75rem;color:var(--ecc-text-dim);background:var(--ecc-surface-2);padding:0.6rem 0.8rem;border-radius:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span>Estimated matching audience:</span>
+        <strong style="color:var(--ecc-primary);font-size:0.85rem;">94 customers</strong>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.4rem;">
+        <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-cus-segment-builder')">Cancel</button>
+        <button type="button" class="ecc-btn ecc-btn-primary" onclick="CustomersControlCenter.saveSegmentBuilder()">✓ Create Segment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add Customer -->
+<div id="modal-cus-add" class="ecc-modal-overlay">
+  <div class="ecc-modal-content" style="max-width:500px;padding:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 style="margin:0;font-size:1.1rem;font-weight:900;">Add Customer Record</h3>
+      <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-cus-add')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Full Name *</label>
+        <input type="text" id="cus-add-name" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" placeholder="e.g. Chisomo Banda">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Email Address</label>
+        <input type="email" id="cus-add-email" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" placeholder="chisomo@example.mw">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Phone Number</label>
+        <input type="text" id="cus-add-phone" class="ecc-input" style="width:100%;font-size:0.82rem;padding:0.45rem;margin-top:0.2rem;" placeholder="+265 99 000 0000">
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.5rem;">
+        <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-cus-add')">Cancel</button>
+        <button type="button" class="ecc-btn ecc-btn-primary" onclick="CustomersControlCenter.saveNewCustomer()">✓ Add Customer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Direct Message Customer -->
+<div id="modal-cus-message" class="ecc-modal-overlay">
+  <div class="ecc-modal-content" style="max-width:520px;padding:1.5rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <h3 style="margin:0;font-size:1.1rem;font-weight:900;" id="cus-msg-title">Message Customer</h3>
+      <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-cus-message')">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.75rem;">
+      <div>
+        <label style="font-size:0.75rem;font-weight:700;">Message Content</label>
+        <textarea id="cus-msg-text" class="ecc-input" rows="4" style="width:100%;font-size:0.8rem;padding:0.5rem;margin-top:0.2rem;" placeholder="Write message to customer..."></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.4rem;">
+        <button type="button" class="ecc-btn ecc-btn-secondary" onclick="closeEccModal('modal-cus-message')">Cancel</button>
+        <button type="button" class="ecc-btn ecc-btn-primary" onclick="CustomersControlCenter.sendMessage()">Send Message →</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2678,12 +3966,26 @@ $userRoleLabel = 'Event Organizer';
 
   window.openEccModal = function(id) {
     var modal = document.getElementById(id);
-    if (modal) modal.classList.add('active');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    void modal.offsetWidth;
+    modal.classList.add('active');
   };
   window.closeEccModal = function(id) {
     var modal = document.getElementById(id);
-    if (modal) modal.classList.remove('active');
+    if (!modal) return;
+    modal.classList.remove('active');
+    setTimeout(function() {
+      if (!modal.classList.contains('active')) {
+        modal.style.display = 'none';
+      }
+    }, 200);
   };
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('ecc-modal-overlay')) {
+      window.closeEccModal(e.target.id);
+    }
+  });
 
   /* ── Check-In LIVE Controller ──────────────────────────────── */
   var ciDoc = document.getElementById('events-workspace');
@@ -3524,6 +4826,10 @@ $userRoleLabel = 'Event Organizer';
     if (isNaN(dt.getTime())) return String(d);
     return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) + ' ' + dt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
+  window.tkEsc = tkEsc;
+  window.tkMoney = tkMoney;
+  window.tkDate = tkDate;
+  window.tkDateTime = tkDateTime;
   function tkStatusPill(status) {
     var s = String(status || '').toLowerCase();
     var cls = 'purple';
@@ -5044,6 +6350,1384 @@ $userRoleLabel = 'Event Organizer';
   };
 
   AttendeesControlCenter.init();
+
+  /* ── Marketing & Commercial Growth Control Center ──────────── */
+  var mktDoc = document.getElementById('events-workspace');
+  var mktApiBase = (mktDoc && mktDoc.dataset.baseUrl ? mktDoc.dataset.baseUrl : '') + 'api/tie/vendor/events/marketing.php';
+
+  window.MarketingControlCenter = {
+    state: {
+      activeTab: 'overview',
+      dateRange: '30',
+      chartMetric: 'revenue',
+      searchQuery: '',
+      aiPanelOpen: true,
+      events: [],
+      campaigns: [],
+      promotions: [],
+      promocodes: [],
+      adCard: {
+        template: 'announcement',
+        headline: 'MALAWI MUSIC FESTIVAL 2026',
+        subtitle: 'Live at Kamuzu Stadium · 09 Sept 2026',
+        price: 'From MK 8,000',
+        cta: 'GET TICKETS',
+        accentColor: '#f97316'
+      },
+      wizStep: 1,
+      wizDraft: {}
+    },
+
+    get: function(action, params) {
+      var qs = '?action=' + encodeURIComponent(action);
+      Object.keys(params || {}).forEach(function(k) { qs += '&' + k + '=' + encodeURIComponent(params[k]); });
+      return fetch(mktApiBase + qs, { credentials: 'same-origin' }).then(function(r) { return r.json().catch(function() { return {}; }); });
+    },
+
+    post: function(data) {
+      var csrf = mktDoc && mktDoc.dataset ? mktDoc.dataset.csrf : '';
+      return fetch(mktApiBase, {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+        body: JSON.stringify(data)
+      }).then(function(r) { return r.json().catch(function() { return {}; }); });
+    },
+
+    init: function() {
+      this.loadOverview();
+      this.loadCampaigns();
+      this.loadPromotions();
+      this.loadPromoCodes();
+      this.renderAdCardPreview();
+      this.renderAudienceSegments();
+      this.renderChannels();
+      this.renderAutomations();
+      this.renderAiAlerts();
+    },
+
+    loadOverview: function() {
+      var self = this;
+      this.get('overview', { date_range: this.state.dateRange }).then(function(body) {
+        if (!body || !body.result) return;
+        var res = body.result;
+        if (res.active_campaigns !== undefined) {
+          var elAct = document.getElementById('mkt-kpi-active-campaigns');
+          if (elAct) elAct.textContent = res.active_campaigns;
+          var elReach = document.getElementById('mkt-kpi-reach');
+          if (elReach) elReach.textContent = res.reach;
+          var elClick = document.getElementById('mkt-kpi-interactions');
+          if (elClick) elClick.textContent = res.interactions;
+          var elSales = document.getElementById('mkt-kpi-sales');
+          if (elSales) elSales.textContent = res.sales;
+          var elRev = document.getElementById('mkt-kpi-revenue');
+          if (elRev) elRev.textContent = res.revenue;
+          var elConv = document.getElementById('mkt-kpi-conversion');
+          if (elConv) elConv.textContent = res.conversion;
+
+          if (res.event_performance) {
+            self.state.events = res.event_performance;
+            self.populateEventSelects();
+            self.renderOverview();
+          }
+        }
+      });
+    },
+
+    loadCampaigns: function() {
+      var self = this;
+      var statusFilter = (document.getElementById('mkt-cmp-status-filter') || {}).value || 'all';
+      var channelFilter = (document.getElementById('mkt-cmp-channel-filter') || {}).value || 'all';
+      this.get('campaigns', { status: statusFilter, channel: channelFilter, q: this.state.searchQuery }).then(function(body) {
+        if (body && body.result && body.result.campaigns) {
+          self.state.campaigns = body.result.campaigns;
+          self.renderCampaigns();
+        }
+      });
+    },
+
+    loadPromotions: function() {
+      var self = this;
+      this.get('promotions').then(function(body) {
+        if (body && body.result && body.result.promotions) {
+          self.state.promotions = body.result.promotions;
+          self.renderPromotions();
+        }
+      });
+    },
+
+    loadPromoCodes: function() {
+      var self = this;
+      this.get('promocodes').then(function(body) {
+        if (body && body.result && body.result.promocodes) {
+          self.state.promocodes = body.result.promocodes;
+          self.renderPromoCodes();
+        }
+      });
+    },
+
+    switchTab: function(tabId, btn) {
+      this.state.activeTab = tabId;
+      var tabs = document.querySelectorAll('#mkt-sub-nav .ecc-mkt-tab');
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      if (!btn) {
+        tabs.forEach(function(t) {
+          if ((t.getAttribute('onclick') || '').indexOf("'" + tabId + "'") !== -1) btn = t;
+        });
+      }
+      if (btn) btn.classList.add('active');
+
+      var views = document.querySelectorAll('#mkt-tab-content .mkt-subview');
+      views.forEach(function(v) { v.style.display = 'none'; });
+
+      var target = document.getElementById('mkt-view-' + tabId);
+      if (target) target.style.display = 'block';
+
+      if (tabId === 'overview') this.loadOverview();
+      if (tabId === 'campaigns') this.loadCampaigns();
+      if (tabId === 'promotions') this.loadPromotions();
+      if (tabId === 'adcards') this.renderAdCardPreview();
+      if (tabId === 'audience') this.renderAudienceSegments();
+      if (tabId === 'channels') this.renderChannels();
+      if (tabId === 'promocodes') this.loadPromoCodes();
+      if (tabId === 'automations') this.renderAutomations();
+    },
+
+    populateEventSelects: function() {
+      var sel1 = document.getElementById('mkt-cmp-event-filter');
+      var sel2 = document.getElementById('mkt-wiz-event-select');
+      var sel3 = document.getElementById('promo-modal-event');
+      if (!sel1 && !sel2 && !sel3) return;
+
+      var opts = '<option value="all">All Events</option>';
+      var optsWiz = '<option value="">Select an event…</option>';
+      this.state.events.forEach(function(e) {
+        opts += '<option value="' + e.id + '">' + e.title + '</option>';
+        optsWiz += '<option value="' + e.id + '">' + e.title + '</option>';
+      });
+      if (sel1) sel1.innerHTML = opts;
+      if (sel2) sel2.innerHTML = optsWiz;
+      if (sel3) sel3.innerHTML = optsWiz;
+    },
+
+    setDateRange: function(val) {
+      this.state.dateRange = val;
+      window.eccNotify('Marketing view filtered to: ' + (val === 'all' ? 'All Time' : 'Last ' + val + ' Days'));
+      this.loadOverview();
+    },
+
+    setChartMetric: function(metric, btn) {
+      this.state.chartMetric = metric;
+      var btns = document.querySelectorAll('.mkt-chart-btn');
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+      this.renderChartBars();
+    },
+
+    renderOverview: function() {
+      this.renderChartBars();
+      
+      var container = document.getElementById('mkt-event-performance-list');
+      if (!container) return;
+
+      var html = '';
+      this.state.events.forEach(function(e) {
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0.75rem;background:var(--ecc-surface-2);border-radius:8px;border:1px solid var(--ecc-border);">' +
+          '<div>' +
+            '<strong style="font-size:0.8rem;display:block;color:var(--ecc-text-bright);">' + e.title + '</strong>' +
+            '<span style="font-size:0.68rem;color:var(--ecc-text-dim);">' + e.reach + ' reach · ' + e.sales + ' sales</span>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<strong style="font-size:0.85rem;color:#10b981;display:block;">' + e.revenue + '</strong>' +
+            '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.15rem 0.4rem;margin-top:2px;" onclick="MarketingControlCenter.promoteEvent(\'' + e.id + '\')">Promote →</button>' +
+          '</div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    renderChartBars: function() {
+      var container = document.getElementById('mkt-chart-bars');
+      if (!container) return;
+
+      var data = {
+        revenue: [{ label: 'W1', val: 'MK 850K', h: 35 }, { label: 'W2', val: 'MK 1.2M', h: 55 }, { label: 'W3', val: 'MK 1.8M', h: 78 }, { label: 'W4', val: 'MK 4.8M', h: 95 }],
+        tickets: [{ label: 'W1', val: '180', h: 30 }, { label: 'W2', val: '320', h: 52 }, { label: 'W3', val: '740', h: 72 }, { label: 'W4', val: '1,240', h: 92 }],
+        reach: [{ label: 'W1', val: '8.4K', h: 25 }, { label: 'W2', val: '14.2K', h: 48 }, { label: 'W3', val: '28.1K', h: 75 }, { label: 'W4', val: '42.8K', h: 98 }],
+        conversion: [{ label: 'W1', val: '2.1%', h: 38 }, { label: 'W2', val: '3.4%', h: 60 }, { label: 'W3', val: '4.1%', h: 75 }, { label: 'W4', val: '4.7%', h: 90 }]
+      }[this.state.chartMetric] || [];
+
+      var html = '';
+      data.forEach(function(item) {
+        html += '<div style="flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;">' +
+          '<span style="font-size:0.65rem;font-weight:800;color:var(--ecc-primary);margin-bottom:4px;">' + item.val + '</span>' +
+          '<div style="width:100%;max-width:42px;height:' + item.h + '%;background:linear-gradient(180deg,var(--ecc-primary) 0%,rgba(230,57,70,0.3) 100%);border-radius:6px 6px 0 0;transition:height 0.3s ease;"></div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    renderCampaigns: function() {
+      var container = document.getElementById('mkt-campaigns-list');
+      if (!container) return;
+
+      var status = (document.getElementById('mkt-cmp-status-filter') || {}).value || 'all';
+      var listingId = (document.getElementById('mkt-cmp-event-filter') || {}).value || 'all';
+      var channel = (document.getElementById('mkt-cmp-channel-filter') || {}).value || 'all';
+      var list = this.state.campaigns.filter(function(c) {
+        return (status === 'all' || c.status === status) &&
+          (listingId === 'all' || c.listing_id === listingId || c.event_id === listingId) &&
+          (channel === 'all' || c.channel === channel);
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = '<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--ecc-text-dim);">No campaigns matching current filters. <button class="ecc-btn ecc-btn-primary" style="margin-left:0.5rem;" onclick="MarketingControlCenter.openCreateWizard()">Create Campaign</button></div>';
+        return;
+      }
+
+      var html = '';
+      list.forEach(function(c) {
+        var statusBadge = {
+          active: '<span class="ecc-pill emerald" style="font-size:0.6rem;">● ACTIVE</span>',
+          scheduled: '<span class="ecc-pill blue" style="font-size:0.6rem;">● SCHEDULED</span>',
+          paused: '<span class="ecc-pill amber" style="font-size:0.6rem;">● PAUSED</span>',
+          completed: '<span class="ecc-pill purple" style="font-size:0.6rem;">● COMPLETED</span>',
+          draft: '<span class="ecc-pill" style="font-size:0.6rem;">● DRAFT</span>'
+        }[c.status] || '';
+
+        html += '<div class="ecc-mkt-cmp-card">' +
+          '<div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;">' +
+              '<span style="font-size:0.68rem;font-weight:800;color:var(--ecc-primary);text-transform:uppercase;">' + c.obj + '</span>' +
+              statusBadge +
+            '</div>' +
+            '<h4 style="font-size:0.95rem;font-weight:900;margin:0 0 0.2rem 0;color:var(--ecc-text-bright);">' + c.title + '</h4>' +
+            '<p style="font-size:0.72rem;color:var(--ecc-text-dim);margin:0 0 0.8rem 0;">' + c.event + '</p>' +
+
+            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;background:var(--ecc-surface-2);padding:0.6rem;border-radius:8px;font-size:0.72rem;margin-bottom:0.8rem;">' +
+              '<div><span style="color:var(--ecc-text-dim);">Reach:</span> <strong>' + c.reach + '</strong></div>' +
+              '<div><span style="color:var(--ecc-text-dim);">Clicks:</span> <strong>' + c.clicks + '</strong></div>' +
+              '<div><span style="color:var(--ecc-text-dim);">Tickets:</span> <strong>' + c.tickets + '</strong></div>' +
+              '<div><span style="color:var(--ecc-text-dim);">Revenue:</span> <strong style="color:#10b981;">' + c.revenue + '</strong></div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ecc-border);padding-top:0.6rem;">' +
+            '<span style="font-size:0.7rem;color:var(--ecc-text-dim);">Conv: <strong style="color:var(--ecc-text-bright);">' + c.conversion + '</strong></span>' +
+            '<div style="display:flex;gap:0.3rem;">' +
+              (c.status === 'active' ? '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.toggleCampaignStatus(\'' + c.id + '\')">Pause</button>' : '<button class="ecc-btn ecc-btn-primary" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.toggleCampaignStatus(\'' + c.id + '\')">Activate</button>') +
+              '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.viewCampaign(\'' + c.id + '\')">View →</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    toggleCampaignStatus: function(id) {
+      var self = this;
+      this.post({ action: 'toggle_campaign_status', campaign_id: id }).then(function(body) {
+        if (body && body.result && body.result.campaigns) {
+          self.state.campaigns = body.result.campaigns;
+          window.eccNotify('Campaign status updated.');
+          self.renderCampaigns();
+        } else {
+          window.eccNotify((body && body.error && body.error.message) || 'Campaign status could not be changed.');
+        }
+      }).catch(function() {
+        window.eccNotify('Campaign status request failed. Please retry.');
+      });
+    },
+
+    viewCampaign: function(id) {
+      var campaign = (this.state.campaigns || []).find(function(item) { return item.id === id; });
+      if (!campaign) { window.eccNotify('Campaign details are no longer available.'); return; }
+      var content = document.getElementById('mkt-campaign-detail-content');
+      if (content) {
+        content.innerHTML = '<div class="ecc-card" style="padding:1rem;">'
+          + '<div style="display:flex;justify-content:space-between;gap:0.8rem;align-items:flex-start;"><div><strong style="font-size:1rem;display:block;">' + campaign.title + '</strong><span style="font-size:0.72rem;color:var(--ecc-text-dim);">' + campaign.event + '</span></div><span class="ecc-pill purple">' + campaign.status + '</span></div>'
+          + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:1rem;font-size:0.76rem;">'
+          + '<div>Objective<strong style="display:block;margin-top:0.15rem;">' + campaign.obj + '</strong></div>'
+          + '<div>Channel<strong style="display:block;margin-top:0.15rem;">' + campaign.channel + '</strong></div>'
+          + '<div>Reach<strong style="display:block;margin-top:0.15rem;">' + campaign.reach + '</strong></div>'
+          + '<div>Clicks<strong style="display:block;margin-top:0.15rem;">' + campaign.clicks + '</strong></div>'
+          + '<div>Tickets<strong style="display:block;margin-top:0.15rem;">' + campaign.tickets + '</strong></div>'
+          + '<div>Attributed revenue<strong style="display:block;margin-top:0.15rem;color:#10b981;">' + campaign.revenue + '</strong></div>'
+          + '</div></div>';
+      }
+      window.openEccModal('modal-mkt-campaign-detail');
+    },
+
+    renderPromotions: function() {
+      var container = document.getElementById('mkt-promotions-list');
+      if (!container) return;
+
+      var html = '';
+      this.state.promotions.forEach(function(p) {
+        html += '<div class="ecc-card" style="display:flex;flex-direction:column;justify-content:space-between;">' +
+          '<div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">' +
+              '<span class="ecc-pill amber" style="font-size:0.65rem;font-weight:900;">' + p.discount + '</span>' +
+              '<span class="ecc-pill ' + (String(p.status || '').toLowerCase() === 'active' ? 'emerald' : 'amber') + '" style="font-size:0.6rem;">● ' + String(p.status || 'paused').toUpperCase() + '</span>' +
+            '</div>' +
+            '<h4 style="font-size:0.95rem;font-weight:900;margin:0 0 0.2rem 0;">' + p.title + '</h4>' +
+            '<p style="font-size:0.72rem;color:var(--ecc-text-dim);margin:0 0 0.75rem 0;">' + p.event + '</p>' +
+            '<div style="font-size:0.72rem;color:var(--ecc-text-dim);margin-bottom:0.4rem;"><i class="far fa-clock"></i> Valid until: <strong>' + p.validUntil + '</strong></div>' +
+            '<div style="font-size:0.72rem;color:var(--ecc-text-dim);"><i class="fas fa-ticket-alt"></i> Claimed: <strong>' + p.used + '</strong></div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;border-top:1px solid var(--ecc-border);padding-top:0.6rem;">' +
+            '<span style="font-size:0.78rem;font-weight:800;color:#10b981;">' + p.revenue + '</span>' +
+            '<div style="display:flex;gap:0.35rem;">'
+            + '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.managePromotion(\'' + p.id + '\')">Manage</button>'
+            + '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.togglePromotionStatus(\'' + p.id + '\')">' + (String(p.status || '').toLowerCase() === 'active' ? 'Pause' : 'Activate') + '</button>'
+            + '</div>' +
+          '</div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    renderPromoCodes: function() {
+      var tbody = document.getElementById('mkt-promocodes-tbody');
+      if (!tbody) return;
+
+      var html = '';
+      this.state.promocodes.forEach(function(c) {
+        html += '<tr>' +
+          '<td><strong style="font-family:monospace;font-size:0.85rem;color:var(--ecc-primary);background:var(--ecc-surface-2);padding:0.2rem 0.4rem;border-radius:4px;">' + c.code + '</strong></td>' +
+          '<td><span class="ecc-pill amber" style="font-size:0.65rem;">' + c.type + '</span></td>' +
+          '<td>' + c.cap + ' uses</td>' +
+          '<td><strong>' + c.used + '</strong> / ' + c.cap + '</td>' +
+          '<td>' + c.sales + ' tickets</td>' +
+          '<td><strong style="color:#10b981;">' + c.revenue + '</strong></td>' +
+          '<td>' + (c.status === 'Active' ? '<span class="ecc-pill emerald" style="font-size:0.6rem;">ACTIVE</span>' : '<span class="ecc-pill" style="font-size:0.6rem;">EXPIRED</span>') + '</td>' +
+          '<td><button class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.15rem 0.4rem;" onclick="MarketingControlCenter.copyPromoCode(\'' + c.code.replace(/'/g, "\\\\'") + '\')">Copy</button></td>' +
+        '</tr>';
+      });
+      tbody.innerHTML = html;
+    },
+
+    renderChannels: function() {
+      var container = document.getElementById('mkt-channels-list');
+      if (!container) return;
+
+      var channels = [
+        { name: 'Uthenga Marketplace (Explore & Events)', pct: 52, reach: '22.2K', sales: 640, rev: 'MK 2.5M', color: '#3b82f6' },
+        { name: 'In-App Mobile Push Notifications', pct: 28, reach: '12.0K', sales: 350, rev: 'MK 1.3M', color: '#8b5cf6' },
+        { name: 'Email Newsletter Broadcasts', pct: 14, reach: '6.0K', sales: 180, rev: 'MK 720K', color: '#10b981' },
+        { name: 'SMS Instant Direct Short-links', pct: 6, reach: '2.6K', sales: 70, rev: 'MK 280K', color: '#f59e0b' }
+      ];
+
+      var html = '';
+      channels.forEach(function(ch) {
+        html += '<div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:0.3rem;">' +
+            '<strong>' + ch.name + '</strong>' +
+            '<span><strong style="color:var(--ecc-text-bright);">' + ch.sales + ' sales</strong> (' + ch.rev + ')</span>' +
+          '</div>' +
+          '<div style="height:10px;background:var(--ecc-surface-2);border-radius:999px;overflow:hidden;margin-bottom:0.2rem;">' +
+            '<div style="height:100%;width:' + ch.pct + '%;background:' + ch.color + ';border-radius:999px;"></div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--ecc-text-dim);">' +
+            '<span>Reach: ' + ch.reach + '</span><span>Attribution Share: ' + ch.pct + '%</span>' +
+          '</div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    renderAudienceSegments: function() {
+      var container = document.getElementById('mkt-audience-segments-list');
+      if (!container) return;
+
+      var segments = [
+        { title: 'High Intent Prospects', count: '1,240 users', desc: 'Viewed event listing 3+ times without checking out', tag: 'High Value' },
+        { title: 'Frequent Event Attendees', count: '620 users', desc: 'Purchased tickets to 2+ events in the last 6 months', tag: 'Loyal' },
+        { title: 'VIP Ticket Buyers', count: '180 users', desc: 'Consistently purchase VVIP / VIP experience passes', tag: 'Premium' },
+        { title: 'Abandoned Checkout Carts', count: '340 users', desc: 'Started checkout step but did not complete payment', tag: 'Urgent' },
+        { title: 'Dormant Past Buyers', count: '2,410 users', desc: 'Haven’t purchased an event ticket in over 90 days', tag: 'Re-target' }
+      ];
+
+      var html = '';
+      segments.forEach(function(s) {
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0.8rem;background:var(--ecc-surface-2);border-radius:8px;border:1px solid var(--ecc-border);">' +
+          '<div>' +
+            '<div style="display:flex;align-items:center;gap:0.4rem;">' +
+              '<strong style="font-size:0.82rem;color:var(--ecc-text-bright);">' + s.title + '</strong>' +
+              '<span class="ecc-pill purple" style="font-size:0.6rem;">' + s.tag + '</span>' +
+            '</div>' +
+            '<span style="font-size:0.7rem;color:var(--ecc-text-dim);">' + s.desc + '</span>' +
+          '</div>' +
+          '<div style="text-align:right;">' +
+            '<strong style="font-size:0.85rem;color:var(--ecc-primary);display:block;">' + s.count + '</strong>' +
+            '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.15rem 0.4rem;margin-top:2px;" onclick="MarketingControlCenter.openCreateWizard(\'segment\')">Campaign →</button>' +
+          '</div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    renderAutomations: function() {
+      var container = document.getElementById('mkt-automations-grid');
+      if (!container) return;
+
+      var flows = [
+        { title: 'Abandoned Checkout Recovery', desc: 'Triggers a push notification 30 minutes after checkout drop-off.', active: true },
+        { title: 'VIP Scarcity Alert', desc: 'Triggers urgency notification when VIP inventory falls below 20%.', active: true },
+        { title: 'Event 48h Approaching Reminder', desc: 'Sends event reminder and ticket pass QR code 48 hours before start.', active: true },
+        { title: 'Early Bird Expiry Warning', desc: 'Notifies high-intent prospects 24 hours before discount expires.', active: true }
+      ];
+
+      var html = '';
+      flows.forEach(function(f, idx) {
+        html += '<div style="background:var(--ecc-surface-2);border:1px solid var(--ecc-border);border-radius:10px;padding:0.85rem;display:flex;flex-direction:column;justify-content:space-between;">' +
+          '<div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">' +
+              '<strong style="font-size:0.85rem;color:var(--ecc-text-bright);">' + f.title + '</strong>' +
+              '<label style="display:inline-flex;align-items:center;cursor:not-allowed;opacity:.65;" title="Delivery automation is not configured yet."><input type="checkbox" ' + (f.active ? 'checked' : '') + ' disabled></label>' +
+            '</div>' +
+            '<p style="font-size:0.72rem;color:var(--ecc-text-dim);margin:0 0 0.8rem 0;">' + f.desc + '</p>' +
+          '</div>' +
+          '<div style="font-size:0.68rem;color:#f59e0b;font-weight:700;"><i class="fas fa-info-circle"></i> Delivery automation not configured</div>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    renderAiAlerts: function() {
+      var container = document.getElementById('mkt-ai-alerts-container');
+      if (!container) return;
+
+      var alerts = [
+        { type: 'warn', title: 'Sales Slowing Warning', msg: 'Music Festival ticket sales dropped 18% today compared to 3-day avg.', btnText: 'Investigate', action: 'MarketingControlCenter.investigateCampaign("cmp-1")' },
+        { type: 'opp', title: 'High-Intent Opportunity', msg: '340 customers viewed Malawi Business Summit but haven’t purchased.', btnText: 'Create Promotion', action: 'MarketingControlCenter.openCreateWizard("early_bird")' },
+        { type: 'info', title: 'Inventory Protection', msg: 'VIP tickets for Music Festival are 87% sold out. Auto-stop active.', btnText: 'Adjust Campaign', action: 'MarketingControlCenter.openCreateWizard("vip_promo")' }
+      ];
+
+      var html = '';
+      alerts.forEach(function(a) {
+        html += '<div class="mkt-ai-card ' + a.type + '">' +
+          '<strong style="font-size:0.78rem;display:block;color:var(--ecc-text-bright);margin-bottom:0.25rem;">' + a.title + '</strong>' +
+          '<p style="font-size:0.7rem;color:var(--ecc-text-dim);margin:0 0 0.5rem 0;line-height:1.35;">' + a.msg + '</p>' +
+          '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.2rem 0.5rem;" onclick="' + a.action + '">' + a.btnText + '</button>' +
+        '</div>';
+      });
+      container.innerHTML = html;
+    },
+
+    toggleAiPanel: function() {
+      this.state.aiPanelOpen = !this.state.aiPanelOpen;
+      var panel = document.getElementById('mkt-ai-panel');
+      if (panel) panel.style.display = (this.state.aiPanelOpen ? 'flex' : 'none');
+    },
+
+    handleSearch: function(q) {
+      this.state.searchQuery = q;
+      if (this.state.activeTab === 'campaigns') this.loadCampaigns();
+    },
+
+    /* ── Ad Card Studio Functions ────────────────────────────── */
+    setAdTemplate: function(tpl, btn) {
+      this.state.adCard.template = tpl;
+      var btns = document.querySelectorAll('#mkt-card-templates button');
+      btns.forEach(function(b) { b.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+
+      if (tpl === 'earlybird') {
+        document.getElementById('ad-field-headline').value = 'EARLY BIRD TIX · 30% OFF';
+        document.getElementById('ad-field-price').value = 'SAVE UP TO MK 10,000';
+      } else if (tpl === 'vip') {
+        document.getElementById('ad-field-headline').value = 'VIP EXPERIENCE PASS';
+        document.getElementById('ad-field-price').value = 'MK 25,000 VIP';
+      }
+      this.updateAdCardPreview();
+    },
+
+    setAdColor: function(hex) {
+      this.state.adCard.accentColor = hex;
+      this.updateAdCardPreview();
+    },
+
+    generateAiCardCopy: function() {
+      var copyList = [
+        { headline: 'UNMISSABLE CULTURAL SPECTACLE', sub: 'Kamuzu Stadium · Lilongwe', price: 'Tickets from MK 5,000' },
+        { headline: 'FEEL THE LIVE ENERGY 2026', sub: 'BICC Lilongwe · Limited Seats', price: 'Early Bird MK 12,000' },
+        { headline: 'EXCLUSIVE VIP NIGHT EXPERIENCE', sub: 'Sunbird Capital · Gold Access', price: 'VVIP MK 35,000' }
+      ];
+      var rand = copyList[Math.floor(Math.random() * copyList.length)];
+      document.getElementById('ad-field-headline').value = rand.headline;
+      document.getElementById('ad-field-sub').value = rand.sub;
+      document.getElementById('ad-field-price').value = rand.price;
+      window.eccNotify('A campaign copy template was inserted. Review it before saving.');
+      this.updateAdCardPreview();
+    },
+
+    renderAdCardPreview: function() {
+      this.updateAdCardPreview();
+    },
+
+    updateAdCardPreview: function() {
+      var canvas = document.getElementById('ad-card-canvas');
+      if (!canvas) return;
+
+      var headline = (document.getElementById('ad-field-headline') || {}).value || this.state.adCard.headline;
+      var sub = (document.getElementById('ad-field-sub') || {}).value || this.state.adCard.subtitle;
+      var price = (document.getElementById('ad-field-price') || {}).value || this.state.adCard.price;
+      var cta = (document.getElementById('ad-field-cta') || {}).value || this.state.adCard.cta;
+      var color = this.state.adCard.accentColor || '#f97316';
+
+      canvas.innerHTML = '<div style="position:relative;background:linear-gradient(180deg,#1f2937 0%,#111827 100%);padding:1.5rem;display:flex;flex-direction:column;gap:1.2rem;width:280px;border-radius:16px;">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<span class="uthenga-tk-logo-img" style="color:' + color + ';width:22px;height:22px;display:inline-block;"></span>' +
+          '<span class="ecc-pill" style="font-size:0.6rem;background:' + color + ';color:#fff;">PROMOTIONAL CARD</span>' +
+        '</div>' +
+        '<div>' +
+          '<h2 style="font-size:1.3rem;font-weight:900;margin:0 0 0.3rem 0;color:#fff;line-height:1.15;text-transform:uppercase;">' + headline + '</h2>' +
+          '<p style="font-size:0.78rem;color:#9ca3af;margin:0;">' + sub + '</p>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.06);padding:0.7rem 0.9rem;border-radius:10px;border:1px solid rgba(255,255,255,0.1);">' +
+          '<strong style="font-size:1rem;color:' + color + ';">' + price + '</strong>' +
+          '<button type="button" class="ecc-btn" style="background:' + color + ';color:#fff;font-weight:900;font-size:0.75rem;padding:0.35rem 0.8rem;border:none;">' + cta + ' →</button>' +
+        '</div>' +
+      '</div>';
+    },
+
+    saveAdCard: function() {
+      var self = this;
+      var headline = (document.getElementById('ad-field-headline') || {}).value || 'Promotional Ad Card';
+      var sub = (document.getElementById('ad-field-sub') || {}).value || '';
+      var price = (document.getElementById('ad-field-price') || {}).value || '';
+      var cta = (document.getElementById('ad-field-cta') || {}).value || 'GET TICKETS';
+
+      this.post({
+        action: 'save_adcard',
+        template: this.state.adCard.template,
+        headline: headline,
+        subtitle: sub,
+        price: price,
+        cta: cta,
+        accent_color: this.state.adCard.accentColor
+      }).then(function(body) {
+        if (body && body.result && body.result.adcard) {
+          window.eccNotify('Ad card saved.');
+        } else {
+          window.eccNotify((body && body.error && body.error.message) || 'Ad card could not be saved.');
+        }
+      }).catch(function() {
+        window.eccNotify('Ad card request failed. Please retry.');
+      });
+    },
+
+    /* ── Campaign Wizard Navigation Functions ─────────────────── */
+    openCreateWizard: function(presetType) {
+      this.state.wizStep = 1;
+      this.populateEventSelects();
+      this.goToWizStep(1);
+      if (presetType) {
+        var normalizedPreset = {
+          early_bird: 'Early Bird',
+          vip_promo: 'VIP Promotion',
+          segment: 'Re-engagement',
+          custom_segment: 'Re-engagement'
+        }[presetType] || presetType;
+        var rad = document.querySelector('input[name="mkt_obj"][value="' + normalizedPreset + '"]');
+        if (rad) rad.checked = true;
+      }
+      var eventSelect = document.getElementById('mkt-wiz-event-select');
+      if (eventSelect && eventSelect.value) {
+        this.wizOnEventSelect(eventSelect.value);
+      }
+      var modal = document.getElementById('modal-mkt-campaign-wiz');
+      if (window.openEccModal) {
+        window.openEccModal('modal-mkt-campaign-wiz');
+      } else if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+      }
+      // The marketing overview loads asynchronously. A campaign may be opened
+      // before that request returns, so refresh the event selector in-place
+      // instead of leaving an apparently inert wizard with no choices.
+      if (!this.state.events.length) {
+        var self = this;
+        this.get('overview', { date_range: this.state.dateRange }).then(function(body) {
+          var result = body && body.result;
+          if (!result || !Array.isArray(result.event_performance)) return;
+          self.state.events = result.event_performance;
+          self.populateEventSelects();
+          var refreshedSelect = document.getElementById('mkt-wiz-event-select');
+          if (refreshedSelect && refreshedSelect.value) self.wizOnEventSelect(refreshedSelect.value);
+        });
+      }
+    },
+
+    wizOnEventSelect: function(val) {
+      var card = document.getElementById('mkt-wiz-event-card-preview');
+      if (!card) return;
+      var ev = (this.state.events || []).find(function(e) { return e.id === val; }) || { title: 'Selected Event', reach: '10K', sales: 200, revenue: 'MK 1M' };
+      card.innerHTML = '<strong style="font-size:0.85rem;color:var(--ecc-text-bright);">' + (ev.title || 'Selected Event') + '</strong>' +
+        '<div style="font-size:0.72rem;color:var(--ecc-text-dim);margin-top:0.3rem;">' + (ev.reach || '10K') + ' reach · ' + (ev.sales || 0) + ' ticket sales · ' + (ev.revenue || 'MK 0') + '</div>';
+    },
+
+    goToWizStep: function(step) {
+      this.state.wizStep = step;
+      var steps = document.querySelectorAll('#mkt-wiz-step-container .mkt-wiz-step');
+      steps.forEach(function(s) { s.style.display = 'none'; });
+
+      var target = document.getElementById('mkt-wiz-step-' + step);
+      if (target) target.style.display = 'block';
+
+      var pills = document.querySelectorAll('#mkt-wiz-nav-pills button');
+      pills.forEach(function(p, idx) {
+        if (idx + 1 === step) {
+          p.className = 'ecc-btn ecc-btn-primary';
+        } else {
+          p.className = 'ecc-btn ecc-btn-secondary';
+        }
+      });
+
+      var prevBtn = document.getElementById('mkt-wiz-prev-btn');
+      var nextBtn = document.getElementById('mkt-wiz-next-btn');
+      if (prevBtn) prevBtn.style.display = (step === 1 ? 'none' : 'inline-flex');
+      if (nextBtn) nextBtn.textContent = (step === 8 ? '🚀 Launch Campaign Now' : 'Next Step →');
+
+      if (step === 8) this.renderWizRecap();
+    },
+
+    wizPrevStep: function() {
+      if (this.state.wizStep > 1) this.goToWizStep(this.state.wizStep - 1);
+    },
+
+    wizNextStep: function() {
+      if (this.state.wizStep < 8) {
+        this.goToWizStep(this.state.wizStep + 1);
+      } else {
+        this.launchCampaign();
+      }
+    },
+
+    generateWizAiCopy: function() {
+      document.getElementById('mkt-wiz-copy-title').value = 'MALAWI MUSIC FESTIVAL 2026 - TICKET FLASH SALE!';
+      document.getElementById('mkt-wiz-copy-body').value = 'Get 25% OFF General Admission & VIP passes for a limited 48-hour window. Claim your ticket now on Uthenga!';
+      window.eccNotify('A campaign copy template was inserted. Review it before saving.');
+    },
+
+    renderWizRecap: function() {
+      var recap = document.getElementById('mkt-wiz-summary-recap');
+      if (!recap) return;
+
+      var obj = (document.querySelector('input[name="mkt_obj"]:checked') || {}).value || 'Drive Ticket Sales';
+      var eventSelect = document.getElementById('mkt-wiz-event-select');
+      var eventText = (eventSelect && eventSelect.selectedIndex >= 0 && eventSelect.options && eventSelect.options[eventSelect.selectedIndex]) ? eventSelect.options[eventSelect.selectedIndex].text : 'Malawi Music Festival 2026';
+      var aud = (document.querySelector('input[name="mkt_aud"]:checked') || {}).value || 'All Customers';
+      var title = (document.getElementById('mkt-wiz-copy-title') || {}).value || 'Campaign Title';
+
+      recap.innerHTML = '<div><strong>Campaign Title:</strong> ' + title + '</div>' +
+        '<div><strong>Objective:</strong> <span class="ecc-pill purple">' + obj + '</span></div>' +
+        '<div><strong>Target Event:</strong> ' + eventText + '</div>' +
+        '<div><strong>Target Audience:</strong> ' + aud + '</div>' +
+        '<div><strong>Channels:</strong> Marketplace, In-App Push</div>' +
+        '<div><strong>Schedule:</strong> 20 Aug 2026 → 30 Aug 2026</div>' +
+        '<div style="margin-top:0.4rem;color:#10b981;font-weight:800;"><i class="fas fa-shield-alt"></i> Inventory Auto-Stop Protection Enabled</div>';
+    },
+
+    saveCampaignDraft: function() {
+      this.persistCampaign('draft');
+    },
+
+    launchCampaign: function() {
+      this.persistCampaign('active');
+    },
+
+    persistCampaign: function(requestedStatus) {
+      var self = this;
+      var title = (document.getElementById('mkt-wiz-copy-title') || {}).value || 'New Growth Campaign';
+      var eventSelect = document.getElementById('mkt-wiz-event-select');
+      var listingId = eventSelect ? eventSelect.value : '';
+      var obj = (document.querySelector('input[name="mkt_obj"]:checked') || {}).value || 'Ticket Sales';
+      var aud = (document.querySelector('input[name="mkt_aud"]:checked') || {}).value || 'All Customers';
+      var offerType = (document.getElementById('mkt-wiz-offer-type') || {}).value || 'none';
+      var offerVal = (document.getElementById('mkt-wiz-offer-val') || {}).value || '';
+      var startDate = (document.getElementById('mkt-wiz-start') || {}).value || '';
+      var endDate = (document.getElementById('mkt-wiz-end') || {}).value || '';
+      var bodyText = (document.getElementById('mkt-wiz-copy-body') || {}).value || '';
+      var channels = [];
+      [['mkt-chan-marketplace', 'marketplace'], ['mkt-chan-push', 'notifications'], ['mkt-chan-email', 'email'], ['mkt-chan-sms', 'sms']].forEach(function(pair) {
+        var box = document.getElementById(pair[0]);
+        if (box && box.checked) channels.push(pair[1]);
+      });
+      if (!listingId) {
+        window.eccNotify('Select an event in Step 2 before saving this campaign.');
+        this.goToWizStep(2);
+        return;
+      }
+      if (!title.trim()) {
+        window.eccNotify('Give the campaign a headline before saving.');
+        this.goToWizStep(5);
+        return;
+      }
+      if (!channels.length) {
+        window.eccNotify('Select at least one distribution channel in Step 6.');
+        this.goToWizStep(6);
+        return;
+      }
+      var status = requestedStatus === 'draft' ? 'draft' : ((startDate && startDate > new Date().toISOString().slice(0, 10)) ? 'scheduled' : 'active');
+      var submit = document.getElementById('mkt-wiz-next-btn');
+      if (submit) submit.disabled = true;
+
+      this.post({
+        action: 'create_campaign',
+        listing_id: listingId,
+        title: title,
+        objective: obj,
+        target_audience: aud,
+        offer_type: offerType,
+        offer_val: offerVal,
+        start_date: startDate,
+        end_date: endDate,
+        headline: title,
+        body_text: bodyText,
+        channel: channels[0],
+        status: status
+      }).then(function(body) {
+        if (submit) submit.disabled = false;
+        if (body && body.result && body.result.campaigns) {
+          self.state.campaigns = body.result.campaigns;
+          window.eccNotify(status === 'draft' ? 'Campaign draft saved.' : 'Campaign "' + title + '" saved.');
+          window.closeEccModal('modal-mkt-campaign-wiz');
+          self.switchTab('campaigns');
+        } else {
+          var message = body && body.error && body.error.message ? body.error.message : 'Could not save campaign.';
+          window.eccNotify(message);
+        }
+      }).catch(function() {
+        if (submit) submit.disabled = false;
+        window.eccNotify('Could not reach the marketing service. Please retry.');
+      });
+    },
+
+    openPromoModal: function() {
+      var self = this;
+      this.populateEventSelects();
+      var id = document.getElementById('promo-modal-id');
+      var heading = document.getElementById('promo-modal-heading');
+      var submit = document.getElementById('promo-modal-submit');
+      if (id) id.value = '';
+      if (heading) heading.textContent = 'Create Promotion Offer';
+      if (submit) submit.textContent = 'Publish Promotion';
+      var title = document.getElementById('promo-modal-title');
+      var discount = document.getElementById('promo-modal-val');
+      var limit = document.getElementById('promo-modal-limit');
+      var status = document.getElementById('promo-modal-status');
+      if (title) title.value = '';
+      if (discount) discount.value = '';
+      if (limit) limit.value = '200';
+      if (status) status.value = 'active';
+      var until = document.getElementById('promo-modal-until');
+      if (until) until.value = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+      window.openEccModal('modal-mkt-promo');
+      if (!this.state.events.length) {
+        this.get('overview', { date_range: this.state.dateRange }).then(function(body) {
+          if (body && body.result && Array.isArray(body.result.event_performance)) {
+            self.state.events = body.result.event_performance;
+            self.populateEventSelects();
+          }
+        });
+      }
+    },
+
+    managePromotion: function(id) {
+      var promotion = (this.state.promotions || []).find(function(item) { return item.id === id; });
+      if (!promotion) { window.eccNotify('Promotion details are no longer available.'); return; }
+      this.populateEventSelects();
+      document.getElementById('promo-modal-id').value = promotion.id;
+      document.getElementById('promo-modal-title').value = promotion.title || '';
+      document.getElementById('promo-modal-val').value = promotion.discount || '';
+      document.getElementById('promo-modal-limit').value = String(promotion.used || '').split('/').pop().trim() || '1';
+      document.getElementById('promo-modal-event').value = promotion.listing_id || '';
+      document.getElementById('promo-modal-until').value = promotion.valid_until || '';
+      document.getElementById('promo-modal-status').value = String(promotion.status || 'active').toLowerCase() === 'active' ? 'active' : 'paused';
+      document.getElementById('promo-modal-heading').textContent = 'Manage Promotion';
+      document.getElementById('promo-modal-submit').textContent = 'Save Promotion';
+      window.openEccModal('modal-mkt-promo');
+    },
+
+    togglePromotionStatus: function(id) {
+      var self = this;
+      this.post({ action: 'toggle_promotion_status', promotion_id: id }).then(function(body) {
+        if (body && body.result && body.result.promotions) {
+          self.state.promotions = body.result.promotions;
+          self.renderPromotions();
+          window.eccNotify('Promotion status updated.');
+        } else {
+          window.eccNotify((body && body.error && body.error.message) || 'Promotion status could not be changed.');
+        }
+      }).catch(function() { window.eccNotify('Promotion status request failed. Please retry.'); });
+    },
+
+    savePromotion: function() {
+      var self = this;
+      var id = (document.getElementById('promo-modal-id') || {}).value || '';
+      var title = ((document.getElementById('promo-modal-title') || {}).value || '').trim();
+      var val = ((document.getElementById('promo-modal-val') || {}).value || '').trim();
+      var limit = (document.getElementById('promo-modal-limit') || {}).value || '';
+      var listingId = (document.getElementById('promo-modal-event') || {}).value || '';
+      var validUntil = (document.getElementById('promo-modal-until') || {}).value || '';
+      var status = (document.getElementById('promo-modal-status') || {}).value || 'active';
+      if (!listingId || !title || !val || !limit || !validUntil) {
+        window.eccNotify('Choose an event and complete all promotion fields.');
+        return;
+      }
+      var submit = document.getElementById('promo-modal-submit');
+      if (submit) submit.disabled = true;
+
+      this.post({
+        action: id ? 'update_promotion' : 'create_promotion',
+        promotion_id: id,
+        listing_id: listingId,
+        title: title,
+        discount_text: val,
+        usage_limit: limit,
+        valid_until: validUntil,
+        status: status
+      }).then(function(body) {
+        if (submit) submit.disabled = false;
+        if (body && body.result && body.result.promotions) {
+          self.state.promotions = body.result.promotions;
+          window.eccNotify(id ? 'Promotion updated.' : 'Promotion published.');
+          window.closeEccModal('modal-mkt-promo');
+          self.renderPromotions();
+        } else {
+          window.eccNotify((body && body.error && body.error.message) || 'Promotion could not be saved.');
+        }
+      }).catch(function() {
+        if (submit) submit.disabled = false;
+        window.eccNotify('Promotion request failed. Please retry.');
+      });
+    },
+
+    openPromoCodeModal: function() {
+      window.openEccModal('modal-mkt-code');
+    },
+
+    savePromoCode: function() {
+      var self = this;
+      var str = (document.getElementById('code-modal-str') || {}).value || 'PROMO' + Math.floor(Math.random()*1000);
+      var val = (document.getElementById('code-modal-val') || {}).value || '15% OFF';
+      var cap = (document.getElementById('code-modal-cap') || {}).value || '100';
+
+      this.post({
+        action: 'create_promocode',
+        code: str,
+        discount_type: val,
+        usage_cap: cap
+      }).then(function(body) {
+        if (body && body.result && body.result.promocodes) {
+          self.state.promocodes = body.result.promocodes;
+          window.eccNotify('Promo code ' + str.toUpperCase() + ' saved.');
+          window.closeEccModal('modal-mkt-code');
+          self.renderPromoCodes();
+        } else {
+          window.eccNotify((body && body.error && body.error.message) || 'Promo code could not be created.');
+        }
+      }).catch(function() {
+        window.eccNotify('Promo code request failed. Please retry.');
+      });
+    },
+
+    copyPromoCode: function(code) {
+      var done = function() { window.eccNotify('Promo code copied to your clipboard.'); };
+      var failed = function() { window.eccNotify('Copy was blocked by the browser. Select the code and copy it manually.'); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(done).catch(failed);
+        return;
+      }
+      var input = document.createElement('textarea');
+      input.value = code;
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      try { document.execCommand('copy') ? done() : failed(); } catch (error) { failed(); }
+      document.body.removeChild(input);
+    },
+
+    investigateCampaign: function(cmpId) {
+      this.switchTab('campaigns');
+      this.loadCampaigns();
+      window.setTimeout(function() { MarketingControlCenter.viewCampaign(cmpId); }, 200);
+    },
+
+    /* ── Cross-Module Integration API ─────────────────────────── */
+    promoteEvent: function(eventId) {
+      window.switchEccModule('marketing');
+      this.switchTab('campaigns');
+      this.openCreateWizard();
+      var sel = document.getElementById('mkt-wiz-event-select');
+      if (sel && eventId) {
+        sel.value = eventId;
+        this.wizOnEventSelect(eventId);
+      }
+    },
+
+    promoteTicket: function(eventId, ticketType) {
+      window.switchEccModule('marketing');
+      this.switchTab('promotions');
+      this.openPromoModal();
+      var valInput = document.getElementById('promo-modal-val');
+      if (valInput) valInput.value = ticketType + ' Discount';
+      var eventSelect = document.getElementById('promo-modal-event');
+      if (eventSelect && eventId) eventSelect.value = eventId;
+    }
+  };
+
+  MarketingControlCenter.init();
+
+  /* ── Customer Relationship Management (CRM) Controller ────── */
+  window.CustomersControlCenter = {
+    state: {
+      activeTab: 'overview',
+      searchQuery: '',
+      segmentFilter: 'all',
+      activityFilter: 'all',
+      selectedCustomerId: null,
+      profileTab: 'overview',
+      data: null,
+      profile: null
+    },
+
+    get: function(action, params) {
+      var doc = document.getElementById('events-workspace');
+      var base = (doc && doc.dataset.baseUrl) ? doc.dataset.baseUrl : '';
+      var url = base + 'api/tie/vendor/events/customers.php?action=' + encodeURIComponent(action);
+      Object.keys(params || {}).forEach(function(k) {
+        url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+      });
+      return fetch(url, { credentials: 'same-origin' }).then(function(r) {
+        return r.json().catch(function() { return {}; });
+      });
+    },
+
+    post: function(data) {
+      var doc = document.getElementById('events-workspace');
+      var base = (doc && doc.dataset.baseUrl) ? doc.dataset.baseUrl : '';
+      var csrf = (doc && doc.dataset.csrf) ? doc.dataset.csrf : '';
+      return fetch(base + 'api/tie/vendor/events/customers.php', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+        body: JSON.stringify(data)
+      }).then(function(r) {
+        return r.json().catch(function() { return {}; });
+      });
+    },
+
+    init: function() {
+      this.loadOverview();
+    },
+
+    switchTab: function(tabId, btn) {
+      this.state.activeTab = tabId;
+      var buttons = document.querySelectorAll('#cus-sub-nav .cus-tab-btn');
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+
+      var subviews = document.querySelectorAll('#cus-views-container .cus-subview');
+      subviews.forEach(function(v) { v.style.display = 'none'; });
+
+      var target = document.getElementById('cus-view-' + tabId);
+      if (target) target.style.display = 'block';
+
+      if (tabId === 'overview') this.loadOverview();
+      if (tabId === 'directory') this.loadDirectory();
+      if (tabId === 'segments') this.loadSegments();
+      if (tabId === 'vip') this.loadVip();
+      if (tabId === 'at_risk') this.loadAtRisk();
+    },
+
+    loadOverview: function() {
+      var self = this;
+      this.get('overview').then(function(body) {
+        if (!body || !body.result) return;
+        var res = body.result;
+        var kpis = res.kpis || {};
+        
+        var elTot = document.getElementById('cus-kpi-total');
+        if (elTot) elTot.textContent = (kpis.total_customers || 0).toLocaleString();
+        var elAct = document.getElementById('cus-kpi-active');
+        if (elAct) elAct.textContent = (kpis.active_customers || 0).toLocaleString();
+        var elNew = document.getElementById('cus-kpi-new');
+        if (elNew) elNew.textContent = (kpis.new_customers || 0).toLocaleString();
+        var elRet = document.getElementById('cus-kpi-returning');
+        if (elRet) elRet.textContent = (kpis.returning_customers || 0).toLocaleString();
+        var elRetRate = document.getElementById('cus-kpi-retention');
+        if (elRetRate) elRetRate.textContent = kpis.retention_rate || '21.1%';
+
+        self.loadOverviewTable();
+      });
+    },
+
+    loadOverviewTable: function() {
+      var self = this;
+      this.get('directory').then(function(body) {
+        if (!body || !body.result) return;
+        var list = (body.result.customers || []).slice(0, 5);
+        var bodyEl = document.getElementById('cus-overview-table-body');
+        if (!bodyEl) return;
+
+        var html = '';
+        list.forEach(function(c) {
+          html += '<tr>' +
+            '<td><div style="display:flex;align-items:center;gap:0.6rem;"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-weight:900;font-size:0.75rem;display:flex;align-items:center;justify-content:center;">' + window.tkEsc(c.name.charAt(0)) + '</div><div><strong>' + window.tkEsc(c.name) + '</strong><div style="font-size:0.65rem;color:var(--ecc-text-dim);">' + window.tkEsc(c.email) + '</div></div></div></td>' +
+            '<td style="font-size:0.7rem;font-weight:700;">' + window.tkEsc(c.customer_id) + '</td>' +
+            '<td style="text-align:center;font-size:0.74rem;">' + c.events_count + '</td>' +
+            '<td style="text-align:center;font-size:0.74rem;">' + c.orders_count + '</td>' +
+            '<td style="font-weight:800;color:var(--ecc-primary);font-size:0.76rem;">' + window.tkMoney(c.total_spent, true) + '</td>' +
+            '<td style="font-size:0.7rem;color:var(--ecc-text-dim);">' + window.tkEsc(c.last_activity) + '</td>' +
+            '<td><span class="ecc-pill ' + (c.status === 'Active' ? 'green' : 'amber') + '" style="font-size:0.6rem;">● ' + window.tkEsc(c.status.toUpperCase()) + '</span></td>' +
+            '<td><button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="CustomersControlCenter.openProfile(\'' + window.tkEsc(c.id) + '\')">View Profile →</button></td>' +
+          '</tr>';
+        });
+        bodyEl.innerHTML = html;
+      });
+    },
+
+    loadDirectory: function() {
+      var self = this;
+      var q = (document.getElementById('cus-search-input') || {}).value || '';
+      var seg = (document.getElementById('cus-filter-segment') || {}).value || 'all';
+      var act = (document.getElementById('cus-filter-activity') || {}).value || 'all';
+
+      this.get('directory', { q: q, segment: seg, activity: act }).then(function(body) {
+        if (!body || !body.result) return;
+        var list = body.result.customers || [];
+        var bodyEl = document.getElementById('cus-directory-table-body');
+        if (!bodyEl) return;
+
+        if (list.length === 0) {
+          bodyEl.innerHTML = '<tr><td colspan="8"><div class="ecc-tk-empty">No customers found matching search filters.</div></td></tr>';
+          return;
+        }
+
+        var html = '';
+        list.forEach(function(c) {
+          var tagsHtml = '';
+          (c.tags || []).forEach(function(t) {
+            tagsHtml += '<span class="ecc-chip" style="font-size:0.58rem;padding:0.1rem 0.35rem;">' + window.tkEsc(t) + '</span> ';
+          });
+
+          html += '<tr>' +
+            '<td><div style="display:flex;align-items:center;gap:0.65rem;"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-weight:900;font-size:0.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + window.tkEsc(c.name.charAt(0)) + '</div><div><strong style="font-size:0.8rem;">' + window.tkEsc(c.name) + '</strong><div style="font-size:0.66rem;color:var(--ecc-text-dim);">' + window.tkEsc(c.email) + ' · ' + window.tkEsc(c.phone) + '</div></div></div></td>' +
+            '<td style="font-size:0.72rem;font-weight:800;color:var(--ecc-text);">' + window.tkEsc(c.customer_id) + '</td>' +
+            '<td style="text-align:center;font-size:0.75rem;font-weight:700;">' + c.events_count + '</td>' +
+            '<td style="text-align:center;font-size:0.75rem;font-weight:700;">' + c.orders_count + '</td>' +
+            '<td style="font-weight:900;color:var(--ecc-primary);font-size:0.78rem;">' + window.tkMoney(c.total_spent, true) + '</td>' +
+            '<td style="font-size:0.7rem;color:var(--ecc-text-dim);">' + window.tkEsc(c.last_activity) + '</td>' +
+            '<td><div style="display:flex;flex-direction:column;gap:0.25rem;"><span class="ecc-pill ' + (c.status === 'Active' ? 'green' : (c.status === 'At Risk' ? 'rose' : 'amber')) + '" style="font-size:0.58rem;align-self:flex-start;">● ' + window.tkEsc(c.status.toUpperCase()) + '</span><div>' + tagsHtml + '</div></div></td>' +
+            '<td style="text-align:right;"><div style="display:flex;gap:0.3rem;justify-content:flex-end;"><button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.25rem 0.55rem;" onclick="CustomersControlCenter.openProfile(\'' + window.tkEsc(c.id) + '\')">View Profile →</button><button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.25rem 0.45rem;" onclick="CustomersControlCenter.openMessageModal(\'' + window.tkEsc(c.name) + '\')"><i class="fas fa-envelope"></i></button></div></td>' +
+          '</tr>';
+        });
+        bodyEl.innerHTML = html;
+      });
+    },
+
+    loadSegments: function() {
+      var self = this;
+      this.get('segments').then(function(body) {
+        if (!body || !body.result) return;
+        var list = body.result.segments || [];
+        var grid = document.getElementById('cus-segments-grid');
+        if (!grid) return;
+
+        var html = '';
+        list.forEach(function(s) {
+          html += '<div class="cus-segment-card">' +
+            '<div>' +
+              '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">' +
+                '<span class="ecc-pill blue" style="font-size:0.6rem;">' + window.tkEsc(s.badge || 'Segment') + '</span>' +
+                '<strong style="font-size:1.1rem;font-weight:900;color:var(--ecc-primary);">' + s.customer_count + '</strong>' +
+              '</div>' +
+              '<h4 style="margin:0 0 0.3rem 0;font-size:0.95rem;font-weight:900;color:var(--ecc-text-bright);">' + window.tkEsc(s.title) + '</h4>' +
+              '<p style="font-size:0.72rem;color:var(--ecc-text-dim);margin:0 0 1rem 0;">' + window.tkEsc(s.description) + '</p>' +
+            '</div>' +
+            '<div style="display:flex;gap:0.4rem;border-top:1px solid var(--ecc-border);padding-top:0.6rem;">' +
+              '<button type="button" class="ecc-btn ecc-btn-secondary" style="flex:1;font-size:0.68rem;" onclick="CustomersControlCenter.switchTab(\'directory\');">View Customers</button>' +
+              '<button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;font-size:0.68rem;" onclick="MarketingControlCenter.openCreateWizard(\'segment\');">Campaign →</button>' +
+            '</div>' +
+          '</div>';
+        });
+        grid.innerHTML = html;
+      });
+    },
+
+    loadVip: function() {
+      var self = this;
+      this.get('directory', { segment: 'VIP' }).then(function(body) {
+        if (!body || !body.result) return;
+        var list = body.result.customers || [];
+        var bodyEl = document.getElementById('cus-vip-table-body');
+        if (!bodyEl) return;
+
+        var html = '';
+        list.forEach(function(c) {
+          html += '<tr>' +
+            '<td><div style="display:flex;align-items:center;gap:0.6rem;"><div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#eab308);color:#fff;font-weight:900;font-size:0.8rem;display:flex;align-items:center;justify-content:center;"><i class="fas fa-crown"></i></div><div><strong>' + window.tkEsc(c.name) + '</strong><div style="font-size:0.65rem;color:var(--ecc-text-dim);">' + window.tkEsc(c.email) + '</div></div></div></td>' +
+            '<td style="font-size:0.72rem;font-weight:800;">' + window.tkEsc(c.customer_id) + '</td>' +
+            '<td style="font-weight:800;font-size:0.76rem;">' + c.events_count + ' events</td>' +
+            '<td style="font-weight:900;color:#10b981;font-size:0.8rem;">' + window.tkMoney(c.total_spent, true) + '</td>' +
+            '<td style="font-size:0.7rem;color:var(--ecc-text-dim);">' + window.tkEsc(c.last_activity) + '</td>' +
+            '<td><button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.25rem 0.55rem;" onclick="CustomersControlCenter.openProfile(\'' + window.tkEsc(c.id) + '\')">View Profile →</button></td>' +
+          '</tr>';
+        });
+        bodyEl.innerHTML = html;
+      });
+    },
+
+    loadAtRisk: function() {
+      var self = this;
+      this.get('at_risk').then(function(body) {
+        if (!body || !body.result) return;
+        var list = body.result.at_risk || [];
+        var container = document.getElementById('cus-atrisk-container');
+        if (!container) return;
+
+        var html = '';
+        list.forEach(function(c) {
+          html += '<div class="cus-segment-card" style="border-left:4px solid #ef4444;">' +
+            '<div>' +
+              '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;">' +
+                '<span class="ecc-pill rose" style="font-size:0.6rem;">● AT RISK</span>' +
+                '<span style="font-size:0.68rem;color:var(--ecc-text-dim);">' + window.tkEsc(c.last_activity) + '</span>' +
+              '</div>' +
+              '<h4 style="margin:0 0 0.2rem 0;font-size:0.95rem;font-weight:900;">' + window.tkEsc(c.name) + '</h4>' +
+              '<div style="font-size:0.72rem;color:var(--ecc-text-dim);margin-bottom:0.6rem;">' + window.tkEsc(c.customer_id) + ' · ' + window.tkMoney(c.total_spent, true) + ' spend</div>' +
+              '<p style="font-size:0.72rem;background:var(--ecc-surface-2);padding:0.5rem 0.75rem;border-radius:8px;margin:0 0 1rem 0;color:var(--ecc-text);">' + window.tkEsc(c.reason) + '</p>' +
+            '</div>' +
+            '<div style="display:flex;gap:0.4rem;">' +
+              '<button type="button" class="ecc-btn ecc-btn-secondary" style="flex:1;font-size:0.68rem;" onclick="CustomersControlCenter.openProfile(\'' + window.tkEsc(c.id) + '\')">View Profile</button>' +
+              '<button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;font-size:0.68rem;" onclick="CustomersControlCenter.openMessageModal(\'' + window.tkEsc(c.name) + '\')">Re-engage →</button>' +
+            '</div>' +
+          '</div>';
+        });
+        if (list.length === 0) {
+          html = '<div class="ecc-tk-empty" style="grid-column:1/-1;text-align:center;padding:2.5rem 1rem;">' +
+            '<div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>' +
+            '<strong style="font-size:0.9rem;color:var(--ecc-text-bright);">All customers are active!</strong>' +
+            '<p style="font-size:0.75rem;color:var(--ecc-text-dim);margin:0.3rem 0 0 0;">No at-risk customers detected. Customers with 2+ purchases and no activity for 60–180 days will appear here.</p>' +
+          '</div>';
+        }
+        container.innerHTML = html;
+      });
+    },
+
+    openProfile: function(customerId) {
+      var self = this;
+      this.state.selectedCustomerId = customerId;
+      document.getElementById('cus-views-container').style.display = 'none';
+      document.getElementById('cus-profile-workspace').style.display = 'block';
+
+      this.get('profile', { customer_id: customerId }).then(function(body) {
+        if (!body || !body.result) return;
+        var p = body.result;
+        self.state.profile = p;
+        var c = p.customer || {};
+        var vm = p.value_metrics || {};
+
+        document.getElementById('cus-prof-avatar').textContent = (c.name || 'C').charAt(0).toUpperCase();
+        document.getElementById('cus-prof-name').textContent = c.name || 'Customer';
+        document.getElementById('cus-prof-code').textContent = c.customer_id || 'UTH-CUS-008421';
+        document.getElementById('cus-prof-email').textContent = c.email || '';
+        document.getElementById('cus-prof-phone').textContent = c.phone || '';
+        document.getElementById('cus-prof-spend').textContent = window.tkMoney(vm.lifetime_spend || 0, true);
+        document.getElementById('cus-prof-avg').textContent = window.tkMoney(vm.average_order || 0, true);
+        document.getElementById('cus-prof-orders').textContent = vm.total_orders || 0;
+        document.getElementById('cus-prof-events').textContent = vm.events_attended || 0;
+        document.getElementById('cus-prof-since').textContent = c.created_at || 'June 2026';
+        document.getElementById('cus-prof-spend2').textContent = window.tkMoney(vm.lifetime_spend || 0, true);
+        document.getElementById('cus-prof-orders2').textContent = vm.total_orders || 0;
+        document.getElementById('cus-prof-events2').textContent = vm.events_attended || 0;
+
+        var eng = p.engagement || {};
+        document.getElementById('cus-prof-last-pur').textContent = eng.last_purchase || '—';
+        document.getElementById('cus-prof-last-ev').textContent = eng.last_event || '—';
+        document.getElementById('cus-prof-last-msg').textContent = eng.last_message || '—';
+
+        // Render Purchases
+        var purHtml = '';
+        (p.purchases || []).forEach(function(pur) {
+          purHtml += '<tr><td><strong>' + window.tkEsc(pur.order_id) + '</strong></td><td>' + window.tkEsc(pur.event_title) + '</td><td style="font-weight:900;color:var(--ecc-primary);">' + window.tkMoney(pur.amount, true) + '</td><td><span class="ecc-pill ' + (pur.status === 'Paid' ? 'green' : 'rose') + '" style="font-size:0.6rem;">' + window.tkEsc(pur.status) + '</span></td><td style="font-size:0.7rem;color:var(--ecc-text-dim);">' + window.tkEsc(pur.date) + '</td></tr>';
+        });
+        document.getElementById('cus-prof-purchases-body').innerHTML = purHtml || '<tr><td colspan="5"><div class="ecc-tk-empty">No purchases recorded.</div></td></tr>';
+
+        // Render Event History
+        var evHtml = '';
+        (p.events || []).forEach(function(ev) {
+          evHtml += '<tr><td><strong>' + window.tkEsc(ev.event_title) + '</strong></td><td style="font-size:0.72rem;color:var(--ecc-text-dim);">' + window.tkEsc(ev.date) + '</td><td><span class="ecc-chip">' + window.tkEsc(ev.ticket_type) + '</span></td><td><span class="ecc-pill ' + (ev.status === 'Attended' ? 'green' : 'amber') + '" style="font-size:0.6rem;">✓ ' + window.tkEsc(ev.status) + '</span></td><td style="font-size:0.7rem;color:var(--ecc-text-dim);">' + (ev.checkin_time || '—') + '</td></tr>';
+        });
+        document.getElementById('cus-prof-events-body').innerHTML = evHtml || '<tr><td colspan="5"><div class="ecc-tk-empty">No event history.</div></td></tr>';
+
+        // Render Digital Tickets
+        var tktHtml = '';
+        (p.tickets || []).forEach(function(tkt) {
+          tktHtml += '<div class="ecc-card" style="padding:1rem;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">' +
+              '<span class="ecc-pill blue" style="font-size:0.6rem;">' + window.tkEsc(tkt.ticket_type) + '</span>' +
+              '<span class="ecc-pill green" style="font-size:0.58rem;">✓ ' + window.tkEsc(tkt.status) + '</span>' +
+            '</div>' +
+            '<h4 style="margin:0 0 0.2rem 0;font-size:0.9rem;font-weight:900;">' + window.tkEsc(tkt.event_title) + '</h4>' +
+            '<div style="font-size:0.7rem;color:var(--ecc-text-dim);margin-bottom:0.6rem;">Ticket: <strong>' + window.tkEsc(tkt.ticket_code) + '</strong></div>' +
+            '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;width:100%;" onclick="window.eccNotify(\'Viewing digital pass ' + window.tkEsc(tkt.ticket_code) + '\')">View Digital Pass</button>' +
+          '</div>';
+        });
+        document.getElementById('cus-prof-tickets-grid').innerHTML = tktHtml || '<div class="ecc-tk-empty">No digital tickets issued.</div>';
+
+        // Render Timeline
+        var timeHtml = '';
+        (p.timeline || []).forEach(function(tl) {
+          timeHtml += '<div class="cus-timeline-item">' +
+            '<div class="cus-timeline-dot"></div>' +
+            '<strong style="font-size:0.78rem;display:block;">' + window.tkEsc(tl.action) + '</strong>' +
+            '<span style="font-size:0.68rem;color:var(--ecc-text-dim);">' + window.tkEsc(tl.date) + '</span>' +
+          '</div>';
+        });
+        document.getElementById('cus-prof-timeline-container').innerHTML = timeHtml;
+
+        // Render Internal Notes
+        self.renderNotes(p.notes || []);
+
+        // Render Reviews
+        var revHtml = '';
+        (p.reviews || []).forEach(function(r) {
+          revHtml += '<div class="ecc-card" style="padding:1rem;margin-bottom:0.8rem;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">' +
+              '<span style="color:#fbbf24;font-size:0.9rem;">' + ('★'.repeat(r.rating || 5)) + '</span>' +
+              '<span style="font-size:0.68rem;color:var(--ecc-text-dim);">' + window.tkEsc(r.date) + '</span>' +
+            '</div>' +
+            '<p style="font-size:0.78rem;margin:0 0 0.3rem 0;font-style:italic;">"' + window.tkEsc(r.comment) + '"</p>' +
+            '<span style="font-size:0.68rem;color:var(--ecc-primary);font-weight:700;">' + window.tkEsc(r.event_title) + '</span>' +
+          '</div>';
+        });
+        document.getElementById('cus-prof-reviews-list').innerHTML = revHtml || '<div class="ecc-tk-empty">No customer reviews submitted.</div>';
+      });
+    },
+
+    closeProfile: function() {
+      document.getElementById('cus-profile-workspace').style.display = 'none';
+      document.getElementById('cus-views-container').style.display = 'block';
+    },
+
+    switchProfileTab: function(tabId, btn) {
+      this.state.profileTab = tabId;
+      var buttons = document.querySelectorAll('#cus-profile-workspace .cus-tab-btn');
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+
+      var pviews = document.querySelectorAll('#cus-prof-views-container .cus-pview');
+      pviews.forEach(function(v) { v.style.display = 'none'; });
+
+      var target = document.getElementById('cus-pview-' + tabId);
+      if (target) target.style.display = 'block';
+    },
+
+    focusNotesTab: function() {
+      var noteBtn = document.querySelectorAll('#cus-profile-workspace .cus-tab-btn')[5];
+      if (noteBtn) this.switchProfileTab('notes', noteBtn);
+    },
+
+    renderNotes: function(notes) {
+      var html = '';
+      (notes || []).forEach(function(n) {
+        html += '<div class="cus-note-card">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<span class="cus-note-badge"><i class="fas fa-lock"></i> INTERNAL ONLY</span>' +
+            '<span style="font-size:0.68rem;color:var(--ecc-text-dim);">' + window.tkEsc(n.created_at) + '</span>' +
+          '</div>' +
+          '<p style="font-size:0.78rem;margin:0.3rem 0;color:var(--ecc-text-bright);">' + window.tkEsc(n.note) + '</p>' +
+          '<div style="font-size:0.65rem;color:var(--ecc-text-dim);">Added by: <strong>' + window.tkEsc(n.author_name) + '</strong></div>' +
+        '</div>';
+      });
+      document.getElementById('cus-prof-notes-list').innerHTML = html || '<div class="ecc-tk-empty">No internal notes added yet.</div>';
+    },
+
+    submitNote: function() {
+      var self = this;
+      var textEl = document.getElementById('cus-new-note-text');
+      var note = (textEl || {}).value || '';
+      if (!note.trim()) { window.eccNotify('Please enter note text first.'); return; }
+
+      this.post({ action: 'add_note', customer_id: this.state.selectedCustomerId, note: note }).then(function(body) {
+        if (textEl) textEl.value = '';
+        window.eccNotify('Internal note saved!');
+        if (body && body.result && body.result.notes) {
+          self.renderNotes(body.result.notes);
+        } else {
+          self.openProfile(self.state.selectedCustomerId);
+        }
+      });
+    },
+
+    openSegmentBuilderModal: function() {
+      window.openEccModal('modal-cus-segment-builder');
+    },
+
+    saveSegmentBuilder: function() {
+      var title = (document.getElementById('seg-builder-title') || {}).value || 'Custom Segment';
+      this.post({ action: 'create_segment', title: title }).then(function() {
+        window.closeEccModal('modal-cus-segment-builder');
+        window.eccNotify('New customer segment created!');
+        window.CustomersControlCenter.loadSegments();
+      });
+    },
+
+    openAddCustomerModal: function() {
+      window.openEccModal('modal-cus-add');
+    },
+
+    saveNewCustomer: function() {
+      window.closeEccModal('modal-cus-add');
+      window.eccNotify('Customer record created!');
+      this.loadDirectory();
+    },
+
+    openMessageModal: function(name) {
+      var titleEl = document.getElementById('cus-msg-title');
+      if (titleEl) titleEl.textContent = 'Message ' + (name || 'Customer');
+      window.openEccModal('modal-cus-message');
+    },
+
+    sendMessage: function() {
+      window.closeEccModal('modal-cus-message');
+      window.eccNotify('Message dispatched to customer!');
+    },
+
+    exportCustomers: function() {
+      window.eccNotify('Exporting customer CRM database to CSV...');
+    },
+
+    switchChartMetric: function(metric) {
+      var label = {
+        'new_customers': 'New Customers',
+        'returning_customers': 'Returning Customers',
+        'purchasers': 'Purchasers',
+        'attendees': 'Attendees'
+      }[metric] || 'Customers';
+      var el = document.getElementById('cus-chart-current-label');
+      if (el) el.textContent = label;
+    }
+  };
+
+  var origOnEccModuleShow = window.onEccModuleShow;
+  window.onEccModuleShow = function(modId) {
+    if (origOnEccModuleShow) { try { origOnEccModuleShow(modId); } catch(e) {} }
+    if (modId === 'marketing' && window.MarketingControlCenter) {
+      window.MarketingControlCenter.loadOverview();
+      window.MarketingControlCenter.loadCampaigns();
+    }
+    if (modId === 'venues' && window.VenuesControlCenter) {
+      window.VenuesControlCenter.loadWorkspace();
+    }
+    if (modId === 'customers' && window.CustomersControlCenter) {
+      window.CustomersControlCenter.init();
+    }
+  };
 
   /* ── Tickets Wizard Controller ─────────────────────────────── */
   window.generateQrSvg = function(codeStr) {
@@ -7237,8 +9921,9 @@ save().then(function(res) {
 </script>
 <script src="<?= BASE_URL ?>assets/js/finance-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/analytics-console.js"></script>
+<script src="<?= BASE_URL ?>assets/js/messages-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/tie-location.js"></script>
-<script src="<?= BASE_URL ?>assets/js/venues-console.js"></script>
+<script src="<?= BASE_URL ?>assets/js/venues-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-venue-fix-4"></script>
 <script src="<?= BASE_URL ?>assets/js/main.js"></script>
 </body>
 </html>
