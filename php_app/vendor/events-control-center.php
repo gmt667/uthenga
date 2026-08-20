@@ -1926,10 +1926,10 @@ $userRoleLabel = 'Event Organizer';
               <option value="90">Last 90 Days</option>
               <option value="all">All Time</option>
             </select>
-            <button type="button" class="ecc-btn ecc-btn-primary" style="font-weight:800;font-size:0.8rem;padding:0.45rem 1rem;" onclick="MarketingControlCenter.openCreateWizard()">
+            <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-create" style="font-weight:800;font-size:0.8rem;padding:0.45rem 1rem;" onclick="MarketingControlCenter.openCreateWizard()">
               <i class="fas fa-plus" style="margin-right:4px;"></i> Create Campaign
             </button>
-            <button type="button" class="ecc-btn ecc-btn-secondary" id="mkt-ai-toggle-btn" style="font-weight:700;font-size:0.8rem;padding:0.45rem 0.8rem;" onclick="MarketingControlCenter.toggleAiPanel()">
+            <button type="button" class="ecc-btn ecc-btn-secondary" id="mkt-ai-toggle-btn" data-mkt-action="ai-toggle" style="font-weight:700;font-size:0.8rem;padding:0.45rem 0.8rem;" onclick="MarketingControlCenter.toggleAiPanel()">
               🤖 AI Assistant <span class="ecc-pill purple" style="margin-left:4px;font-size:0.6rem;">3 Alerts</span>
             </button>
           </div>
@@ -1937,14 +1937,14 @@ $userRoleLabel = 'Event Organizer';
 
         <!-- Sub-Navigation Bar -->
         <div class="ecc-mkt-nav" id="mkt-sub-nav">
-          <button type="button" class="ecc-mkt-tab active" onclick="MarketingControlCenter.switchTab('overview', this)"><i class="fas fa-chart-line"></i> Overview</button>
-          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('campaigns', this)"><i class="fas fa-bullhorn"></i> Campaigns <span class="ecc-pill-count">12</span></button>
-          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('promotions', this)"><i class="fas fa-tags"></i> Promotions</button>
-          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('adcards', this)"><i class="fas fa-id-card"></i> Ad Cards</button>
-          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('audience', this)"><i class="fas fa-users"></i> Audience</button>
-          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('channels', this)"><i class="fas fa-share-alt"></i> Channels</button>
-          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('promocodes', this)"><i class="fas fa-barcode"></i> Promo Codes</button>
-          <button type="button" class="ecc-mkt-tab" onclick="MarketingControlCenter.switchTab('automations', this)"><i class="fas fa-robot"></i> Automations</button>
+          <button type="button" class="ecc-mkt-tab active" data-mkt-action="tab" data-mkt-target="overview" onclick="MarketingControlCenter.switchTab('overview', this)"><i class="fas fa-chart-line"></i> Overview</button>
+          <button type="button" class="ecc-mkt-tab" data-mkt-action="tab" data-mkt-target="campaigns" onclick="MarketingControlCenter.switchTab('campaigns', this)"><i class="fas fa-bullhorn"></i> Campaigns <span class="ecc-pill-count">12</span></button>
+          <button type="button" class="ecc-mkt-tab" data-mkt-action="tab" data-mkt-target="promotions" onclick="MarketingControlCenter.switchTab('promotions', this)"><i class="fas fa-tags"></i> Promotions</button>
+          <button type="button" class="ecc-mkt-tab" data-mkt-action="tab" data-mkt-target="adcards" onclick="MarketingControlCenter.switchTab('adcards', this)"><i class="fas fa-id-card"></i> Ad Cards</button>
+          <button type="button" class="ecc-mkt-tab" data-mkt-action="tab" data-mkt-target="audience" onclick="MarketingControlCenter.switchTab('audience', this)"><i class="fas fa-users"></i> Audience</button>
+          <button type="button" class="ecc-mkt-tab" data-mkt-action="tab" data-mkt-target="channels" onclick="MarketingControlCenter.switchTab('channels', this)"><i class="fas fa-share-alt"></i> Channels</button>
+          <button type="button" class="ecc-mkt-tab" data-mkt-action="tab" data-mkt-target="promocodes" onclick="MarketingControlCenter.switchTab('promocodes', this)"><i class="fas fa-barcode"></i> Promo Codes</button>
+          <button type="button" class="ecc-mkt-tab" data-mkt-action="tab" data-mkt-target="automations" onclick="MarketingControlCenter.switchTab('automations', this)"><i class="fas fa-robot"></i> Automations</button>
           <button type="button" class="ecc-mkt-tab" onclick="switchEccModule('analytics')"><i class="fas fa-external-link-alt"></i> Analytics</button>
         </div>
 
@@ -2038,8 +2038,8 @@ $userRoleLabel = 'Event Organizer';
                       <h4 style="font-size:0.85rem;margin:0 0 0.25rem 0;color:var(--ecc-text-bright);">Marketing Insight: Checkout Drop-off</h4>
                       <p style="font-size:0.74rem;color:var(--ecc-text-dim);margin:0 0 0.6rem 0;">Music Festival 2026 has 12.8K impressions but checkout conversion dropped 18% today. Customers drop off at VIP tier selection.</p>
                       <div style="display:flex;gap:0.5rem;">
-                        <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.72rem;padding:0.3rem 0.7rem;" onclick="MarketingControlCenter.investigateCampaign('cmp-1')">Investigate Campaign</button>
-                        <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.72rem;padding:0.3rem 0.7rem;" onclick="MarketingControlCenter.openCreateWizard('vip_promo')">Create VIP Offer</button>
+                        <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-investigate" data-mkt-target="cmp-1" style="font-size:0.72rem;padding:0.3rem 0.7rem;" onclick="MarketingControlCenter.investigateCampaign('cmp-1')">Investigate Campaign</button>
+                        <button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="campaign-create" data-mkt-preset="vip_promo" style="font-size:0.72rem;padding:0.3rem 0.7rem;" onclick="MarketingControlCenter.openCreateWizard('vip_promo')">Create VIP Offer</button>
                       </div>
                     </div>
                   </div>
@@ -2054,7 +2054,7 @@ $userRoleLabel = 'Event Organizer';
                       <h4 style="font-size:0.85rem;margin:0 0 0.25rem 0;color:var(--ecc-text-bright);">Growth Opportunity: Mid-week Flash Sale</h4>
                       <p style="font-size:0.74rem;color:var(--ecc-text-dim);margin:0 0 0.6rem 0;">Malawi Business Summit has high weekday views (340 high-intent viewers). A 48-hour Early Bird promotion can accelerate ticket sales.</p>
                       <div style="display:flex;gap:0.5rem;">
-                        <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.72rem;padding:0.3rem 0.7rem;background:#10b981;border-color:#10b981;" onclick="MarketingControlCenter.openCreateWizard('early_bird')">Launch Early Bird Promo</button>
+                        <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-create" data-mkt-preset="early_bird" style="font-size:0.72rem;padding:0.3rem 0.7rem;background:#10b981;border-color:#10b981;" onclick="MarketingControlCenter.openCreateWizard('early_bird')">Launch Early Bird Promo</button>
                       </div>
                     </div>
                   </div>
@@ -2085,7 +2085,7 @@ $userRoleLabel = 'Event Organizer';
                     <option value="sms">SMS</option>
                   </select>
                 </div>
-                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.8rem;padding:0.4rem 0.9rem;" onclick="MarketingControlCenter.openCreateWizard()">
+                <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-create" style="font-size:0.8rem;padding:0.4rem 0.9rem;" onclick="MarketingControlCenter.openCreateWizard()">
                   <i class="fas fa-plus" style="margin-right:4px;"></i> New Campaign
                 </button>
               </div>
@@ -2102,7 +2102,7 @@ $userRoleLabel = 'Event Organizer';
                   <h3 style="font-size:0.95rem;margin:0;">Active Promotions &amp; Discounts</h3>
                   <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Manage flash sales, percentage discounts, and ticket tier offers</span>
                 </div>
-                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.78rem;padding:0.4rem 0.9rem;" onclick="MarketingControlCenter.openPromoModal()">
+                <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="promotion-create" style="font-size:0.78rem;padding:0.4rem 0.9rem;" onclick="MarketingControlCenter.openPromoModal()">
                   <i class="fas fa-plus" style="margin-right:4px;"></i> Create Promotion
                 </button>
               </div>
@@ -2119,7 +2119,7 @@ $userRoleLabel = 'Event Organizer';
                 <div class="ecc-card">
                   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.85rem;">
                     <h3 style="font-size:0.95rem;margin:0;">Ad Card Studio &amp; AI Copywriter</h3>
-                    <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.72rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.generateAiCardCopy()">
+                    <button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="ad-generate" style="font-size:0.72rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.generateAiCardCopy()">
                       🤖 AI Generate Copy
                     </button>
                   </div>
@@ -2174,8 +2174,8 @@ $userRoleLabel = 'Event Organizer';
                   </div>
 
                   <div style="display:flex;gap:0.6rem;margin-top:1rem;">
-                    <button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;" onclick="MarketingControlCenter.saveAdCard()">Save Ad Card</button>
-                    <button type="button" class="ecc-btn ecc-btn-secondary" onclick="MarketingControlCenter.openCreateWizard()">Attach to Campaign →</button>
+                    <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="ad-save" style="flex:1;" onclick="MarketingControlCenter.saveAdCard()">Save Ad Card</button>
+                    <button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="campaign-create" data-mkt-preset="ad_card" onclick="MarketingControlCenter.openCreateWizard()">Attach to Campaign →</button>
                   </div>
                 </div>
 
@@ -2253,7 +2253,7 @@ $userRoleLabel = 'Event Organizer';
                       <div style="font-size:0.68rem;color:var(--ecc-text-dim);font-weight:700;">ESTIMATED REACH</div>
                       <div style="font-size:1.1rem;font-weight:900;color:var(--ecc-primary);">4,820 Customers</div>
                     </div>
-                    <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.75rem;" onclick="MarketingControlCenter.openCreateWizard('custom_segment')">Create Campaign</button>
+                    <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-create" data-mkt-preset="custom_segment" style="font-size:0.75rem;" onclick="MarketingControlCenter.openCreateWizard('custom_segment')">Create Campaign</button>
                   </div>
                 </div>
               </div>
@@ -2277,7 +2277,7 @@ $userRoleLabel = 'Event Organizer';
                     <h3 style="font-size:0.95rem;margin:0;">Promo Code Management</h3>
                     <span style="font-size:0.7rem;color:var(--ecc-text-dim);">Issued codes, usage caps, and restrictions</span>
                   </div>
-                  <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.78rem;padding:0.4rem 0.8rem;" onclick="MarketingControlCenter.openPromoCodeModal()">
+                  <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="promo-code-create" style="font-size:0.78rem;padding:0.4rem 0.8rem;" onclick="MarketingControlCenter.openPromoCodeModal()">
                     <i class="fas fa-plus" style="margin-right:4px;"></i> Generate New Code
                   </button>
                 </div>
@@ -2325,7 +2325,7 @@ $userRoleLabel = 'Event Organizer';
                 <span style="font-size:1.1rem;">🤖</span>
                 <strong style="font-size:0.85rem;">AI Marketing Advisor</strong>
               </div>
-              <button type="button" class="mkt-ai-close" onclick="MarketingControlCenter.toggleAiPanel()">×</button>
+              <button type="button" class="mkt-ai-close" data-mkt-action="ai-toggle" onclick="MarketingControlCenter.toggleAiPanel()">×</button>
             </div>
             <div style="padding:0.8rem;font-size:0.72rem;color:var(--ecc-text-dim);border-bottom:1px solid var(--ecc-border);">
               Real-time monitoring of event ticket sales velocity, audience drop-off, and campaign ROI.
@@ -2611,7 +2611,7 @@ $userRoleLabel = 'Event Organizer';
                   <strong style="font-size:0.9rem;color:var(--ecc-primary);"><i class="fas fa-crown"></i> VIP CUSTOMER AUDIENCE</strong>
                   <span style="font-size:0.75rem;color:var(--ecc-text-dim);display:block;">Top-tier event patrons with lifetime spend exceeding MK 100,000</span>
                 </div>
-                <button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.72rem;" onclick="MarketingControlCenter.openCreateWizard('vip_promo')">Promote VIP Special Offer →</button>
+                <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-create" data-mkt-preset="vip_promo" style="font-size:0.72rem;" onclick="MarketingControlCenter.openCreateWizard('vip_promo')">Promote VIP Special Offer →</button>
               </div>
             </div>
 
@@ -2861,8 +2861,7 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 12: DOCUMENTS -->
       <div id="mod-documents" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Event Compliance & Contracts</h2>
-        <div class="ecc-card"><p style="font-size:0.85rem;color:var(--ecc-text-dim);">City Permit (Verified), Fire Safety Audit (Verified)</p></div>
+        <div id="docs-root"></div>
       </div>
 
       <!-- MODULE 13: STAFF -->
@@ -6538,7 +6537,7 @@ $userRoleLabel = 'Event Organizer';
           '</div>' +
           '<div style="text-align:right;">' +
             '<strong style="font-size:0.85rem;color:#10b981;display:block;">' + e.revenue + '</strong>' +
-            '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.15rem 0.4rem;margin-top:2px;" onclick="MarketingControlCenter.promoteEvent(\'' + e.id + '\')">Promote →</button>' +
+            '<button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="campaign-create" data-mkt-target="' + e.id + '" style="font-size:0.65rem;padding:0.15rem 0.4rem;margin-top:2px;" onclick="MarketingControlCenter.promoteEvent(\'' + e.id + '\')">Promote →</button>' +
           '</div>' +
         '</div>';
       });
@@ -6580,7 +6579,7 @@ $userRoleLabel = 'Event Organizer';
       });
 
       if (list.length === 0) {
-        container.innerHTML = '<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--ecc-text-dim);">No campaigns matching current filters. <button class="ecc-btn ecc-btn-primary" style="margin-left:0.5rem;" onclick="MarketingControlCenter.openCreateWizard()">Create Campaign</button></div>';
+        container.innerHTML = '<div style="grid-column:1/-1;padding:2rem;text-align:center;color:var(--ecc-text-dim);">No campaigns matching current filters. <button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-create" style="margin-left:0.5rem;" onclick="MarketingControlCenter.openCreateWizard()">Create Campaign</button></div>';
         return;
       }
 
@@ -6614,8 +6613,8 @@ $userRoleLabel = 'Event Organizer';
           '<div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ecc-border);padding-top:0.6rem;">' +
             '<span style="font-size:0.7rem;color:var(--ecc-text-dim);">Conv: <strong style="color:var(--ecc-text-bright);">' + c.conversion + '</strong></span>' +
             '<div style="display:flex;gap:0.3rem;">' +
-              (c.status === 'active' ? '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.toggleCampaignStatus(\'' + c.id + '\')">Pause</button>' : '<button class="ecc-btn ecc-btn-primary" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.toggleCampaignStatus(\'' + c.id + '\')">Activate</button>') +
-              '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.viewCampaign(\'' + c.id + '\')">View →</button>' +
+              (c.status === 'active' ? '<button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="campaign-toggle" data-mkt-target="' + c.id + '" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.toggleCampaignStatus(\'' + c.id + '\')">Pause</button>' : '<button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-toggle" data-mkt-target="' + c.id + '" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.toggleCampaignStatus(\'' + c.id + '\')">Activate</button>') +
+              '<button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="campaign-view" data-mkt-target="' + c.id + '" style="font-size:0.65rem;padding:0.2rem 0.5rem;" onclick="MarketingControlCenter.viewCampaign(\'' + c.id + '\')">View →</button>' +
             '</div>' +
           '</div>' +
         '</div>';
@@ -6677,8 +6676,8 @@ $userRoleLabel = 'Event Organizer';
           '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;border-top:1px solid var(--ecc-border);padding-top:0.6rem;">' +
             '<span style="font-size:0.78rem;font-weight:800;color:#10b981;">' + p.revenue + '</span>' +
             '<div style="display:flex;gap:0.35rem;">'
-            + '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.managePromotion(\'' + p.id + '\')">Manage</button>'
-            + '<button class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.togglePromotionStatus(\'' + p.id + '\')">' + (String(p.status || '').toLowerCase() === 'active' ? 'Pause' : 'Activate') + '</button>'
+            + '<button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="promotion-manage" data-mkt-target="' + p.id + '" style="font-size:0.68rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.managePromotion(\'' + p.id + '\')">Manage</button>'
+            + '<button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="promotion-toggle" data-mkt-target="' + p.id + '" style="font-size:0.68rem;padding:0.25rem 0.6rem;" onclick="MarketingControlCenter.togglePromotionStatus(\'' + p.id + '\')">' + (String(p.status || '').toLowerCase() === 'active' ? 'Pause' : 'Activate') + '</button>'
             + '</div>' +
           '</div>' +
         '</div>';
@@ -6759,7 +6758,7 @@ $userRoleLabel = 'Event Organizer';
           '</div>' +
           '<div style="text-align:right;">' +
             '<strong style="font-size:0.85rem;color:var(--ecc-primary);display:block;">' + s.count + '</strong>' +
-            '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.65rem;padding:0.15rem 0.4rem;margin-top:2px;" onclick="MarketingControlCenter.openCreateWizard(\'segment\')">Campaign →</button>' +
+            '<button type="button" class="ecc-btn ecc-btn-secondary" data-mkt-action="campaign-create" data-mkt-preset="segment" style="font-size:0.65rem;padding:0.15rem 0.4rem;margin-top:2px;" onclick="MarketingControlCenter.openCreateWizard(\'segment\')">Campaign →</button>' +
           '</div>' +
         '</div>';
       });
@@ -6808,7 +6807,7 @@ $userRoleLabel = 'Event Organizer';
         html += '<div class="mkt-ai-card ' + a.type + '">' +
           '<strong style="font-size:0.78rem;display:block;color:var(--ecc-text-bright);margin-bottom:0.25rem;">' + a.title + '</strong>' +
           '<p style="font-size:0.7rem;color:var(--ecc-text-dim);margin:0 0 0.5rem 0;line-height:1.35;">' + a.msg + '</p>' +
-          '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.2rem 0.5rem;" onclick="' + a.action + '">' + a.btnText + '</button>' +
+          '<button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="' + (a.type === 'warn' ? 'campaign-investigate' : 'campaign-create') + '" data-mkt-target="' + (a.type === 'warn' ? 'cmp-1' : '') + '" data-mkt-preset="' + (a.type === 'opp' ? 'early_bird' : (a.type === 'info' ? 'vip_promo' : '')) + '" style="font-size:0.68rem;padding:0.2rem 0.5rem;" onclick="' + a.action + '">' + a.btnText + '</button>' +
         '</div>';
       });
       container.innerHTML = html;
@@ -6931,6 +6930,14 @@ $userRoleLabel = 'Event Organizer';
         }[presetType] || presetType;
         var rad = document.querySelector('input[name="mkt_obj"][value="' + normalizedPreset + '"]');
         if (rad) rad.checked = true;
+      }
+      if (presetType === 'ad_card') {
+        var adHeadline = document.getElementById('ad-field-headline');
+        var adBody = document.getElementById('ad-field-sub');
+        var campaignHeadline = document.getElementById('mkt-wiz-copy-title');
+        var campaignBody = document.getElementById('mkt-wiz-copy-body');
+        if (campaignHeadline && adHeadline && String(adHeadline.value || '').trim()) campaignHeadline.value = adHeadline.value.trim();
+        if (campaignBody && adBody && String(adBody.value || '').trim()) campaignBody.value = adBody.value.trim();
       }
       var eventSelect = document.getElementById('mkt-wiz-event-select');
       if (eventSelect && eventSelect.value) {
@@ -7251,9 +7258,18 @@ $userRoleLabel = 'Event Organizer';
     },
 
     investigateCampaign: function(cmpId) {
+      var self = this;
       this.switchTab('campaigns');
       this.loadCampaigns();
-      window.setTimeout(function() { MarketingControlCenter.viewCampaign(cmpId); }, 200);
+      window.setTimeout(function() {
+        var campaign = (self.state.campaigns || []).find(function(item) { return item.id === cmpId; }) || (self.state.campaigns || [])[0];
+        if (campaign) {
+          self.viewCampaign(campaign.id);
+          return;
+        }
+        self.openCreateWizard();
+        window.eccNotify('No saved campaign is available to investigate. Create one from verified event data.');
+      }, 200);
     },
 
     /* ── Cross-Module Integration API ─────────────────────────── */
@@ -7450,7 +7466,7 @@ $userRoleLabel = 'Event Organizer';
             '</div>' +
             '<div style="display:flex;gap:0.4rem;border-top:1px solid var(--ecc-border);padding-top:0.6rem;">' +
               '<button type="button" class="ecc-btn ecc-btn-secondary" style="flex:1;font-size:0.68rem;" onclick="CustomersControlCenter.switchTab(\'directory\');">View Customers</button>' +
-              '<button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;font-size:0.68rem;" onclick="MarketingControlCenter.openCreateWizard(\'segment\');">Campaign →</button>' +
+              '<button type="button" class="ecc-btn ecc-btn-primary" data-mkt-action="campaign-create" data-mkt-preset="segment" style="flex:1;font-size:0.68rem;" onclick="MarketingControlCenter.openCreateWizard(\'segment\');">Campaign →</button>' +
             '</div>' +
           '</div>';
         });
@@ -9922,8 +9938,53 @@ save().then(function(res) {
 <script src="<?= BASE_URL ?>assets/js/finance-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/analytics-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/messages-console.js"></script>
+<script src="<?= BASE_URL ?>assets/js/documents-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-docs-1"></script>
 <script src="<?= BASE_URL ?>assets/js/tie-location.js"></script>
 <script src="<?= BASE_URL ?>assets/js/venues-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-venue-fix-4"></script>
+<script src="<?= BASE_URL ?>assets/js/events-marketing-actions.js?v=<?= rawurlencode(APP_VERSION) ?>-marketing-actions-1"></script>
+<script>
+/* Last-resort in-document bridge: this page is no-store, so campaign controls
+   remain live even if a browser or proxy fails to fetch a cached asset. */
+(function () {
+  if (window.__uthengaMarketingInlineBridgeBound) return;
+  window.__uthengaMarketingInlineBridgeBound = true;
+
+  if (typeof window.UthengaMarketingAction !== 'function') {
+    window.UthengaMarketingAction = function (action, target, preset, button) {
+      var marketing = window.MarketingControlCenter;
+      if (!marketing) {
+        if (typeof window.eccNotify === 'function') window.eccNotify('Marketing controls are still loading. Please refresh and try again.');
+        return;
+      }
+      if (action === 'tab') return marketing.switchTab(target, button);
+      if (action === 'campaign-create') return target && !preset ? marketing.promoteEvent(target) : marketing.openCreateWizard(preset || undefined);
+      if (action === 'campaign-investigate') return marketing.investigateCampaign(target || '');
+      if (action === 'campaign-view') return marketing.viewCampaign(target);
+      if (action === 'campaign-toggle') return marketing.toggleCampaignStatus(target);
+      if (action === 'promotion-create') return marketing.openPromoModal();
+      if (action === 'promotion-manage') return marketing.managePromotion(target);
+      if (action === 'promotion-toggle') return marketing.togglePromotionStatus(target);
+      if (action === 'promo-code-create') return marketing.openPromoCodeModal();
+      if (action === 'ad-generate') return marketing.generateAiCardCopy();
+      if (action === 'ad-save') return marketing.saveAdCard();
+      if (action === 'ai-toggle') return marketing.toggleAiPanel();
+    };
+  }
+
+  document.addEventListener('click', function (event) {
+    var source = event.target && event.target.closest ? event.target.closest('[data-mkt-action]') : null;
+    if (!source) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    window.UthengaMarketingAction(
+      source.getAttribute('data-mkt-action'),
+      source.getAttribute('data-mkt-target') || '',
+      source.getAttribute('data-mkt-preset') || '',
+      source
+    );
+  }, true);
+}());
+</script>
 <script src="<?= BASE_URL ?>assets/js/main.js"></script>
 </body>
 </html>

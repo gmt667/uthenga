@@ -119,6 +119,7 @@ $migrations = [
     '037_tie_events_finance.sql'                      => $base . '037_tie_events_finance.sql',
     '038_tie_analytics.sql'                           => $base . '038_tie_analytics.sql',
     '039_tie_messages.sql'                            => $base . '039_tie_messages.sql',
+    '040_tie_documents.sql'                           => $base . '040_tie_documents.sql',
 ];
 
 out("", 'info');
