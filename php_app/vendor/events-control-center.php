@@ -2866,8 +2866,7 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 13: STAFF -->
       <div id="mod-staff" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Staff & Gate Scanner Roster</h2>
-        <div class="ecc-card"><p style="font-size:0.85rem;color:var(--ecc-text-dim);">Gate A: Grace (Lead), Gate B: David (Tech)</p></div>
+        <div id="staff-root" data-base-url="<?= e(BASE_URL) ?>" data-csrf="<?= e($_SESSION['csrf_token'] ?? '') ?>"></div>
       </div>
 
       <!-- MODULE 14: SETTINGS -->
@@ -9939,6 +9938,7 @@ save().then(function(res) {
 <script src="<?= BASE_URL ?>assets/js/analytics-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/messages-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/documents-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-docs-1"></script>
+<script src="<?= BASE_URL ?>assets/js/staff-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-staff-1"></script>
 <script src="<?= BASE_URL ?>assets/js/tie-location.js"></script>
 <script src="<?= BASE_URL ?>assets/js/venues-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-venue-fix-4"></script>
 <script src="<?= BASE_URL ?>assets/js/events-marketing-actions.js?v=<?= rawurlencode(APP_VERSION) ?>-marketing-actions-1"></script>

@@ -120,6 +120,8 @@ $migrations = [
     '038_tie_analytics.sql'                           => $base . '038_tie_analytics.sql',
     '039_tie_messages.sql'                            => $base . '039_tie_messages.sql',
     '040_tie_documents.sql'                           => $base . '040_tie_documents.sql',
+    '041_tie_reviews.sql'                             => $base . '041_tie_reviews.sql',
+    '042_tie_staff.sql'                               => $base . '042_tie_staff.sql',
 ];
 
 out("", 'info');
