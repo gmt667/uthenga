@@ -1957,12 +1957,7 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 7: FINANCE -->
       <div id="mod-finance" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Finance & Payouts</h2>
-        <div class="ecc-stats-row">
-          <div class="ecc-stat-card"><div class="ecc-stat-info"><label>Gross Sales</label><h2>MK 4.35M</h2></div></div>
-          <div class="ecc-stat-card"><div class="ecc-stat-info"><label>Net Payout Ready</label><h2>MK 4.13M</h2></div></div>
-          <div class="ecc-stat-card"><div class="ecc-stat-info"><label>Platform Fees (5%)</label><h2>MK 217,500</h2></div></div>
-        </div>
+        <div id="fin-root"></div>
       </div>
 
       <!-- MODULE 8: CUSTOMERS -->
@@ -7244,6 +7239,7 @@ save().then(function(res) {
   });
 })();
 </script>
+<script src="<?= BASE_URL ?>assets/js/finance-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/tie-location.js"></script>
 <script src="<?= BASE_URL ?>assets/js/venues-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/main.js"></script>
