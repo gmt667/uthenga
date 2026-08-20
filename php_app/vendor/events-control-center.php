@@ -1971,11 +1971,7 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 9: ANALYTICS -->
       <div id="mod-analytics" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Analytics & Conversion Funnel</h2>
-        <div class="ecc-card">
-          <h3>Conversion Funnel</h3>
-          <p style="font-size:0.85rem;color:var(--ecc-text-dim);">14,200 Page Views → 1,450 Checkout Clicks → 245 Completed Ticket Purchases (16.8% Conversion)</p>
-        </div>
+        <div id="anl-root"></div>
       </div>
 
       <!-- MODULE 10: REVIEWS -->
@@ -7240,6 +7236,7 @@ save().then(function(res) {
 })();
 </script>
 <script src="<?= BASE_URL ?>assets/js/finance-console.js"></script>
+<script src="<?= BASE_URL ?>assets/js/analytics-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/tie-location.js"></script>
 <script src="<?= BASE_URL ?>assets/js/venues-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/main.js"></script>
