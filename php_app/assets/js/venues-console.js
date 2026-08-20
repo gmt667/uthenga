@@ -80,6 +80,19 @@ window.VenuesControlCenter = (function() {
   };
 
   function esc(s) { return window.tkEsc ? tkEsc(s) : String(s == null ? '' : s); }
+  function icon(name) {
+    var p = {
+      pin: '<path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 3.4 4.5 8.5 4.5 8.5s4.5-5.1 4.5-8.5A4.5 4.5 0 0 0 8 1.5Z" /><circle cx="8" cy="6" r="1.6" />',
+      calendar: '<rect x="2.5" y="4" width="11" height="10.5" rx="2" /><path d="M2.5 7.5h11M6 2.5v3M10 2.5v3" />',
+      clock: '<circle cx="8" cy="8.5" r="5.5" /><path d="M8 5.5v3l2 1.5" />',
+      bulb: '<path d="M8 2a4.5 4.5 0 0 0-2.4 8.3c.7.5 1 1.2 1 2.2h2.8c0-1 .3-1.7 1-2.2A4.5 4.5 0 0 0 8 2Z" /><path d="M6.8 14h2.4M7.5 14.8v.1" />',
+      doc: '<path d="M4 1.5h5.5L13 5v9.5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-12a1 1 0 0 1 1-1Z" /><path d="M9.5 1.5V5H13" />',
+      check: '<path d="M3 8.5l3.2 3.2L13 5" />',
+      warn: '<path d="M8 2.5l6.5 11h-13L8 2.5Z" /><path d="M8 6.5v3.2M8 11.9v.1" />',
+      pencil: '<path d="M3.5 12.5l.6-2.6L11.5 2.5a1.1 1.1 0 0 1 1.6 1.6L5.7 11.5l-2.6.6Z" /><path d="M10.6 3.4l1.9 1.9" />'
+    };
+    return '<svg viewBox="0 0 16 16" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-0.14em;flex-shrink:0;">' + (p[name] || '') + '</svg>';
+  }
   function money(n, c) { return window.tkMoney ? tkMoney(n, c) : ('MWK ' + (Number(n) || 0)); }
   function fmtDate(d) { return window.tkDate ? tkDate(d) : String(d || '—'); }
   function fmtDt(d) { return window.tkDateTime ? tkDateTime(d) : String(d || '—'); }
@@ -447,11 +460,11 @@ window.VenuesControlCenter = (function() {
     h += '<span class="ecc-chip">' + esc(String(v.capacity || 0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')) + ' capacity</span>';
     var spaces = (state.detail && state.detail.spaces) || [];
     h += '<span class="ecc-chip">' + spaces.length + ' space' + (spaces.length === 1 ? '' : 's') + '</span>';
-    if (v.gps_lat != null) h += '<span class="ecc-chip">📍 ' + esc(String(v.gps_lat)) + ', ' + esc(String(v.gps_lng)) + '</span>';
+    if (v.gps_lat != null) h += '<span class="ecc-chip">' + icon('pin') + ' ' + esc(String(v.gps_lat)) + ', ' + esc(String(v.gps_lng)) + '</span>';
     h += '</div></div>';
     h += '<div style="display:flex;flex-direction:column;gap:0.4rem;">';
-    h += '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.7rem;padding:0.34rem 0.7rem;" onclick="VenuesControlCenter.openAssign(\'' + esc(v.id) + '\')">🎪 Assign Event</button>';
-    h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;padding:0.34rem 0.7rem;" onclick="VenuesControlCenter.openBlock(\'' + esc(v.id) + '\', \'\')">⏱ Set Availability Block</button>';
+    h += '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.7rem;padding:0.34rem 0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.openAssign(\'' + esc(v.id) + '\')">' + icon('calendar') + ' Assign Event</button>';
+    h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;padding:0.34rem 0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.openBlock(\'' + esc(v.id) + '\', \'\')">' + icon('clock') + ' Set Availability Block</button>';
     h += '<select class="ecc-input" style="font-size:0.68rem;padding:0.3rem;" onchange="VenuesControlCenter.quickStatus(\'' + esc(v.id) + '\', this.value)">';
     ['ACTIVE', 'TEMPORARILY_UNAVAILABLE', 'MAINTENANCE', 'SUSPENDED'].forEach(function(s) {
       h += '<option value="' + s + '"' + (v.status === s ? ' selected' : '') + '>' + s.replace(/_/g, ' ') + '</option>';
@@ -509,7 +522,7 @@ window.VenuesControlCenter = (function() {
     h += '<strong style="font-size:0.78rem;">Intelligence</strong>';
     h += '<div style="margin-top:0.5rem;display:grid;gap:0.45rem;">';
     (st.insights || []).forEach(function(s) {
-      h += '<div style="font-size:0.72rem;color:var(--ecc-text-dim);padding:0.5rem 0.65rem;background:var(--ecc-surface-2);border-radius:8px;border-left:3px solid #a855f7;">💡 ' + esc(s) + '</div>';
+      h += '<div style="font-size:0.72rem;color:var(--ecc-text-dim);padding:0.5rem 0.65rem;background:var(--ecc-surface-2);border-radius:8px;border-left:3px solid #a855f7;">' + icon('bulb') + ' ' + esc(s) + '</div>';
     });
     h += '</div></div>';
 
@@ -522,10 +535,10 @@ window.VenuesControlCenter = (function() {
 
     h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0.8rem;">';
     h += '<div class="ecc-card" style="padding:1rem;"><strong style="font-size:0.78rem;">Quick actions</strong><div style="display:grid;gap:0.45rem;margin-top:0.6rem;">';
-    h += '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.7rem;" onclick="VenuesControlCenter.openAssign(\'' + esc(v.id) + '\')">🎪 Assign an event</button>';
-    h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;" onclick="VenuesControlCenter.openBlock(\'' + esc(v.id) + '\', \'\')">⏱ Block a date</button>';
+    h += '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.openAssign(\'' + esc(v.id) + '\')">' + icon('calendar') + ' Assign an event</button>';
+    h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.openBlock(\'' + esc(v.id) + '\', \'\')">' + icon('clock') + ' Block a date</button>';
     h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;" onclick="VenuesControlCenter.goSub(\'availability\')">▤ Open availability calendar</button>';
-    h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;" onclick="VenuesControlCenter.goSub(\'details\')">✎ Edit venue details</button>';
+    h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.goSub(\'details\')">' + icon('pencil') + ' Edit venue details</button>';
     h += '</div></div>';
     h += '<div class="ecc-card" style="padding:1rem;"><strong style="font-size:0.78rem;">Guest rating</strong>';
     h += '<div style="margin-top:0.5rem;font-size:1.05rem;font-weight:900;color:#fbbf24;">★ 4.8</div>';
@@ -971,7 +984,7 @@ window.VenuesControlCenter = (function() {
     if (!docs.length) h += '<div class="ecc-tk-empty">No documents yet. Add floor plans in the Media tab.</div>';
     docs.forEach(function(m) {
       h += '<div style="display:flex;gap:0.6rem;align-items:center;padding:0.5rem 0;border-bottom:1px dashed var(--ecc-border);">';
-      h += '<span style="width:34px;height:34px;border-radius:8px;background:var(--ecc-surface-3);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;">📄</span>';
+      h += '<span style="width:34px;height:34px;border-radius:8px;background:var(--ecc-surface-3);display:flex;align-items:center;justify-content:center;color:var(--ecc-text-dim);font-size:0.9rem;flex-shrink:0;">' + icon('doc') + '</span>';
       h += '<div style="flex:1;min-width:0;font-size:0.72rem;"><strong>Floor plan</strong><div style="color:var(--ecc-text-dim);font-size:0.64rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(m.url) + '</div></div>';
       h += '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" class="ecc-btn ecc-btn-secondary" style="font-size:0.64rem;padding:0.25rem 0.55rem;text-decoration:none;">Open ↗</a>';
       h += '</div>';
@@ -1301,7 +1314,12 @@ window.VenuesControlCenter = (function() {
         + '<label style="font-weight:700;font-size:0.75rem;">Contact phone<input type="text" id="ww-i-phone" class="ecc-input" value="' + esc(d.contact_phone) + '" placeholder="+265 99 000 0000" style="display:block;width:100%;margin-top:0.2rem;"></label>'
         + '<label style="font-weight:700;font-size:0.75rem;">Contact email<input type="email" id="ww-i-email" class="ecc-input" value="' + esc(d.contact_email) + '" placeholder="bookings@venue.mw" style="display:block;width:100%;margin-top:0.2rem;"></label>'
         + '</div>'
-        + '<label style="font-weight:700;font-size:0.75rem;display:block;margin-top:0.7rem;">Cover image URL<input type="url" id="ww-i-cover" class="ecc-input" value="' + esc(d.cover_image || d.mediaCover) + '" placeholder="https://…/cover.jpg" style="display:block;width:100%;margin-top:0.2rem;"></label>';
+        + '<label style="font-weight:700;font-size:0.75rem;display:block;margin-top:0.7rem;">Cover image URL<input type="url" id="ww-i-cover" class="ecc-input" value="' + esc(d.cover_image || d.mediaCover) + '" placeholder="https://…/cover.jpg" style="display:block;width:100%;margin-top:0.2rem;"></label>'
+        + '<div style="margin-top:0.4rem;"><label style="font-size:0.68rem;color:var(--ecc-text-dim);">Or upload an image (JPG, PNG or WebP, max 10 MB)</label>'
+        + '<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem;">'
+        + '<input type="file" id="ww-i-cover-file" accept="image/jpeg,image/png,image/webp" style="font-size:0.7rem;flex:1;min-width:0;">'
+        + '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.25rem 0.6rem;display:inline-flex;align-items:center;gap:0.3rem;" id="ww-i-cover-up" onclick="VenuesControlCenter.wizardUploadCover(\'ww-i-cover-file\', \'ww-i-cover\', this)">' + icon('clock') + ' Upload</button>'
+        + '</div><div id="ww-i-cover-msg" style="font-size:0.64rem;color:var(--ecc-text-dim);margin-top:0.15rem;"></div></div>';
     } else if (step === 2) {
       h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">'
         + '<label style="font-weight:700;font-size:0.75rem;">Street address<input type="text" id="ww-l-addr" class="ecc-input" value="' + esc(d.address) + '" placeholder="e.g. Convention Drive" style="display:block;width:100%;margin-top:0.2rem;"></label>'
@@ -1340,6 +1358,11 @@ window.VenuesControlCenter = (function() {
       });
     } else if (step === 5) {
       h += '<label style="font-weight:700;font-size:0.75rem;">Cover image URL<input type="url" id="ww-m-cover" class="ecc-input" value="' + esc(d.mediaCover || '') + '" placeholder="https://…/cover.jpg" style="display:block;width:100%;margin-top:0.2rem;"></label>';
+      h += '<div style="margin-top:0.4rem;"><label style="font-size:0.68rem;color:var(--ecc-text-dim);">Or upload an image (JPG, PNG or WebP, max 10 MB)</label>'
+        + '<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem;">'
+        + '<input type="file" id="ww-m-cover-file" accept="image/jpeg,image/png,image/webp" style="font-size:0.7rem;flex:1;min-width:0;">'
+        + '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.25rem 0.6rem;display:inline-flex;align-items:center;gap:0.3rem;" id="ww-m-cover-up" onclick="VenuesControlCenter.wizardUploadCover(\'ww-m-cover-file\', \'ww-m-cover\', this)">' + icon('clock') + ' Upload</button>'
+        + '</div><div id="ww-m-cover-msg" style="font-size:0.64rem;color:var(--ecc-text-dim);margin-top:0.15rem;"></div></div>';
       h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:0.9rem 0 0.6rem;"><strong style="font-size:0.78rem;">Gallery</strong><label style="font-size:0.7rem;color:var(--ecc-text-dim);">One image URL per line</label></div>';
       h += '<textarea id="ww-m-gallery" class="ecc-input" rows="5" placeholder="https://…/photo1.jpg&#10;https://…/photo2.jpg" style="display:block;width:100%;resize:vertical;">' + esc((d.mediaGallery || []).join('\n')) + '</textarea>';
       h += '<div style="font-size:0.7rem;color:var(--ecc-text-dim);margin-top:0.6rem;">Floor plans and extra media can be managed later from the venue workspace.</div>';
@@ -1381,7 +1404,7 @@ window.VenuesControlCenter = (function() {
       h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:0.45rem;margin-bottom:1rem;">';
       checks.forEach(function(c) {
         h += '<div style="padding:0.55rem 0.7rem;border-radius:10px;background:var(--ecc-surface-2);border:1px solid ' + (c[1] ? 'rgba(52,211,153,0.35)' : 'rgba(251,113,133,0.35)') + ';font-size:0.72rem;">'
-          + (c[1] ? '✅' : '⚠️') + ' ' + c[0] + '</div>';
+          + (c[1] ? '<span style="color:#34d399;display:inline-flex;align-items:center;">' + icon('check') + '</span>' : '<span style="color:#fbbf24;display:inline-flex;align-items:center;">' + icon('warn') + '</span>') + ' ' + c[0] + '</div>';
       });
       h += '</div>';
       h += '<div class="ecc-card" style="padding:0.9rem 1rem;margin-bottom:1rem;font-size:0.72rem;">';
@@ -1438,6 +1461,37 @@ window.VenuesControlCenter = (function() {
       wizardRenderStep();
     }).catch(function(e) {
       toast('Location: ' + ((e && (e.message || e.code)) || 'permission denied'));
+    });
+  }
+
+  function wizardUploadCover(fileId, urlId, btn) {
+    var f = document.getElementById(fileId);
+    var msg = document.getElementById(urlId + '-msg');
+    if (!f || !f.files || !f.files.length) { if (msg) msg.textContent = 'Choose an image file first.'; return; }
+    var file = f.files[0];
+    if (file.size > 10 * 1024 * 1024) { if (msg) { msg.textContent = 'The file must be smaller than 10 MB.'; msg.style.color = '#fb7185'; } return; }
+    var fd = new FormData();
+    fd.append('file', file);
+    var original = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Uploading…'; }
+    if (msg) { msg.textContent = 'Uploading…'; msg.style.color = 'var(--ecc-text-dim)'; }
+    fetch(base + 'api/tie/vendor/events/cover-image.php', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'X-CSRF-Token': csrf },
+      body: fd
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      if (btn) { btn.disabled = false; btn.innerHTML = original; }
+      var urlInput = document.getElementById(urlId);
+      if (d && d.success && d.url) {
+        if (urlInput) urlInput.value = d.url;
+        if (msg) { msg.textContent = 'Cover uploaded.'; msg.style.color = '#34d399'; }
+        toast('Cover image uploaded.');
+      } else {
+        if (msg) { msg.textContent = ((d && d.error && d.error.message) || 'Upload failed.'); msg.style.color = '#fb7185'; }
+      }
+    }).catch(function() {
+      if (btn) { btn.disabled = false; btn.innerHTML = original; }
+      if (msg) { msg.textContent = 'Upload failed. Check your connection and try again.'; msg.style.color = '#fb7185'; }
     });
   }
 
@@ -1594,6 +1648,7 @@ window.VenuesControlCenter = (function() {
     wizardPricePresets: wizardPricePresets,
     wizardAddCustomFac: wizardAddCustomFac,
     wizardGeo: wizardGeo,
+    wizardUploadCover: wizardUploadCover,
     wizardSubmit: wizardSubmit,
     wizardDelSpace: wizardDelSpace,
     wizardDelPrice: wizardDelPrice,
