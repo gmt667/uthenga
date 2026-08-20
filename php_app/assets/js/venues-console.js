@@ -407,8 +407,11 @@ window.VenuesControlCenter = (function() {
   function openWorkspace(venueId) {
     state.venueId = venueId;
     state.sub = 'overview';
-    document.getElementById('vc-console').style.display = 'none';
-    document.getElementById('vc-workspace').style.display = 'block';
+    var consoleEl = document.getElementById('vc-console');
+    var wsEl = document.getElementById('vc-workspace');
+    if (!consoleEl || !wsEl) return;
+    consoleEl.style.display = 'none';
+    wsEl.style.display = 'block';
     document.getElementById('vc-ws-body').innerHTML = '<div class="ecc-tk-empty">Loading…</div>';
     refreshDetail();
   }
@@ -420,11 +423,18 @@ window.VenuesControlCenter = (function() {
   }
   function refreshDetail() {
     get('detail', { venue_id: state.venueId }).then(function(b) {
-      if (!b.success) { toast('Venue: ' + errMsg(b)); return; }
+      if (!b || !b.success) {
+        toast('Venue: ' + errMsg(b));
+        closeWorkspace();
+        return;
+      }
       state.detail = b.venue_result || {};
       renderWsHead();
       renderWsNav();
       renderSub();
+    }).catch(function(err) {
+      toast('Could not load venue details.');
+      closeWorkspace();
     });
   }
   function goSub(sub) {
@@ -478,21 +488,32 @@ window.VenuesControlCenter = (function() {
     return '<div class="vc-box"><div style="font-size:0.6rem;color:var(--ecc-text-dim);font-weight:700;letter-spacing:0.05em;">' + esc(label) + '</div><div style="font-size:0.95rem;font-weight:900;margin-top:0.2rem;overflow:hidden;text-overflow:ellipsis;">' + value + '</div></div>';
   }
 
+  function ensureArray(val) {
+    if (Array.isArray(val)) return val;
+    if (val && typeof val === 'object') return Object.keys(val).map(function(k) { return val[k]; });
+    return [];
+  }
+
   function renderSub() {
     var el = document.getElementById('vc-ws-body');
     if (!el) return;
-    switch (state.sub) {
-      case 'overview': renderOverview(el); break;
-      case 'details': renderDetails(el); break;
-      case 'spaces': renderSpaces(el); break;
-      case 'availability': renderAvailability(el); break;
-      case 'pricing': renderPricing(el); break;
-      case 'facilities': renderFacilities(el); break;
-      case 'media': renderMedia(el); break;
-      case 'policies': renderPolicies(el); break;
-      case 'documents': renderDocuments(el); break;
-      case 'activity': renderActivity(el); break;
-      default: el.innerHTML = '';
+    try {
+      switch (state.sub) {
+        case 'overview': renderOverview(el); break;
+        case 'details': renderDetails(el); break;
+        case 'spaces': renderSpaces(el); break;
+        case 'availability': renderAvailability(el); break;
+        case 'pricing': renderPricing(el); break;
+        case 'facilities': renderFacilities(el); break;
+        case 'media': renderMedia(el); break;
+        case 'policies': renderPolicies(el); break;
+        case 'documents': renderDocuments(el); break;
+        case 'activity': renderActivity(el); break;
+        default: el.innerHTML = '';
+      }
+    } catch(err) {
+      console.error('[VC] renderSub error:', err);
+      el.innerHTML = '<div class="ecc-card" style="padding:1.5rem;text-align:center;"><div style="font-weight:700;color:var(--ecc-text);margin-bottom:0.5rem;">Could not render this workspace section.</div><button type="button" class="ecc-btn ecc-btn-primary" onclick="VenuesControlCenter.closeWorkspace()">← Return to Venues</button></div>';
     }
   }
 
@@ -500,28 +521,28 @@ window.VenuesControlCenter = (function() {
     var d = state.detail || {};
     var v = d.venue || {};
     var st = d.stats || { bookings: 0, available_days: 0, utilization: 0, revenue: 0, insights: [] };
-    var assignments = d.assignments || [];
+    var assignments = ensureArray(d.assignments);
     var now = new Date();
-    var upcoming = assignments.filter(function(a) { return a.status === 'CONFIRMED' && a.event_start >= (now.toISOString().slice(0, 10) + ' 00:00:00'); });
+    var upcoming = assignments.filter(function(a) { return a && a.status === 'CONFIRMED' && (a.event_start || '') >= (now.toISOString().slice(0, 10) + ' 00:00:00'); });
 
     var h = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.6rem;margin-bottom:1rem;">';
     h += box('UPCOMING EVENTS', '<span style="color:var(--ecc-primary);">' + upcoming.length + '</span>');
-    h += box('UTILIZATION', '<span style="color:' + (st.utilization > 60 ? '#22c55e' : '#f59e0b') + ';">' + st.utilization + '%</span>');
+    h += box('UTILIZATION', '<span style="color:' + (st.utilization > 60 ? '#22c55e' : '#f59e0b') + ';">' + (st.utilization || 0) + '%</span>');
     h += box('REVENUE', money(st.revenue, true));
-    h += box('BOOKINGS', st.bookings);
-    h += box('AVAILABLE DAYS', st.available_days);
+    h += box('BOOKINGS', st.bookings || 0);
+    h += box('AVAILABLE DAYS', st.available_days || 0);
     h += '</div>';
 
     h += '<div class="ecc-card" style="margin-bottom:1rem;padding:1rem;">';
-    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><strong style="font-size:0.78rem;">Utilization (next 30 days)</strong><span style="font-size:0.7rem;color:var(--ecc-text-dim);">' + st.utilization + '%</span></div>';
-    h += '<div style="height:8px;border-radius:100px;background:var(--ecc-surface-3);overflow:hidden;"><div style="width:' + Math.min(100, st.utilization) + '%;height:100%;border-radius:100px;background:linear-gradient(90deg,#6366f1,#a855f7);"></div></div>';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;"><strong style="font-size:0.78rem;">Utilization (next 30 days)</strong><span style="font-size:0.7rem;color:var(--ecc-text-dim);">' + (st.utilization || 0) + '%</span></div>';
+    h += '<div style="height:8px;border-radius:100px;background:var(--ecc-surface-3);overflow:hidden;"><div style="width:' + Math.min(100, (st.utilization || 0)) + '%;height:100%;border-radius:100px;background:linear-gradient(90deg,#6366f1,#a855f7);"></div></div>';
     h += '<div style="margin-top:0.6rem;font-size:0.72rem;color:var(--ecc-text-dim);">Based on confirmed assignments in the next 6 months.</div>';
     h += '</div>';
 
     h += '<div class="ecc-card" style="margin-bottom:1rem;padding:1rem;">';
     h += '<strong style="font-size:0.78rem;">Intelligence</strong>';
     h += '<div style="margin-top:0.5rem;display:grid;gap:0.45rem;">';
-    (st.insights || []).forEach(function(s) {
+    ensureArray(st.insights).forEach(function(s) {
       h += '<div style="font-size:0.72rem;color:var(--ecc-text-dim);padding:0.5rem 0.65rem;background:var(--ecc-surface-2);border-radius:8px;border-left:3px solid #a855f7;">' + icon('bulb') + ' ' + esc(s) + '</div>';
     });
     h += '</div></div>';
@@ -598,12 +619,13 @@ window.VenuesControlCenter = (function() {
 
   function renderSpaces(el) {
     var d = state.detail || {};
-    var spaces = d.spaces || [];
+    var spaces = ensureArray(d.spaces);
     var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;"><strong style="font-size:0.8rem;">Spaces (' + spaces.length + ')</strong></div>';
     h += '<div class="ecc-card" style="overflow-x:auto;margin-bottom:1rem;"><table class="vc-table">';
     h += '<thead><tr><th>Name</th><th>Seating</th><th>Capacity</th><th>Dimensions</th><th>Status</th><th></th></tr></thead><tbody>';
     if (!spaces.length) h += '<tr><td colspan="6"><div class="ecc-tk-empty">No spaces yet — add the first one below.</div></td></tr>';
     spaces.forEach(function(s) {
+      if (!s) return;
       h += '<tr>';
       h += '<td style="font-size:0.74rem;"><strong>' + esc(s.name) + '</strong>' + (s.description ? '<div style="color:var(--ecc-text-dim);font-size:0.66rem;">' + esc(s.description) + '</div>' : '') + '</td>';
       h += '<td style="font-size:0.72rem;">' + esc(s.type || '—') + '</td>';
@@ -617,14 +639,14 @@ window.VenuesControlCenter = (function() {
     h += '</tbody></table></div>';
     h += '<div class="ecc-card" style="padding:1rem;max-width:760px;">';
     h += '<strong style="font-size:0.78rem;">Add a space</strong>';
-    h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-top:0.6rem;font-size:0.72rem;">';
-    h += '<label style="font-weight:700;">Name<input id="vs-name" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;" placeholder="Hall A"></label>';
-    h += '<label style="font-weight:700;">Seating layout<select id="vs-type" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;"><option value="">—</option>' + SPACE_TYPES.map(function(t) { return '<option>' + t + '</option>'; }).join('') + '</select></label>';
-    h += '<label style="font-weight:700;">Capacity<input type="number" id="vs-capacity" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;"></label>';
-    h += '<label style="grid-column:1 / -1;font-weight:700;">Dimensions<input id="vs-dims" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;" placeholder="e.g. 40x25m"></label>';
-    h += '<label style="grid-column:1 / -1;font-weight:700;">Description<input id="vs-desc" class="ecc-input" style="display:block;width:100%;margin-top:0.2rem;"></label>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:0.6rem;">';
+    h += '<input type="text" id="vc-sp-name" class="ecc-input" placeholder="Space name * (e.g. Grand Ballroom)" style="font-size:0.74rem;">';
+    h += '<select id="vc-sp-type" class="ecc-input" style="font-size:0.74rem;">' + SPACE_TYPES.map(function(t) { return '<option>' + t + '</option>'; }).join('') + '</select>';
+    h += '<input type="number" id="vc-sp-cap" class="ecc-input" placeholder="Capacity (e.g. 500)" style="font-size:0.74rem;">';
+    h += '<input type="text" id="vc-sp-dim" class="ecc-input" placeholder="Dimensions (e.g. 20m x 15m)" style="font-size:0.74rem;">';
+    h += '<input type="text" id="vc-sp-desc" class="ecc-input" placeholder="Short description" style="grid-column:1/-1;font-size:0.74rem;">';
     h += '</div>';
-    h += '<button type="button" class="ecc-btn ecc-btn-primary" style="margin-top:0.7rem;font-size:0.72rem;" onclick="VenuesControlCenter.addSpaceFn()">+ Add Space</button>';
+    h += '<button type="button" class="ecc-btn ecc-btn-primary" style="margin-top:0.7rem;font-size:0.74rem;" onclick="VenuesControlCenter.addSpace()">+ Save Space</button>';
     h += '</div>';
     el.innerHTML = h;
   }
@@ -669,7 +691,7 @@ window.VenuesControlCenter = (function() {
   function renderAvailability(el) {
     var d = state.detail || {};
     var v = d.venue || {};
-    var assignments = (d.assignments || []).filter(function(a) { return a.status === 'CONFIRMED'; });
+    var assignments = ensureArray(d.assignments).filter(function(a) { return a && a.status === 'CONFIRMED'; });
     var h = '<div style="display:flex;justify-content:space-between;align-items:center;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.7rem;">';
     h += '<strong style="font-size:0.8rem;">Availability calendar</strong>';
     h += '<div style="display:flex;gap:0.4rem;align-items:center;">';
@@ -690,6 +712,7 @@ window.VenuesControlCenter = (function() {
     h += '<div class="ecc-card" style="padding:1rem;"><strong style="font-size:0.78rem;">Upcoming bookings</strong><div style="margin-top:0.5rem;display:grid;gap:0.45rem;">';
     if (!assignments.length) h += '<div class="ecc-tk-empty">No confirmed bookings yet.</div>';
     assignments.forEach(function(a) {
+      if (!a) return;
       h += '<div style="font-size:0.7rem;background:var(--ecc-surface-2);border-radius:8px;padding:0.5rem 0.65rem;display:flex;gap:0.5rem;align-items:center;justify-content:space-between;">';
       h += '<div style="min-width:0;"><strong>' + esc(a.title) + '</strong><div style="color:var(--ecc-text-dim);font-size:0.64rem;">' + fmtDt(a.event_start) + ' → ' + fmtDt(a.teardown_end) + (a.space_id ? ' · space' : ' · whole venue') + '</div></div>';
       h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.62rem;padding:0.22rem 0.5rem;flex-shrink:0;" onclick="VenuesControlCenter.unassign(\'' + esc(a.assignment_id) + '\')">Unassign</button>';
@@ -697,9 +720,10 @@ window.VenuesControlCenter = (function() {
     });
     h += '</div></div>';
     h += '<div class="ecc-card" style="padding:1rem;"><strong style="font-size:0.78rem;">Manual blocks</strong><div style="margin-top:0.5rem;display:grid;gap:0.45rem;">';
-    var blocks = (d.blocks || []).filter(function(x) { return ['RESERVED', 'BLOCKED', 'MAINTENANCE'].indexOf(x.status) !== -1; });
+    var blocks = ensureArray(d.blocks).filter(function(x) { return x && ['RESERVED', 'BLOCKED', 'MAINTENANCE'].indexOf(x.status) !== -1; });
     if (!blocks.length) h += '<div class="ecc-tk-empty">No manual blocks.</div>';
     blocks.forEach(function(x) {
+      if (!x) return;
       h += '<div style="font-size:0.7rem;background:var(--ecc-surface-2);border-radius:8px;padding:0.5rem 0.65rem;display:flex;gap:0.5rem;align-items:center;justify-content:space-between;">';
       h += '<div style="min-width:0;"><strong style="color:' + chip(x.status) + ';">' + esc(x.status) + '</strong><div style="color:var(--ecc-text-dim);font-size:0.64rem;">' + fmtDt(x.start_at) + ' → ' + fmtDt(x.end_at) + (x.reason ? ' · ' + esc(x.reason) : '') + '</div></div>';
       h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.62rem;padding:0.22rem 0.5rem;flex-shrink:0;" onclick="VenuesControlCenter.removeBlock(\'' + esc(x.id) + '\')">✕</button>';
@@ -929,9 +953,9 @@ window.VenuesControlCenter = (function() {
   }
 
   function renderPolicies(el) {
-    var p = (state.detail && state.detail.policies) || {};
-    var restr = p.restrictions || '[]';
-    if (typeof restr === 'string') { try { restr = JSON.parse(restr); } catch (e) { restr = []; } }
+    var d = state.detail || {};
+    var p = (d.policies && d.policies[0]) || d.policies || {};
+    var restr = ensureArray(p.restrictions);
     var sel = {};
     restr.forEach(function(r) { sel[r] = true; });
     var h = '<div class="ecc-card" style="padding:1rem;max-width:760px;">';
@@ -956,19 +980,23 @@ window.VenuesControlCenter = (function() {
     h += '</div>';
     el.innerHTML = h;
   }
+
   function savePoliciesFn() {
     var restr = [];
-    document.querySelectorAll('.vp2-restr').forEach(function(cb) { if (cb.checked) restr.push(cb.value); });
-    post({
-      action: 'save_policies', venue_id: state.venueId,
-      policies: {
-        cancellation_policy: val('vp2-cancel'), advance_booking_days: val('vp2-advance'),
-        min_duration_hours: val('vp2-min'), max_duration_hours: val('vp2-max'),
-        check_in_time: val('vp2-checkin'), opening_time: val('vp2-open'), closing_time: val('vp2-close'),
-        setup_period_minutes: val('vp2-setup'), teardown_period_minutes: val('vp2-teardown'),
-        restrictions: restr
-      }
-    }).then(function(b) {
+    document.querySelectorAll('.vp2-restr:checked').forEach(function(c) { restr.push(c.value); });
+    var policies = {
+      restrictions: restr,
+      cancellation_policy: val('vp2-cancel'),
+      advance_booking_days: val('vp2-advance'),
+      min_duration_hours: val('vp2-min'),
+      max_duration_hours: val('vp2-max'),
+      check_in_time: val('vp2-checkin'),
+      opening_time: val('vp2-open'),
+      closing_time: val('vp2-close'),
+      setup_period_minutes: val('vp2-setup'),
+      teardown_period_minutes: val('vp2-teardown')
+    };
+    post({ action: 'save_policies', venue_id: state.venueId, policies: policies }).then(function(b) {
       if (!b.success) { toast('Policies: ' + errMsg(b)); return; }
       toast('Policies saved');
       applyDetailResult(b);
@@ -977,12 +1005,13 @@ window.VenuesControlCenter = (function() {
 
   function renderDocuments(el) {
     var d = state.detail || {};
-    var docs = (d.media || []).filter(function(m) { return m.media_type === 'FLOOR_PLAN'; });
+    var docs = ensureArray(d.media).filter(function(m) { return m && m.media_type === 'FLOOR_PLAN'; });
     var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;"><strong style="font-size:0.8rem;">Venue documents</strong></div>';
     h += '<div class="ecc-card" style="padding:1rem;max-width:720px;">';
     h += '<div style="font-size:0.7rem;color:var(--ecc-text-dim);margin-bottom:0.7rem;">Floor plans, seating diagrams and venue packs. Add a file as a <strong>Floor plan / Doc</strong> item in the Media tab — it appears here for the venue team.</div>';
     if (!docs.length) h += '<div class="ecc-tk-empty">No documents yet. Add floor plans in the Media tab.</div>';
     docs.forEach(function(m) {
+      if (!m) return;
       h += '<div style="display:flex;gap:0.6rem;align-items:center;padding:0.5rem 0;border-bottom:1px dashed var(--ecc-border);">';
       h += '<span style="width:34px;height:34px;border-radius:8px;background:var(--ecc-surface-3);display:flex;align-items:center;justify-content:center;color:var(--ecc-text-dim);font-size:0.9rem;flex-shrink:0;">' + icon('doc') + '</span>';
       h += '<div style="flex:1;min-width:0;font-size:0.72rem;"><strong>Floor plan</strong><div style="color:var(--ecc-text-dim);font-size:0.64rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(m.url) + '</div></div>';
@@ -995,16 +1024,16 @@ window.VenuesControlCenter = (function() {
 
   function renderActivity(el) {
     var d = state.detail || {};
-    var act = d.activity || [];
+    var act = ensureArray(d.activity);
     var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;"><strong style="font-size:0.8rem;">Activity timeline</strong></div>';
     h += '<div class="ecc-card" style="padding:1rem;max-width:720px;">';
     if (!act.length) h += '<div class="ecc-tk-empty">No activity recorded yet.</div>';
     act.forEach(function(a) {
+      if (!a) return;
       var det = '';
       try { var j = JSON.parse(a.details || '{}'); if (j && j.event) det = j.event; else if (j && j.space) det = j.space; } catch (e) {}
       h += '<div style="display:flex;gap:0.6rem;padding:0.45rem 0;border-bottom:1px dashed var(--ecc-border);">';
       h += '<div style="width:9px;height:9px;border-radius:50%;background:var(--ecc-primary);margin-top:0.3rem;flex-shrink:0;"></div>';
-      h += '<div style="flex:1;font-size:0.72rem;"><strong>' + esc(a.action) + '</strong>' + (det ? ' <span style="color:var(--ecc-text-dim);">· ' + esc(det) + '</span>' : '') +
         '<div style="font-size:0.62rem;color:var(--ecc-text-dim);">by ' + esc(a.actor_name || a.actor_id || 'system') + '</div></div>';
       h += '<div style="font-size:0.62rem;color:var(--ecc-text-dim);white-space:nowrap;">' + fmtDt(a.created_at) + '</div>';
       h += '</div>';

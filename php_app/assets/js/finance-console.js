@@ -132,8 +132,14 @@ window.FinanceControlCenter = (function() {
     if (!root || root.dataset.built) return;
     root.dataset.built = '1';
 
-    var h = '<div class="fin-toolbar">';
-    h += '<div class="fin-subnav">';
+    var h = '<div class="fin-head">';
+    h += '<div class="fin-head-l"><h2>Finance console</h2><p>Revenue, settlements, fees and reconciliation for your events — reconciled against live transactions.</p></div>';
+    h += '<div class="fin-head-r"><span class="fin-head-badge">' + icon('shield', 13) + 'Realtime</span>' +
+      '<button type="button" class="fin-btn fin-btn-line fin-btn-sm" onclick="FinanceControlCenter.refreshAll()">' + icon('refresh', 13) + 'Refresh</button></div>';
+    h += '</div>';
+
+    h += '<div class="fin-toolbar">';
+    h += '<div class="fin-subnav" role="tablist">';
     TABS.forEach(function(t) {
       h += '<button type="button" data-fin-tab="' + t.id + '" class="' + (t.id === 'overview' ? 'active' : '') + '" onclick="FinanceControlCenter.loadTab(\'' + t.id + '\')">' + esc(t.label) + '</button>';
     });
@@ -184,6 +190,11 @@ window.FinanceControlCenter = (function() {
     else if (id === 'reconciliation') loadReconciliation();
   }
   function body(id) { return document.getElementById('fin-body-' + id); }
+  function refreshAll() {
+    state.loaded = {};
+    state.overview = null;
+    loadTab(state.tab, true);
+  }
   function busy(id) {
     var b = body(id);
     if (b) b.innerHTML = '<div class="fin-loading">' + icon('refresh', 15) + 'Loading…</div>';
@@ -1028,6 +1039,7 @@ window.FinanceControlCenter = (function() {
   return {
     init: init,
     loadTab: loadTab,
+    refreshAll: refreshAll,
     drawerClose: drawerClose,
     txOpen: txOpen,
     txApply: txApply,
