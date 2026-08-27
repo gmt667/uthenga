@@ -1,4 +1,8 @@
 ---
+# Unused: cPanel's Repository Path for this project is the repo root
+# (public_html), so only the root-level .cpanel.yml is ever consulted.
+# This copy previously held the same self-referential rsync task that
+# broke production (see the root .cpanel.yml for the full explanation) —
+# left empty here so it can't be mistakenly reactivated.
 deployment:
-  tasks:
-    - /bin/rsync -a --delete --exclude='.git/' --exclude='.agents/' --exclude='.env' --exclude='database/' --exclude='install/' --exclude='README.md' php_app/ ${HOME}/public_html/
+  tasks: []

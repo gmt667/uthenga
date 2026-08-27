@@ -1,4 +1,12 @@
 ---
+# No deployment tasks: the Repository Path for this repo is public_html
+# itself, and the app is self-contained without any deploy-time copy step —
+# the root index.php requires php_app/index.php directly, and .htaccess
+# rewrites every request into php_app/. A prior version of this file ran
+# `rsync -a --delete ... php_app/ ${HOME}/public_html/`, which is
+# self-referential in that setup (source is a subfolder of the destination)
+# and deleted php_app/'s own contents while dumping copies at the repo
+# root, breaking the site. Do not reintroduce a copy/rsync task here unless
+# the Repository Path is changed to a separate clone directory.
 deployment:
-  tasks:
-    - /bin/rsync -a --delete --exclude='.git/' --exclude='.agents/' --exclude='.env' --exclude='database/' --exclude='install/' --exclude='README.md' php_app/ ${HOME}/public_html/
+  tasks: []
