@@ -39,6 +39,7 @@ if (!function_exists('dashboard_sidebar_items')) {
                 ['label' => 'My Tickets',      'href' => 'dashboard.php?tab=tickets',    'icon' => 'ticket'],
                 ['label' => 'Favorites',       'href' => 'dashboard.php?tab=favorites',  'icon' => 'heart'],
                 ['label' => 'Payments',        'href' => 'dashboard.php?tab=payments',   'icon' => 'wallet'],
+                ['label' => 'Payment Methods', 'href' => 'payment-methods.php',          'icon' => 'wallet'],
                 ['label' => 'Recently Viewed', 'href' => 'dashboard.php?tab=viewed',     'icon' => 'list'],
                 ['label' => 'Loyalty',         'href' => 'dashboard.php?tab=loyalty',    'icon' => 'chart'],
                 ['label' => 'Profile',         'href' => 'profile.php',                  'icon' => 'user'],
@@ -61,6 +62,49 @@ if (!function_exists('dashboard_sidebar_items')) {
     }
 }
 
+if (!function_exists('dashboard_service_dashboard_items')) {
+    /** Specialized operating consoles for vendors. */
+    function dashboard_service_dashboard_items(string $role, string $vendorId): array {
+        if (!in_array($role, VENDOR_ROLES, true)) {
+            return [];
+        }
+
+        $profiles = [];
+        global $pdo;
+        if ($pdo instanceof PDO && uthenga_table_exists('tie_vendor_service_profiles')) {
+            $profiles = dbQuery("SELECT profile_type, profile_name, status, is_active FROM tie_vendor_service_profiles WHERE vendor_id=? ORDER BY is_active DESC, updated_at DESC", [$vendorId]);
+        }
+        $byType = [];
+        foreach ($profiles as $p) {
+            if (!isset($byType[$p['profile_type']])) {
+                $byType[$p['profile_type']] = $p;
+            }
+        }
+
+        $catalogue = [
+            'accommodation' => ['Accommodation OS', 'store', 'ai.php#/accommodation', 'Property, rooms & rate management'],
+            'event'         => ['Event Control Center', 'calendar', 'vendor/events-control-center.php', 'Event operations & ticketing'],
+            'tour'          => ['Tours Control Center', 'chart', 'vendor/tours-control-center.php', 'Tour lifecycle & itineraries'],
+            'transport'     => ['Driver Operations', 'vehicle', 'ai.php#/driver', 'Vehicle fleet & transport dispatch'],
+            'bus'           => ['Bus Operations', 'ticket', 'vendor/bus-control-center.php', 'Scheduled routes, ticket sales & boarding'],
+        ];
+
+        $items = [];
+        foreach ($catalogue as $type => [$label, $icon, $targetUrl, $defaultMeta]) {
+            $profile = $byType[$type] ?? null;
+            $meta = $profile ? ($profile['profile_name'] . ' (' . (!empty($profile['is_active']) ? 'Active' : 'Draft') . ')') : $defaultMeta;
+            $items[] = [
+                'label' => $label,
+                'meta'  => $meta,
+                'href'  => $targetUrl,
+                'icon'  => $icon
+            ];
+        }
+
+        return $items;
+    }
+}
+
 if (!function_exists('dashboard_icon_svg')) {
     function dashboard_icon_svg(string $icon): string {
         $paths = [
@@ -73,6 +117,7 @@ if (!function_exists('dashboard_icon_svg')) {
             'list' => '<path d="M5 6h14v2H5zm0 5h14v2H5zm0 5h14v2H5z" fill="currentColor"/>',
             'chart' => '<path d="M5 19V9h3v10H5zm5 0V5h3v14h-3zm5 0v-7h3v7h-3z" fill="currentColor"/>',
             'users' => '<path d="M9 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm8 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 21v-2a5 5 0 0 1 5-5h1a7 7 0 0 0 7 0h1a5 5 0 0 1 5 5v2z" fill="currentColor"/>',
+            'vehicle' => '<path d="M5 10 6.5 5h11L19 10v8h-2v2h-2v-2H9v2H7v-2H5zm3-3-.7 3h9.4L16 7zM8 15a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm8 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" fill="currentColor"/>',
             'store' => '<path d="M3 7h18l-1 4H4L3 7zm2 6h14v7H5z" fill="currentColor"/>',
             'shield' => '<path d="M12 2 4 5v6c0 5 3.5 8.8 8 11 4.5-2.2 8-6 8-11V5z" fill="currentColor"/>',
             'user' => '<path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-4 0-7 2-7 5v1h14v-1c0-3-3-5-7-5z" fill="currentColor"/>',
@@ -84,6 +129,7 @@ if (!function_exists('dashboard_icon_svg')) {
 
 if (!function_exists('renderDashboardChromeStart')) {
     function renderDashboardChromeStart(array $options = []): void {
+        global $pdo;
         $role = $options['role'] ?? currentRole();
         $title = $options['title'] ?? dashboard_role_label($role);
         $active = $options['active'] ?? '';
@@ -92,7 +138,15 @@ if (!function_exists('renderDashboardChromeStart')) {
         $firstName = explode(' ', $userName)[0] ?? 'Account';
         $searchPlaceholder = $options['searchPlaceholder'] ?? 'Search dashboard...';
         $status = $options['status'] ?? 'Active';
+        $sidebarTitle = $options['sidebarTitle'] ?? $title;
+        $sidebarStatus = $options['sidebarStatus'] ?? $status;
+        $sidebarHeroIcon = $options['sidebarHeroIcon'] ?? (($role === ROLE_CUSTOMER) ? 'user' : 'store');
         $items = dashboard_sidebar_items($role);
+        $serviceItems = dashboard_service_dashboard_items($role, (string) ($_SESSION['user_id'] ?? ''));
+        $setupDraft = null;
+        if (in_array($role, VENDOR_ROLES, true) && $pdo instanceof PDO && uthenga_table_exists('tie_vendor_service_profiles')) $setupDraft = dbQueryOne("SELECT profile_type, profile_name FROM tie_vendor_service_profiles WHERE vendor_id=? AND status='DRAFT' ORDER BY updated_at DESC LIMIT 1", [(string) ($_SESSION['user_id'] ?? '')]);
+        $pageStyles = is_array($options['pageStyles'] ?? null) ? $options['pageStyles'] : [];
+        $bodyClass = trim((string) ($options['bodyClass'] ?? ''));
         $themePreference = uthenga_theme_preference();
         ?>
 <!DOCTYPE html>
@@ -109,8 +163,11 @@ if (!function_exists('renderDashboardChromeStart')) {
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/admin.css">
+  <?php foreach ($pageStyles as $style): ?>
+    <link rel="stylesheet" href="<?= BASE_URL . ltrim((string) $style, '/') ?>">
+  <?php endforeach; ?>
 </head>
-<body class="dashboard-page" data-dashboard-role="<?= e($role) ?>">
+<body class="dashboard-page <?= e($bodyClass) ?>" data-dashboard-role="<?= e($role) ?>">
   <?php require_once __DIR__ . '/page_loader.php'; ?>
   <div class="dashboard-shell">
     <header class="dashboard-topbar">
@@ -148,12 +205,11 @@ if (!function_exists('renderDashboardChromeStart')) {
 
     <div class="admin-layout">
       <aside class="sidebar admin-sidebar" aria-label="Dashboard navigation">
-        <?php $heroIcon = ($role === ROLE_CUSTOMER) ? 'user' : 'store'; ?>
         <div class="sidebar-hero">
-          <div class="sidebar-hero-mark"><?= dashboard_icon_svg($heroIcon) ?></div>
+          <div class="sidebar-hero-mark"><?= dashboard_icon_svg($sidebarHeroIcon) ?></div>
           <div>
-            <div class="sidebar-role-title"><?= e($title) ?></div>
-            <div class="sidebar-role-meta"><?= e($status) ?></div>
+            <div class="sidebar-role-title"><?= e($sidebarTitle) ?></div>
+            <div class="sidebar-role-meta"><?= e($sidebarStatus) ?></div>
           </div>
         </div>
         <nav class="dashboard-sidebar-nav">
@@ -164,9 +220,29 @@ if (!function_exists('renderDashboardChromeStart')) {
               <span class="sidebar-link-copy"><?= e($item['label']) ?></span>
             </a>
           <?php endforeach; ?>
+          <?php if ($serviceItems): ?>
+            <?php $serviceActive = false; foreach ($serviceItems as $serviceItem) if ($active === $serviceItem['href']) { $serviceActive = true; break; } ?>
+            <details class="sidebar-cascade" <?= $serviceActive ? 'open' : '' ?>>
+              <summary class="sidebar-link <?= $serviceActive ? 'active' : '' ?>">
+                <span class="sidebar-link-icon" aria-hidden="true"><?= dashboard_icon_svg('vehicle') ?></span>
+                <span class="sidebar-link-copy">Service dashboards</span><span class="sidebar-cascade-chevron" aria-hidden="true">⌄</span>
+              </summary>
+              <div class="sidebar-cascade-menu">
+                <?php foreach ($serviceItems as $serviceItem): ?>
+                  <a class="sidebar-cascade-link <?= $active === $serviceItem['href'] ? 'active' : '' ?>" href="<?= BASE_URL . $serviceItem['href'] ?>">
+                    <span class="sidebar-link-icon" aria-hidden="true"><?= dashboard_icon_svg($serviceItem['icon']) ?></span>
+                    <span><strong><?= e($serviceItem['label']) ?></strong><small><?= e($serviceItem['meta']) ?></small></span>
+                  </a>
+                <?php endforeach; ?>
+              </div>
+            </details>
+          <?php endif; ?>
         </nav>
       </aside>
       <div class="admin-content">
+        <?php if ($setupDraft): ?>
+          <div class="container" style="padding-top:1rem"><div class="alert alert-warning" role="status"><strong>Finish your private service setup.</strong> <?= e($setupDraft['profile_name']) ?> is still a draft and is not visible to customers. <a href="<?= BASE_URL ?>vendor/service-dashboard.php?type=<?= rawurlencode((string) $setupDraft['profile_type']) ?>&tab=settings">Open Settings</a></div></div>
+        <?php endif; ?>
         <?php
     }
 }

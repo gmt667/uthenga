@@ -212,7 +212,8 @@ require_once __DIR__ . '/../includes/header.php';
           </div>
         <?php endif; ?>
 
-        <form method="POST" action="" style="margin-top:1.25rem;display:grid;gap:1rem;" novalidate>
+        <form method="POST" action="" style="margin-top:1.25rem;display:grid;gap:1rem;" data-auth-type="vendor_register" novalidate>
+          <script src="<?= BASE_URL ?>assets/js/auth-inline-validation.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
           <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
 
           <div class="form-group">

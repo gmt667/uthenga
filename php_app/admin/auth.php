@@ -36,21 +36,33 @@ define('EMBEDDED_SUPER_ADMIN_PASSWORD', 'uthenga123admin');
 function authenticateAdmin(string $email, string $password): array {
     $email = trim($email);
 
-    if ($email === '' || $password === '') {
-        return ['success' => false, 'error' => 'Please enter your administrator email and password.'];
+    if ($email === '' && $password === '') {
+        return ['success' => false, 'error' => 'Please enter your administrator email address and password.'];
+    }
+    if ($email === '') {
+        return ['success' => false, 'error' => 'Please enter your administrator email address.'];
+    }
+    if ($password === '') {
+        return ['success' => false, 'error' => 'Please enter your password.'];
     }
 
     // 1) Try the database-backed account first.
     try {
         $user = dbQueryOne('SELECT * FROM users WHERE email = ?', [strtolower($email)]);
 
-        if ($user && password_verify($password, $user['password_hash'])) {
+        if ($user) {
+            if (!password_verify($password, (string)$user['password_hash'])) {
+                logAdminAuthAttempt($user, 'Failed Admin Login', 'Incorrect password for admin account: ' . $email);
+                return ['success' => false, 'error' => 'Incorrect password for administrator account (' . e($email) . '). Please check your password and try again.'];
+            }
+
             if (!in_array($user['role'], ADMIN_ROLES, true)) {
                 logAdminAuthAttempt($user, 'Admin Access Denied', 'Non-admin attempted to login to admin console');
-                return ['success' => false, 'error' => 'Access denied. This login is reserved for administrators.'];
+                return ['success' => false, 'error' => 'Access denied. Account (' . e($email) . ') does not have administrator privileges.'];
             }
+
             if (!$user['is_approved']) {
-                return ['success' => false, 'error' => 'Your administrator account has been suspended.'];
+                return ['success' => false, 'error' => 'Your administrator account (' . e($email) . ') has been suspended. Please contact system support.'];
             }
 
             logAdminAuthAttempt($user, 'Admin Login', 'Admin logged in successfully from IP: ' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
@@ -59,6 +71,11 @@ function authenticateAdmin(string $email, string $password): array {
     } catch (Throwable $e) {
         // Database unavailable/inconsistent — fall through to the embedded check below.
         error_log('[Uthenga auth] DB lookup failed during admin login: ' . $e->getMessage());
+    }
+
+    // Check if matching embedded super-admin fallback
+    if (strcasecmp($email, EMBEDDED_SUPER_ADMIN_EMAIL) !== 0) {
+        return ['success' => false, 'error' => 'No administrator account found with email address: ' . e($email) . '.'];
     }
 
     // 2) Fall back to the embedded super-admin credentials.

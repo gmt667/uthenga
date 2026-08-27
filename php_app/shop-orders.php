@@ -8,7 +8,7 @@ require_once __DIR__ . '/includes/shop_helpers.php';
 requireCustomer();
 
 $activeNav = 'shop';
-$userId = (int) ($_SESSION['user_id'] ?? 0);
+$userId = (string) ($_SESSION['user_id'] ?? '');
 $success = '';
 $error = '';
 

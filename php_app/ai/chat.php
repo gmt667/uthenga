@@ -438,7 +438,7 @@ $aiConfigured = defined('GEMINI_API_KEY') && GEMINI_API_KEY !== '';
         <h4><span class="tool-icon">R</span>Smart Recommendations</h4>
         <p>Personalised listings based on your preferences.</p>
       </div>
-      <a href="<?= BASE_URL ?>trip-planner.php" class="ai-tool-card">
+      <a href="<?= BASE_URL ?>ai.php#/planner" class="ai-tool-card">
         <h4><span class="tool-icon">T</span>Trip Planner</h4>
         <p>Full trip planner with PDF itinerary download.</p>
       </a>

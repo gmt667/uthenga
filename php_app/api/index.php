@@ -13,5 +13,6 @@ uthenga_json_response([
         'notifications' => 'api/notifications.php',
         'trip_planner' => 'api/trip_planner.php',
         'ai_chat' => 'api/ai/chat.php',
+        'tie' => 'api/tie/index.php',
     ],
 ]);

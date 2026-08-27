@@ -213,14 +213,11 @@ define('SUPPORT_CONTACT', [
     'phone_alt' => SUPPORT_PHONE_ALT,
 ]);
 
-// PayChangu integration defaults
-define('PAYCHANGU_API_BASE_URL', uthenga_env('PAYCHANGU_API_BASE_URL', 'https://api.paychangu.com'));
-define('PAYCHANGU_PUBLIC_KEY', uthenga_env('PAYCHANGU_PUBLIC_KEY', uthenga_env('PAYCHANGU_KEY', '')));
+// PayChangu integration defaults — used by api/payment/webhook/paychangu.php's
+// signature verification. Legacy per-service PayChangu clients (Shop's own,
+// the old provider-branded checkout) have been retired in favor of the one
+// UthengaPaymentEngine, so only the secret key is still consumed here.
 define('PAYCHANGU_SECRET_KEY', uthenga_env('PAYCHANGU_SECRET_KEY', ''));
-define('PAYCHANGU_INIT_PATH', uthenga_env('PAYCHANGU_INIT_PATH', '/payment'));
-define('PAYCHANGU_RETURN_URL', uthenga_env('PAYCHANGU_RETURN_URL', BASE_URL . 'payments/paychangu-callback.php'));
-define('PAYCHANGU_CALLBACK_URL', uthenga_env('PAYCHANGU_CALLBACK_URL', BASE_URL . 'payments/paychangu-callback.php'));
-define('PAYCHANGU_WEBHOOK_SIGNATURE_HEADER', 'HTTP_X_PAYCHANGU_SIGNATURE');
 
 // Google OAuth 2.0
 define('GOOGLE_CLIENT_ID', uthenga_env('GOOGLE_CLIENT_ID', ''));
@@ -459,7 +456,8 @@ function hasRole($roles) {
         return false;
     }
     $roles = (array) $roles;
-    return in_array($_SESSION['user_role'], $roles, true);
+    $role = $_SESSION['user_role'] ?? $_SESSION['role'] ?? '';
+    return in_array($role, $roles, true);
 }
 
 function currentRole(): string {

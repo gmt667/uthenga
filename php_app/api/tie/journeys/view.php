@@ -1,0 +1,4 @@
+<?php
+require_once __DIR__ . '/../../../config.php'; require_once __DIR__ . '/../../../db.php'; require_once __DIR__ . '/../../../includes/tie/bootstrap.php'; require_once __DIR__ . '/../../../includes/tie/Api.php';
+$requestId = UthengaTieObservability::requestId();
+try { if ($_SERVER['REQUEST_METHOD'] !== 'GET') throw UthengaTieErrors::validation(['method' => 'GET is required.']); UthengaTieApi::requireFeature('journey'); $user = UthengaTieApi::requireAuthenticatedUser(); $journey = (new UthengaTieKernel())->journey->get(trim((string) (UthengaTieApi::query()['journey_id'] ?? '')), $user['id']); if ($journey === null) throw new UthengaTieException('not_found', 'The requested journey was not found.', 404); UthengaTieApi::respond(['success' => true, 'request_id' => $requestId, 'journey' => $journey->toArray()]); } catch (Throwable $error) { UthengaTieApi::handleError($error, $requestId); }

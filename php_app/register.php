@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Customer Registration Page
  */
@@ -218,7 +218,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     <?php endif; ?>
 
-    <form method="POST" action="" id="register-form" novalidate>
+    <form method="POST" action="" id="register-form" data-auth-type="register" novalidate>
+      <script src="<?= BASE_URL ?>assets/js/auth-inline-validation.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
       <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
 
       <div class="form-group">

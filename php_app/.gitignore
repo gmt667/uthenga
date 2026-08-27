@@ -11,3 +11,7 @@ config.local.php
 .env.local
 cache/*
 !cache/.htaccess
+storage/*
+!storage/.htaccess
+uploads/*
+!uploads/.htaccess

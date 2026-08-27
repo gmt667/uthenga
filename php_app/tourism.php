@@ -265,7 +265,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
     </div>
     <div class="city-spotlight-grid">
       <?php foreach ($citySpotlights as $city): ?>
-        <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($city['city']) ?>" class="city-spotlight-card">
+        <a href="<?= BASE_URL ?>ai.php#/planner" class="city-spotlight-card">
           <img src="<?= e($city['image']) ?>" alt="<?= e($city['city']) ?>" loading="lazy">
           <div class="city-spotlight-body">
             <div class="city-spotlight-label"><?= e($city['district']) ?></div>
@@ -322,7 +322,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
       <h2><?= uthenga_public_icon_svg('sparkles') ?> Plan Your Perfect Malawi Trip</h2>
       <p>Use our AI-powered trip planner to get a personalized itinerary, budget estimate, and downloadable PDF — in seconds.</p>
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-        <a href="<?= BASE_URL ?>trip-planner.php" class="btn btn-white btn-lg">ðŸ—“ Plan My Trip</a>
+        <a href="<?= BASE_URL ?>ai.php#/planner" class="btn btn-white btn-lg">ðŸ—“ Plan My Trip</a>
         <a href="<?= BASE_URL ?>ai/chat.php" class="btn btn-outline-white btn-lg">ðŸ¤– Ask AI Assistant</a>
       </div>
     </div>

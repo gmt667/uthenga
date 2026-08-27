@@ -61,15 +61,10 @@ final class UthengaTieEventFinance
     /** Commission rate for event sales — settings-driven, matching the central engine. */
     public function commissionRate(?string $vendorId = null): float
     {
-        $rate = null;
-        foreach (['commission_rate_event', 'commission_rate'] as $key) {
-            $stmt = $this->db->prepare('SELECT value FROM settings WHERE `key`=? LIMIT 1');
-            $stmt->execute([$key]);
-            $v = $stmt->fetchColumn();
-            if ($v !== false && $v !== null && trim((string) $v) !== '') { $rate = (float) $v; break; }
-        }
-        if ($rate === null) $rate = (float) (defined('COMMISSION_RATE') ? COMMISSION_RATE : 10);
-        return (float) max(0, $rate);
+        // Delegates to the one shared, versioned rate lookup (includes/functions.php)
+        // instead of reading `settings` directly — this used to be a second,
+        // independent source of truth that could silently disagree with it.
+        return uthenga_finance_commission_rate('event');
     }
 
     /** Gross → [platform_fee, net] using the central commission model. */

@@ -200,7 +200,7 @@ function getPrice(array $listing): string {
             <?php if (isLoggedIn()): ?>
               <button
                 class="btn btn-sm btn-primary"
-                onclick="openBookingModal('<?= e($listing['id']) ?>','accommodation','<?= addslashes(e($listing['title'])) ?>',<?= (float)($meta['rooms'][0]['pricePerNight'] ?? 0) ?>)"
+                onclick="AccommodationCheckout.open('<?= e($listing['id']) ?>','<?= addslashes(e($listing['title'])) ?>')"
               >Book Now</button>
             <?php else: ?>
               <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-primary">Book Now</a>
@@ -213,99 +213,9 @@ function getPrice(array $listing): string {
   <?php endif; ?>
 </div>
 
-<!-- Include standard booking modals and scripts -->
 <?php if (isLoggedIn()): ?>
-<div class="modal-overlay" id="booking-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="bk-modal-title">Book Stay</h3>
-      <button class="modal-close" onclick="closeModal('booking-modal')"><?= uthenga_public_icon_svg('x') ?></button>
-    </div>
-    <form method="POST" action="<?= BASE_URL ?>request_api.php" id="booking-form">
-      <div class="modal-body">
-        <input type="hidden" name="action" value="create_booking">
-        <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
-        <input type="hidden" id="bk-listing-id" name="listing_id" value="">
-        <input type="hidden" id="bk-listing-type" name="listing_type" value="">
-        <input type="hidden" id="bk-listing-title" name="listing_title" value="">
-        <input type="hidden" id="bk-base-price" value="0">
-        <input type="hidden" id="bk-total-price" name="total_price" value="0">
-        <input type="hidden" id="bk-discount" name="discount" value="0">
-        <input type="hidden" id="bk-gateway" name="gateway" value="">
-        
-        <input type="hidden" id="bk-quantity" name="quantity" value="1">
-        
-        <div id="bk-accom-fields" style="display:none;">
-          <div class="form-group">
-            <label class="form-label" for="bk-checkin">Check-in Date</label>
-            <input type="date" id="bk-checkin" name="check_in_date" class="form-control" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="bk-checkout">Check-out Date</label>
-            <input type="date" id="bk-checkout" name="check_out_date" class="form-control" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Coupon Code</label>
-          <div style="display:flex;gap:0.5rem;">
-            <input type="text" id="coupon-code" name="coupon_code" class="form-control" placeholder="WELCOME10" style="flex:1;">
-            <button type="button" id="apply-coupon" class="btn btn-secondary btn-sm">Apply</button>
-          </div>
-          <div id="coupon-msg" class="text-xs text-muted" style="margin-top:0.35rem;"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Payment Method</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
-            <?php foreach (['Airtel Money','TNM Mpamba','Bank Card','Direct NBS Transfer','Uthenga Pay'] as $gw): ?>
-            <button type="button" class="gateway-btn btn btn-secondary btn-sm" data-gateway="<?= e($gw) ?>" id="gw-<?= str_replace([' ','/'],'_',$gw) ?>"><?= e($gw) ?></button>
-            <?php endforeach; ?>
-          </div>
-        </div>
-
-        <div class="glass-panel" style="padding:1rem;text-align:center;margin-top:0.5rem;">
-          <div class="text-xs text-muted" style="margin-bottom:0.25rem;">Total Amount</div>
-          <div id="bk-total" style="font-size:1.5rem;font-weight:800;color:var(--clr-accent);">MK 0</div>
-          <div class="text-xs text-muted" style="margin-top:0.25rem;">10% platform commission included</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal('booking-modal')">Cancel</button>
-        <button type="button" id="proceed-to-payment" class="btn btn-primary">Continue to Payment</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="modal-overlay" id="payment-modal" role="dialog" aria-modal="true" aria-hidden="true">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Confirm Payment</h3>
-      <button class="modal-close" onclick="closeModal('payment-modal')"><?= uthenga_public_icon_svg('x') ?></button>
-    </div>
-    <div class="modal-body" style="text-align:center;">
-      <div style="font-size:3rem;margin-bottom:1rem;"><?= uthenga_public_icon_svg('wallet') ?></div>
-      <h4 id="pm-title" style="margin-bottom:0.5rem;"></h4>
-      <div style="font-size:2rem;font-weight:800;color:var(--clr-accent);margin-bottom:0.5rem;" id="pm-total">MK 0</div>
-      <div class="text-sm text-muted">via <strong id="pm-gateway"></strong></div>
-      <div class="alert alert-info" style="margin-top:1.5rem;text-align:left;"><div><strong>Simulation Mode:</strong> No real payment will be charged.</div></div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" onclick="closeModal('payment-modal')">Back</button>
-      <button type="submit" form="booking-form" id="confirm-payment-btn" class="btn btn-primary"><?= uthenga_public_icon_svg('check') ?> Pay Now</button>
-    </div>
-  </div>
-</div>
-
-<div id="booking-success" style="display:none;position:fixed;bottom:2rem;right:2rem;background:var(--clr-surface);border:1px solid var(--clr-green);border-radius:var(--radius-lg);padding:1.5rem;max-width:340px;box-shadow:var(--shadow-lg);z-index:300;">
-  <div style="font-size:1.5rem;margin-bottom:0.5rem;"><?= uthenga_public_icon_svg('sparkles') ?></div>
-  <h4 style="color:var(--clr-green);margin-bottom:0.25rem;">Booking Confirmed!</h4>
-  <div class="text-sm text-muted" style="margin-bottom:0.75rem;">ID: <strong id="success-booking-id" class="text-accent"></strong></div>
-  <div class="qr-block"><div class="text-xs text-muted" style="margin-bottom:0.5rem;">Digital Ticket</div><div class="qr-string" id="success-qr-code"></div></div>
-  <div style="margin-top:0.75rem;font-size:0.85rem;">Total: <strong id="success-total" class="text-accent"></strong></div>
-  <button onclick="this.parentElement.style.display='none'" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;">Close</button>
-</div>
+<?php require_once __DIR__ . '/includes/accommodation_checkout_modal.php'; ?>
+<script src="<?= BASE_URL ?>assets/js/accommodation-checkout.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

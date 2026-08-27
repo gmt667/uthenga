@@ -1,0 +1,89 @@
+/* Bus ticket templates — 5 controlled, vendor-selectable designs.
+   Company branding (logo + name) is always the dominant header element;
+   Uthenga's own mark is always present but small/secondary; the QR code
+   and ticket ID are identical in size/prominence across every style. */
+
+.btt-card { position: relative; border-radius: 16px; overflow: hidden; font-family: inherit; max-width: 480px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+.btt-body { padding: 1.1rem 1.25rem 1.25rem; }
+.btt-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.9rem; }
+.btt-brand { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+.btt-logo-img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: rgba(255,255,255,0.15); }
+.btt-logo-fallback { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; flex-shrink: 0; background: rgba(255,255,255,0.15); }
+.btt-company-name { font-weight: 900; font-size: 1.05rem; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btt-company-sub { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+.btt-badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 999px; letter-spacing: 0.03em; flex-shrink: 0; }
+.btt-route { font-size: 1.35rem; font-weight: 900; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.9rem; }
+.btt-route-arrow { opacity: 0.6; }
+.btt-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem 1rem; margin-bottom: 1rem; }
+.btt-meta-item { display: flex; align-items: center; gap: 0.45rem; }
+.btt-meta-icon { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+.btt-meta-value { font-weight: 800; font-size: 0.85rem; line-height: 1.1; }
+.btt-meta-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.65; }
+.btt-passenger { font-weight: 800; font-size: 0.95rem; margin-bottom: 0.9rem; }
+.btt-stub { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 0.9rem; border-top: 1px dashed rgba(127,127,127,0.35); }
+.btt-qr-box { width: 84px; height: 84px; background: #fff; border-radius: 8px; padding: 6px; flex-shrink: 0; }
+.btt-qr-box svg { width: 100%; height: 100%; }
+.btt-ticket-id-block { text-align: right; }
+.btt-ticket-id { font-size: 0.78rem; font-weight: 900; letter-spacing: 0.02em; }
+.btt-scan-hint { font-size: 0.62rem; opacity: 0.65; margin-top: 2px; }
+.btt-footer { padding: 0.7rem 1.25rem; font-size: 0.7rem; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.btt-powered-by { display: flex; align-items: center; gap: 0.3rem; font-size: 0.6rem; opacity: 0.55; font-weight: 700; }
+.btt-powered-by img { width: 14px; height: 14px; opacity: 0.8; }
+
+/* ── Classic Blue ─────────────────────────────────────────── */
+.btt-card--classic_blue { background: #fff; color: #0f172a; --btt-accent: var(--btt-accent-override, #1d4ed8); }
+.btt-card--classic_blue .btt-header { background: var(--btt-accent); color: #fff; padding: 1rem 1.25rem; margin-bottom: 0; }
+.btt-card--classic_blue .btt-badge { background: rgba(255,255,255,0.2); color: #fff; }
+.btt-card--classic_blue .btt-body { padding-top: 1.1rem; }
+.btt-card--classic_blue .btt-route { color: var(--btt-accent); }
+.btt-card--classic_blue .btt-meta-label { color: #64748b; }
+.btt-card--classic_blue .btt-footer { background: var(--btt-accent); color: #fff; }
+.btt-card--classic_blue .btt-powered-by { color: rgba(255,255,255,0.75); }
+
+/* ── Modern Card ──────────────────────────────────────────── */
+.btt-card--modern_card { background: #0b1120; color: #fff; --btt-accent: var(--btt-accent-override, #e63946); }
+.btt-card--modern_card .btt-header { padding: 1.1rem 1.25rem 0; }
+.btt-card--modern_card .btt-badge { background: var(--btt-accent); color: #fff; }
+.btt-card--modern_card .btt-photo-strip { height: 90px; margin: 0.7rem 0 1rem; border-radius: 10px; background-size: cover; background-position: center; position: relative; overflow: hidden; }
+.btt-card--modern_card .btt-photo-strip::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, rgba(11,17,32,0.85) 30%, transparent 75%); }
+.btt-card--modern_card .btt-eyebrow { font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--btt-accent); margin-bottom: 0.2rem; }
+.btt-card--modern_card .btt-meta-label { color: rgba(255,255,255,0.55); }
+.btt-card--modern_card .btt-stub { border-top-color: rgba(255,255,255,0.15); }
+.btt-card--modern_card .btt-footer { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+.btt-card--modern_card .btt-powered-by { color: rgba(255,255,255,0.5); }
+
+/* ── Minimal White ────────────────────────────────────────── */
+.btt-card--minimal_white { background: #fff; color: #111827; border: 1px solid #e5e7eb; box-shadow: none; --btt-accent: var(--btt-accent-override, #f97316); }
+.btt-card--minimal_white .btt-header { padding: 1.1rem 1.25rem 0; }
+.btt-card--minimal_white .btt-badge { background: #111827; color: #fff; }
+.btt-card--minimal_white .btt-route-arrow { color: var(--btt-accent); }
+.btt-card--minimal_white .btt-meta-grid { padding: 0.8rem 0; border-top: 1px dashed #e5e7eb; border-bottom: 1px dashed #e5e7eb; }
+.btt-card--minimal_white .btt-meta-label { color: #9ca3af; }
+.btt-card--minimal_white .btt-footer { background: #fff; color: #6b7280; border-top: 1px dashed #e5e7eb; justify-content: center; text-align: center; }
+.btt-card--minimal_white .btt-powered-by { color: #9ca3af; }
+
+/* ── Premium Dark ─────────────────────────────────────────── */
+.btt-card--premium_dark { background: #0a0a0a; color: #f5f0e6; --btt-accent: var(--btt-accent-override, #d4af37); }
+.btt-card--premium_dark .btt-header { padding: 1.1rem 1.25rem 0; }
+.btt-card--premium_dark .btt-badge { background: var(--btt-accent); color: #1a1a1a; }
+.btt-card--premium_dark .btt-company-name { color: var(--btt-accent); }
+.btt-card--premium_dark .btt-route { background: linear-gradient(90deg, #fff, var(--btt-accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.btt-card--premium_dark .btt-meta-label { color: rgba(245,240,230,0.5); }
+.btt-card--premium_dark .btt-photo-strip { height: 80px; margin: 0.4rem 0 1rem; border-radius: 10px; background-size: cover; background-position: center; opacity: 0.85; }
+.btt-card--premium_dark .btt-stub { border-top-color: rgba(212,175,55,0.35); }
+.btt-card--premium_dark .btt-footer { background: rgba(212,175,55,0.08); color: var(--btt-accent); }
+.btt-card--premium_dark .btt-powered-by { color: rgba(245,240,230,0.45); }
+
+/* ── Mobile Wallet ────────────────────────────────────────── */
+.btt-card--mobile_wallet { background: #fff; color: #1e1b2e; --btt-accent: var(--btt-accent-override, #6d28d9); }
+.btt-card--mobile_wallet .btt-header { background: var(--btt-accent); color: #fff; padding: 0.9rem 1.25rem; margin-bottom: 0; }
+.btt-card--mobile_wallet .btt-badge { background: rgba(255,255,255,0.22); color: #fff; }
+.btt-card--mobile_wallet .btt-body { position: relative; }
+.btt-card--mobile_wallet .btt-body::before, .btt-card--mobile_wallet .btt-body::after { content: ''; position: absolute; width: 22px; height: 22px; background: var(--btt-page-bg, #f8fafc); border-radius: 50%; top: -11px; }
+.btt-card--mobile_wallet .btt-body::before { left: -11px; }
+.btt-card--mobile_wallet .btt-body::after { right: -11px; }
+.btt-card--mobile_wallet .btt-meta-label { color: #7c7c9a; }
+.btt-card--mobile_wallet .btt-footer { background: var(--btt-accent); color: #fff; }
+.btt-card--mobile_wallet .btt-powered-by { color: rgba(255,255,255,0.7); }
+
+@media (max-width: 480px) { .btt-meta-grid { grid-template-columns: 1fr; } }

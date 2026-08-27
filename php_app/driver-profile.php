@@ -187,7 +187,7 @@ if ($driver) {
     </div>
     <div class="grid grid-cols-5 gap-4">
       <?php foreach (array_slice(uthenga_malawi_featured_cities(), 0, 5) as $city): ?>
-        <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($city['city']) ?>" class="card" style="overflow:hidden;display:block;text-decoration:none;color:inherit;">
+        <a href="<?= BASE_URL ?>ai.php#/planner" class="card" style="overflow:hidden;display:block;text-decoration:none;color:inherit;">
           <img src="<?= e($city['image']) ?>" alt="<?= e($city['city']) ?>" loading="lazy" style="width:100%;height:120px;object-fit:cover;">
           <div style="padding:0.9rem;">
             <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-accent);"><?= e($city['district']) ?></div>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bg_pc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#172554"/></linearGradient>
+    <linearGradient id="skin_pc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a16207"/><stop offset="100%" stop-color="#713f12"/></linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="60" fill="url(#bg_pc)"/>
+  <path d="M 25,110 C 25,85 40,75 60,75 C 80,75 95,85 95,110 Z" fill="#2563eb"/>
+  <circle cx="60" cy="50" r="23" fill="url(#skin_pc)"/>
+  <circle cx="51" cy="48" r="2" fill="#ffffff"/><circle cx="69" cy="48" r="2" fill="#ffffff"/>
+  <path d="M 50,58 Q 60,64 70,58" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+</svg>

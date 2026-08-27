@@ -833,13 +833,13 @@ if (!function_exists('uthenga_shop_cart_save_state')) {
         }
 
         $token = uthenga_shop_session_token();
-        $userId = (int) ($_SESSION['user_id'] ?? 0);
-        dbExecute('DELETE FROM shop_cart_items WHERE user_id = ? OR session_token = ?', [$userId > 0 ? $userId : null, $token]);
+        $userId = (string) ($_SESSION['user_id'] ?? '');
+        dbExecute('DELETE FROM shop_cart_items WHERE user_id = ? OR session_token = ?', [$userId !== '' ? $userId : null, $token]);
         foreach ($items as $productId => $item) {
             dbExecute(
                 'INSERT INTO shop_cart_items (user_id, session_token, product_id, quantity, unit_price) VALUES (?, ?, ?, ?, ?)',
                 [
-                    $userId > 0 ? $userId : null,
+                    $userId !== '' ? $userId : null,
                     $token,
                     (int) $productId,
                     max(1, (int) ($item['quantity'] ?? 1)),
@@ -1135,10 +1135,10 @@ if (!function_exists('uthenga_shop_cart_sync_from_db')) {
         }
 
         $token = uthenga_shop_session_token();
-        $userId = (int) ($_SESSION['user_id'] ?? 0);
+        $userId = (string) ($_SESSION['user_id'] ?? '');
         $rows = dbQuery(
             'SELECT product_id, quantity, unit_price FROM shop_cart_items WHERE user_id = ? OR session_token = ?',
-            [$userId > 0 ? $userId : null, $token]
+            [$userId !== '' ? $userId : null, $token]
         );
 
         if (empty($rows)) {
@@ -1221,22 +1221,24 @@ if (!function_exists('uthenga_shop_split_name')) {
     }
 }
 
-if (!function_exists('uthenga_shop_paychangu_ready')) {
-    function uthenga_shop_paychangu_ready(): bool {
-        return (PAYCHANGU_PUBLIC_KEY !== '' || PAYCHANGU_SECRET_KEY !== '');
+if (!function_exists('uthenga_shop_pay_online_ready')) {
+    // "Pay Online" routes through the shared Uthenga Checkout (UthengaPaymentEngine),
+    // which owns its own PayChangu credentials independently of the legacy
+    // PAYCHANGU_* constants — it's offered whenever the shop has enabled any of
+    // its real electronic methods (they now all funnel through the same checkout).
+    function uthenga_shop_pay_online_ready(): bool {
+        $settings = uthenga_shop_settings();
+        return !empty($settings['bank_transfer_enabled']) || !empty($settings['tnm_mpamba_enabled'])
+            || !empty($settings['airtel_money_enabled']) || !empty($settings['paychangu_enabled']);
     }
 }
 
 if (!function_exists('uthenga_shop_payment_methods')) {
     function uthenga_shop_payment_methods(): array {
         $settings = uthenga_shop_settings();
-        $paychanguReady = !empty($settings['paychangu_enabled']) && uthenga_shop_paychangu_ready();
         return array_values(array_filter([
             'cash_on_delivery' => !empty($settings['cod_enabled']) ? 'Cash on Delivery' : null,
-            'bank_transfer' => !empty($settings['bank_transfer_enabled']) ? 'Bank Transfer' : null,
-            'tnm_mpamba' => !empty($settings['tnm_mpamba_enabled']) ? 'TNM Mpamba' : null,
-            'airtel_money' => !empty($settings['airtel_money_enabled']) ? 'Airtel Money' : null,
-            'paychangu' => $paychanguReady ? 'PayChangu' : null,
+            'pay_online' => uthenga_shop_pay_online_ready() ? 'Pay Online (Bank / Airtel Money / Mpamba)' : null,
         ]));
     }
 }
@@ -1244,13 +1246,9 @@ if (!function_exists('uthenga_shop_payment_methods')) {
 if (!function_exists('uthenga_shop_payment_methods_map')) {
     function uthenga_shop_payment_methods_map(): array {
         $settings = uthenga_shop_settings();
-        $paychanguReady = !empty($settings['paychangu_enabled']) && uthenga_shop_paychangu_ready();
         return array_filter([
             'cash_on_delivery' => !empty($settings['cod_enabled']) ? 'Cash on Delivery' : null,
-            'bank_transfer' => !empty($settings['bank_transfer_enabled']) ? 'Bank Transfer' : null,
-            'tnm_mpamba' => !empty($settings['tnm_mpamba_enabled']) ? 'TNM Mpamba' : null,
-            'airtel_money' => !empty($settings['airtel_money_enabled']) ? 'Airtel Money' : null,
-            'paychangu' => $paychanguReady ? 'PayChangu' : null,
+            'pay_online' => uthenga_shop_pay_online_ready() ? 'Pay Online (Bank / Airtel Money / Mpamba)' : null,
         ]);
     }
 }
@@ -1259,6 +1257,8 @@ if (!function_exists('uthenga_shop_payment_method_label')) {
     function uthenga_shop_payment_method_label(string $method): string {
         return match ($method) {
             'cash_on_delivery' => 'Cash on Delivery',
+            'pay_online' => 'Pay Online',
+            // Retained for display of historical orders placed before this method was unified.
             'bank_transfer' => 'Bank Transfer',
             'tnm_mpamba' => 'TNM Mpamba',
             'airtel_money' => 'Airtel Money',
@@ -1272,22 +1272,14 @@ if (!function_exists('uthenga_shop_payment_method_state')) {
     function uthenga_shop_payment_method_state(string $method): array {
         $method = strtolower(trim($method));
         return match ($method) {
-            'paychangu', 'tnm_mpamba', 'airtel_money' => [
-                'order_payment_status' => 'authorized',
-                'payment_status' => 'processing',
-                'provider' => uthenga_shop_payment_method_label($method),
-                'reference_prefix' => match ($method) {
-                    'paychangu' => 'PAYCHANGU-',
-                    'tnm_mpamba' => 'TNM-',
-                    'airtel_money' => 'AIRTEL-',
-                    default => 'SHOP-',
-                },
-            ],
-            'bank_transfer' => [
+            // Real payment collection happens via UthengaPaymentEngine after this
+            // order is created — it starts genuinely Pending, never a fake
+            // "authorized"/"processing" state with no charge behind it.
+            'pay_online' => [
                 'order_payment_status' => 'pending',
                 'payment_status' => 'pending',
-                'provider' => 'Bank Transfer',
-                'reference_prefix' => 'BANK-',
+                'provider' => 'Uthenga Checkout',
+                'reference_prefix' => 'SHOP-',
             ],
             default => [
                 'order_payment_status' => 'pending',
@@ -1332,92 +1324,21 @@ if (!function_exists('uthenga_shop_payment_by_order_id')) {
     }
 }
 
-if (!function_exists('uthenga_shop_paychangu_initialize')) {
-    function uthenga_shop_paychangu_initialize(array $order, array $payment, string $customerEmail, string $customerName, string $phone): array {
-        $apiKey = PAYCHANGU_SECRET_KEY !== '' ? PAYCHANGU_SECRET_KEY : PAYCHANGU_PUBLIC_KEY;
-        if ($apiKey === '') {
-            return ['success' => false, 'message' => 'PayChangu credentials are not configured.'];
+if (!function_exists('uthenga_shop_restore_stock')) {
+    // Reverses the atomic decrement made at order-creation time when a "Pay
+    // Online" order's payment never clears — mirrors the accommodation hold
+    // release pattern (stock was reserved, not yet actually sold).
+    function uthenga_shop_restore_stock(int $orderId): void {
+        if ($orderId <= 0) {
+            return;
         }
-
-        if (!function_exists('curl_init')) {
-            return ['success' => false, 'message' => 'cURL is not available on this server.'];
+        $items = dbQuery('SELECT product_id, quantity FROM shop_order_items WHERE order_id = ?', [$orderId]);
+        foreach ($items as $item) {
+            dbExecute(
+                'UPDATE shop_products SET stock_quantity = stock_quantity + ?, status = IF(status = "out_of_stock", "active", status) WHERE id = ?',
+                [(int) $item['quantity'], (int) $item['product_id']]
+            );
         }
-
-        $reference = trim((string) ($payment['payment_reference'] ?? ''));
-        if ($reference === '') {
-            $reference = uthenga_shop_payment_reference();
-        }
-
-        $amount = (float) ($payment['amount'] ?? $order['total_amount'] ?? 0);
-        if ($amount <= 0) {
-            return ['success' => false, 'message' => 'Invalid payment amount.'];
-        }
-
-        [$firstName, $lastName] = uthenga_shop_split_name($customerName);
-        $payload = [
-            'amount' => $amount,
-            'currency' => $payment['currency'] ?? $order['currency'] ?? APP_CURRENCY,
-            'email' => $customerEmail,
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'tx_ref' => $reference,
-            'callback_url' => BASE_URL . 'payments/shop-paychangu-callback.php',
-            'return_url' => BASE_URL . 'shop-order.php?order=' . urlencode((string) ($order['order_number'] ?? '')) . '&payment=paychangu&reference=' . urlencode($reference),
-            'description' => 'Uthenga Shop order ' . ($order['order_number'] ?? $reference),
-            'customization' => [
-                'title' => APP_NAME . ' Shop',
-                'description' => 'Secure checkout for physical product delivery',
-            ],
-            'metadata' => [
-                'order_id' => (int) ($order['id'] ?? 0),
-                'order_number' => (string) ($order['order_number'] ?? ''),
-                'payment_id' => (int) ($payment['id'] ?? 0),
-                'payment_reference' => $reference,
-                'payment_method' => 'paychangu',
-                'phone' => $phone !== '' ? $phone : null,
-            ],
-        ];
-
-        $ch = curl_init(rtrim(PAYCHANGU_API_BASE_URL, '/') . PAYCHANGU_INIT_PATH);
-        curl_setopt_array($ch, [
-            CURLOPT_POST => true,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Accept: application/json',
-                'Authorization: Bearer ' . $apiKey,
-            ],
-            CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
-            CURLOPT_TIMEOUT => 30,
-        ]);
-
-        $responseBody = curl_exec($ch);
-        $curlErr = curl_error($ch);
-        $curlCode = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-        curl_close($ch);
-
-        if ($responseBody === false || $responseBody === null) {
-            return ['success' => false, 'message' => $curlErr ?: 'Unable to initialize PayChangu payment.'];
-        }
-
-        $decoded = json_decode($responseBody, true);
-        if (!is_array($decoded)) {
-            return ['success' => false, 'message' => 'PayChangu returned an invalid response.'];
-        }
-
-        $gatewayRef = trim((string) ($decoded['reference'] ?? $decoded['data']['reference'] ?? $decoded['data']['tx_ref'] ?? $reference));
-        $checkoutUrl = trim((string) ($decoded['checkout_url'] ?? $decoded['data']['checkout_url'] ?? $decoded['data']['link'] ?? $decoded['payment_url'] ?? $decoded['url'] ?? ''));
-        $success = $curlCode >= 200 && $curlCode < 300 && ($checkoutUrl !== '' || !empty($decoded['success']));
-        $message = (string) ($decoded['message'] ?? $decoded['data']['message'] ?? ($success ? 'PayChangu checkout ready.' : 'PayChangu could not start the payment.'));
-
-        return [
-            'success' => $success,
-            'checkout_url' => $checkoutUrl,
-            'reference' => $gatewayRef !== '' ? $gatewayRef : $reference,
-            'message' => $message,
-            'response' => $decoded,
-            'payload' => $payload,
-        ];
     }
 }
 
@@ -1433,7 +1354,6 @@ if (!function_exists('uthenga_shop_confirm_payment')) {
             "UPDATE shop_orders
              SET payment_status = 'paid',
                  order_status = CASE WHEN order_status IN ('cancelled', 'delivered') THEN order_status ELSE 'confirmed' END,
-                 fulfillment_status = CASE WHEN fulfillment_status IN ('cancelled', 'delivered') THEN fulfillment_status ELSE 'confirmed' END,
                  confirmed_at = COALESCE(confirmed_at, NOW()),
                  updated_at = NOW()
              WHERE id = ?",
@@ -1516,6 +1436,160 @@ if (!function_exists('uthenga_shop_order_totals')) {
             'discount_amount' => $discountAmount,
             'total' => $total,
         ];
+    }
+}
+
+/**
+ * Creates a real shop_orders/shop_order_items/shop_payments record from the
+ * given cart items and customer details — the exact same logic
+ * shop-checkout.php's own form handler used to run inline, extracted so a
+ * JSON API (api/shop/checkout.php) can drive the same real order-creation
+ * path without duplicating it. Clears the cart on success; does not redirect
+ * or render anything (caller's responsibility). Returns
+ * ['success'=>bool, 'error'=>?string, 'order_number'=>?string, 'order_id'=>?int,
+ *  'total'=>?float, 'payment_method'=>?string, 'requires_payment'=>?bool].
+ */
+if (!function_exists('uthenga_shop_create_order_from_cart')) {
+    function uthenga_shop_create_order_from_cart(array $cartItems, array $details): array {
+        if (empty($cartItems)) {
+            return ['success' => false, 'error' => 'Your cart is empty.'];
+        }
+
+        $customerName = trim((string) ($details['customer_name'] ?? ''));
+        $customerEmail = trim((string) ($details['customer_email'] ?? ''));
+        $customerPhone = trim((string) ($details['customer_phone'] ?? ''));
+        $deliveryAddress = trim((string) ($details['delivery_address'] ?? ''));
+        $deliveryInstructions = trim((string) ($details['delivery_instructions'] ?? ''));
+        $preferredDeliveryTime = trim((string) ($details['preferred_delivery_time'] ?? ''));
+        $paymentMethod = trim((string) ($details['payment_method'] ?? 'cash_on_delivery'));
+        $userId = trim((string) ($details['user_id'] ?? ''));
+
+        if (strlen($customerName) < 2) {
+            return ['success' => false, 'error' => 'Please enter your full name.'];
+        }
+        if (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+            return ['success' => false, 'error' => 'Please enter a valid email address.'];
+        }
+        if (!preg_match('/^[0-9+()\-\s]{7,30}$/', $customerPhone)) {
+            return ['success' => false, 'error' => 'Please enter a valid phone number.'];
+        }
+        if (strlen($deliveryAddress) < 6) {
+            return ['success' => false, 'error' => 'Please enter a full delivery address.'];
+        }
+        if (!in_array($paymentMethod, array_keys(uthenga_shop_payment_methods_map()), true)) {
+            return ['success' => false, 'error' => 'Please choose a valid payment method.'];
+        }
+
+        $totals = uthenga_shop_order_totals($cartItems);
+        $paymentState = uthenga_shop_payment_method_state($paymentMethod);
+        $paymentReference = $paymentState['reference_prefix'] . strtoupper(bin2hex(random_bytes(4)));
+        $orderNumber = uthenga_shop_order_number();
+        $sessionToken = uthenga_shop_session_token();
+
+        try {
+            $ownsTransaction = uthenga_db_is_available() && !empty($GLOBALS['pdo']) && $GLOBALS['pdo'] instanceof PDO && !$GLOBALS['pdo']->inTransaction();
+            if ($ownsTransaction) {
+                $GLOBALS['pdo']->beginTransaction();
+            }
+
+            dbExecute(
+                'INSERT INTO shop_orders (order_number, user_id, customer_name, customer_email, customer_phone, delivery_address, delivery_instructions, preferred_delivery_time, subtotal, delivery_fee, discount_amount, tax_amount, total_amount, currency, payment_method, payment_status, order_status, fulfillment_status, session_token, placed_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+                [
+                    $orderNumber,
+                    $userId !== '' ? $userId : null,
+                    $customerName,
+                    $customerEmail,
+                    $customerPhone,
+                    $deliveryAddress,
+                    $deliveryInstructions !== '' ? $deliveryInstructions : null,
+                    $preferredDeliveryTime !== '' ? $preferredDeliveryTime : null,
+                    $totals['subtotal'],
+                    $totals['delivery_fee'],
+                    $totals['discount_amount'],
+                    $totals['tax_amount'],
+                    $totals['total'],
+                    APP_CURRENCY,
+                    $paymentMethod,
+                    $paymentState['order_payment_status'],
+                    'pending',
+                    'pending',
+                    $sessionToken,
+                ]
+            );
+
+            $orderId = (int) dbLastId();
+            foreach ($cartItems as $item) {
+                dbExecute(
+                    'INSERT INTO shop_order_items (order_id, product_id, product_name, sku, unit_price, quantity, line_total, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [
+                        $orderId,
+                        (int) ($item['id'] ?? 0),
+                        (string) ($item['name'] ?? ''),
+                        (string) ($item['sku'] ?? ''),
+                        (float) ($item['unit_price'] ?? 0),
+                        (int) ($item['quantity'] ?? 1),
+                        (float) ($item['line_total'] ?? 0),
+                        (uthenga_shop_product_image_urls($item)[0] ?? $item['primary_image_url'] ?? null),
+                    ]
+                );
+
+                dbExecute(
+                    'UPDATE shop_products SET stock_quantity = GREATEST(stock_quantity - ?, 0), status = CASE WHEN stock_quantity - ? <= 0 THEN "out_of_stock" ELSE status END WHERE id = ?',
+                    [
+                        (int) ($item['quantity'] ?? 1),
+                        (int) ($item['quantity'] ?? 1),
+                        (int) ($item['id'] ?? 0),
+                    ]
+                );
+            }
+
+            dbExecute(
+                'INSERT INTO shop_payments (order_id, payment_method, provider, payment_reference, amount, currency, payment_status, gateway_payload, paid_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                    $orderId,
+                    $paymentMethod,
+                    $paymentState['provider'],
+                    $paymentReference,
+                    $totals['total'],
+                    APP_CURRENCY,
+                    $paymentState['payment_status'],
+                    json_encode([
+                        'method' => $paymentMethod,
+                        'order_number' => $orderNumber,
+                        'payment_reference' => $paymentReference,
+                        'initial_state' => $paymentState,
+                    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                    null,
+                ]
+            );
+
+            if ($userId !== '') {
+                uthenga_shop_notify_user($userId, 'shop', 'Order Placed', 'Your order ' . $orderNumber . ' has been placed successfully.');
+            }
+            uthenga_shop_notify_admins('New Shop Order', 'Order ' . $orderNumber . ' has been placed by ' . $customerName . '.');
+
+            if ($ownsTransaction && $GLOBALS['pdo']->inTransaction()) {
+                $GLOBALS['pdo']->commit();
+            }
+
+            uthenga_shop_cart_clear();
+
+            return [
+                'success'          => true,
+                'order_id'         => $orderId,
+                'order_number'     => $orderNumber,
+                'total'            => (float) $totals['total'],
+                'payment_method'   => $paymentMethod,
+                'requires_payment' => $paymentMethod === 'pay_online',
+            ];
+        } catch (Throwable $e) {
+            if (!empty($GLOBALS['pdo']) && $GLOBALS['pdo'] instanceof PDO && $GLOBALS['pdo']->inTransaction()) {
+                $GLOBALS['pdo']->rollBack();
+            }
+            error_log('[uthenga_shop_create_order_from_cart] ' . $e->getMessage());
+            return ['success' => false, 'error' => 'Unable to place the order right now. Please try again.'];
+        }
     }
 }
 
@@ -1902,8 +1976,7 @@ if (!function_exists('uthenga_shop_cancel_order')) {
             return ['ok' => false, 'message' => 'Order not found.'];
         }
 
-        $userIdInt = (int) $userId;
-        if ($userIdInt > 0 && (int) ($order['user_id'] ?? 0) !== $userIdInt) {
+        if ($userId !== '' && (string) ($order['user_id'] ?? '') !== $userId) {
             return ['ok' => false, 'message' => 'You cannot cancel this order.'];
         }
 

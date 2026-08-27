@@ -1,18 +1,19 @@
 <?php
 /**
- * Uthenga - Super Admin Command Center
+ * Uthenga - Super Admin Entry Point
+ *
+ * Super Admins are now served by the unified Admin Control Center.
+ * This file redirects them transparently to the enterprise dashboard.
  */
-$pageTitle = 'Super Admin Command Center';
-$activeNav = 'super-dashboard';
-
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/auth_check.php';
-require_once __DIR__ . '/../includes/shop_helpers.php';
 
 requireLogin([ROLE_SUPER_ADMIN]);
 
-require_once __DIR__ . '/includes/admin_header.php';
-require_once __DIR__ . '/includes/admin_icons.php';
+// Redirect to the unified Admin Control Center (handles both Admin & Super Admin)
+redirect(BASE_URL . 'admin/dashboard.php');
+exit;
 
 function superDashboardBadgeClass(string $status): string {
     return match (strtolower(trim($status))) {

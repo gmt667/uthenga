@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS shop_categories (
   KEY idx_shop_categories_active (is_active),
   CONSTRAINT fk_shop_categories_parent FOREIGN KEY (parent_id) REFERENCES shop_categories(id) ON DELETE SET NULL,
   CONSTRAINT fk_shop_categories_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_suppliers (
   id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS shop_suppliers (
   updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uq_shop_suppliers_code (supplier_code),
   KEY idx_shop_suppliers_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_warehouses (
   id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS shop_warehouses (
   updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uq_shop_warehouses_code (warehouse_code),
   KEY idx_shop_warehouses_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_products (
   id                    BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS shop_products (
   CONSTRAINT fk_shop_products_supplier FOREIGN KEY (supplier_id) REFERENCES shop_suppliers(id) ON DELETE SET NULL,
   CONSTRAINT fk_shop_products_warehouse FOREIGN KEY (warehouse_id) REFERENCES shop_warehouses(id) ON DELETE SET NULL,
   CONSTRAINT fk_shop_products_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_product_images (
   id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -116,11 +116,11 @@ CREATE TABLE IF NOT EXISTS shop_product_images (
   KEY idx_shop_product_images_product (product_id),
   KEY idx_shop_product_images_primary (product_id, is_primary),
   CONSTRAINT fk_shop_product_images_product FOREIGN KEY (product_id) REFERENCES shop_products(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_cart_items (
   id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  user_id        BIGINT UNSIGNED NULL,
+  user_id        VARCHAR(30) NULL,
   session_token  VARCHAR(80) NOT NULL,
   product_id     BIGINT UNSIGNED NOT NULL,
   quantity       INT UNSIGNED NOT NULL DEFAULT 1,
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS shop_cart_items (
   KEY idx_shop_cart_items_product (product_id),
   CONSTRAINT fk_shop_cart_items_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   CONSTRAINT fk_shop_cart_items_product FOREIGN KEY (product_id) REFERENCES shop_products(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS delivery_riders (
   id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -142,7 +142,7 @@ CREATE TABLE IF NOT EXISTS delivery_riders (
   bike_registration VARCHAR(60) NULL,
   availability     ENUM('available','busy','offline','inactive') NOT NULL DEFAULT 'available',
   status           ENUM('active','inactive','suspended') NOT NULL DEFAULT 'active',
-  user_id          BIGINT UNSIGNED NULL,
+  user_id          VARCHAR(30) NULL,
   current_location VARCHAR(220) NULL,
   delivery_history_count INT UNSIGNED NOT NULL DEFAULT 0,
   notes            TEXT NULL,
@@ -152,12 +152,12 @@ CREATE TABLE IF NOT EXISTS delivery_riders (
   KEY idx_delivery_riders_availability (availability),
   KEY idx_delivery_riders_status (status),
   CONSTRAINT fk_delivery_riders_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_orders (
   id                     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   order_number          VARCHAR(36) NOT NULL,
-  user_id               BIGINT UNSIGNED NULL,
+  user_id               VARCHAR(30) NULL,
   customer_name         VARCHAR(150) NOT NULL,
   customer_email        VARCHAR(180) NOT NULL,
   customer_phone        VARCHAR(30) NOT NULL,
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS shop_orders (
   KEY idx_shop_orders_placed (placed_at),
   CONSTRAINT fk_shop_orders_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
   CONSTRAINT fk_shop_orders_rider FOREIGN KEY (assigned_rider_id) REFERENCES delivery_riders(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_order_items (
   id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS shop_order_items (
   KEY idx_shop_order_items_product (product_id),
   CONSTRAINT fk_shop_order_items_order FOREIGN KEY (order_id) REFERENCES shop_orders(id) ON DELETE CASCADE,
   CONSTRAINT fk_shop_order_items_product FOREIGN KEY (product_id) REFERENCES shop_products(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_deliveries (
   id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS shop_deliveries (
   KEY idx_shop_deliveries_status (delivery_status),
   CONSTRAINT fk_shop_deliveries_order FOREIGN KEY (order_id) REFERENCES shop_orders(id) ON DELETE CASCADE,
   CONSTRAINT fk_shop_deliveries_rider FOREIGN KEY (rider_id) REFERENCES delivery_riders(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_payments (
   id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS shop_payments (
   KEY idx_shop_payments_order (order_id),
   KEY idx_shop_payments_status (payment_status),
   CONSTRAINT fk_shop_payments_order FOREIGN KEY (order_id) REFERENCES shop_orders(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS shop_settings (
   setting_key   VARCHAR(120) NOT NULL PRIMARY KEY,
@@ -257,7 +257,7 @@ CREATE TABLE IF NOT EXISTS shop_settings (
   updated_by    VARCHAR(30) NULL,
   updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_shop_settings_updated_by FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT IGNORE INTO shop_settings (setting_key, setting_value, value_type, description) VALUES
 ('shop_name', 'Uthenga Drinks Shop', 'string', 'Public-facing shop name'),

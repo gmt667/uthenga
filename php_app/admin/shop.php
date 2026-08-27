@@ -10,6 +10,11 @@ $isSuperAdmin = currentRole() === ROLE_SUPER_ADMIN;
 $pageTitle = $isSuperAdmin ? 'Global Shop Management' : 'Shop Control Room';
 $activeNav = $isSuperAdmin ? 'admin-shop-global' : 'admin-shop';
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    redirect(BASE_URL . 'admin/dashboard.php?tab=shop');
+    exit;
+}
+
 require_once __DIR__ . '/includes/admin_header.php';
 
 $flashMessage = '';

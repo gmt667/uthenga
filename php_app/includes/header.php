@@ -55,6 +55,14 @@ if (in_array($userRole, VENDOR_ROLES, true)) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= rawurlencode(APP_VERSION) ?>">
+  <?php foreach (($pageStyles ?? []) as $pageStyle): ?>
+    <?php $pageStylePath = ltrim((string) $pageStyle, '/'); $pageStyleFile = dirname(__DIR__) . '/' . strtok($pageStylePath, '?'); $pageStyleVersion = APP_ENV === 'development' && is_file($pageStyleFile) ? (string) filemtime($pageStyleFile) : APP_VERSION; $pageStyleJoiner = str_contains($pageStylePath, '?') ? '&' : '?'; ?>
+    <link rel="stylesheet" href="<?= BASE_URL ?><?= e($pageStylePath) ?><?= $pageStyleJoiner ?>v=<?= rawurlencode($pageStyleVersion) ?>">
+  <?php endforeach; ?>
+  <?php foreach (($pageScripts ?? []) as $pageScript): ?>
+    <?php $pageScriptPath = ltrim((string) $pageScript, '/'); $pageScriptFile = dirname(__DIR__) . '/' . strtok($pageScriptPath, '?'); $pageScriptVersion = APP_ENV === 'development' && is_file($pageScriptFile) ? (string) filemtime($pageScriptFile) : APP_VERSION; $pageScriptJoiner = str_contains($pageScriptPath, '?') ? '&' : '?'; ?>
+    <script src="<?= BASE_URL ?><?= e($pageScriptPath) ?><?= $pageScriptJoiner ?>v=<?= rawurlencode($pageScriptVersion) ?>" defer></script>
+  <?php endforeach; ?>
 </head>
 <body>
 

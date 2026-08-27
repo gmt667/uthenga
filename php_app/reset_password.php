@@ -106,7 +106,8 @@ $themePreference = uthenga_theme_preference();
     <?php endif; ?>
 
     <?php if ($resetRow && $success === ''): ?>
-      <form method="POST" action="" style="margin-top:1.5rem;">
+      <form method="POST" action="" style="margin-top:1.5rem;" data-auth-type="reset_password">
+        <script src="<?= BASE_URL ?>assets/js/auth-inline-validation.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
         <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
         <input type="hidden" name="token" value="<?= e($token) ?>">
 

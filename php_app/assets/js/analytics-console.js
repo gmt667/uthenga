@@ -131,7 +131,7 @@ window.AnalyticsControlCenter = (function() {
       var h = Math.max(2, Math.round((num(b.value) / maxV) * (H - 55)));
       var x = pad + i * (bw + gap);
       var y = H - 28 - h;
-      var fill = b.color || opts.color || '#8b5cf6';
+      var fill = b.color || opts.color || '#e63946';
       out += '<rect x="' + x + '" y="' + y + '" width="' + bw + '" height="' + h + '" rx="3" fill="' + fill + '" fill-opacity=".85"><title>' + esc(b.label || '') + ': ' + b.value + '</title></rect>';
       if (opts.labels !== false) {
         var lblLen = (b.labels || b.label || '').length;
@@ -165,10 +165,10 @@ window.AnalyticsControlCenter = (function() {
       out += '<line x1="' + pad + '" y1="' + gy + '" x2="' + (W - 10) + '" y2="' + gy + '" stroke="#1e2a38" stroke-opacity=".06"/>';
       out += '<text x="' + (pad - 6) + '" y="' + (gy + 3) + '" text-anchor="end" font-size="9" fill="#7b8794">' + fmt(gv) + '</text>';
     }
-    out += '<path d="' + area + '" fill="#8b5cf6" fill-opacity=".10" stroke="none"/>';
-    out += '<path d="' + path + '" fill="none" stroke="#8b5cf6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    out += '<path d="' + area + '" fill="#e63946" fill-opacity=".10" stroke="none"/>';
+    out += '<path d="' + path + '" fill="none" stroke="#e63946" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
     pts.forEach(function(pt) {
-      out += '<circle cx="' + pt[0].toFixed(1) + '" cy="' + pt[1].toFixed(1) + '" r="3" fill="#fff" stroke="#8b5cf6" stroke-width="2"><title>' + esc(pt[2].day) + ': ' + fmt(pt[2][mode]) + '</title></circle>';
+      out += '<circle cx="' + pt[0].toFixed(1) + '" cy="' + pt[1].toFixed(1) + '" r="3" fill="#fff" stroke="#e63946" stroke-width="2"><title>' + esc(pt[2].day) + ': ' + fmt(pt[2][mode]) + '</title></circle>';
     });
     out += '</svg>';
     return out;

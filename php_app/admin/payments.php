@@ -7,46 +7,52 @@ $activeNav = 'admin-transactions';
 
 require_once __DIR__ . '/includes/admin_header.php';
 
-// Handle updating commission rate setting
+// Handle saving a new, effective-dated fee rule — never overwrites a rate in
+// place; uthenga_finance_save_fee_rule() closes whatever was active and
+// inserts a fresh row, so transactions already created keep the rate that
+// was active when they were made.
 $message = '';
 $err = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_commission']) && validateCsrf()) {
-    $rates = [
-        'commission_rate_event' => (float)($_POST['commission_rate_event'] ?? 10),
-        'commission_rate_accommodation' => (float)($_POST['commission_rate_accommodation'] ?? 12),
-        'commission_rate_tour' => (float)($_POST['commission_rate_tour'] ?? 15),
-        'commission_rate_transport' => (float)($_POST['commission_rate_transport'] ?? 8),
-        'service_fee_event' => (float)($_POST['service_fee_event'] ?? 0),
-        'service_fee_accommodation' => (float)($_POST['service_fee_accommodation'] ?? 0),
-        'service_fee_tour' => (float)($_POST['service_fee_tour'] ?? 0),
-        'service_fee_transport' => (float)($_POST['service_fee_transport'] ?? 0),
-    ];
+$feeRuleCategories = ['accommodation' => 'Accommodation', 'event' => 'Events', 'tour' => 'Tours', 'transport' => 'Transport', 'shop' => 'Shop'];
 
-    foreach ($rates as $key => $value) {
-        if ($value < 0 || $value > 100) {
-            $err = 'Commission rates must be between 0% and 100%, and service fees must be non-negative.';
-            break;
-        }
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_fee_rule']) && validateCsrf()) {
+    $category = trim((string) ($_POST['service_category'] ?? ''));
+    $rate = (float) ($_POST['commission_rate'] ?? -1);
+    $fee = (float) ($_POST['service_fee'] ?? -1);
+    $effectiveFromInput = trim((string) ($_POST['effective_from'] ?? ''));
 
-    if ($err === '') {
-        foreach ($rates as $key => $value) {
-            setSetting($key, $value, $_SESSION['user_id'] ?? null);
+    if (!isset($feeRuleCategories[$category])) {
+        $err = 'Unknown service category.';
+    } elseif ($rate < 0 || $rate > 100) {
+        $err = 'Commission rate must be between 0% and 100%.';
+    } elseif ($fee < 0) {
+        $err = 'Service fee must be zero or greater.';
+    } else {
+        $effectiveFrom = null;
+        if ($effectiveFromInput !== '') {
+            $parsed = strtotime($effectiveFromInput);
+            if ($parsed === false) {
+                $err = 'Invalid effective-from date.';
+            } else {
+                $effectiveFrom = date('Y-m-d H:i:s', $parsed);
+            }
         }
-        logAction('Updated Commission Rates', 'Admin updated marketplace commission and service-fee settings.');
-        $message = 'Commission and service-fee settings updated successfully.';
+        if ($err === '') {
+            uthenga_finance_save_fee_rule($category, $rate, $fee, $_SESSION['user_id'] ?? null, $effectiveFrom);
+            logAction('Updated Commission Rate', 'Admin set a new ' . $feeRuleCategories[$category] . " fee rule: {$rate}% + MK{$fee}, effective " . ($effectiveFrom ?? 'immediately') . '.');
+            $message = $feeRuleCategories[$category] . ' fee rule saved.';
+        }
     }
 }
 
-// Load current commission rate from settings
-$commissionRateEvent = (float)getSetting('commission_rate_event', getSetting('commission_rate', 10));
-$commissionRateAccommodation = (float)getSetting('commission_rate_accommodation', 12);
-$commissionRateTour = (float)getSetting('commission_rate_tour', 15);
-$commissionRateTransport = (float)getSetting('commission_rate_transport', 8);
-$serviceFeeEvent = (float)getSetting('service_fee_event', 0);
-$serviceFeeAccommodation = (float)getSetting('service_fee_accommodation', 0);
-$serviceFeeTour = (float)getSetting('service_fee_tour', 0);
-$serviceFeeTransport = (float)getSetting('service_fee_transport', 0);
+// Current active rule + recent history per category, straight from the
+// versioned table — no more flat, historyless settings keys.
+$activeFeeRules = [];
+$feeRuleHistory = [];
+foreach ($feeRuleCategories as $key => $label) {
+    $activeFeeRules[$key] = uthenga_finance_active_fee_rule($key);
+    $feeRuleHistory[$key] = dbQuery('SELECT * FROM uthenga_fee_rules WHERE service_category = ? ORDER BY effective_from DESC LIMIT 10', [$key]);
+}
 
 // ─── Filters ─────────────────────────────────────────────────────────────────
 $filterStatus  = strtolower($_GET['status']  ?? 'all');
@@ -193,25 +199,44 @@ function shopPaymentStatusBadge(string $status): string {
 
 <!-- Settings + Configuration -->
 <div class="glass-panel animate-in" style="padding: 1.5rem; margin-bottom: 2rem;">
-  <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.45rem;"><?= admin_icon_svg('settings') ?><span>Commission Configuration</span></h3>
-  <form method="POST" class="flex items-center gap-3 wrap">
-    <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
-    <input type="hidden" name="update_commission" value="1">
-    <div class="grid grid-cols-4 gap-2" style="width:100%;margin-bottom:1rem;">
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Events %</label><input type="number" name="commission_rate_event" class="form-control" min="0" max="100" step="0.1" value="<?= e($commissionRateEvent) ?>"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Hotels %</label><input type="number" name="commission_rate_accommodation" class="form-control" min="0" max="100" step="0.1" value="<?= e($commissionRateAccommodation) ?>"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Tours %</label><input type="number" name="commission_rate_tour" class="form-control" min="0" max="100" step="0.1" value="<?= e($commissionRateTour) ?>"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Transport %</label><input type="number" name="commission_rate_transport" class="form-control" min="0" max="100" step="0.1" value="<?= e($commissionRateTransport) ?>"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Events Fee</label><input type="number" name="service_fee_event" class="form-control" min="0" max="100000" step="0.1" value="<?= e($serviceFeeEvent) ?>"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Hotels Fee</label><input type="number" name="service_fee_accommodation" class="form-control" min="0" max="100000" step="0.1" value="<?= e($serviceFeeAccommodation) ?>"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Tours Fee</label><input type="number" name="service_fee_tour" class="form-control" min="0" max="100000" step="0.1" value="<?= e($serviceFeeTour) ?>"></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Transport Fee</label><input type="number" name="service_fee_transport" class="form-control" min="0" max="100000" step="0.1" value="<?= e($serviceFeeTransport) ?>"></div>
-    </div>
-    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
-      <button type="submit" class="btn btn-primary">Update Fee Settings</button>
-      <div class="text-xs text-muted">Commission is applied to the net booking amount after discounts. Service fees are charged to the customer and kept by Uthenga.</div>
-    </div>
-  </form>
+  <h3 style="font-size: 1.1rem; margin-bottom: 1rem; display:flex; align-items:center; gap:0.45rem;"><?= admin_icon_svg('settings') ?><span>Payment Revenue Rules</span></h3>
+  <div class="text-xs text-muted" style="margin-bottom:1rem;">Saving a rule never overwrites the previous one — it closes it and starts a new one, so a transaction always keeps the rate that was active when it was created.</div>
+
+  <?php foreach ($feeRuleCategories as $catKey => $catLabel): $active = $activeFeeRules[$catKey]; ?>
+  <div class="glass-panel" style="padding:1rem;margin-bottom:1rem;background:rgba(255,255,255,0.02);">
+    <form method="POST" class="flex items-center gap-3 wrap" style="align-items:flex-end;">
+      <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
+      <input type="hidden" name="save_fee_rule" value="1">
+      <input type="hidden" name="service_category" value="<?= e($catKey) ?>">
+      <div class="form-group" style="margin-bottom:0;min-width:140px;"><label class="form-label">Service</label><div style="font-weight:700;padding:0.55rem 0;"><?= e($catLabel) ?></div></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Rate %</label><input type="number" name="commission_rate" class="form-control" min="0" max="100" step="0.1" value="<?= e($active['commission_rate'] ?? 0) ?>" required></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Service Fee</label><input type="number" name="service_fee" class="form-control" min="0" step="0.1" value="<?= e($active['service_fee'] ?? 0) ?>" required></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Effective From</label><input type="datetime-local" name="effective_from" class="form-control"></div>
+      <button type="submit" class="btn btn-primary btn-sm">Save Rule</button>
+      <?php if ($active): ?>
+        <div class="text-xs text-muted">Active since <?= e(date('d M Y', strtotime($active['effective_from']))) ?></div>
+      <?php endif; ?>
+    </form>
+    <?php if (count($feeRuleHistory[$catKey]) > 1): ?>
+    <details style="margin-top:0.75rem;">
+      <summary class="text-xs text-muted" style="cursor:pointer;">Rate history (<?= count($feeRuleHistory[$catKey]) ?>)</summary>
+      <table class="table" style="margin-top:0.5rem;font-size:0.8rem;">
+        <thead><tr><th>Rate</th><th>Service Fee</th><th>Effective From</th><th>Effective To</th></tr></thead>
+        <tbody>
+          <?php foreach ($feeRuleHistory[$catKey] as $rule): ?>
+          <tr>
+            <td><?= e($rule['commission_rate']) ?>%</td>
+            <td>MK<?= e(number_format((float) $rule['service_fee'], 2)) ?></td>
+            <td><?= e(date('d M Y H:i', strtotime($rule['effective_from']))) ?></td>
+            <td><?= $rule['effective_to'] ? e(date('d M Y H:i', strtotime($rule['effective_to']))) : '<strong>current</strong>' ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </details>
+    <?php endif; ?>
+  </div>
+  <?php endforeach; ?>
 </div>
 
 <!-- Ledger Grid -->

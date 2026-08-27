@@ -153,7 +153,7 @@ $activeNav = 'tourism';
 
         <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:2.5rem;">
           <a href="<?= BASE_URL ?>tourism.php" class="btn btn-secondary"><?= uthenga_public_icon_svg('chevron-left') ?> Back to Tourism Hub</a>
-          <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($guide['city'] ?? '') ?>" class="btn btn-primary">✨ Plan a Trip Here</a>
+          <a href="<?= BASE_URL ?>ai.php#/planner" class="btn btn-primary">✨ Plan a Trip Here</a>
         </div>
       </div>
 
@@ -177,7 +177,7 @@ $activeNav = 'tourism';
         </div>
         <div class="sidebar-card">
           <h4 style="display:inline-flex;align-items:center;gap:.35rem;"><?= uthenga_public_icon_svg('calendar') ?> Plan Your Visit</h4>
-          <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($guide['city'] ?? '') ?>" class="btn btn-primary" style="width:100%;margin-bottom:.5rem;"><?= uthenga_public_icon_svg('sparkles') ?> AI Trip Planner</a>
+          <a href="<?= BASE_URL ?>ai.php#/planner" class="btn btn-primary" style="width:100%;margin-bottom:.5rem;"><?= uthenga_public_icon_svg('sparkles') ?> AI Trip Planner</a>
           <a href="<?= BASE_URL ?>ai/chat.php" class="btn btn-secondary" style="width:100%;"><?= uthenga_public_icon_svg('globe') ?> Ask AI Assistant</a>
         </div>
       </aside>
@@ -203,7 +203,7 @@ $activeNav = 'tourism';
       </div>
       <div class="grid grid-cols-4 gap-4">
         <?php foreach (uthenga_malawi_districts() as $district): ?>
-          <a href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($district['city']) ?>" class="card" style="overflow:hidden;display:block;text-decoration:none;color:inherit;">
+          <a href="<?= BASE_URL ?>ai.php#/planner" class="card" style="overflow:hidden;display:block;text-decoration:none;color:inherit;">
             <img src="<?= e($district['image']) ?>" alt="<?= e($district['district']) ?>" loading="lazy" style="width:100%;height:140px;object-fit:cover;">
             <div style="padding:1rem;">
               <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-accent);"><?= e($district['region']) ?></div>
@@ -225,7 +225,7 @@ $activeNav = 'tourism';
       </div>
       <div class="grid grid-cols-5 gap-4">
         <?php foreach (uthenga_malawi_featured_cities() as $city): ?>
-          <a class="card" href="<?= BASE_URL ?>trip-planner.php?destination=<?= urlencode($city['city']) ?>" style="overflow:hidden;display:block;text-decoration:none;color:inherit;">
+          <a class="card" href="<?= BASE_URL ?>ai.php#/planner" style="overflow:hidden;display:block;text-decoration:none;color:inherit;">
             <img src="<?= e($city['image']) ?>" alt="<?= e($city['city']) ?>" loading="lazy" style="width:100%;height:150px;object-fit:cover;">
             <div style="padding:1rem;">
               <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--clr-accent);"><?= e($city['district']) ?></div>

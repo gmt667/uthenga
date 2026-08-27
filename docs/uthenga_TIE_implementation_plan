@@ -1,0 +1,1486 @@
+Absolutely. The previous document describes **what TIE should become**, but for an implementation agent we need something more operational: **phases, objectives, activities, deliverables, dependencies, acceptance criteria, and progression gates**.
+
+I would restructure it into the following implementation roadmap.
+
+# Uthenga Travel Intelligence Engine
+
+## Phased Implementation Plan
+
+### Version 1.0
+
+---
+
+# 0. Implementation Strategy
+
+The TIE implementation will proceed incrementally.
+
+We will **not build all 14 engines simultaneously**.
+
+Each phase should produce a working, testable capability before the next phase begins.
+
+The implementation principle is:
+
+```text
+Understand Existing System
+        ↓
+Establish TIE Foundation
+        ↓
+Connect Uthenga Data
+        ↓
+Add Location Intelligence
+        ↓
+Add LLM Intelligence
+        ↓
+Build Recommendations
+        ↓
+Build Trip Planning
+        ↓
+Add Live Journey Intelligence
+        ↓
+Add Conversational AI
+        ↓
+Production Hardening
+        ↓
+Future ML
+```
+
+The first release should rely primarily on:
+
+* Uthenga's existing database
+* deterministic backend logic
+* Google Maps Platform
+* device/browser location
+* weather API
+* LLM APIs
+
+**No custom ML model training is required for the initial implementation.**
+
+---
+
+# Phase 1: Existing System Discovery & Technical Audit
+
+## Objective
+
+Understand the current Uthenga platform before introducing TIE.
+
+The implementation agent must first inspect the existing system rather than making assumptions about its architecture.
+
+## Activities
+
+### 1.1 Repository Analysis
+
+Identify:
+
+* Frontend framework
+* Backend framework
+* Database technology
+* Authentication system
+* API architecture
+* Existing services
+* Existing Trip Planner implementation
+* Existing booking workflow
+* Existing vendor architecture
+
+### 1.2 Database Analysis
+
+Identify existing entities for:
+
+* Users
+* Vendors
+* Services
+* Hotels
+* Transport
+* Events
+* Tourism
+* Bookings
+* Payments
+* Reviews
+* Availability
+* Locations
+* User preferences
+
+### 1.3 Trip Planner Analysis
+
+Document:
+
+* Current UI
+* Inputs
+* Outputs
+* Existing API calls
+* Existing business logic
+* Existing database queries
+* Current limitations
+
+### 1.4 Integration Audit
+
+Determine whether Uthenga already has:
+
+* Maps
+* Geolocation
+* Weather
+* Notifications
+* WebSockets
+* Background jobs
+* Caching
+* Search
+* Analytics
+
+## Deliverable
+
+**TIE Technical Discovery Report**
+
+Containing:
+
+```text
+Current Architecture
+Database Schema
+Existing APIs
+Trip Planner Flow
+Existing Integrations
+Integration Gaps
+Recommended Integration Points
+Risks
+```
+
+## Gate
+
+Do not proceed until the implementation agent understands the existing architecture and identifies exactly where TIE will connect.
+
+---
+
+# Phase 2: TIE Foundation & Service Architecture
+
+## Objective
+
+Create the foundational architecture for the Travel Intelligence Engine without implementing advanced intelligence yet.
+
+## Activities
+
+### 2.1 Create TIE module/service
+
+Establish the core TIE boundary.
+
+Suggested structure:
+
+```text
+TIE
+│
+├── context
+├── query
+├── availability
+├── location
+├── budget
+├── recommendation
+├── trip-planning
+├── routing
+├── journey
+├── conversation
+├── notifications
+├── llm
+├── prompts
+└── validation
+```
+
+These can initially be modules inside an existing backend rather than independent microservices.
+
+### 2.2 Establish Internal Contracts
+
+Define standardized inputs and outputs.
+
+For example:
+
+```text
+TripRequest
+UserContext
+LocationContext
+VendorCandidate
+Recommendation
+TripPlan
+Route
+JourneyState
+```
+
+### 2.3 Establish Configuration
+
+Define:
+
+* API keys
+* Environment variables
+* LLM configuration
+* Google Maps configuration
+* Weather configuration
+* Feature flags
+
+## Deliverables
+
+* TIE module
+* Service interfaces
+* DTO/schema definitions
+* Configuration system
+* Initial API routes
+* Architecture documentation
+
+## Gate
+
+TIE must be callable by the existing Uthenga backend without disrupting existing booking functionality.
+
+---
+
+# Phase 3: Uthenga Data & Query Engine
+
+## Objective
+
+Make TIE capable of retrieving reliable marketplace information.
+
+This is one of the most important phases because **the AI can only be as useful as the data it receives**.
+
+## Activities
+
+Build retrieval capabilities for:
+
+### Transport
+
+* Routes
+* Operators
+* Vehicles
+* Departure times
+* Arrival times
+* Prices
+* Seat availability
+
+### Accommodation
+
+* Hotels
+* Rooms
+* Prices
+* Availability
+* Ratings
+* Locations
+* Amenities
+
+### Events
+
+* Event type
+* Date
+* Location
+* Ticket price
+* Availability
+* Organizer
+
+### Tourism
+
+* Attractions
+* Tours
+* Activities
+* Locations
+* Prices
+* Availability
+
+### Other Services
+
+Support the existing Uthenga vendor categories without hard-coding the system around only hotels and transport.
+
+## Retrieval capabilities
+
+```text
+Search by destination
+Search by origin
+Search by date
+Search by category
+Search by price
+Search by availability
+Search by location
+Search by radius
+```
+
+## Deliverables
+
+* Query Engine
+* Vendor retrieval APIs
+* Candidate normalization
+* Search/filter functionality
+* Tests
+
+## Gate
+
+TIE can reliably retrieve relevant Uthenga services without involving an LLM.
+
+---
+
+# Phase 4: Availability & Business Rules Engine
+
+## Objective
+
+Ensure AI operates only on services that are actually bookable and valid.
+
+## Activities
+
+Implement deterministic validation for:
+
+### Availability
+
+```text
+Hotel rooms
+Transport seats
+Event tickets
+Tour capacity
+```
+
+### Date validation
+
+```text
+Start date
+End date
+Event date
+Check-in
+Check-out
+Departure
+Arrival
+```
+
+### Vendor status
+
+```text
+Active
+Suspended
+Unavailable
+Expired
+```
+
+### Booking constraints
+
+* Capacity
+* Minimum/maximum booking quantities
+* Service restrictions
+* Vendor-specific rules
+
+## Deliverable
+
+**Availability Engine**
+
+## Gate
+
+Every candidate returned to the AI layer must be valid according to current Uthenga business data.
+
+---
+
+# Phase 5: Location Intelligence
+
+## Objective
+
+Give TIE awareness of the user's geographic context.
+
+This phase introduces the location layer before we make the AI dependent upon it.
+
+## Activities
+
+### 5.1 Device Location
+
+Implement permission-based:
+
+* Browser Geolocation
+* Mobile location services
+
+Capture:
+
+```text
+Latitude
+Longitude
+Accuracy
+Timestamp
+```
+
+### 5.2 Reverse Geocoding
+
+Convert coordinates into:
+
+```text
+Country
+Region
+District
+City
+Area
+Address
+```
+
+### 5.3 Geospatial Storage
+
+If necessary, introduce **PostGIS/geospatial capabilities** into the database.
+
+### 5.4 Nearby Search
+
+Enable:
+
+```text
+Hotels within radius
+Transport within radius
+Events nearby
+Tourism nearby
+Restaurants nearby
+Other Uthenga services nearby
+```
+
+## Deliverables
+
+* Location service
+* Location context
+* Geospatial queries
+* Nearby vendor search
+* Location permissions handling
+
+## Gate
+
+A user can provide their current location and TIE can correctly determine their geographic context and nearby Uthenga services.
+
+---
+
+# Phase 6: Google Maps & Route Intelligence
+
+## Objective
+
+Integrate Google Maps as the geographic and routing infrastructure.
+
+We should not rebuild navigation functionality ourselves.
+
+## Activities
+
+Integrate the appropriate Google Maps Platform capabilities for:
+
+* Maps
+* Geocoding
+* Directions/routes
+* Distance calculations
+* Places where required
+* Route visualization
+* ETA
+* Traffic information where available
+
+### Route Engine
+
+Given:
+
+```text
+Origin
+Destination
+Travel mode
+```
+
+return:
+
+```text
+Distance
+Duration
+ETA
+Route
+Alternative routes
+Polyline
+```
+
+### Route Enrichment
+
+Connect route information with Uthenga inventory.
+
+Example:
+
+```text
+Route
+│
+├── Hotels nearby
+├── Events nearby
+├── Tourism nearby
+├── Restaurants
+└── Transport connections
+```
+
+## Deliverables
+
+* Maps integration
+* Route API
+* Route visualization
+* ETA
+* Route enrichment
+
+## Gate
+
+The Trip Planner can display a route between an origin and destination and associate relevant Uthenga services with that route.
+
+---
+
+# Phase 7: Context Engine
+
+## Objective
+
+Combine user, trip, location, and environmental information into a unified context.
+
+The Context Engine becomes the **state provider for intelligence**.
+
+## Context sources
+
+```text
+User Profile
++
+Current Location
++
+Current Time
++
+Current Trip
++
+Previous Bookings
++
+Current Bookings
++
+Weather
++
+Destination
++
+Preferences
+```
+
+Example:
+
+```json
+{
+  "user": {},
+  "location": {},
+  "trip": {},
+  "weather": {},
+  "preferences": {},
+  "bookings": {}
+}
+```
+
+## Deliverable
+
+**Unified Travel Context**
+
+## Gate
+
+Any TIE component can request the user's current travel context through a standardized interface.
+
+---
+
+# Phase 8: Recommendation & Ranking Engine
+
+## Objective
+
+Build the first intelligence layer for vendor recommendations.
+
+No trained ML model is required yet.
+
+## Candidate scoring
+
+Initial ranking can combine:
+
+```text
+Price
+Rating
+Distance
+Availability
+Popularity
+Vendor quality
+User preferences
+Trip context
+```
+
+Example conceptual score:
+
+```text
+Recommendation Score =
+    Price relevance
+  + Distance relevance
+  + Rating
+  + Availability
+  + Preference match
+  + Popularity
+```
+
+The exact weighting should be configurable and tested rather than hard-coded permanently.
+
+## Deliverables
+
+* Candidate ranking
+* Category-specific ranking
+* User preference matching
+* Recommendation API
+* Ranking tests
+
+## Gate
+
+Given a travel request, TIE can produce a ranked set of suitable Uthenga services.
+
+---
+
+# Phase 9: Budget & Trip Optimization Engine
+
+## Objective
+
+Enable TIE to construct plans within user constraints.
+
+## Activities
+
+Calculate:
+
+```text
+Transport cost
++
+Accommodation
++
+Activities
++
+Other bookable services
++
+Applicable fees
+=
+Estimated trip cost
+```
+
+Track:
+
+```text
+Total Budget
+Committed Cost
+Remaining Budget
+```
+
+### Optimization
+
+Support constraints such as:
+
+```text
+Budget ≤ X
+
+Travel date = Y
+
+Travellers = N
+
+Preferred category = Z
+```
+
+Then find viable combinations.
+
+## Deliverables
+
+* Cost calculator
+* Budget tracker
+* Budget constraints
+* Alternative selection
+* Trip cost estimator
+
+## Gate
+
+The system can construct a valid combination of services that respects user-defined budget and trip constraints.
+
+---
+
+# Phase 10: LLM Gateway & AI Reasoning Layer
+
+## Objective
+
+Introduce the LLM as the reasoning layer.
+
+The LLM receives **filtered, validated Uthenga data**, not raw database access.
+
+## Architecture
+
+```text
+User Request
+      ↓
+TIE
+      ↓
+Retrieve
+      ↓
+Filter
+      ↓
+Rank
+      ↓
+Build Context
+      ↓
+LLM Gateway
+      ↓
+Structured Response
+```
+
+## LLM Gateway responsibilities
+
+* Provider abstraction
+* Model selection
+* Structured output
+* Prompt management
+* Retry
+* Timeout handling
+* Rate limiting
+* Token tracking
+* Cost tracking
+* Provider fallback
+
+## Initial model providers
+
+Keep the architecture provider-agnostic.
+
+Potential providers:
+
+* OpenAI
+* Anthropic
+* Gemini
+* Other compatible providers
+* Local models later
+
+## Deliverables
+
+* LLM Gateway
+* Prompt infrastructure
+* Structured output schemas
+* Model configuration
+* AI error handling
+
+## Gate
+
+TIE can send a validated travel context to an LLM and receive a predictable structured response.
+
+---
+
+# Phase 11: Prompt & Context Engineering
+
+## Objective
+
+Create reliable prompts that constrain the LLM to Uthenga's verified information.
+
+The prompt should establish:
+
+```text
+System Role
+
+User Intent
+
+Travel Context
+
+Available Vendors
+
+Availability
+
+Budget
+
+Constraints
+
+Required Output Schema
+
+Safety / Accuracy Rules
+```
+
+Critical rule:
+
+> **The LLM must not invent services or marketplace facts.**
+
+## Deliverables
+
+* System prompts
+* Trip planning prompts
+* Recommendation prompts
+* Conversational prompts
+* Prompt versioning
+* Prompt tests
+
+## Gate
+
+AI responses consistently use supplied marketplace data and conform to defined schemas.
+
+---
+
+# Phase 12: Response Validation & Safety Layer
+
+## Objective
+
+Never allow an LLM response to directly control booking or financial operations.
+
+## Validation pipeline
+
+```text
+LLM
+ ↓
+Schema Validation
+ ↓
+Business Validation
+ ↓
+Availability Check
+ ↓
+Price Check
+ ↓
+Date Check
+ ↓
+Booking Compatibility
+ ↓
+Approved Response
+```
+
+If invalid:
+
+```text
+Reject
+ ↓
+Re-query
+or
+ ↓
+Regenerate
+or
+ ↓
+Fallback
+```
+
+## Deliverables
+
+* Response validator
+* Schema validation
+* Business validation
+* Hallucination safeguards
+* Booking safety checks
+
+## Gate
+
+No AI-generated recommendation can produce an invalid booking state.
+
+---
+
+# Phase 13: AI Trip Planner
+
+## Objective
+
+Combine all preceding components into the first complete AI-powered Trip Planner.
+
+## User can provide
+
+```text
+Origin
+Destination
+Dates
+Budget
+Number of travellers
+Preferences
+Interests
+Travel mode
+Accommodation preferences
+```
+
+Natural language should eventually be supported:
+
+> "Plan me a three-day trip to Mangochi for two people under MWK 300,000."
+
+## Processing
+
+```text
+Request
+ ↓
+Intent Extraction
+ ↓
+Context
+ ↓
+Location
+ ↓
+Vendor Retrieval
+ ↓
+Availability
+ ↓
+Ranking
+ ↓
+Budget Optimization
+ ↓
+LLM Planning
+ ↓
+Validation
+ ↓
+Itinerary
+```
+
+## Output
+
+```text
+Trip Overview
+
+Transportation
+
+Accommodation
+
+Activities
+
+Daily Schedule
+
+Estimated Cost
+
+Route
+
+Recommendations
+
+Booking Actions
+```
+
+## Deliverable
+
+### TIE Trip Planner MVP
+
+## Gate
+
+A user can provide a travel request and receive a valid, personalized, bookable itinerary based on real Uthenga inventory.
+
+---
+
+# Phase 14: Live Journey Engine
+
+## Objective
+
+Turn a planned trip into a live travel experience.
+
+## Activities
+
+Track, with explicit user permission:
+
+```text
+Current Location
+Journey Progress
+Route
+ETA
+Distance Remaining
+```
+
+Display:
+
+```text
+Origin
+   ↓
+Live User Position
+   ↓
+Destination
+```
+
+### Simulation
+
+The system should also support **route simulation/progress visualization** for planned journeys using route geometry and ETA.
+
+This is different from claiming to know the user's actual location. Actual location requires real device GPS.
+
+## Deliverables
+
+* Live location updates
+* Journey state
+* Route progress
+* ETA updates
+* Live map UI
+* Planned journey simulation
+
+## Gate
+
+A user can start a trip and see their journey progress against the planned route.
+
+---
+
+# Phase 15: Intelligent Journey & Route Awareness
+
+## Objective
+
+Make the live journey context-aware.
+
+During travel, TIE can detect:
+
+```text
+Approaching destination
+Delay
+Route deviation
+Nearby Uthenga service
+Upcoming event
+Hotel check-in
+```
+
+Potential recommendations:
+
+> "You're arriving in Blantyre in approximately 25 minutes. Your hotel is 3.2 km from the current route."
+
+Or:
+
+> "There is a Uthenga-listed attraction 1.5 km from your route."
+
+## Deliverables
+
+* Route-aware recommendations
+* Journey context updates
+* Dynamic ETA context
+* Nearby-service recommendations
+
+---
+
+# Phase 16: Notification Engine
+
+## Objective
+
+Make TIE proactive rather than purely reactive.
+
+Potential notifications:
+
+```text
+Trip starts in 2 hours.
+
+Your bus departs in 30 minutes.
+
+Your hotel check-in is approaching.
+
+Traffic may delay your arrival.
+
+You have arrived at your destination.
+
+A recommended activity is nearby.
+```
+
+Notifications should be:
+
+* Relevant
+* Permission-based
+* Configurable
+* Non-spammy
+
+## Deliverable
+
+**Context-aware Travel Notification System**
+
+---
+
+# Phase 17: Conversation Engine
+
+## Objective
+
+Allow users to interact with TIE conversationally.
+
+Example:
+
+```text
+User:
+Plan a weekend trip to Zomba.
+
+TIE:
+What's your budget?
+
+User:
+MWK 200,000.
+
+TIE:
+Are you travelling alone?
+
+User:
+With my wife.
+
+TIE:
+I found three suitable options...
+```
+
+The user should be able to modify the plan:
+
+```text
+Make it cheaper.
+
+Change the hotel.
+
+Remove the bus.
+
+Add hiking.
+
+Move this activity to Saturday.
+```
+
+The Conversation Engine should maintain trip state rather than treating every message as an isolated request.
+
+## Deliverable
+
+**Conversational Trip Planner**
+
+---
+
+# Phase 18: Booking Integration
+
+## Objective
+
+Connect AI-generated plans directly to Uthenga's existing booking system.
+
+The AI should not create an entirely separate booking system.
+
+Instead:
+
+```text
+AI Recommendation
+       ↓
+Selected Service
+       ↓
+Existing Uthenga Booking Flow
+       ↓
+Payment
+       ↓
+Vendor
+       ↓
+Confirmation
+```
+
+## Deliverables
+
+* Booking action integration
+* Booking validation
+* Selected itinerary persistence
+* Confirmation integration
+
+## Gate
+
+Every recommended service can transition cleanly into Uthenga's existing booking workflow.
+
+---
+
+# Phase 19: Personalization
+
+## Objective
+
+Use accumulated user interaction data to improve recommendations.
+
+Potential signals:
+
+```text
+Searches
+Clicks
+Bookings
+Cancellations
+Ratings
+Favourite vendors
+Trip preferences
+Price preferences
+Travel frequency
+```
+
+Initially use these for rule-based personalization.
+
+Example:
+
+```text
+User frequently books budget hotels
+        ↓
+Increase budget hotel ranking
+```
+
+Later, these signals can become training data for custom recommendation models.
+
+---
+
+# Phase 20: Analytics & Observability
+
+## Objective
+
+Measure whether TIE actually improves Uthenga.
+
+Track:
+
+### AI
+
+* Requests
+* Successful responses
+* Failed responses
+* LLM latency
+* Token usage
+* Cost
+* Model performance
+
+### Recommendations
+
+* Impressions
+* Click-through rate
+* Booking conversion
+* Recommendation acceptance
+* Recommendation rejection
+
+### Trip Planner
+
+* Plans created
+* Plans modified
+* Plans abandoned
+* Plans booked
+* Average trip value
+
+### Location
+
+* Permission acceptance
+* Location errors
+* GPS update failures
+
+---
+
+# Phase 21: Production Hardening
+
+## Objective
+
+Prepare TIE for real users and production traffic.
+
+Implement:
+
+* Authentication
+* Authorization
+* Rate limiting
+* Caching
+* Error handling
+* API timeouts
+* LLM fallback
+* External API fallback
+* Logging
+* Monitoring
+* Security
+* Privacy controls
+* Location-data retention policies
+* Cost controls
+
+### Important
+
+The core Uthenga marketplace must remain functional even if:
+
+```text
+LLM unavailable
+Google Maps unavailable
+Weather unavailable
+GPS unavailable
+```
+
+AI is an enhancement, not a single point of failure.
+
+---
+
+# Phase 22: Future ML Intelligence
+
+Only after sufficient Uthenga data has accumulated should custom ML models be considered.
+
+Potential models:
+
+```text
+Recommendation Model
+Demand Forecasting
+Vendor Demand Prediction
+Personalized Ranking
+Travel Demand Prediction
+Fraud Detection
+Customer Lifetime Value
+Dynamic Pricing Assistance
+```
+
+The future architecture becomes:
+
+```text
+                    TIE
+                     │
+          ┌──────────┴──────────┐
+          │                     │
+       LLM Layer            ML Layer
+          │                     │
+     Reasoning             Prediction
+     Planning              Ranking
+     Conversation          Forecasting
+          │                     │
+          └──────────┬──────────┘
+                     │
+                Uthenga Data
+```
+
+This phase should **not block the initial TIE implementation**.
+
+---
+
+# Implementation Dependency Chain
+
+The phases should follow this dependency structure:
+
+```text
+PHASE 1
+System Discovery
+      │
+      ▼
+PHASE 2
+TIE Foundation
+      │
+      ▼
+PHASE 3
+Data / Query Engine
+      │
+      ▼
+PHASE 4
+Availability
+      │
+      ├──────────────┐
+      ▼              ▼
+PHASE 5          PHASE 6
+Location         Google Maps
+      │              │
+      └──────┬───────┘
+             ▼
+         PHASE 7
+      Context Engine
+             │
+             ▼
+         PHASE 8
+    Recommendation Engine
+             │
+             ▼
+         PHASE 9
+      Budget Engine
+             │
+             ▼
+        PHASE 10
+       LLM Gateway
+             │
+             ▼
+        PHASE 11
+    Prompt Engineering
+             │
+             ▼
+        PHASE 12
+      Validation
+             │
+             ▼
+        PHASE 13
+    AI Trip Planner MVP
+             │
+             ▼
+        PHASE 14
+     Live Journey Engine
+             │
+             ▼
+        PHASE 15
+   Journey Intelligence
+             │
+             ▼
+        PHASE 16
+      Notifications
+             │
+             ▼
+        PHASE 17
+      Conversation
+             │
+             ▼
+        PHASE 18
+       Booking
+             │
+             ▼
+        PHASE 19
+     Personalization
+             │
+             ▼
+        PHASE 20
+       Analytics
+             │
+             ▼
+        PHASE 21
+   Production Hardening
+             │
+             ▼
+        PHASE 22
+      Future ML
+```
+
+---
+
+# Phase Completion Standard
+
+Every phase should follow the same implementation cycle:
+
+```text
+1. Understand
+      ↓
+2. Inspect existing code
+      ↓
+3. Design
+      ↓
+4. Implement
+      ↓
+5. Test
+      ↓
+6. Integrate
+      ↓
+7. Validate
+      ↓
+8. Document
+      ↓
+9. Commit
+      ↓
+10. Move to next phase
+```
+
+The agent **must not silently jump over phases**.
+
+Each completed phase should produce:
+
+```text
+Implementation
++
+Tests
++
+Documentation
++
+Integration Notes
++
+Known Limitations
++
+Next-Phase Dependencies
+```
+
+---
+
+# Recommended MVP Boundary
+
+There is a temptation here to build the entire spaceship immediately. I would resist it.
+
+The first meaningful milestone should be:
+
+```text
+                 Uthenga
+                    │
+                    ▼
+              Trip Planner
+                    │
+                    ▼
+            User Travel Intent
+                    │
+                    ▼
+             Context Engine
+                    │
+                    ▼
+         Uthenga Vendor Retrieval
+                    │
+                    ▼
+           Availability Filtering
+                    │
+                    ▼
+             Ranking + Budget
+                    │
+                    ▼
+                LLM Gateway
+                    │
+                    ▼
+            Structured Itinerary
+                    │
+                    ▼
+              Response Validator
+                    │
+                    ▼
+          Bookable Recommendations
+```
+
+That is the **TIE MVP**.
+
+Once that works reliably, we bolt on:
+
+```text
+MVP
+ ↓
+Google Maps
+ ↓
+Live Location
+ ↓
+Journey Simulation
+ ↓
+Live Journey
+ ↓
+Notifications
+ ↓
+Conversation
+ ↓
+Personalization
+ ↓
+Advanced ML
+```
+
+This gives the implementation agent a very clear marching order: **first make Uthenga intelligent, then make it location-aware, then make it live, then make it proactive, and only much later make it predictive with custom ML.**

@@ -145,7 +145,8 @@ $themePreference = uthenga_theme_preference();
       </div>
     <?php endif; ?>
 
-    <form method="POST" action="" style="margin-top:1.5rem;">
+    <form method="POST" action="" style="margin-top:1.5rem;" data-auth-type="forgot_password">
+      <script src="<?= BASE_URL ?>assets/js/auth-inline-validation.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
       <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
 
       <div class="form-group">

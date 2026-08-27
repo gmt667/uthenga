@@ -1,4 +1,4 @@
-﻿<?php require_once __DIR__ . '/../config.php'; ?>
+<?php require_once __DIR__ . '/../config.php'; ?>
 </main>
 
 <footer class="footer">
@@ -119,6 +119,8 @@
 })();
 </script>
 <?php endif; ?>
+<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/uthenga-payment.css?v=<?= rawurlencode(APP_VERSION) ?>">
+<?php require_once __DIR__ . '/payment_modal.php'; ?>
 
 </body>
 </html>

@@ -594,11 +594,30 @@ if (bookingForm) {
       const res = await fetch(BASE + 'request_api.php', { method: 'POST', body: formData });
       const data = await res.json();
       if (data.success) {
-        closeModal('booking-modal');
         closeModal('payment-modal');
-        showSuccessBooking(data.booking);
-        // Reload page after 3s
-        setTimeout(() => location.reload(), 3000);
+        if (data.booking && data.booking.requires_payment && typeof UthengaPay !== 'undefined') {
+          // Real payment collection — the booking stays Pending until UthengaPay
+          // reports a verified confirmation. Booking-modal stays open behind the
+          // checkout so the customer can see what they're paying for.
+          var listingType = data.booking.listing_type || 'accommodation';
+          UthengaPay.initiate({
+            serviceType: listingType,
+            serviceId: data.booking.listing_id,
+            bookingId: data.booking.id,
+            amount: data.booking.total_price,
+            title: data.booking.listing_title,
+            sub: listingType.charAt(0).toUpperCase() + listingType.slice(1) + (data.booking.quantity > 1 ? ' × ' + data.booking.quantity : '')
+          }, function(receiptNo, intent) {
+            closeModal('booking-modal');
+            showSuccessBooking(data.booking);
+            setTimeout(() => location.reload(), 3000);
+          });
+        } else {
+          closeModal('booking-modal');
+          showSuccessBooking(data.booking);
+          // Reload page after 3s
+          setTimeout(() => location.reload(), 3000);
+        }
       } else {
         showAlert(bookingForm, data.message || 'Booking failed. Please try again.');
       }

@@ -290,7 +290,7 @@ function uthenga_booking_btn_label(string $listingType, bool $immediate = false)
     .timeline-title {
       font-size: 0.92rem;
       font-weight: 600;
-      color: #fff;
+      color: var(--clr-text);
     }
     
     /* ─── Map Styles ─── */

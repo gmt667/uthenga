@@ -3,6 +3,7 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/restoration_helpers.php';
+require_once __DIR__ . '/../includes/tie/bootstrap.php';
 
 requireApprovedVendor();
 
@@ -19,6 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
         $image = trim((string)($_POST['image'] ?? ''));
         $listingType = (string)($_POST['listing_type'] ?? 'event');
         $price = (float)($_POST['price'] ?? 0);
+        $coordinateSource = (string)($_POST['coordinate_source'] ?? 'vendor_input');
+        $latitude = trim((string)($_POST['gps_lat'] ?? ''));
+        $longitude = trim((string)($_POST['gps_lng'] ?? ''));
+        $accuracy = trim((string)($_POST['location_accuracy_m'] ?? ''));
         $meta = json_decode(trim((string)($_POST['meta_json'] ?? '{}')), true);
         if (!is_array($meta)) {
             $meta = [];
@@ -31,6 +36,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
         } else {
             if ($title === '' || $description === '' || $location === '' || $image === '') {
                 throw new RuntimeException('Title, description, location, and image are required.');
+            }
+            $coordinateRequest = null;
+            $hasCoordinateInput = $latitude !== '' || $longitude !== '' || $accuracy !== '';
+            if ($hasCoordinateInput) {
+                if ($latitude === '' || $longitude === '') {
+                    throw new RuntimeException('Enter both latitude and longitude, or leave all coordinate fields blank.');
+                }
+                UthengaTieVendorCoordinateGovernance::source($coordinateSource, false);
+                $coordinateRequest = UthengaTieLocationContracts::request([
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'accuracy_m' => $accuracy === '' ? null : $accuracy,
+                    'captured_at' => gmdate(DATE_ATOM),
+                    'source' => 'vendor_location',
+                    'permission_state' => 'NOT_REQUESTED',
+                ]);
             }
             $listingId = trim((string)($_POST['listing_id'] ?? ''));
             if ($listingId === '') {
@@ -66,6 +87,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
                     ]
                 );
                 $message = 'Listing updated.';
+            }
+            if ($coordinateRequest !== null) {
+                $coordinate = $coordinateRequest->data;
+                $capturedAt = (new DateTimeImmutable($coordinate['captured_at']))->format('Y-m-d H:i:s');
+                dbExecute(
+                    'UPDATE listings SET gps_lat = ?, gps_lng = ?, location_source = ?, location_accuracy_m = ?, location_captured_at = ?, location_verified_at = NULL, location_verification_status = ?, location_verified_by = NULL WHERE id = ? AND vendor_id = ?',
+                    [$coordinate['latitude'], $coordinate['longitude'], $coordinateSource, $coordinate['accuracy_m'] ?? null, $capturedAt, 'pending_review', $listingId, $vendorId]
+                );
+                if (!$pdo instanceof PDO) {
+                    throw new RuntimeException('Coordinate submission requires the database connection.');
+                }
+                UthengaTieVendorCoordinateGovernance::audit($pdo, $listingId, $vendorId, 'coordinate_submitted', $coordinateSource, 'pending_review', $coordinate['accuracy_m'] ?? null, $capturedAt);
+                $message .= ' Coordinate submitted for administrator review.';
             }
         }
     } catch (Throwable $e) {
@@ -103,6 +137,19 @@ require_once __DIR__ . '/../includes/header.php';
             </select>
           </div>
           <input class="form-control" name="location" id="location" placeholder="Location">
+          <div>
+            <div class="text-xs text-muted" style="margin-bottom:.35rem;">Optional map coordinates. They are used for nearby search only after administrator verification.</div>
+            <div class="grid grid-cols-2 gap-2">
+              <input class="form-control" type="number" step="0.000001" min="-90" max="90" name="gps_lat" id="gps_lat" placeholder="Latitude">
+              <input class="form-control" type="number" step="0.000001" min="-180" max="180" name="gps_lng" id="gps_lng" placeholder="Longitude">
+              <input class="form-control" type="number" step="0.01" min="0" name="location_accuracy_m" id="location_accuracy_m" placeholder="Accuracy (metres, optional)">
+              <select class="form-control" name="coordinate_source" id="coordinate_source">
+                <option value="vendor_input">Confirmed map pin</option>
+                <option value="vendor_gps">Vendor device GPS</option>
+                <option value="geocoded_address">Address-derived coordinate</option>
+              </select>
+            </div>
+          </div>
           <input class="form-control" name="image" id="image" placeholder="Image URL">
           <input class="form-control" name="price" id="price" placeholder="Base price">
           <textarea class="form-control" name="description" id="description" rows="4" placeholder="Description"></textarea>
@@ -120,6 +167,7 @@ require_once __DIR__ . '/../includes/header.php';
               <div>
                 <strong><?= e($listing['title']) ?></strong>
                 <div class="text-xs text-muted"><?= e($listing['listing_type']) ?> · <?= e($listing['location']) ?></div>
+                <?php if (!empty($listing['location_verification_status'])): ?><div class="text-xs text-muted">Coordinate: <?= e($listing['location_verification_status']) ?></div><?php endif; ?>
               </div>
               <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
                 <button type="button" class="btn btn-sm btn-secondary" onclick='vendorFillListing(<?= json_encode($listing, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG) ?>)'>Edit</button>
@@ -144,6 +192,10 @@ function vendorFillListing(row) {
   document.getElementById('title').value = row.title || '';
   document.getElementById('listing_type').value = row.listing_type === 'accommodation' ? 'property' : (row.listing_type || 'event');
   document.getElementById('location').value = row.location || '';
+  document.getElementById('gps_lat').value = row.gps_lat || '';
+  document.getElementById('gps_lng').value = row.gps_lng || '';
+  document.getElementById('location_accuracy_m').value = row.location_accuracy_m || '';
+  document.getElementById('coordinate_source').value = ['vendor_input', 'vendor_gps', 'geocoded_address'].includes(row.location_source) ? row.location_source : 'vendor_input';
   document.getElementById('image').value = row.image || '';
   document.getElementById('description').value = row.description || '';
   document.getElementById('price').value = row.price_amount || '';

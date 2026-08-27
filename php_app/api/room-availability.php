@@ -8,6 +8,7 @@
  */
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
+require_once __DIR__ . '/../includes/tie/bootstrap.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -34,6 +35,17 @@ if (!$listing) {
 }
 
 $rooms = [];
+
+if (UthengaTieFeatureFlags::enabled('accommodation_v2') && uthenga_table_exists('tie_accommodation_properties')) {
+    try {
+        global $pdo; $service = new UthengaAccommodationService($pdo); $roomRows = dbQuery('SELECT id,room_name,max_occupancy FROM room_types WHERE listing_id=? AND is_active=1 ORDER BY sort_order,id',[$listingId]) ?: [];
+        foreach ($roomRows as $room) {
+            try { $quote=$service->quoteListing($listingId,(int)$room['id'],1,$checkIn,$checkOut);$rooms[]=['room_id'=>(string)$room['id'],'room_name'=>(string)$room['room_name'],'price_per_night'=>round((float)$quote['total']/max(1,(int)$quote['nights']),2),'stay_total'=>(float)$quote['total'],'deposit_required'=>(float)$quote['deposit_required'],'balance_due'=>round((float)$quote['total']-(float)$quote['deposit_required'],2),'currency'=>(string)$quote['currency'],'max_occupancy'=>(int)$room['max_occupancy'],'available'=>true,'sellable_rooms'=>min(array_column($quote['nightly'],'sellable')),'rate_plan_id'=>(string)$quote['rate_plan']['id'],'booking_mode'=>(string)$quote['rate_plan']['booking_mode'],'payment_mode'=>(string)$quote['rate_plan']['payment_mode']]; }
+            catch (UthengaTieException $unavailable) { $rooms[]=['room_id'=>(string)$room['id'],'room_name'=>(string)$room['room_name'],'price_per_night'=>null,'max_occupancy'=>(int)$room['max_occupancy'],'available'=>false,'reason'=>$unavailable->getMessage()]; }
+        }
+        echo json_encode(['success'=>true,'schema_version'=>'tie-accommodation-public-availability/v2','property_id'=>$listingId,'check_in'=>$checkIn,'check_out'=>$checkOut,'rooms'=>$rooms,'provenance'=>['availability'=>'nightly_inventory_ledger','price'=>'active_rate_plan']]); exit;
+    } catch (Throwable $error) { http_response_code(503); echo json_encode(['success'=>false,'message'=>'Verified accommodation availability is temporarily unavailable. No reservation was created.']); exit; }
+}
 
 if (uthenga_table_exists('room_types')) {
     $rooms = dbQuery(

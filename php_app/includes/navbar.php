@@ -36,11 +36,9 @@ $themePreference = uthenga_theme_preference();
       <li><a href="<?= BASE_URL ?>events.php" id="nav-events" class="<?= $activeNav === 'events' ? 'active' : '' ?>">Events</a></li>
       <li><a href="<?= BASE_URL ?>hotels.php" id="nav-stays" class="<?= $activeNav === 'stays' ? 'active' : '' ?>">Stays</a></li>
       <li><a href="<?= BASE_URL ?>transport.php" id="nav-transport" class="<?= $activeNav === 'transport' ? 'active' : '' ?>">Transport</a></li>
-      <li><a href="<?= BASE_URL ?>mbanda/index.php" id="nav-mbanda" class="<?= $activeNav === 'mbanda' ? 'active' : '' ?>">Mbanda</a></li>
-      <li><a href="<?= BASE_URL ?>marketplace.php" id="nav-marketplace" class="<?= $activeNav === 'marketplace' ? 'active' : '' ?>">Marketplace</a></li>
+      <li><a href="<?= BASE_URL ?>ai.php#/driver" id="nav-quick-travel" class="<?= $activeNav === 'quick-travel' ? 'active' : '' ?>" style="color:var(--clr-cyan);">Quick Taxi</a></li>
       <li><a href="<?= BASE_URL ?>shop.php" id="nav-shop" class="<?= $activeNav === 'shop' ? 'active' : '' ?>"><?= uthenga_public_icon_svg('shop') ?> Shop</a></li>
-      <li><a href="<?= BASE_URL ?>trip-planner.php" id="nav-planner" class="<?= $activeNav === 'trip-planner' ? 'active' : '' ?>" style="color:var(--clr-cyan);">Trip Planner</a></li>
-      <li><a href="<?= BASE_URL ?>tours.php" id="nav-explore" class="<?= $activeNav === 'explore' ? 'active' : '' ?>">Explore</a></li>
+      <li><a href="<?= BASE_URL ?>ai.php#/planner" id="nav-planner" class="<?= $activeNav === 'trip-planner' ? 'active' : '' ?>" style="color:var(--clr-cyan);">Trip Planner</a></li>
     </ul>
 
     <div class="navbar-actions" id="navbar-actions">
@@ -58,11 +56,14 @@ $themePreference = uthenga_theme_preference();
               <a href="<?= BASE_URL ?>shop.php" role="menuitem">Shop</a>
               <a href="<?= BASE_URL ?>bookings.php" role="menuitem">My Bookings</a>
               <a href="<?= BASE_URL ?>mbanda/my_bookings.php" role="menuitem">My Rides</a>
+              <a href="<?= BASE_URL ?>payment-history.php" role="menuitem">Payment History</a>
               <a href="<?= BASE_URL ?>support.php" role="menuitem">My Tickets</a>
               <a href="<?= BASE_URL ?>profile.php" role="menuitem">Profile</a>
             <?php elseif ($isVendor): ?>
               <a href="<?= BASE_URL ?>vendor/dashboard.php" role="menuitem">Vendor Dashboard</a>
+              <a href="<?= BASE_URL ?>ai.php#/driver" role="menuitem">Quick Travel Operations</a>
               <a href="<?= BASE_URL ?>vendor/business-listing.php" role="menuitem">My Business Listing</a>
+              <a href="<?= BASE_URL ?>vendor/payment-settings.php" role="menuitem">Payment Settlement</a>
               <a href="<?= BASE_URL ?>profile.php" role="menuitem">Profile</a>
             <?php elseif (in_array($userRole, ADMIN_ROLES, true)): ?>
               <a href="<?= BASE_URL . ($userRole === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') ?>" role="menuitem">Admin Dashboard</a>

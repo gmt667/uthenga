@@ -53,20 +53,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $redirect = uthenga_safe_redirect_url((string)($_POST['redirect'] ?? ''), '');
 
         try {
-            if ($email === '' || $password === '') {
-                throw new RuntimeException('Email address and password are required.');
+            if ($email === '' && $password === '') {
+                throw new RuntimeException('Please enter your email address and password.');
+            }
+            if ($email === '') {
+                throw new RuntimeException('Please enter your email address.');
+            }
+            if ($password === '') {
+                throw new RuntimeException('Please enter your password.');
             }
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                throw new RuntimeException('Please enter a valid email address.');
+                throw new RuntimeException('Please enter a valid email address (e.g. name@domain.com).');
             }
 
             $user = uthenga_auth_find_user_by_email($email);
-            if (!$user || !password_verify($password, (string)$user['password_hash'])) {
-                throw new RuntimeException('Invalid email or password. Please try again.');
+            if (!$user) {
+                throw new RuntimeException('No account found with this email address. Please check your email or create a new account.');
+            }
+
+            if (!password_verify($password, (string)$user['password_hash'])) {
+                throw new RuntimeException('Incorrect password for ' . e($email) . '. Please check your password and try again.');
             }
 
             if (in_array($user['role'], ADMIN_ROLES, true)) {
-                throw new RuntimeException('Admin accounts must sign in via the Admin Portal.');
+                throw new RuntimeException('Admin accounts must sign in via the Admin Portal at /admin/login.php.');
+            }
+
+            if (isset($user['account_status']) && strtolower((string)$user['account_status']) === 'suspended') {
+                throw new RuntimeException('Your account has been suspended. Please contact customer support.');
             }
 
             if (in_array($user['role'], VENDOR_ROLES, true) && empty($user['is_approved'])) {
@@ -283,7 +297,8 @@ require_once __DIR__ . '/includes/header.php';
           </div>
         </div>
         <?php endif; ?>
-        <form method="post" style="margin-top:1.25rem;display:grid;gap:1rem;" id="loginForm">
+        <form method="post" style="margin-top:1.25rem;display:grid;gap:1rem;" id="loginForm" data-auth-type="login">
+          <script src="<?= BASE_URL ?>assets/js/auth-inline-validation.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
           <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
           <input type="hidden" name="redirect" value="<?= e($redirect) ?>">
           <div class="form-group">

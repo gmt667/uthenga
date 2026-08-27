@@ -1,0 +1,2 @@
+<?php
+require_once __DIR__.'/_bootstrap.php';$requestId=UthengaTieObservability::requestId();try{[$user,$service,$requestId]=accommodation_v2_context();if($_SERVER['REQUEST_METHOD']!=='GET')throw UthengaTieErrors::validation(['method'=>'GET is required.']);accommodation_v2_respond($requestId,'audit',$service->auditLog(accommodation_v2_property(),$user['id']));}catch(Throwable $e){UthengaTieApi::handleError($e,$requestId);}

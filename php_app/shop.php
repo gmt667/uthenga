@@ -585,8 +585,12 @@ $activeNav = 'shop';
         </div>
         <div class="shop-hero-actions">
           <a href="#catalog" class="btn btn-primary"><?= uthenga_public_icon_svg('cart') ?> Browse Products</a>
-          <a href="<?= BASE_URL ?>shop-cart.php" class="btn btn-secondary">View Cart <?= count($cartItems) > 0 ? '(' . count($cartItems) . ')' : '' ?></a>
-          <a href="<?= BASE_URL ?>shop-orders.php" class="btn btn-secondary">My Orders</a>
+          <?php if (isLoggedIn()): ?>
+            <a href="<?= BASE_URL ?>shop-cart.php" class="btn btn-secondary">View Cart <?= count($cartItems) > 0 ? '(' . count($cartItems) . ')' : '' ?></a>
+            <a href="<?= BASE_URL ?>shop-orders.php" class="btn btn-secondary">My Orders</a>
+          <?php else: ?>
+            <a href="<?= BASE_URL ?>login.php" class="btn btn-secondary">Sign In to Order</a>
+          <?php endif; ?>
         </div>
         <div class="shop-hero-stats">
           <div class="shop-stat"><span>Products</span><strong><?= number_format(count($products ?: $featuredProducts)) ?></strong></div>
@@ -646,6 +650,7 @@ $activeNav = 'shop';
           <div class="text-sm text-muted" style="margin-bottom:1rem;">
             <?= e($product['brand'] ?? 'Uthenga Direct') ?> &middot; <?= e($product['unit_label'] ?? 'Item') ?> &middot; SKU <?= e($product['sku']) ?>
           </div>
+          <?php if (isLoggedIn()): ?>
           <form method="post" action="<?= BASE_URL ?>shop-cart.php" class="grid" style="gap:.75rem;">
             <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
             <input type="hidden" name="action" value="add">
@@ -666,6 +671,11 @@ $activeNav = 'shop';
               <a href="<?= BASE_URL ?>shop-cart.php" class="btn btn-secondary">Go to Cart</a>
             </div>
           </form>
+          <?php else: ?>
+            <div class="product-actions" style="margin-top:1rem;">
+              <a href="<?= BASE_URL ?>login.php" class="btn btn-primary" style="width:100%;text-align:center;">Sign In to Order</a>
+            </div>
+          <?php endif; ?>
           <?php if (!empty($product['description'])): ?>
             <div style="margin-top:1.25rem;">
               <h3>Product Details</h3>
@@ -769,14 +779,18 @@ $activeNav = 'shop';
                   <p class="product-desc"><?= e($item['short_description'] ?? '') ?></p>
                   <div class="product-footer">
                     <strong class="product-price"><?= uthenga_shop_money((float) $item['price']) ?></strong>
-                    <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin:0;">
-                      <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
-                      <input type="hidden" name="action" value="add">
-                      <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
-                      <input type="hidden" name="quantity" value="1">
-                      <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop.php') ?>">
-                      <button type="submit" class="btn btn-sm btn-secondary" <?= (int) $item['stock_quantity'] <= 0 ? 'disabled' : '' ?>>Add</button>
-                    </form>
+                    <?php if (isLoggedIn()): ?>
+                      <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin:0;">
+                        <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
+                        <input type="hidden" name="quantity" value="1">
+                        <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop.php') ?>">
+                        <button type="submit" class="btn btn-sm btn-secondary" <?= (int) $item['stock_quantity'] <= 0 ? 'disabled' : '' ?>>Add</button>
+                      </form>
+                    <?php else: ?>
+                      <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-secondary">Order</a>
+                    <?php endif; ?>
                   </div>
                 </div>
               </article>
@@ -814,14 +828,18 @@ $activeNav = 'shop';
                     <strong class="product-price"><?= uthenga_shop_money((float) $item['price']) ?></strong>
                     <div class="product-actions">
                       <a class="btn btn-sm btn-secondary" href="<?= BASE_URL ?>shop.php?product=<?= urlencode((string) $item['slug']) ?>">View</a>
-                      <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin:0;">
-                        <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
-                        <input type="hidden" name="quantity" value="1">
-                        <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop.php') ?>">
-                        <button type="submit" class="btn btn-sm btn-primary" <?= (int) $item['stock_quantity'] <= 0 ? 'disabled' : '' ?>>Add</button>
-                      </form>
+                      <?php if (isLoggedIn()): ?>
+                        <form method="post" action="<?= BASE_URL ?>shop-cart.php" style="margin:0;">
+                          <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>">
+                          <input type="hidden" name="action" value="add">
+                          <input type="hidden" name="product_id" value="<?= (int) $item['id'] ?>">
+                          <input type="hidden" name="quantity" value="1">
+                          <input type="hidden" name="return_to" value="<?= e($_SERVER['REQUEST_URI'] ?? 'shop.php') ?>">
+                          <button type="submit" class="btn btn-sm btn-primary" <?= (int) $item['stock_quantity'] <= 0 ? 'disabled' : '' ?>>Add</button>
+                        </form>
+                      <?php else: ?>
+                        <a href="<?= BASE_URL ?>login.php" class="btn btn-sm btn-primary">Order</a>
+                      <?php endif; ?>
                     </div>
                   </div>
                 </div>

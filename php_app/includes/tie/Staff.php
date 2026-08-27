@@ -699,8 +699,8 @@ final class UthengaStaffService
             throw UthengaTieErrors::validation(['name' => 'First and last name are required.']);
         }
         $role = $this->roleById($vendorId, (string) ($input['role_id'] ?? ''), 'role_id');
-        $scopeType = in_array((string) ($input['scope_type'] ?? 'organization'), ['organization', 'events'], true)
-            ? (string) $input['scope_type'] : 'organization';
+        $requestedScopeType = (string) ($input['scope_type'] ?? 'organization');
+        $scopeType = in_array($requestedScopeType, ['organization', 'events'], true) ? $requestedScopeType : 'organization';
         $eventIds = $this->validatedEventIds($vendorId, $input['event_ids'] ?? [], $scopeType);
 
         $existingUser = $this->userIdByEmail($email);

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bg_g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#065f46"/><stop offset="100%" stop-color="#022c22"/></linearGradient>
+    <linearGradient id="skin_g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c68642"/><stop offset="100%" stop-color="#8d5524"/></linearGradient>
+    <linearGradient id="shirt_g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#047857"/></linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="60" fill="url(#bg_g)"/>
+  <path d="M 25,110 C 25,85 40,75 60,75 C 80,75 95,85 95,110 Z" fill="url(#shirt_g)"/>
+  <circle cx="60" cy="48" r="22" fill="url(#skin_g)"/>
+  <path d="M 34,42 C 34,22 45,18 60,18 C 75,18 86,22 86,42 C 86,30 75,22 60,22 C 45,22 34,30 34,42 Z" fill="#0f172a"/>
+  <circle cx="51" cy="46" r="2" fill="#ffffff"/><circle cx="69" cy="46" r="2" fill="#ffffff"/>
+  <path d="M 50,56 Q 60,62 70,56" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+</svg>

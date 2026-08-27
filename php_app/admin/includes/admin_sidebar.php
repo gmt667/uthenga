@@ -69,6 +69,7 @@ $menuGroups = $isSuperAdmin ? [
         'label' => 'Operations',
         'items' => [
             ['key' => 'admin-payments',  'label' => 'Payments',         'href' => 'admin/payments.php',   'icon' => 'credit-card'],
+            ['key' => 'admin-reconciliation', 'label' => 'Reconciliation', 'href' => 'admin/reconciliation.php', 'icon' => 'activity'],
             ['key' => 'admin-promotions', 'label' => 'Promotional Popups', 'href' => 'admin/popup_manager.php', 'icon' => 'announcement'],
             ['key' => 'admin-marketing',  'label' => 'Marketing Control', 'href' => 'admin/marketing.php',   'icon' => 'announcement'],
             ['key' => 'admin-support',   'label' => 'Support Tickets',  'href' => 'admin/support.php',    'icon' => 'help'],

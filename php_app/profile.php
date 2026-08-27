@@ -237,10 +237,23 @@ $activeSessions = $hasDeviceSessionsTable ? dbQuery("
     WHERE user_id = ? 
     ORDER BY is_current DESC, last_active_at DESC
 ", [$_SESSION['device_session_token'] ?? '', $userId]) : [];
-?>
-<?php require_once __DIR__ . '/includes/header.php'; ?>
+$isVendorUser = in_array(currentRole(), VENDOR_ROLES, true);
 
-<div class="container" style="padding-top:2.5rem;padding-bottom:3rem;">
+if ($isVendorUser) {
+    require_once __DIR__ . '/includes/dashboard_shell.php';
+    renderDashboardChromeStart([
+        'role' => currentRole(),
+        'title' => 'My Profile',
+        'active' => 'profile.php',
+        'search' => false,
+        'status' => 'Approved Vendor',
+    ]);
+} else {
+    require_once __DIR__ . '/includes/header.php';
+}
+?>
+
+<div class="container dashboard-content-frame" style="padding-top:2.25rem;padding-bottom:3rem;">
 
   <div class="page-header">
     <h1 class="page-title">My Profile</h1>
@@ -498,14 +511,18 @@ $activeSessions = $hasDeviceSessionsTable ? dbQuery("
           <?php endforeach; ?>
         <?php endif; ?>
       </div>
-      <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;text-align:center;" id="view-bookings-btn">Go to Dashboard &rarr;</a>
+      <a href="<?= BASE_URL . ($isVendorUser ? 'vendor/dashboard.php' : 'dashboard.php') ?>" class="btn btn-secondary btn-sm" style="margin-top:1rem;width:100%;text-align:center;" id="view-bookings-btn">Go to Dashboard &rarr;</a>
 
       <!-- Quick Links -->
       <h3 style="margin-top:2rem;margin-bottom:1rem;">Quick Links</h3>
       <div style="display:grid;gap:0.5rem;">
-        <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary" style="text-align:center;" id="profile-bookings-link"><?= uthenga_public_icon_svg('home') ?> Customer Dashboard</a>
+        <?php if ($isVendorUser): ?>
+          <a href="<?= BASE_URL ?>vendor/dashboard.php" class="btn btn-secondary" style="text-align:center;" id="profile-vendor-dash-link"><?= uthenga_public_icon_svg('home') ?> Vendor Dashboard</a>
+          <a href="<?= BASE_URL ?>vendor/finance/withdrawals.php" class="btn btn-secondary" style="text-align:center;" id="profile-withdrawals-link"><?= uthenga_public_icon_svg('shop') ?> Withdrawals &amp; Settlements</a>
+        <?php else: ?>
+          <a href="<?= BASE_URL ?>dashboard.php" class="btn btn-secondary" style="text-align:center;" id="profile-bookings-link"><?= uthenga_public_icon_svg('home') ?> Customer Dashboard</a>
+        <?php endif; ?>
         <a href="<?= BASE_URL ?>support.php" class="btn btn-secondary" style="text-align:center;" id="profile-support-link"><?= uthenga_public_icon_svg('mail') ?> Support Tickets</a>
-        <a href="<?= BASE_URL ?>index.php" class="btn btn-secondary" style="text-align:center;" id="profile-explore-link"><?= uthenga_public_icon_svg('globe') ?> Explore Listings</a>
         <a href="<?= BASE_URL ?>logout.php" class="btn btn-danger" style="text-align:center;" id="profile-logout-link"><?= uthenga_public_icon_svg('x') ?> Logout</a>
       </div>
     </div>
@@ -530,4 +547,10 @@ if (newPw)  newPw.addEventListener('input', checkMatch);
 if (confPw) confPw.addEventListener('input', checkMatch);
 </script>
 
-<?php require_once __DIR__ . '/includes/footer.php'; ?>
+<?php
+if ($isVendorUser) {
+    renderDashboardChromeEnd();
+} else {
+    require_once __DIR__ . '/includes/footer.php';
+}
+?>

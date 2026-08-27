@@ -7,10 +7,7 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
 
 function redirectByRole(string $role): void {
-    if ($role === ROLE_SUPER_ADMIN) {
-        redirect(BASE_URL . 'admin/super-dashboard.php');
-    }
-    if ($role === ROLE_ADMIN) {
+    if ($role === ROLE_SUPER_ADMIN || $role === ROLE_ADMIN) {
         redirect(BASE_URL . 'admin/dashboard.php');
     }
     if (in_array($role, VENDOR_ROLES, true)) {

@@ -29,10 +29,12 @@ $_imgLight = BASE_URL . 'assets/images/logo-light.png';
 $_alt      = e(APP_NAME) . ' logo';
 $_logoFallbackId = 'uthenga-logo-fallback-' . substr(md5((string) mt_rand()), 0, 8);
 
+$_logoHref  = $logoHref ?? (isLoggedIn() && in_array(currentRole(), VENDOR_ROLES, true) ? BASE_URL . 'vendor/dashboard.php' : BASE_URL . 'index.php');
+
 // Unset so they don't bleed into parent scope
-unset($logoSize, $logoLink);
+unset($logoSize, $logoLink, $logoHref);
 ?>
-<?php if ($_logoLink): ?><a href="<?= BASE_URL ?>index.php" class="logo-partial" aria-label="<?= e(APP_NAME) ?> — Home"><?php else: ?><span class="logo-partial"><?php endif; ?>
+<?php if ($_logoLink): ?><a href="<?= e($_logoHref) ?>" class="logo-partial" aria-label="<?= e(APP_NAME) ?> — Home"><?php else: ?><span class="logo-partial"><?php endif; ?>
   <span class="logo-visual" aria-hidden="true">
     <img src="<?= $_imgDark ?>"  alt="<?= $_alt ?>" class="logo-img logo-dark"  width="<?= $_dim['w'] ?>" height="<?= $_dim['h'] ?>" draggable="false" onerror="this.closest('.logo-partial')?.classList.add('logo-broken')">
     <img src="<?= $_imgLight ?>" alt="<?= $_alt ?>" class="logo-img logo-light" width="<?= $_dim['w'] ?>" height="<?= $_dim['h'] ?>" draggable="false" onerror="this.closest('.logo-partial')?.classList.add('logo-broken')">

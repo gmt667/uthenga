@@ -1,0 +1,13 @@
+@media(min-width:1001px){
+  .quick-reference{position:relative;padding-bottom:104px}
+  .quick-reference__grid{grid-template-columns:160px minmax(510px,1fr) minmax(430px,562px);grid-template-rows:350px auto;min-height:calc(100vh - 78px - 104px)}
+  .quick-reference__draft{width:267px}
+  .quick-reference__results{width:calc(100% - 100px);margin-left:100px}
+  .quick-reference__answer{position:fixed;z-index:30;bottom:37px;left:15px;width:min(777px,calc(100vw - 750px));margin:0}
+  .quick-reference__error{margin-left:100px}
+  .quick-reference__bot{left:-146px}
+  .quick-reference__actions{position:fixed;z-index:30;right:28px;bottom:37px;padding:0}
+}
+@media(max-width:1000px){.quick-reference__answer,.quick-reference__actions{position:static;width:auto;margin-top:.8rem}}
+.quick-reference__planner-link{border:1px solid #2f735f;border-radius:999px;padding:.45rem .7rem;color:#65efb0;font-size:.7rem;font-weight:800}
+@media(max-width:720px){.quick-reference__planner-link{display:none}}

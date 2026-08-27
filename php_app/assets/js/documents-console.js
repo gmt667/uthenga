@@ -116,11 +116,11 @@ window.DocumentsControlCenter = (function() {
     return g[String(dt || 'PDF').toUpperCase()] || 'doc';
   }
   function typeColor(dt) {
-    var c = { PDF: '#e5484d', CSV: '#10b981', DOC: '#3b82f6', DOCX: '#3b82f6', XLS: '#0e9f6e', XLSX: '#0e9f6e', PNG: '#8b5cf6', JPG: '#8b5cf6', HTM: '#0f6fd8', TXT: '#64748b' };
+    var c = { PDF: '#e63946', CSV: '#10b981', DOC: '#3b82f6', DOCX: '#3b82f6', XLS: '#0e9f6e', XLSX: '#0e9f6e', PNG: '#e63946', JPG: '#e63946', HTM: '#0f6fd8', TXT: '#64748b' };
     return c[String(dt || 'PDF').toUpperCase()] || '#64748b';
   }
   function statusColor(s) {
-    var c = { DRAFT: '#64748b', PENDING_REVIEW: '#f59e0b', APPROVED: '#0f6fd8', FINAL: '#10b981', ARCHIVED: '#8b5cf6' };
+    var c = { DRAFT: '#64748b', PENDING_REVIEW: '#f59e0b', APPROVED: '#0f6fd8', FINAL: '#10b981', ARCHIVED: '#e63946' };
     return c[String(s || 'DRAFT').toUpperCase()] || '#64748b';
   }
   function readAsB64(file, cb) {
@@ -311,7 +311,7 @@ window.DocumentsControlCenter = (function() {
   function docCard(d) {
     var extras = '';
     if (d.locked) extras += '<span class="docs-chip-st" style="background:#e5484d22;color:#e5484d">' + ic('lock', 10) + ' Locked</span>';
-    if (d.legal_hold) extras += '<span class="docs-chip-st" style="background:#8b5cf622;color:#8b5cf6">' + ic('shield', 10) + ' Legal hold</span>';
+    if (d.legal_hold) extras += '<span class="docs-chip-st" style="background:#e6394622;color:#e63946">' + ic('shield', 10) + ' Legal hold</span>';
     if (num(d.shared_with)) extras += '<span class="docs-chip-st" style="background:#0f6fd822;color:#0f6fd8">' + ic('users', 10) + ' ' + num(d.shared_with) + '</span>';
     var tags = '';
     (d.tags || []).slice(0, 3).forEach(function(t) { tags += '<span class="docs-tag">' + esc(t) + '</span>'; });
@@ -379,7 +379,7 @@ window.DocumentsControlCenter = (function() {
     rules += '<div class="docs-meta"><span>Source</span><b>' + esc(doc.source_kind || 'UPLOAD') + (doc.source_label ? ' · ' + esc(doc.source_label) : '') + '</b></div>';
     rules += '<div class="docs-meta"><span>Created</span><b>' + date(doc.created_at) + '</b></div>';
     rules += '<div class="docs-meta"><span>Last viewed</span><b>' + date(doc.last_viewed_at, true) + '</b></div>';
-    if (doc.legal_hold) rules += '<div class="docs-meta"><span>' + ic('shield', 12) + '</span><b style="color:#8b5cf6">Under legal hold — cannot be deleted</b></div>';
+    if (doc.legal_hold) rules += '<div class="docs-meta"><span>' + ic('shield', 12) + '</span><b style="color:#e63946">Under legal hold — cannot be deleted</b></div>';
 
     var tags = '';
     (doc.tags || []).forEach(function(t) { tags += '<span class="docs-tag">' + esc(t) + '</span>'; });

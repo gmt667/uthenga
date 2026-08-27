@@ -79,15 +79,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 require_once __DIR__ . '/../includes/security_helper.php';
                 registerDeviceSession((string) $user['id']);
 
-                if (!empty($user['must_change_pw'])) {
+                // Only force a password change if the user is NOT the embedded super admin
+                // (embedded account always has must_change_pw=1 as a safety marker).
+                $isEmbedded = ($user['id'] ?? '') === 'u-super-admin'
+                    || ($result['via'] ?? '') === 'embedded';
+                if (!empty($user['must_change_pw']) && !$isEmbedded) {
                     redirect(BASE_URL . 'change_password.php');
                 }
 
                 $redirect = $safeRedirect;
-                if (($user['role'] ?? '') === ROLE_SUPER_ADMIN) {
-                    redirect($redirect !== '' ? $redirect : BASE_URL . 'admin/super-dashboard.php');
-                }
-
+                // All admins (both ROLE_ADMIN and ROLE_SUPER_ADMIN) land on the unified Control Center
                 redirect($redirect !== '' ? $redirect : BASE_URL . 'admin/dashboard.php');
             }
         }
@@ -233,7 +234,8 @@ $themePreference = uthenga_theme_preference();
       <div class="alert alert-success" style="margin-bottom:1.25rem;" role="status"><?= e($success) ?></div>
     <?php endif; ?>
 
-    <form method="POST" action="" id="admin-login-form">
+    <form method="POST" action="" id="admin-login-form" data-auth-type="admin_login">
+      <script src="<?= BASE_URL ?>assets/js/auth-inline-validation.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
       <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
 
       <div class="form-group">

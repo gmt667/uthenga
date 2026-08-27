@@ -122,10 +122,21 @@ window.VenuesControlCenter = (function() {
   }
 
   /* ── API ─────────────────────────────────────────────────── */
-  function get(action, params) {
+  function get(action, params, timeoutMs) {
     var qs = '?action=' + encodeURIComponent(action);
     Object.keys(params || {}).forEach(function(k) { qs += '&' + k + '=' + encodeURIComponent(params[k]); });
-    return fetch(vcApi + qs, { credentials: 'same-origin' }).then(function(r) { return r.json().catch(function() { return {}; }); });
+    var controller = window.AbortController ? new AbortController() : null;
+    var timer = window.setTimeout(function() {
+      if (controller) controller.abort();
+    }, timeoutMs || 12000);
+    return fetch(vcApi + qs, {
+      credentials: 'same-origin',
+      signal: controller ? controller.signal : undefined
+    }).then(function(r) {
+      return r.json().catch(function() { return {}; });
+    }).finally(function() {
+      window.clearTimeout(timer);
+    });
   }
   function post(data) {
     return fetch(vcApi, {
@@ -214,6 +225,7 @@ window.VenuesControlCenter = (function() {
       }
       h += '<div style="display:flex;gap:0.4rem;align-items:center;">';
       h += '<button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;font-size:0.68rem;padding:0.34rem 0.5rem;" onclick="VenuesControlCenter.openWorkspace(\'' + esc(v.id) + '\')">Manage</button>';
+      if (v.status === 'DRAFT') h += '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.34rem 0.5rem;" onclick="VenuesControlCenter.publishVenue(\'' + esc(v.id) + '\')">Publish</button>';
       h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.34rem 0.5rem;" title="Calendar" onclick="VenuesControlCenter.jumpToCal(\'' + esc(v.id) + '\')">▤</button>';
       h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.68rem;padding:0.34rem 0.55rem;" title="Options" onclick="VenuesControlCenter.toggleCardMenu(\'' + esc(v.id) + '\')">⋯</button>';
       h += '</div>';
@@ -412,7 +424,7 @@ window.VenuesControlCenter = (function() {
     if (!consoleEl || !wsEl) return;
     consoleEl.style.display = 'none';
     wsEl.style.display = 'block';
-    document.getElementById('vc-ws-body').innerHTML = '<div class="ecc-tk-empty">Loading…</div>';
+    document.getElementById('vc-ws-body').innerHTML = '<div class="ecc-tk-empty">Loading venue operations…</div>';
     refreshDetail();
   }
   function closeWorkspace() {
@@ -421,20 +433,39 @@ window.VenuesControlCenter = (function() {
     document.getElementById('vc-workspace').style.display = 'none';
     loadWorkspace();
   }
+  function renderWorkspaceFailure(message) {
+    var body = document.getElementById('vc-ws-body');
+    if (!body) return;
+    body.innerHTML = '<div class="ecc-card" style="padding:1.5rem;text-align:center;max-width:680px;">' +
+      '<div style="font-weight:800;color:var(--ecc-text);margin-bottom:0.4rem;">Venue workspace could not be loaded</div>' +
+      '<div style="font-size:0.74rem;color:var(--ecc-text-dim);margin-bottom:0.9rem;">' + esc(message || 'Please retry. No venue data was changed.') + '</div>' +
+      '<div style="display:flex;justify-content:center;gap:0.5rem;flex-wrap:wrap;">' +
+      '<button type="button" class="ecc-btn ecc-btn-primary" onclick="VenuesControlCenter.retryWorkspace()">Retry</button>' +
+      '<button type="button" class="ecc-btn ecc-btn-secondary" onclick="VenuesControlCenter.closeWorkspace()">← All Venues</button>' +
+      '</div></div>';
+  }
   function refreshDetail() {
-    get('detail', { venue_id: state.venueId }).then(function(b) {
+    get('detail', { venue_id: state.venueId }, 12000).then(function(b) {
       if (!b || !b.success) {
         toast('Venue: ' + errMsg(b));
-        closeWorkspace();
+        renderWorkspaceFailure(errMsg(b));
         return;
       }
       state.detail = b.venue_result || {};
-      renderWsHead();
-      renderWsNav();
-      renderSub();
+      try {
+        renderWsHead();
+        renderWsNav();
+        renderSub();
+      } catch (err) {
+        console.error('[VC] workspace render error:', err);
+        renderWorkspaceFailure('The venue data was received, but this section could not be rendered.');
+      }
     }).catch(function(err) {
-      toast('Could not load venue details.');
-      closeWorkspace();
+      var message = err && err.name === 'AbortError'
+        ? 'The venue request took too long. Check your connection and retry.'
+        : 'The venue request failed. Check your connection and retry.';
+      toast(message);
+      renderWorkspaceFailure(message);
     });
   }
   function goSub(sub) {
@@ -473,6 +504,7 @@ window.VenuesControlCenter = (function() {
     if (v.gps_lat != null) h += '<span class="ecc-chip">' + icon('pin') + ' ' + esc(String(v.gps_lat)) + ', ' + esc(String(v.gps_lng)) + '</span>';
     h += '</div></div>';
     h += '<div style="display:flex;flex-direction:column;gap:0.4rem;">';
+    if (v.status === 'DRAFT') h += '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.7rem;padding:0.34rem 0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.publishVenue(\'' + esc(v.id) + '\')">' + icon('check') + ' Publish venue</button>';
     h += '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.7rem;padding:0.34rem 0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.openAssign(\'' + esc(v.id) + '\')">' + icon('calendar') + ' Assign Event</button>';
     h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.7rem;padding:0.34rem 0.7rem;display:inline-flex;align-items:center;gap:0.35rem;" onclick="VenuesControlCenter.openBlock(\'' + esc(v.id) + '\', \'\')">' + icon('clock') + ' Set Availability Block</button>';
     h += '<select class="ecc-input" style="font-size:0.68rem;padding:0.3rem;" onchange="VenuesControlCenter.quickStatus(\'' + esc(v.id) + '\', this.value)">';
@@ -654,7 +686,7 @@ window.VenuesControlCenter = (function() {
   function addSpaceFn() {
     post({
       action: 'add_space', venue_id: state.venueId,
-      space: { name: val('vs-name'), type: val('vs-type'), capacity: val('vs-capacity'), dimensions: val('vs-dims'), description: val('vs-desc') }
+      space: { name: val('vc-sp-name'), type: val('vc-sp-type'), capacity: val('vc-sp-cap'), dimensions: val('vc-sp-dim'), description: val('vc-sp-desc') }
     }).then(function(b) {
       if (!b.success) { toast('Space: ' + errMsg(b)); return; }
       toast('Space added');
@@ -1034,7 +1066,8 @@ window.VenuesControlCenter = (function() {
       try { var j = JSON.parse(a.details || '{}'); if (j && j.event) det = j.event; else if (j && j.space) det = j.space; } catch (e) {}
       h += '<div style="display:flex;gap:0.6rem;padding:0.45rem 0;border-bottom:1px dashed var(--ecc-border);">';
       h += '<div style="width:9px;height:9px;border-radius:50%;background:var(--ecc-primary);margin-top:0.3rem;flex-shrink:0;"></div>';
-        '<div style="font-size:0.62rem;color:var(--ecc-text-dim);">by ' + esc(a.actor_name || a.actor_id || 'system') + '</div></div>';
+      h += '<div style="flex:1;min-width:0;"><div style="font-size:0.72rem;font-weight:700;">' + esc(a.action || 'Venue updated') + (det ? ' · ' + esc(det) : '') + '</div>';
+      h += '<div style="font-size:0.62rem;color:var(--ecc-text-dim);">by ' + esc(a.actor_name || a.actor_id || 'system') + '</div></div>';
       h += '<div style="font-size:0.62rem;color:var(--ecc-text-dim);white-space:nowrap;">' + fmtDt(a.created_at) + '</div>';
       h += '</div>';
     });
@@ -1159,7 +1192,9 @@ window.VenuesControlCenter = (function() {
       capacity: '',
       spaces: [{ name: 'Main Hall', type: 'Theatre', capacity: '', dimensions: '', description: '' }],
       facilities: [], customFac: [],
-      mediaCover: '', mediaGallery: '',
+      // The wizard accepts uploaded images only. URLs returned by the secure
+      // upload endpoint are kept here until the venue is saved.
+      mediaAssets: [],
       pricing: [{ name: '', price: '', description: '' }],
       policies: {
         cancellation_policy: '', advance_booking_days: '', min_duration_hours: '', max_duration_hours: '',
@@ -1197,7 +1232,7 @@ window.VenuesControlCenter = (function() {
       type: !!String(d.type || '').trim(),
       spaces: (d.spaces || []).some(function(s) { return !!String(s.name || '').trim(); }),
       facilities: !!((d.facilities || []).length || (d.customFac || []).some(function(c) { return !!String(c.name || '').trim(); })),
-      media: !!String(d.mediaCover || '').trim() || !!((d.mediaGallery || []).length),
+      media: Array.isArray(d.mediaAssets) && d.mediaAssets.length > 0,
       pricing: (d.pricing || []).some(function(p) { return !!String(p.name || '').trim(); })
     };
   }
@@ -1231,7 +1266,6 @@ window.VenuesControlCenter = (function() {
       d.description = val('ww-i-desc');
       d.contact_phone = val('ww-i-phone');
       d.contact_email = val('ww-i-email');
-      d.cover_image = val('ww-i-cover');
       if (!String(d.name || '').trim()) { toast('Venue name is required.'); return false; }
     } else if (step === 2) {
       d.address = val('ww-l-addr');
@@ -1273,8 +1307,7 @@ window.VenuesControlCenter = (function() {
       d.facilities = facs;
       d.customFac = customs;
     } else if (step === 5) {
-      d.mediaCover = val('ww-m-cover');
-      d.mediaGallery = String(val('ww-m-gallery') || '').split('\n').map(function(u) { return u.trim(); }).filter(Boolean);
+      d.mediaAssets = Array.isArray(d.mediaAssets) ? d.mediaAssets : [];
     } else if (step === 6) {
       var prices = [];
       document.querySelectorAll('.ww-price-row').forEach(function(r) {
@@ -1342,13 +1375,7 @@ window.VenuesControlCenter = (function() {
         + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-top:0.7rem;">'
         + '<label style="font-weight:700;font-size:0.75rem;">Contact phone<input type="text" id="ww-i-phone" class="ecc-input" value="' + esc(d.contact_phone) + '" placeholder="+265 99 000 0000" style="display:block;width:100%;margin-top:0.2rem;"></label>'
         + '<label style="font-weight:700;font-size:0.75rem;">Contact email<input type="email" id="ww-i-email" class="ecc-input" value="' + esc(d.contact_email) + '" placeholder="bookings@venue.mw" style="display:block;width:100%;margin-top:0.2rem;"></label>'
-        + '</div>'
-        + '<label style="font-weight:700;font-size:0.75rem;display:block;margin-top:0.7rem;">Cover image URL<input type="url" id="ww-i-cover" class="ecc-input" value="' + esc(d.cover_image || d.mediaCover) + '" placeholder="https://…/cover.jpg" style="display:block;width:100%;margin-top:0.2rem;"></label>'
-        + '<div style="margin-top:0.4rem;"><label style="font-size:0.68rem;color:var(--ecc-text-dim);">Or upload an image (JPG, PNG or WebP, max 10 MB)</label>'
-        + '<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem;">'
-        + '<input type="file" id="ww-i-cover-file" accept="image/jpeg,image/png,image/webp" style="font-size:0.7rem;flex:1;min-width:0;">'
-        + '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.25rem 0.6rem;display:inline-flex;align-items:center;gap:0.3rem;" id="ww-i-cover-up" onclick="VenuesControlCenter.wizardUploadCover(\'ww-i-cover-file\', \'ww-i-cover\', this)">' + icon('clock') + ' Upload</button>'
-        + '</div><div id="ww-i-cover-msg" style="font-size:0.64rem;color:var(--ecc-text-dim);margin-top:0.15rem;"></div></div>';
+        + '</div>';
     } else if (step === 2) {
       h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">'
         + '<label style="font-weight:700;font-size:0.75rem;">Street address<input type="text" id="ww-l-addr" class="ecc-input" value="' + esc(d.address) + '" placeholder="e.g. Convention Drive" style="display:block;width:100%;margin-top:0.2rem;"></label>'
@@ -1386,15 +1413,26 @@ window.VenuesControlCenter = (function() {
           + '</div>';
       });
     } else if (step === 5) {
-      h += '<label style="font-weight:700;font-size:0.75rem;">Cover image URL<input type="url" id="ww-m-cover" class="ecc-input" value="' + esc(d.mediaCover || '') + '" placeholder="https://…/cover.jpg" style="display:block;width:100%;margin-top:0.2rem;"></label>';
-      h += '<div style="margin-top:0.4rem;"><label style="font-size:0.68rem;color:var(--ecc-text-dim);">Or upload an image (JPG, PNG or WebP, max 10 MB)</label>'
-        + '<div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem;">'
-        + '<input type="file" id="ww-m-cover-file" accept="image/jpeg,image/png,image/webp" style="font-size:0.7rem;flex:1;min-width:0;">'
-        + '<button type="button" class="ecc-btn ecc-btn-primary" style="font-size:0.68rem;padding:0.25rem 0.6rem;display:inline-flex;align-items:center;gap:0.3rem;" id="ww-m-cover-up" onclick="VenuesControlCenter.wizardUploadCover(\'ww-m-cover-file\', \'ww-m-cover\', this)">' + icon('clock') + ' Upload</button>'
-        + '</div><div id="ww-m-cover-msg" style="font-size:0.64rem;color:var(--ecc-text-dim);margin-top:0.15rem;"></div></div>';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:0.9rem 0 0.6rem;"><strong style="font-size:0.78rem;">Gallery</strong><label style="font-size:0.7rem;color:var(--ecc-text-dim);">One image URL per line</label></div>';
-      h += '<textarea id="ww-m-gallery" class="ecc-input" rows="5" placeholder="https://…/photo1.jpg&#10;https://…/photo2.jpg" style="display:block;width:100%;resize:vertical;">' + esc((d.mediaGallery || []).join('\n')) + '</textarea>';
-      h += '<div style="font-size:0.7rem;color:var(--ecc-text-dim);margin-top:0.6rem;">Floor plans and extra media can be managed later from the venue workspace.</div>';
+      var assets = Array.isArray(d.mediaAssets) ? d.mediaAssets : [];
+      h += '<div class="ecc-card" style="padding:1rem;border:1px dashed rgba(99,102,241,.65);">';
+      h += '<strong style="font-size:0.8rem;">Venue images</strong><p style="font-size:0.7rem;color:var(--ecc-text-dim);margin:0.35rem 0 0.8rem;">Upload JPG, PNG, or WebP images. The first image is your public cover; choose another image as cover if needed.</p>';
+      h += '<div style="display:flex;align-items:center;gap:0.55rem;flex-wrap:wrap;">'
+        + '<input type="file" id="ww-m-files" accept="image/jpeg,image/png,image/webp" multiple style="font-size:0.72rem;flex:1;min-width:220px;">'
+        + '<button type="button" class="ecc-btn ecc-btn-primary" id="ww-m-upload" style="font-size:0.7rem;padding:0.32rem 0.7rem;" onclick="VenuesControlCenter.wizardUploadMedia()">Upload selected</button>'
+        + '</div><div id="ww-m-upload-msg" style="font-size:0.68rem;color:var(--ecc-text-dim);margin-top:0.45rem;"></div></div>';
+      h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.65rem;margin-top:0.9rem;">';
+      if (!assets.length) {
+        h += '<div class="ecc-card" style="grid-column:1 / -1;padding:1.1rem;text-align:center;color:var(--ecc-text-dim);font-size:0.72rem;">No images uploaded yet.</div>';
+      }
+      assets.forEach(function(asset, index) {
+        h += '<div class="ecc-card" style="padding:0.45rem;overflow:hidden;">'
+          + '<img src="' + esc(asset.url) + '" alt="Venue upload ' + (index + 1) + '" style="width:100%;height:96px;object-fit:cover;border-radius:7px;display:block;background:var(--ecc-surface-2);">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;gap:0.3rem;margin-top:0.45rem;">'
+          + (asset.is_cover ? '<span class="ecc-pill emerald" style="font-size:0.54rem;">COVER</span>' : '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.58rem;padding:0.16rem 0.34rem;" onclick="VenuesControlCenter.wizardMediaCover(' + index + ')">Set cover</button>')
+          + '<button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.58rem;padding:0.16rem 0.34rem;" onclick="VenuesControlCenter.wizardMediaRemove(' + index + ')">Remove</button>'
+          + '</div></div>';
+      });
+      h += '</div>';
     } else if (step === 6) {
       h += '<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.9rem;">';
       PRICE_PRESETS.forEach(function(p, i) {
@@ -1444,8 +1482,8 @@ window.VenuesControlCenter = (function() {
         + ' · ' + (d.spaces || []).length + ' space(s) · ' + (d.pricing || []).length + ' package(s)'
         + '</div></div>';
       h += '<div style="display:flex;gap:0.6rem;">';
-      h += '<button type="button" class="ecc-btn ecc-btn-secondary" style="flex:1;font-size:0.74rem;" onclick="VenuesControlCenter.wizardSubmit(\'DRAFT\')">Save as Draft</button>';
-      h += '<button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;font-size:0.74rem;" onclick="VenuesControlCenter.wizardSubmit(\'ACTIVE\')">Publish Venue</button>';
+      h += '<button type="button" class="ecc-btn ecc-btn-secondary" data-vw-submit="draft" style="flex:1;font-size:0.74rem;" onclick="VenuesControlCenter.wizardSubmit(\'DRAFT\')">Save as Draft</button>';
+      h += '<button type="button" class="ecc-btn ecc-btn-primary" data-vw-submit="publish" style="flex:1;font-size:0.74rem;" onclick="VenuesControlCenter.wizardSubmit(\'ACTIVE\')">Publish Venue</button>';
       h += '</div>';
       h += '<div style="font-size:0.7rem;color:var(--ecc-text-dim);margin-top:0.7rem;">Publishing makes the venue visible in the public directory. You can still manage everything from the workspace afterwards.</div>';
     }
@@ -1493,34 +1531,78 @@ window.VenuesControlCenter = (function() {
     });
   }
 
-  function wizardUploadCover(fileId, urlId, btn) {
-    var f = document.getElementById(fileId);
-    var msg = document.getElementById(urlId + '-msg');
-    if (!f || !f.files || !f.files.length) { if (msg) msg.textContent = 'Choose an image file first.'; return; }
-    var file = f.files[0];
-    if (file.size > 10 * 1024 * 1024) { if (msg) { msg.textContent = 'The file must be smaller than 10 MB.'; msg.style.color = '#fb7185'; } return; }
+  function wizardMediaCover(index) {
+    if (!state.vwData || !Array.isArray(state.vwData.mediaAssets) || !state.vwData.mediaAssets[index]) return;
+    state.vwData.mediaAssets.forEach(function(asset, itemIndex) { asset.is_cover = itemIndex === index; });
+    wizardRenderStep();
+  }
+
+  function wizardMediaRemove(index) {
+    if (!state.vwData || !Array.isArray(state.vwData.mediaAssets)) return;
+    state.vwData.mediaAssets.splice(index, 1);
+    if (state.vwData.mediaAssets.length) {
+      var hasCover = state.vwData.mediaAssets.some(function(asset) { return !!asset.is_cover; });
+      if (!hasCover) state.vwData.mediaAssets[0].is_cover = true;
+    }
+    wizardRenderStep();
+  }
+
+  function uploadVenueImage(file) {
+    if (!file || !/^image\/(jpeg|png|webp)$/.test(String(file.type || ''))) {
+      return Promise.reject(new Error('Choose a JPG, PNG, or WebP image.'));
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      return Promise.reject(new Error('Each image must be smaller than 10 MB.'));
+    }
     var fd = new FormData();
     fd.append('file', file);
-    var original = btn ? btn.innerHTML : '';
-    if (btn) { btn.disabled = true; btn.innerHTML = 'Uploading…'; }
-    if (msg) { msg.textContent = 'Uploading…'; msg.style.color = 'var(--ecc-text-dim)'; }
-    fetch(base + 'api/tie/vendor/events/cover-image.php', {
-      method: 'POST', credentials: 'same-origin',
-      headers: { 'X-CSRF-Token': csrf },
-      body: fd
-    }).then(function(r) { return r.json(); }).then(function(d) {
-      if (btn) { btn.disabled = false; btn.innerHTML = original; }
-      var urlInput = document.getElementById(urlId);
-      if (d && d.success && d.url) {
-        if (urlInput) urlInput.value = d.url;
-        if (msg) { msg.textContent = 'Cover uploaded.'; msg.style.color = '#34d399'; }
-        toast('Cover image uploaded.');
-      } else {
-        if (msg) { msg.textContent = ((d && d.error && d.error.message) || 'Upload failed.'); msg.style.color = '#fb7185'; }
+    return fetch(base + 'api/tie/vendor/events/cover-image.php', {
+      method: 'POST', credentials: 'same-origin', headers: { 'X-CSRF-Token': csrf }, body: fd
+    }).then(function(response) {
+      return response.json().catch(function() { return {}; });
+    }).then(function(body) {
+      if (!body || body.success !== true || !body.url) {
+        throw new Error((body && body.error && body.error.message) || 'Image upload failed.');
+      }
+      return body.url;
+    });
+  }
+
+  function wizardUploadMedia() {
+    var input = document.getElementById('ww-m-files');
+    var msg = document.getElementById('ww-m-upload-msg');
+    var button = document.getElementById('ww-m-upload');
+    var files = input && input.files ? Array.prototype.slice.call(input.files) : [];
+    if (!files.length) {
+      if (msg) { msg.textContent = 'Choose at least one image first.'; msg.style.color = '#fb7185'; }
+      return;
+    }
+    if (!state.vwData) return;
+    if (button) { button.disabled = true; button.textContent = 'Uploading…'; }
+    if (msg) { msg.textContent = 'Uploading ' + files.length + ' image' + (files.length === 1 ? '' : 's') + '…'; msg.style.color = 'var(--ecc-text-dim)'; }
+    Promise.allSettled(files.map(uploadVenueImage)).then(function(results) {
+      var uploaded = 0;
+      var errors = [];
+      state.vwData.mediaAssets = Array.isArray(state.vwData.mediaAssets) ? state.vwData.mediaAssets : [];
+      results.forEach(function(result) {
+        if (result.status === 'fulfilled') {
+          state.vwData.mediaAssets.push({ url: result.value, type: 'GALLERY', is_cover: state.vwData.mediaAssets.length === 0 });
+          uploaded += 1;
+        } else {
+          errors.push(result.reason && result.reason.message ? result.reason.message : 'An image could not be uploaded.');
+        }
+      });
+      if (button) { button.disabled = false; button.textContent = 'Upload selected'; }
+      if (uploaded) {
+        toast(uploaded + ' venue image' + (uploaded === 1 ? '' : 's') + ' uploaded.');
+        wizardRenderStep();
+      } else if (msg) {
+        msg.textContent = errors[0] || 'Image upload failed.';
+        msg.style.color = '#fb7185';
       }
     }).catch(function() {
-      if (btn) { btn.disabled = false; btn.innerHTML = original; }
-      if (msg) { msg.textContent = 'Upload failed. Check your connection and try again.'; msg.style.color = '#fb7185'; }
+      if (button) { button.disabled = false; button.textContent = 'Upload selected'; }
+      if (msg) { msg.textContent = 'Image upload failed. Check your connection and retry.'; msg.style.color = '#fb7185'; }
     });
   }
 
@@ -1530,28 +1612,35 @@ window.VenuesControlCenter = (function() {
     wizardSaveStep(state.vwStep);
     var r = wizardReady();
     if (!String(d.name || '').trim()) { state.vwStep = 1; wizardRenderStep(); toast('Venue name is required.'); return; }
-    if (!r.spaces || !r.facilities || !r.pricing) { toast('Add at least one space, one facility and one pricing package.'); return; }
+    if (status === 'ACTIVE' && (!r.type || !r.spaces || !r.facilities || !r.media || !r.pricing)) {
+      toast('To publish, add venue type, a space, facilities, at least one image, and a pricing package.');
+      return;
+    }
     var facilities = (d.facilities || []).concat(d.customFac || []);
-    var media = [];
-    if (String(d.mediaCover || '').trim()) media.push({ url: String(d.mediaCover).trim(), type: 'COVER', is_cover: 1 });
-    (d.mediaGallery || []).forEach(function(u) { media.push({ url: u, type: 'GALLERY', is_cover: 0 }); });
-    var btn = document.getElementById('vw-next');
-    if (btn) btn.style.display = 'none';
+    var media = (d.mediaAssets || []).map(function(asset, index) {
+      return { url: asset.url, type: asset.is_cover ? 'COVER' : 'GALLERY', is_cover: asset.is_cover ? 1 : 0, sort_order: index };
+    });
+    var coverAsset = media.filter(function(asset) { return asset.is_cover; })[0] || media[0] || null;
+    var buttons = document.querySelectorAll('[data-vw-submit]');
+    buttons.forEach(function(button) { button.disabled = true; });
     post({
       action: 'create_venue', status: status,
       name: d.name, type: d.type, description: d.description,
-      contact_phone: d.contact_phone, contact_email: d.contact_email, cover_image: String(d.mediaCover || d.cover_image || '').trim(),
+      contact_phone: d.contact_phone, contact_email: d.contact_email, cover_image: coverAsset ? coverAsset.url : '',
       address: d.address, city: d.city, district: d.district, region: d.region, country: d.country,
       gps_lat: d.gps_lat, gps_lng: d.gps_lng, capacity: d.capacity,
       spaces: d.spaces, facilities: facilities, media: media, pricing: d.pricing,
       policies: d.policies
     }).then(function(b) {
-      if (btn) btn.style.display = '';
+      buttons.forEach(function(button) { button.disabled = false; });
       if (!b.success) { toast('Venue: ' + errMsg(b)); return; }
       toast(status === 'ACTIVE' ? 'Venue published' : 'Venue saved as draft');
       closeEccModal('modal-add-venue');
       state.vwData = null;
       loadWorkspace();
+    }).catch(function() {
+      buttons.forEach(function(button) { button.disabled = false; });
+      toast('Venue request failed. Check your connection and retry.');
     });
   }  function openBlock(venueId, dayStr) {
     var d = (venueId === state.venueId && state.detail) ? state.detail : null;
@@ -1601,6 +1690,15 @@ window.VenuesControlCenter = (function() {
       loadWorkspace();
     });
   }
+  function publishVenue(venueId) {
+    if (!window.confirm('Publish this venue? It will become available for venue operations.')) return;
+    post({ action: 'update_status', venue_id: venueId, status: 'ACTIVE' }).then(function(b) {
+      if (!b.success) { toast('Publish: ' + errMsg(b)); return; }
+      toast('Venue published.');
+      if (venueId === state.venueId) refreshDetail();
+      loadWorkspace();
+    }).catch(function() { toast('Venue publish request failed. Please retry.'); });
+  }
   function removeVenue(venueId) {
     if (!window.confirm('Delete this venue? Venues with confirmed bookings cannot be removed.')) return;
     if (!window.confirm('Are you really sure? This cannot be undone.')) return;
@@ -1647,10 +1745,12 @@ window.VenuesControlCenter = (function() {
     calVenueChanged: calVenueChanged,
     calDayClick: calDayClick,
     openWorkspace: openWorkspace,
+    retryWorkspace: refreshDetail,
     closeWorkspace: closeWorkspace,
     goSub: goSub,
     renderSub: renderSub,
     saveDetails: saveDetails,
+    addSpace: addSpaceFn,
     addSpaceFn: addSpaceFn,
     editSpace: editSpace,
     removeSpace: removeSpace,
@@ -1677,7 +1777,9 @@ window.VenuesControlCenter = (function() {
     wizardPricePresets: wizardPricePresets,
     wizardAddCustomFac: wizardAddCustomFac,
     wizardGeo: wizardGeo,
-    wizardUploadCover: wizardUploadCover,
+    wizardUploadMedia: wizardUploadMedia,
+    wizardMediaCover: wizardMediaCover,
+    wizardMediaRemove: wizardMediaRemove,
     wizardSubmit: wizardSubmit,
     wizardDelSpace: wizardDelSpace,
     wizardDelPrice: wizardDelPrice,
@@ -1687,6 +1789,7 @@ window.VenuesControlCenter = (function() {
     openBlock: openBlock,
     blockSubmit: blockSubmit,
     quickStatus: quickStatus,
+    publishVenue: publishVenue,
     removeVenue: removeVenue,
     toggleCardMenu: toggleCardMenu
   };

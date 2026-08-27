@@ -216,8 +216,78 @@ if (!function_exists('uthenga_finance_service_fee_key')) {
     }
 }
 
+if (!function_exists('uthenga_finance_active_fee_rule')) {
+    // The one place a rate is actually looked up "as of now". Everything that
+    // needs a rate frozen for a specific transaction should capture this
+    // result once and store it (fee_rule_id + commission_rate), not call this
+    // again later — a rate change here must never retroactively affect a
+    // transaction that already captured a rule.
+    function uthenga_finance_active_fee_rule(string $listingType): ?array {
+        if (!uthenga_table_exists('uthenga_fee_rules')) {
+            return null;
+        }
+        $category = uthenga_finance_normalize_listing_type($listingType);
+        return dbQueryOne(
+            "SELECT * FROM uthenga_fee_rules
+             WHERE service_category = ? AND effective_from <= NOW() AND (effective_to IS NULL OR effective_to > NOW())
+             ORDER BY effective_from DESC LIMIT 1",
+            [$category]
+        ) ?: null;
+    }
+}
+
+if (!function_exists('uthenga_finance_save_fee_rule')) {
+    // Never overwrites a rate in place — closes whatever is currently active
+    // (or scheduled in the future) for this category, then inserts a fresh row.
+    function uthenga_finance_save_fee_rule(string $listingType, float $rate, float $serviceFee, ?string $updatedBy = null, ?string $effectiveFrom = null): array {
+        global $pdo;
+        $category = uthenga_finance_normalize_listing_type($listingType);
+        $effectiveFrom = $effectiveFrom !== null && $effectiveFrom !== '' ? $effectiveFrom : date('Y-m-d H:i:s');
+
+        $randomBytes = random_bytes(16);
+        $randomBytes[6] = chr((ord($randomBytes[6]) & 0x0f) | 0x40);
+        $randomBytes[8] = chr((ord($randomBytes[8]) & 0x3f) | 0x80);
+        $id = vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($randomBytes), 4));
+
+        // Atomic: closing the old rule and inserting the new one must not be
+        // allowed to half-succeed — that would leave the category with no
+        // active rule at all.
+        $ownsTransaction = !$pdo->inTransaction();
+        if ($ownsTransaction) {
+            $pdo->beginTransaction();
+        }
+        try {
+            dbExecute(
+                "UPDATE uthenga_fee_rules SET effective_to = ?
+                 WHERE service_category = ? AND (effective_to IS NULL OR effective_from > NOW())",
+                [$effectiveFrom, $category]
+            );
+            dbExecute(
+                "INSERT INTO uthenga_fee_rules (id, service_category, commission_rate, service_fee, effective_from, created_by)
+                 VALUES (?, ?, ?, ?, ?, ?)",
+                [$id, $category, max(0.0, $rate), max(0.0, $serviceFee), $effectiveFrom, $updatedBy]
+            );
+            if ($ownsTransaction) {
+                $pdo->commit();
+            }
+        } catch (Throwable $e) {
+            if ($ownsTransaction && $pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $e;
+        }
+
+        return ['id' => $id, 'service_category' => $category, 'commission_rate' => $rate, 'service_fee' => $serviceFee, 'effective_from' => $effectiveFrom];
+    }
+}
+
 if (!function_exists('uthenga_finance_commission_rate')) {
     function uthenga_finance_commission_rate(string $listingType): float {
+        $rule = uthenga_finance_active_fee_rule($listingType);
+        if ($rule !== null) {
+            return max(0.0, (float) $rule['commission_rate']);
+        }
+        // Defensive fallback only — every real category is seeded by migration 075.
         $rate = getSetting(uthenga_finance_commission_rate_key($listingType), null);
         if ($rate === null || $rate === '') {
             $rate = getSetting('commission_rate', COMMISSION_RATE);
@@ -228,6 +298,10 @@ if (!function_exists('uthenga_finance_commission_rate')) {
 
 if (!function_exists('uthenga_finance_service_fee')) {
     function uthenga_finance_service_fee(string $listingType): float {
+        $rule = uthenga_finance_active_fee_rule($listingType);
+        if ($rule !== null) {
+            return max(0.0, (float) $rule['service_fee']);
+        }
         $fee = getSetting(uthenga_finance_service_fee_key($listingType), null);
         if ($fee === null || $fee === '') {
             $fee = getSetting('service_fee', 0);
@@ -239,8 +313,9 @@ if (!function_exists('uthenga_finance_service_fee')) {
 if (!function_exists('uthenga_finance_split_amounts')) {
     function uthenga_finance_split_amounts(float $grossAmount, string $listingType): array {
         $grossAmount = max(0.0, round($grossAmount, 2));
-        $commissionRate = uthenga_finance_commission_rate($listingType);
-        $serviceFee = uthenga_finance_service_fee($listingType);
+        $rule = uthenga_finance_active_fee_rule($listingType);
+        $commissionRate = $rule !== null ? (float) $rule['commission_rate'] : uthenga_finance_commission_rate($listingType);
+        $serviceFee = $rule !== null ? (float) $rule['service_fee'] : uthenga_finance_service_fee($listingType);
         $commissionAmount = round(($grossAmount * $commissionRate) / 100, 2);
         $vendorNetAmount = round(max(0.0, $grossAmount - $commissionAmount), 2);
         $platformRevenue = round($commissionAmount + $serviceFee, 2);
@@ -253,7 +328,33 @@ if (!function_exists('uthenga_finance_split_amounts')) {
             'vendor_net_amount' => $vendorNetAmount,
             'platform_revenue' => $platformRevenue,
             'customer_total' => round($grossAmount + $serviceFee, 2),
+            'fee_rule_id' => $rule['id'] ?? null,
         ];
+    }
+}
+
+if (!function_exists('uthenga_notify_user')) {
+    // Generic notification insert — same shape as shop_helpers.php's
+    // uthenga_shop_notify_user(), but not shop-specific; a shared home for
+    // any part of the app (e.g. the payment engine) that needs to notify a
+    // customer or vendor without pulling in shop's own helper by name.
+    function uthenga_notify_user(string $userId, string $type, string $title, string $message): void {
+        if ($userId === '' || !uthenga_table_exists('notifications')) {
+            return;
+        }
+        try {
+            dbExecute(
+                'INSERT INTO notifications (user_id, type, title, message, is_read, created_at) VALUES (?, ?, ?, ?, 0, NOW())',
+                [$userId, $type, $title, $message]
+            );
+        } catch (Throwable $e) {
+            try {
+                dbExecute(
+                    'INSERT INTO notifications (user_id, message, is_read, created_at) VALUES (?, ?, 0, NOW())',
+                    [$userId, $title . ': ' . $message]
+                );
+            } catch (Throwable $e2) {}
+        }
     }
 }
 

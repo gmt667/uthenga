@@ -199,7 +199,7 @@ $planHeroImage = $planLocation['image'] ?? 'https://images.unsplash.com/photo-15
     <span>📄 Ready to print or save your itinerary.</span>
     <div>
       <button onclick="window.print()" class="btn">Print / Save as PDF</button>
-      <a href="trip-planner.php" class="btn btn-secondary">Back to Planner</a>
+      <a href="ai.php#/planner" class="btn btn-secondary">Back to Planner</a>
     </div>
   </div>
 

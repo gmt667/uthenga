@@ -8,11 +8,11 @@ require_once __DIR__ . '/includes/shop_helpers.php';
 requireCustomer();
 
 $activeNav = 'shop';
-$userId = (int) ($_SESSION['user_id'] ?? 0);
+$userId = (string) ($_SESSION['user_id'] ?? '');
 $orderNumber = trim((string) ($_GET['order'] ?? ''));
 $order = $orderNumber !== '' ? uthenga_shop_order_by_number($orderNumber) : null;
 
-if (!$order || (int) ($order['user_id'] ?? 0) !== $userId) {
+if (!$order || (string) ($order['user_id'] ?? '') !== $userId) {
     redirect(BASE_URL . 'shop-orders.php');
 }
 
@@ -614,5 +614,25 @@ renderDashboardChromeStart([
     </aside>
   </div>
 </div>
+
+<?php if ($order['payment_method'] === 'pay_online' && $order['payment_status'] === 'pending'): ?>
+<link rel="stylesheet" href="<?= BASE_URL ?>assets/css/uthenga-payment.css?v=<?= rawurlencode(APP_VERSION) ?>">
+<?php require_once __DIR__ . '/includes/payment_modal.php'; ?>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    UthengaPay.initiate({
+      serviceType: 'shop',
+      serviceId: 'uthenga-retail-org',
+      bookingId: <?= json_encode((string) $order['order_number']) ?>,
+      amount: <?= json_encode((float) $order['total_amount']) ?>,
+      title: 'Order ' + <?= json_encode((string) $order['order_number']) ?>,
+      sub: <?= json_encode(count($items) . ' item' . (count($items) === 1 ? '' : 's')) ?>
+    }, function () {
+      // Success screen (receipt) is shown by UthengaPay itself; its own
+      // "Close & View Reservation" button reloads the page from there.
+    });
+  });
+</script>
+<?php endif; ?>
 
 <?php renderDashboardChromeEnd(); ?>

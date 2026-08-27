@@ -6,6 +6,8 @@
  */
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/auth_check.php';
+require_once __DIR__ . '/includes/tie/bootstrap.php';
+require_once __DIR__ . '/includes/payment_engine.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -62,6 +64,7 @@ if (!function_exists('uthenga_restore_booking_inventory')) {
         }
 
         if ($listingType === 'accommodation' && $roomTypeId > 0) {
+            if (UthengaTieFeatureFlags::enabled('accommodation_v2')) return;
             dbExecute(
                 "UPDATE room_types SET available_rooms = available_rooms + 1 WHERE id = ? AND listing_id = ? AND is_active = 1",
                 [$roomTypeId, $listingId]
@@ -145,6 +148,11 @@ try {
             }
             $listingType = $listing['listing_type'];
 
+            if ($listingType === 'accommodation' && class_exists('UthengaTieFeatureFlags') && UthengaTieFeatureFlags::enabled('accommodation_v2')) {
+                echo json_encode(['success' => false, 'message' => 'This property now requires date-safe Uthenga checkout. Return to the property page, select verified dates and use the secure payment flow.']);
+                break;
+            }
+
             if (empty($gatewayLabel) || !in_array($gatewayLabel, $allowedGateways, true)) {
                 echo json_encode(['success' => false, 'message' => 'Please select a valid payment method.']);
                 break;
@@ -186,12 +194,27 @@ try {
                 $unitPrice = (float)($meta['pricePerPerson'] ?? $meta['base_price'] ?? 0);
             }
 
+            // Accommodation is priced per night — a stay of N nights must charge N times
+            // the nightly rate, not just the room quantity, as this used to.
+            $nights = 1;
+            if ($listingType === 'accommodation') {
+                $checkInRaw  = trim((string)($_POST['check_in_date']  ?? ''));
+                $checkOutRaw = trim((string)($_POST['check_out_date'] ?? ''));
+                if ($checkInRaw !== '' && $checkOutRaw !== '') {
+                    $checkInTs  = strtotime($checkInRaw);
+                    $checkOutTs = strtotime($checkOutRaw);
+                    if ($checkInTs !== false && $checkOutTs !== false && $checkOutTs > $checkInTs) {
+                        $nights = max(1, (int)ceil(($checkOutTs - $checkInTs) / 86400));
+                    }
+                }
+            }
+
             if ($unitPrice <= 0) {
                 echo json_encode(['success' => false, 'message' => 'Unable to determine booking price.']);
                 break;
             }
 
-            $grossTotal = round($unitPrice * $qty, 2);
+            $grossTotal = round($unitPrice * $qty * $nights, 2);
             $listingMeta = json_decode((string)($listing['meta'] ?? '{}'), true);
             $listingMeta = is_array($listingMeta) ? $listingMeta : [];
             $isModernSchema = uthenga_column_exists('bookings', 'booking_channel');
@@ -223,6 +246,18 @@ try {
             $customerEmail= $_SESSION['user_email'];
             $typeShort    = strtoupper(substr($listingType, 0, 2));
             $qrCode       = "UTHENGA-$typeShort-$bookingRef-" . strtoupper(explode(' ', $customerName)[0]);
+
+            // Release any of this listing's own abandoned pending event bookings
+            // before reserving more inventory — the only expiry mechanism this
+            // codebase has anywhere is this "sweep on next attempt" pattern.
+            // Re-fetch $listing afterward: the legacy meta-JSON fallback below
+            // reads from this PHP variable, not a fresh query, so a stale
+            // pre-sweep snapshot would silently clobber the sweep's own restore.
+            if ($listingType === 'event' && class_exists('UthengaPaymentEngine')) {
+                UthengaPaymentEngine::sweepStaleEventBookings($listingId);
+                $listing = dbQueryOne('SELECT * FROM listings WHERE id = ? AND is_active = 1', [$listingId]) ?: $listing;
+            }
+
             $pdo->beginTransaction();
 
             // ── Inventory Decrement (atomic — prevents overselling) ─────────────
@@ -326,6 +361,7 @@ try {
 
             $bookingInsertId = $bookingRef;
             $bookingNumericId = 0;
+            $isPaymentEnginePending = false;
             if ($isModernSchema) {
                 $bookingCode = 'BK-' . strtoupper(bin2hex(random_bytes(4)));
                 dbExecute(
@@ -357,12 +393,19 @@ try {
                 $ttIdParam = $ticketTypeId ?: null;
                 $scIdParam = $seatClassId  ?: null;
                 $rtIdParam = $roomTypeId   ?: null;
+                // Accommodation, Events and Tours go through the real Uthenga Payment
+                // Engine — the booking starts Pending and is only flipped to
+                // Paid/confirmed once payment is actually verified (see
+                // UthengaPaymentEngine::confirmUnderlyingBooking()). Transport (bus)
+                // has its own separate, already-proven direct-charge flow
+                // (BusOperations::purchaseTicket()) and never reaches this branch.
+                $isPaymentEnginePending = in_array($listingType, ['accommodation', 'event', 'tour'], true);
                 dbExecute(
                     'INSERT INTO bookings (
                         id, listing_id, listing_title, listing_image, listing_type,
                         customer_id, customer_name, customer_email, details, total_price, commission_paid,
-                        payment_status, booking_status, transaction_id, qr_code
-                    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                        payment_status, booking_status, transaction_id, qr_code, quantity
+                    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                     [
                         $bookingRef,
                         $listingId,
@@ -375,10 +418,11 @@ try {
                         json_encode($details),
                         $totalPrice,
                         $commission,
-                        'Paid',
-                        'confirmed',
-                        $txnRef,
+                        $isPaymentEnginePending ? 'Pending' : 'Paid',
+                        $isPaymentEnginePending ? 'pending' : 'confirmed',
+                        $isPaymentEnginePending ? null : $txnRef,
                         $qrCode,
+                        $qty,
                     ]
                 );
                 $details['ticket_type_id'] = $ttIdParam;
@@ -469,33 +513,41 @@ try {
                     'status' => 'success',
                     'wallet_bucket' => 'available',
                 ]);
-            } else {
+            } elseif (!$isPaymentEnginePending) {
                 dbExecute(
                     'INSERT INTO transactions (id, booking_id, customer_id, customer_name, amount, gateway, status, receipt_number)
                      VALUES (?,?,?,?,?,?,?,?)',
                     [$txnRef, $bookingRef, $customerId, $customerName, $totalPrice, $gatewayLabel, 'Success', $receiptNum]
                 );
             }
+            // else: accommodation is Pending — no transaction exists yet. The
+            // Payment Engine writes both the transaction and the audit log once
+            // a real payment is verified.
 
-            // Audit log
-            logAction('Authorized Payment', "Paid " . formatMWK($totalPrice) . " via $gatewayLabel for {$listing['title']}. Ref: $bookingRef");
+            if (!$isPaymentEnginePending) {
+                logAction('Authorized Payment', "Paid " . formatMWK($totalPrice) . " via $gatewayLabel for {$listing['title']}. Ref: $bookingRef");
+            }
 
             echo json_encode([
                 'success' => true,
-                'message' => 'Booking confirmed!',
+                'message' => $isPaymentEnginePending ? 'Booking created — complete payment to confirm.' : 'Booking confirmed!',
                 'booking' => [
                     'id'           => $bookingInsertId,
                     'booking_id'   => $bookingInsertId,
                     'booking_code' => $bookingRef,
                     'ticket_id'    => $bookingInsertId,
+                    'listing_id'   => $listingId,
+                    'listing_title'=> $listing['title'],
+                    'listing_type' => $listingType,
                     'quantity'     => $qty,
                     'qr_code'      => $qrCode,
                     'ticket_format'=> $ticketFormat,
                     'total_price'  => $totalPrice,
-                    'transaction_id' => $txnRef,
-                    'transaction_reference' => $transactionReference,
+                    'transaction_id' => $isPaymentEnginePending ? null : $txnRef,
+                    'transaction_reference' => $isPaymentEnginePending ? null : $transactionReference,
                     'receipt_number' => $receiptNum,
-                    'gateway' => $gatewayLabel
+                    'gateway' => $gatewayLabel,
+                    'requires_payment' => $isPaymentEnginePending,
                 ]
             ]);
             $pdo->commit();

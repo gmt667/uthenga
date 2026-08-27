@@ -410,11 +410,10 @@ $userRoleLabel = 'Event Organizer';
       </div>
 
       <!-- AI Assistant Panel Toggle -->
-      <div class="acc-hd-wrap" style="position:relative;">
-        <button type="button" class="acc-icon-btn" id="ecc-ai-toggle" onclick="toggleAiPanel()" aria-label="Toggle AI assistant" title="AI Assistant">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z"/></svg>
-        </button>
-      </div>
+      <button type="button" class="acc-theme-btn ecc-ai-btn" id="ecc-ai-toggle" onclick="toggleAiPanel()" aria-label="Toggle AI assistant" title="Toggle AI Assistant Panel">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z"/></svg>
+        <span>AI Copilot</span>
+      </button>
 
       <!-- Theme Switcher Button -->
       <button type="button" class="acc-theme-btn" id="ecc-theme-toggle" onclick="toggleEventsTheme()">
@@ -592,133 +591,289 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 0: DASHBOARD -->
       <div id="mod-dashboard" class="ecc-module-content active">
-        <div class="ecc-hero-greeting">
-          <h1>Good morning, <?= e(explode(' ', $userName)[0]) ?></h1>
-          <p>Everything is ready for today's events.</p>
-        </div>
-
-        <!-- 5 Top KPI Cards -->
-        <div class="ecc-stats-row">
-          <div class="ecc-stat-card" onclick="switchEccModule('finance')">
-            <div class="ecc-stat-info">
-              <label>Revenue Today</label>
-              <h2>MK 4,350,000</h2>
-              <div class="ecc-stat-sub green">↑ 32% vs yesterday</div>
-            </div>
-            <div class="ecc-stat-icon-wrap purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          </div>
-
-          <div class="ecc-stat-card" onclick="switchEccModule('tickets')">
-            <div class="ecc-stat-info">
-              <label>Tickets Sold</label>
-              <h2>245</h2>
-              <div class="ecc-stat-sub green">↑ 18% vs yesterday</div>
-            </div>
-            <div class="ecc-stat-icon-wrap green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg></div>
-          </div>
-
-          <div class="ecc-stat-card" onclick="switchEccModule('events')">
-            <div class="ecc-stat-info">
-              <label>Active Events</label>
-              <h2>3</h2>
-              <div class="ecc-stat-sub blue">1 Live · 2 Upcoming</div>
-            </div>
-            <div class="ecc-stat-icon-wrap blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div>
-          </div>
-
-          <div class="ecc-stat-card" onclick="switchEccModule('check-in')">
-            <div class="ecc-stat-info">
-              <label>Check-ins Today</label>
-              <h2>118</h2>
-              <div class="ecc-stat-sub amber">76% of expected</div>
-            </div>
-            <div class="ecc-stat-icon-wrap orange"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-          </div>
-
-          <div class="ecc-stat-card" onclick="switchEccModule('messages')">
-            <div class="ecc-stat-info">
-              <label>Pending Messages</label>
-              <h2>12</h2>
-              <div class="ecc-stat-sub pink">Requires attention</div>
-            </div>
-            <div class="ecc-stat-icon-wrap pink"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
-          </div>
-        </div>
-
-        <!-- Live Event Featured Card & Upcoming List -->
-        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
-          <div class="ecc-card">
-            <div class="ecc-card-head">
-              <h3>Live Event Operations</h3>
-              <a href="#all" onclick="switchEccModule('events')" class="ecc-card-link">View All</a>
-            </div>
-            <div class="ecc-live-card">
-              <div class="ecc-live-thumb-wrap">
-                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80" alt="Worship Concert">
-                <span class="ecc-live-badge-overlay">LIVE NOW</span>
-              </div>
-              <div class="ecc-live-info">
-                <div>
-                  <h4>Annual Worship Concert 2025</h4>
-                  <p>Bingu International Convention Centre · Hall A</p>
+        <div class="dsh-root">
+          <div class="dsh-layout-grid">
+            <!-- Left Main Column -->
+            <div class="dsh-main-col">
+              <div class="dsh-header">
+                <div class="dsh-header-left">
+                  <h1 class="dsh-greeting">Good morning, <span class="dsh-greeting-name"><?= e(explode(' ', $userName)[0] ?: 'Patrick') ?></span> 👋</h1>
+                  <p class="dsh-subtitle">Here's what's happening with your events today.</p>
                 </div>
-                <div style="font-size:0.75rem;display:flex;justify-content:space-between;">
-                  <span><strong>150 / 200</strong> Checked-in</span>
-                  <span><strong>MK 2,250,000</strong> Revenue</span>
+                <button type="button" class="dsh-customise-btn" onclick="eccNotify('Dashboard customization panel active!')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  <span>Customise Dashboard</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+              </div>
+
+              <!-- Top KPI Cards -->
+              <div class="dsh-kpis">
+                <div class="dsh-kpi" onclick="switchEccModule('finance')" style="cursor:pointer;">
+                  <div class="dsh-kpi-top">
+                    <div class="dsh-kpi-ic" style="background:rgba(124,58,237,0.12);color:#7c3aed;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <span class="dsh-kpi-label">REVENUE TODAY</span>
+                  </div>
+                  <div class="dsh-kpi-val">MK 4,350,000</div>
+                  <div class="dsh-kpi-sub"><span class="dsh-delta pos">↑ 32% vs yesterday</span></div>
+                  <div class="dsh-kpi-spark">
+                    <svg viewBox="0 0 110 26" width="110" height="26"><polyline points="0,22 15,18 30,21 45,14 60,16 75,8 90,12 105,4" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round"/></svg>
+                  </div>
                 </div>
-                <div class="ecc-progress-bar-wrap"><div class="ecc-progress-fill" style="width:75%;"></div></div>
-                <div style="display:flex;gap:0.4rem;margin-top:0.6rem;">
-                  <button type="button" class="ecc-btn ecc-btn-primary" style="flex:1;font-size:0.72rem;" onclick="switchEccModule('check-in')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                    <span>Open Live Dashboard</span>
-                  </button>
-                  <button type="button" class="ecc-btn ecc-btn-secondary" style="font-size:0.72rem;" onclick="eccNotify('Broadcast sent to all attendees!')">Broadcast Message</button>
+
+                <div class="dsh-kpi" onclick="switchEccModule('tickets')" style="cursor:pointer;">
+                  <div class="dsh-kpi-top">
+                    <div class="dsh-kpi-ic" style="background:rgba(16,185,129,0.12);color:#10b981;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg>
+                    </div>
+                    <span class="dsh-kpi-label">TICKETS SOLD</span>
+                  </div>
+                  <div class="dsh-kpi-val">245</div>
+                  <div class="dsh-kpi-sub"><span class="dsh-delta pos">↑ 18% vs yesterday</span></div>
+                  <div class="dsh-kpi-spark">
+                    <svg viewBox="0 0 110 26" width="110" height="26"><polyline points="0,20 15,16 30,18 45,11 60,14 75,9 90,6 105,2" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round"/></svg>
+                  </div>
+                </div>
+
+                <div class="dsh-kpi" onclick="switchEccModule('events')" style="cursor:pointer;">
+                  <div class="dsh-kpi-top">
+                    <div class="dsh-kpi-ic" style="background:rgba(59,130,246,0.12);color:#3b82f6;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                    </div>
+                    <span class="dsh-kpi-label">ACTIVE EVENTS</span>
+                  </div>
+                  <div class="dsh-kpi-val">3</div>
+                  <div class="dsh-kpi-sub"><span class="dsh-delta blue">1 Live · 2 Upcoming</span></div>
+                  <div class="dsh-kpi-spark">
+                    <svg viewBox="0 0 110 26" width="110" height="26"><polyline points="0,18 15,14 30,16 45,12 60,15 75,10 90,12 105,8" fill="none" stroke="#3b82f6" stroke-width="2.2" stroke-linecap="round"/></svg>
+                  </div>
+                </div>
+
+                <div class="dsh-kpi" onclick="switchEccModule('check-in')" style="cursor:pointer;">
+                  <div class="dsh-kpi-top">
+                    <div class="dsh-kpi-ic" style="background:rgba(245,158,11,0.12);color:#f59e0b;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    </div>
+                    <span class="dsh-kpi-label">CHECK-INS TODAY</span>
+                  </div>
+                  <div class="dsh-kpi-val">118</div>
+                  <div class="dsh-kpi-sub"><span class="dsh-delta orange">76% of expected</span></div>
+                  <div class="dsh-kpi-spark">
+                    <svg viewBox="0 0 110 26" width="110" height="26"><polyline points="0,22 15,20 30,17 45,12 60,15 75,8 90,5 105,2" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/></svg>
+                  </div>
+                </div>
+
+                <div class="dsh-kpi" onclick="switchEccModule('messages')" style="cursor:pointer;">
+                  <div class="dsh-kpi-top">
+                    <div class="dsh-kpi-ic" style="background:rgba(244,63,94,0.12);color:#f43f5e;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    </div>
+                    <span class="dsh-kpi-label">PENDING MESSAGES</span>
+                  </div>
+                  <div class="dsh-kpi-val">12</div>
+                  <div class="dsh-kpi-sub"><span class="dsh-delta rose">Requires attention</span></div>
+                  <div class="dsh-kpi-spark">
+                    <svg viewBox="0 0 110 26" width="110" height="26"><polyline points="0,15 15,18 30,12 45,16 60,10 75,14 90,8 105,12" fill="none" stroke="#f43f5e" stroke-width="2.2" stroke-linecap="round"/></svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mid Row: Live Event & Upcoming -->
+              <div class="dsh-mid-row">
+                <div class="dsh-card">
+                  <div class="dsh-card-head">
+                    <h3>Live Event Operations</h3>
+                    <button class="dsh-card-link" onclick="switchEccModule('events')">View All</button>
+                  </div>
+                  <div class="dsh-live-box">
+                    <div class="dsh-live-thumb-wrap">
+                      <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80" alt="Annual Worship Concert 2025">
+                      <span class="dsh-live-badge-tag">LIVE NOW</span>
+                    </div>
+                    <div class="dsh-live-details">
+                      <div class="dsh-live-title"><span class="dsh-live-title-dot"></span> Annual Worship Concert 2025</div>
+                      <div class="dsh-live-venue">📍 Bingu International Convention Centre - Hall A</div>
+                      <div class="dsh-live-progress-info">
+                        <span>150 / 200 Checked-in</span>
+                        <span>MK 2,250,000 Revenue</span>
+                      </div>
+                      <div class="dsh-progress-track"><div class="dsh-progress-fill" style="width:75%;"></div></div>
+                      <div class="dsh-stat-mini-grid">
+                        <div class="dsh-stat-mini-item"><label>Capacity</label><strong>200</strong></div>
+                        <div class="dsh-stat-mini-item"><label>Checked-in</label><strong>150</strong></div>
+                        <div class="dsh-stat-mini-item"><label>Available</label><strong class="green">50</strong></div>
+                        <div class="dsh-stat-mini-item"><label>Revenue</label><strong>MK 2,250,000</strong></div>
+                      </div>
+                      <div class="dsh-live-actions">
+                        <button class="dsh-btn-live-primary" onclick="switchEccModule('check-in')">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                          <span>Open Live Dashboard</span>
+                        </button>
+                        <button class="dsh-btn-live-secondary" onclick="switchEccModule('messages')">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                          <span>Broadcast Message</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dsh-card">
+                  <div class="dsh-card-head">
+                    <h3>Upcoming Events</h3>
+                    <button class="dsh-card-link" onclick="switchEccModule('events')">View All</button>
+                  </div>
+                  <div class="dsh-upcoming-list">
+                    <div class="dsh-upcoming-row" onclick="switchEccModule('events')" style="cursor:pointer;">
+                      <div class="dsh-uc-thumb"><img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=400&q=80" alt="Conf"></div>
+                      <div class="dsh-uc-info">
+                        <strong>Youth Leadership Conference</strong>
+                        <span>May 16 - May 18 · Sunbird Nkopola Lodge</span>
+                      </div>
+                      <span class="dsh-uc-badge" style="background:rgba(16,185,129,0.12);color:#10b981;">Starts in 2 days</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+
+                    <div class="dsh-upcoming-row" onclick="switchEccModule('events')" style="cursor:pointer;">
+                      <div class="dsh-uc-thumb"><img src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=400&q=80" alt="Tech"></div>
+                      <div class="dsh-uc-info">
+                        <strong>Tech Innovators Summit</strong>
+                        <span>May 22 · Crossroads Hotel</span>
+                      </div>
+                      <span class="dsh-uc-badge" style="background:rgba(230,57,70,0.12);color:#e63946;">Starts in 8 days</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Lower Middle Row: Schedule & Bookings -->
+              <div class="dsh-bottom-row">
+                <div class="dsh-card">
+                  <div class="dsh-card-head">
+                    <h3>Today's Schedule</h3>
+                    <button class="dsh-card-link" onclick="switchEccModule('events')">Full Schedule</button>
+                  </div>
+                  <div class="dsh-sched-list">
+                    <div class="dsh-sched-row">
+                      <div class="dsh-sched-time">08:00 AM</div>
+                      <div class="dsh-sched-dot done"></div>
+                      <div class="dsh-sched-info"><strong>Registration Opens</strong><small>Main Entrance</small></div>
+                      <span class="dsh-pill green">COMPLETED</span>
+                    </div>
+                    <div class="dsh-sched-row">
+                      <div class="dsh-sched-time">09:00 AM</div>
+                      <div class="dsh-sched-dot live"></div>
+                      <div class="dsh-sched-info"><strong>Opening Ceremony</strong><small>Main Hall</small></div>
+                      <span class="dsh-pill rose">LIVE</span>
+                    </div>
+                    <div class="dsh-sched-row">
+                      <div class="dsh-sched-time">10:30 AM</div>
+                      <div class="dsh-sched-dot upcoming"></div>
+                      <div class="dsh-sched-info"><strong>Keynote Address</strong><small>Hall A</small></div>
+                      <span class="dsh-pill amber-outline">UPCOMING</span>
+                    </div>
+                    <div class="dsh-sched-row">
+                      <div class="dsh-sched-time">01:00 PM</div>
+                      <div class="dsh-sched-dot upcoming"></div>
+                      <div class="dsh-sched-info"><strong>Workshop Session</strong><small>Breakout Rooms</small></div>
+                      <span class="dsh-pill amber-outline">UPCOMING</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="dsh-card">
+                  <div class="dsh-card-head">
+                    <h3>Recent Bookings</h3>
+                    <button class="dsh-card-link" onclick="switchEccModule('attendees')">View All</button>
+                  </div>
+                  <table class="dsh-table">
+                    <thead><tr><th>ATTENDEE</th><th>EVENT</th><th>TICKET</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
+                    <tbody>
+                      <tr><td><strong>John Phiri</strong></td><td>Worship Concert</td><td>VIP</td><td>MK 25,000</td><td><span class="dsh-pill green">✓ Paid</span></td></tr>
+                      <tr><td><strong>Grace Malunga</strong></td><td>Tech Summit</td><td>Standard</td><td>MK 10,000</td><td><span class="dsh-pill green">✓ Paid</span></td></tr>
+                      <tr><td><strong>Mary Moyo</strong></td><td>Wedding Expo</td><td>VIP</td><td>MK 30,000</td><td><span class="dsh-pill amber">Pending ⓘ</span></td></tr>
+                      <tr><td><strong>Brighton Chilemba</strong></td><td>Youth Conference</td><td>Standard</td><td>MK 8,000</td><td><span class="dsh-pill green">✓ Paid</span></td></tr>
+                      <tr><td><strong>Emma Zulu</strong></td><td>Worship Concert</td><td>Standard</td><td>MK 12,000</td><td><span class="dsh-pill green">✓ Paid</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Week Overview -->
+              <div class="dsh-card">
+                <div class="dsh-card-head"><h3>This Week Overview</h3></div>
+                <div class="dsh-week-grid">
+                  <div class="dsh-week-item">
+                    <div class="dsh-week-ic" style="background:rgba(124,58,237,0.12);color:#7c3aed;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <div class="dsh-week-main">
+                      <div class="dsh-week-label">REVENUE (YTD)</div>
+                      <div class="dsh-week-val">MK 145.2M</div>
+                    </div>
+                    <div class="dsh-week-pct dsh-delta pos">↑ 24%</div>
+                  </div>
+
+                  <div class="dsh-week-item">
+                    <div class="dsh-week-ic" style="background:rgba(16,185,129,0.12);color:#10b981;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/></svg>
+                    </div>
+                    <div class="dsh-week-main">
+                      <div class="dsh-week-label">TICKETS SOLD (YTD)</div>
+                      <div class="dsh-week-val">8,452</div>
+                    </div>
+                    <div class="dsh-week-pct dsh-delta pos">↑ 18%</div>
+                  </div>
+
+                  <div class="dsh-week-item">
+                    <div class="dsh-week-ic" style="background:rgba(59,130,246,0.12);color:#3b82f6;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+                    </div>
+                    <div class="dsh-week-main">
+                      <div class="dsh-week-label">EVENTS THIS MONTH</div>
+                      <div class="dsh-week-val">12</div>
+                    </div>
+                    <div class="dsh-week-pct dsh-delta pos">↑ 3</div>
+                  </div>
+
+                  <div class="dsh-week-item">
+                    <div class="dsh-week-ic" style="background:rgba(245,158,11,0.12);color:#f59e0b;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="dsh-week-main">
+                      <div class="dsh-week-label">ATTENDEES (YTD)</div>
+                      <div class="dsh-week-val">23,814</div>
+                    </div>
+                    <div class="dsh-week-pct dsh-delta pos">↑ 21%</div>
+                  </div>
+
+                  <div class="dsh-week-item">
+                    <div class="dsh-week-ic" style="background:rgba(230,57,70,0.12);color:#e63946;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="dsh-week-main">
+                      <div class="dsh-week-label">CHECK-IN RATE</div>
+                      <div class="dsh-week-val">92%</div>
+                    </div>
+                    <div class="dsh-week-pct dsh-delta pos">↑ 6%</div>
+                  </div>
+
+                  <div class="dsh-week-item">
+                    <div class="dsh-week-ic" style="background:rgba(168,85,247,0.12);color:#a855f7;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </div>
+                    <div class="dsh-week-main">
+                      <div class="dsh-week-label">AVG. RATING</div>
+                      <div class="dsh-week-val">4.7 / 5</div>
+                    </div>
+                    <div class="dsh-week-pct dsh-delta pos">↑ 0.3</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-
-          <div class="ecc-card">
-            <div class="ecc-card-head">
-              <h3>Upcoming Events</h3>
-              <a href="#all" onclick="switchEccModule('events')" class="ecc-card-link">View All</a>
-            </div>
-            <div class="ecc-upcoming-list">
-              <div class="ecc-upcoming-item">
-                <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=400&q=80" alt="Conf">
-                <div class="ecc-upcoming-details"><strong>Youth Leadership Conference</strong><span>May 16 - May 18 · Sunbird Nkopola Lodge</span></div>
-                <span class="ecc-pill green">Starts in 2 days</span>
-              </div>
-              <div class="ecc-upcoming-item">
-                <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=400&q=80" alt="Tech">
-                <div class="ecc-upcoming-details"><strong>Tech Innovators Summit</strong><span>May 22 · Crossroads Hotel</span></div>
-                <span class="ecc-pill blue">Starts in 8 days</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Schedule & Bookings Grid -->
-        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.25rem;">
-          <div class="ecc-card">
-            <div class="ecc-card-head"><h3>Today's Schedule</h3><a href="#cal" onclick="switchEccModule('events')" class="ecc-card-link">Full Schedule</a></div>
-            <div class="ecc-timeline-list">
-              <div class="ecc-timeline-item"><div class="ecc-timeline-node completed"></div><div><strong>Registration Opens</strong><small style="display:block;color:var(--ecc-text-dim);">08:00 AM · Main Entrance</small></div><span class="ecc-pill green">Completed</span></div>
-              <div class="ecc-timeline-item"><div class="ecc-timeline-node live"></div><div><strong>Opening Ceremony</strong><small style="display:block;color:var(--ecc-text-dim);">09:00 AM · Main Hall</small></div><span class="ecc-pill rose">Live</span></div>
-              <div class="ecc-timeline-item"><div class="ecc-timeline-node"></div><div><strong>Keynote Address</strong><small style="display:block;color:var(--ecc-text-dim);">10:30 AM · Hall A</small></div><span class="ecc-pill amber">Upcoming</span></div>
-            </div>
-          </div>
-
-          <div class="ecc-card">
-            <div class="ecc-card-head"><h3>Recent Bookings</h3><a href="#all" onclick="switchEccModule('attendees')" class="ecc-card-link">View All</a></div>
-            <table class="ecc-table">
-              <thead><tr><th>Attendee</th><th>Event</th><th>Ticket</th><th>Amount</th><th>Status</th></tr></thead>
-              <tbody>
-                <tr><td><strong>John Phiri</strong></td><td>Worship Concert</td><td>VIP</td><td>MK 25,000</td><td><span class="ecc-pill green">Paid</span></td></tr>
-                <tr><td><strong>Grace Malunga</strong></td><td>Tech Summit</td><td>Standard</td><td>MK 10,000</td><td><span class="ecc-pill green">Paid</span></td></tr>
-                <tr><td><strong>Mary Moyo</strong></td><td>Wedding Expo</td><td>VIP</td><td>MK 30,000</td><td><span class="ecc-pill amber">Pending</span></td></tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
@@ -2847,11 +3002,7 @@ $userRoleLabel = 'Event Organizer';
 
       <!-- MODULE 10: REVIEWS -->
       <div id="mod-reviews" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Event Reviews</h2>
-        <div class="ecc-card">
-          <strong>Mary Moyo ★★★★★</strong>
-          <p style="font-size:0.85rem;color:var(--ecc-text-dim);margin-top:0.4rem;">"Exceptional event organization and sound quality!"</p>
-        </div>
+        <div id="rev-root"></div>
       </div>
 
       <!-- MODULE 11: MESSAGES -->
@@ -2870,13 +3021,7 @@ $userRoleLabel = 'Event Organizer';
       </div>
 
       <!-- MODULE 14: SETTINGS -->
-      <div id="mod-settings" class="ecc-module-content">
-        <h2 style="font-size:1.15rem;font-weight:900;margin-bottom:1.25rem;">Organizer Settings</h2>
-        <div class="ecc-card" style="max-width:450px;">
-          <div style="margin-bottom:0.85rem;"><label style="font-size:0.75rem;font-weight:700;">Organizer Brand Name</label><input class="ecc-search-input" style="background:var(--ecc-bg);border:1px solid var(--ecc-border);padding:0.5rem;width:100%;box-sizing:border-box;margin-top:0.2rem;" value="Axon Events & Concerts"></div>
-          <button type="button" class="ecc-btn ecc-btn-primary" onclick="eccNotify('Settings Saved!')">Save Organizer Profile</button>
-        </div>
-      </div>
+      <div id="mod-settings" class="ecc-module-content"></div>
 
     </main>
 
@@ -7742,6 +7887,24 @@ $userRoleLabel = 'Event Organizer';
     if (modId === 'customers' && window.CustomersControlCenter) {
       window.CustomersControlCenter.init();
     }
+    if (modId === 'reviews' && window.ReviewsControlCenter) {
+      window.ReviewsControlCenter.init();
+    }
+    if (modId === 'analytics' && window.AnalyticsControlCenter) {
+      window.AnalyticsControlCenter.init();
+    }
+    if (modId === 'messages' && window.MessagesControlCenter) {
+      window.MessagesControlCenter.init();
+    }
+    if (modId === 'documents' && window.DocumentsControlCenter) {
+      window.DocumentsControlCenter.init();
+    }
+    if (modId === 'staff' && window.StaffControlCenter) {
+      window.StaffControlCenter.init();
+    }
+    if (modId === 'settings' && window.SettingsControlCenter) {
+      window.SettingsControlCenter.init();
+    }
   };
 
   /* ── Tickets Wizard Controller ─────────────────────────────── */
@@ -9937,8 +10100,10 @@ save().then(function(res) {
 <script src="<?= BASE_URL ?>assets/js/finance-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/analytics-console.js"></script>
 <script src="<?= BASE_URL ?>assets/js/messages-console.js"></script>
+<script src="<?= BASE_URL ?>assets/js/reviews-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-reviews-1"></script>
 <script src="<?= BASE_URL ?>assets/js/documents-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-docs-1"></script>
 <script src="<?= BASE_URL ?>assets/js/staff-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-staff-1"></script>
+<script src="<?= BASE_URL ?>assets/js/settings-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-settings-1"></script>
 <script src="<?= BASE_URL ?>assets/js/tie-location.js"></script>
 <script src="<?= BASE_URL ?>assets/js/venues-console.js?v=<?= rawurlencode(APP_VERSION) ?>-events-venue-fix-4"></script>
 <script src="<?= BASE_URL ?>assets/js/events-marketing-actions.js?v=<?= rawurlencode(APP_VERSION) ?>-marketing-actions-1"></script>
