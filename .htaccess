@@ -7,6 +7,14 @@ Options -Indexes
     RewriteRule ^php_app/(?:config|db)\.php$ - [F,L]
     RewriteRule ^php_app/(?:includes|database|install)/ - [F,L]
 
+    # Compatibility shim: the compiled frontend/ SPA bundle (Quick Taxi /
+    # Trip Planner) was built against a dev environment served under a
+    # /uthenga/ subdirectory and has that prefix baked into its API base
+    # URL. Production serves from the domain root, so transparently strip
+    # a leading uthenga/ from any request rather than rebuilding the
+    # bundle. Remove once the frontend is rebuilt with the correct base.
+    RewriteRule ^uthenga/(.*)$ /$1 [L]
+
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
