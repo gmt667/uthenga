@@ -163,15 +163,38 @@ if (isset($_SERVER['HTTP_HOST'])) {
     $docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: ($_SERVER['DOCUMENT_ROOT'] ?? ''));
     $basePath = '/';
 
+    // Two supported deployment styles share this same config.php:
+    // (a) the web server's DocumentRoot points directly at php_app/, or
+    // (b) DocumentRoot is the repo root (one level up), with that root's
+    //     own index.php + .htaccess transparently rewriting every request
+    //     into php_app/ (see the repo root's own files). In style (b),
+    //     URLs are meant to look rootless — BASE_URL must be computed
+    //     from that root, not from php_app/ itself, even though
+    //     config.php lives inside php_app/.
+    $repoRoot = basename($appRoot) === 'php_app' ? dirname($appRoot) : null;
+    $usesRootBootstrap = $repoRoot !== null
+        && is_file($repoRoot . '/index.php')
+        && is_file($repoRoot . '/.htaccess');
+    $effectiveAppRoot = $usesRootBootstrap ? $repoRoot : $appRoot;
+
+    // Set once we've confidently resolved basePath from the filesystem —
+    // guards the SCRIPT_NAME-based fallback below from re-adding a
+    // '/php_app' segment we've deliberately stripped in the root-bootstrap
+    // case (that fallback can't otherwise tell "correctly root" apart from
+    // "not yet determined", since both look like basePath === '/').
+    $basePathResolved = false;
+
     if ($docRoot !== '') {
         $docRoot = rtrim($docRoot, '/');
-        if (strpos($appRoot, $docRoot) === 0) {
-            $relative = substr($appRoot, strlen($docRoot));
-            $basePath = '/' . trim($relative, '/') . '/';
+        if (strpos($effectiveAppRoot, $docRoot) === 0) {
+            $relative = substr($effectiveAppRoot, strlen($docRoot));
+            $basePath = '/' . trim($relative, '/');
+            $basePath = $basePath === '/' ? '/' : $basePath . '/';
+            $basePathResolved = true;
         }
     }
 
-    if ($basePath === '/') {
+    if ($basePath === '/' && !$basePathResolved) {
         $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
         $dir = dirname($scriptName);
         if (preg_match('~/((?:uthenga|php_app))(?:/|$)~', $dir, $matches, PREG_OFFSET_CAPTURE)) {
