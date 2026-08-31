@@ -93,6 +93,7 @@ executeSqlFile($conn, __DIR__ . '/database/migrations/006_ticket_types_seats_inv
 executeSqlFile($conn, __DIR__ . '/database/migrations/007_ride_sharing_trip_planner_qr.sql');
 executeSqlFile($conn, __DIR__ . '/database/migrations/008_feature_enhancements.sql');
 executeSqlFile($conn, __DIR__ . '/database/migrations/009_marketing_security_phase.sql');
+executeSqlFile($conn, __DIR__ . '/database/migrations/080_admin_permissions_hardening.sql');
 executeSqlFile($conn, __DIR__ . '/database/migrations/002_support_and_stats.sql');
 
 echo "Database initialization complete.\n";

@@ -8,7 +8,7 @@ $pageTitle = 'Event Report';
 $activeNav = 'admin-event-report';
 
 require_once __DIR__ . '/../includes/auth_check.php';
-requireAdmin();
+requireAdminPermission('reports.view');
 require_once __DIR__ . '/includes/admin_header.php';
 require_once __DIR__ . '/../includes/functions.php';
 

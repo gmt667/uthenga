@@ -32,6 +32,7 @@ $marketingCategoryIcons = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_campaign'])) {
+    requireAdminPermission('marketing.manage');
     if (!validateCsrf()) {
         $error = 'Security check failed. Please refresh and try again.';
     } elseif (!$hasNewsletterSubscribers || !$hasNewsletterCampaigns) {
@@ -68,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_campaign'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_ad'])) {
+    requireAdminPermission('marketing.manage');
     if (!validateCsrf()) {
         $error = 'Security check failed. Please refresh and try again.';
     } elseif (!$hasAds) {

@@ -16,6 +16,7 @@ $actionErr = '';
 
 // ── POST Actions ──────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('stays.manage');
     $postAction = $_POST['post_action'] ?? '';
     $lid = trim($_POST['listing_id'] ?? '');
 

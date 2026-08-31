@@ -9,7 +9,7 @@ $activeNav = 'event-analytics';
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/auth_check.php';
-requireAdmin();
+requireAdminPermission('reports.view');
 
 // ── Filters ─────────────────────────────────────────────────────────────────
 $organizerId = trim($_GET['organizer_id'] ?? '');

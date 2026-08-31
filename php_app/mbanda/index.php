@@ -1,7 +1,7 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config.php';
 
-$pageTitle = 'Mbanda Ride Sharing';
+$pageTitle = 'Quick Taxi Ride Sharing';
 $activeNav = 'mbanda';
 
 if (!function_exists('mbanda_trip_image')) {
@@ -98,7 +98,7 @@ if (empty($trips) && $pickup === '' && $dest === '') {
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
   <div class="page-header">
     <div>
-      <h1 class="page-title">Mbanda Ride Sharing</h1>
+      <h1 class="page-title">Quick Taxi Ride Sharing</h1>
       <p class="text-muted">Offer or find rides across Malawi. Share costs, travel together.</p>
     </div>
     <div class="dashboard-head-meta">
@@ -114,7 +114,7 @@ if (empty($trips) && $pickup === '' && $dest === '') {
   <div style="position:relative; overflow:hidden; border-radius:var(--radius-lg); margin-bottom:2rem; min-height:300px; border:1px solid var(--clr-border);">
     <img
       src="<?= e(!empty($trips) ? mbanda_trip_image($trips[0]) : 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&fit=crop&q=80') ?>"
-      alt="Mbanda Ride Sharing"
+      alt="Quick Taxi Ride Sharing"
       style="width:100%;height:300px;object-fit:cover;display:block;filter:brightness(0.55);">
     <div style="
       position:absolute;inset:0;
@@ -127,7 +127,7 @@ if (empty($trips) && $pickup === '' && $dest === '') {
         text-transform:uppercase;color:var(--clr-accent);background:rgba(230,57,70,0.15);
         border:1px solid rgba(230,57,70,0.35);border-radius:100px;
         padding:.25rem .85rem;margin-bottom:.85rem;
-      ">Mbanda Ride Network</span>
+      ">Quick Taxi Ride Network</span>
       <h2 style="font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:800;color:#fff;margin:0 0 .6rem;line-height:1.15;max-width:600px;">
         Welcome - Share a Ride,<br>Share the Journey
       </h2>
@@ -160,7 +160,7 @@ if (empty($trips) && $pickup === '' && $dest === '') {
 
   <?php if (!$hasRideSharingTables): ?>
     <div class="card" style="padding:1rem 1.25rem;margin-bottom:1.5rem;border:1px solid rgba(245,158,11,.35);background:rgba(245,158,11,.08);">
-      Mbanda ride-sharing tables are not installed yet. Run the base installer or the ride-sharing migration to enable this feature.
+      Quick Taxi tables are not installed yet. Run the base installer or the ride-sharing migration to enable this feature.
     </div>
   <?php endif; ?>
 

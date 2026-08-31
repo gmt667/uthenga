@@ -15,18 +15,20 @@ $actionMsg = '';
 $actionErr = '';
 
 $tab = $_GET['tab'] ?? 'commercial';
+if ($tab === 'mbanda') requireAdminPermission('quick_taxi.view');
 
 // ── POST Actions ──────────────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     $postAction = $_POST['post_action'] ?? '';
+    requireAdminPermission($postAction === 'cancel_mbanda_trip' ? 'quick_taxi.manage' : 'transport.manage');
     
     if ($postAction === 'cancel_mbanda_trip') {
         $tripId = trim($_POST['trip_id'] ?? '');
         if ($tripId) {
             dbExecute("UPDATE ride_sharing_trips SET status = 'cancelled' WHERE id = ?", [$tripId]);
             dbExecute("UPDATE ride_sharing_bookings SET status = 'cancelled' WHERE trip_id = ?", [$tripId]);
-            logAction('Cancel Mbanda Trip', "Trip ID: $tripId");
-            $actionMsg = 'Mbanda Ride Sharing trip cancelled.';
+            logAction('Cancel Quick Taxi Trip', "Trip ID: $tripId");
+            $actionMsg = 'Quick Taxi trip cancelled.';
         }
     } else {
         $lid  = trim($_POST['listing_id'] ?? '');
@@ -98,7 +100,7 @@ if ($tab === 'mbanda') {
 <div class="page-header">
   <div>
     <h1 class="page-title"><?= admin_icon_svg('transport') ?> Transport Management</h1>
-    <p class="text-muted">Manage transport listings, seat classes, and Mbanda ride sharing.</p>
+    <p class="text-muted">Manage transport listings, seat classes, and Quick Taxi ride sharing.</p>
   </div>
   <div style="display:flex;gap:0.75rem;">
     <a href="<?= BASE_URL ?>admin/events.php" class="btn btn-secondary btn-sm">All Listings</a>
@@ -108,7 +110,7 @@ if ($tab === 'mbanda') {
 <!-- Tab Nav -->
 <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;border-bottom:1px solid var(--clr-border);padding-bottom:0.75rem;">
   <a href="transport.php?tab=commercial" class="btn btn-sm <?= $tab === 'commercial' ? 'btn-primary' : 'btn-ghost' ?>"><?= admin_icon_svg('transport') ?> Commercial Transport</a>
-  <a href="transport.php?tab=mbanda" class="btn btn-sm <?= $tab === 'mbanda' ? 'btn-primary' : 'btn-ghost' ?>"><?= uthenga_public_icon_svg('car') ?> Mbanda Ride Sharing</a>
+  <a href="transport.php?tab=mbanda" class="btn btn-sm <?= $tab === 'mbanda' ? 'btn-primary' : 'btn-ghost' ?>"><?= uthenga_public_icon_svg('car') ?> Quick Taxi</a>
 </div>
 
 <?php if ($actionMsg): ?><div class="alert alert-success"><?= uthenga_public_icon_svg('check') ?> <?= e($actionMsg) ?></div><?php endif; ?>
@@ -160,7 +162,7 @@ if (($_GET['export'] ?? '') === 'csv') {
       </thead>
       <tbody>
         <?php if (empty($mbandaTrips)): ?>
-          <tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--clr-text-muted);">No Mbanda ride sharing trips found.</td></tr>
+          <tr><td colspan="7" style="text-align:center;padding:2.5rem;color:var(--clr-text-muted);">No Quick Taxi trips found.</td></tr>
         <?php else: ?>
           <?php foreach ($mbandaTrips as $trip): ?>
           <tr>
@@ -184,7 +186,7 @@ if (($_GET['export'] ?? '') === 'csv') {
             </td>
             <td style="text-align:right;">
               <?php if ($trip['status'] === 'open'): ?>
-              <form method="POST" onsubmit="return confirm('Cancel this Mbanda trip and all its bookings?');" style="display:inline;">
+              <form method="POST" onsubmit="return confirm('Cancel this Quick Taxi trip and all its bookings?');" style="display:inline;">
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
                 <input type="hidden" name="post_action" value="cancel_mbanda_trip">
                 <input type="hidden" name="trip_id" value="<?= e($trip['id']) ?>">
@@ -342,7 +344,7 @@ if (($_GET['export'] ?? '') === 'csv') {
 </div>
 <?php endif; ?>
 <p class="text-xs text-muted" style="text-align:center;margin-top:0.75rem;">
-  <?= number_format($totalCount) ?> <?= $tab === 'mbanda' ? 'Mbanda trips' : 'transport listings' ?>
+  <?= number_format($totalCount) ?> <?= $tab === 'mbanda' ? 'Quick Taxi trips' : 'transport listings' ?>
 </p>
 
 <script>

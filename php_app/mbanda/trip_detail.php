@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config.php';
 
 if (!function_exists('mbanda_trip_image')) {
@@ -176,7 +176,7 @@ if ($isDriver) {
   <div class="glass-panel" style="padding:0; overflow:hidden; margin-bottom:1.5rem; border:1px solid var(--clr-border);">
     <div style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,0.9fr);align-items:stretch;">
       <div style="padding:1.5rem;">
-        <span class="section-label">MBANDA TRIP</span>
+        <span class="section-label">QUICK TAXI TRIP</span>
         <h2 style="font-size:1.6rem;margin:0.5rem 0 0.75rem;"><?= e($trip['pickup_location']) ?> to <?= e($trip['destination']) ?></h2>
         <p class="text-muted" style="margin:0;">View trip details, passenger seats, and route notes with a visual preview of the ride.</p>
       </div>

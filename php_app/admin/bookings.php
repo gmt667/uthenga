@@ -6,7 +6,7 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 
-requireAdmin();
+requireAdminPermission('bookings.view');
 
 if (!function_exists('uthenga_admin_bookings_pdf_ascii')) {
     function uthenga_admin_bookings_pdf_ascii(string $text): string {

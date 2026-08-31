@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config.php';
 
 if (!isLoggedIn()) {
@@ -10,7 +10,7 @@ $msg = '';
 $hasRideSharingTables = uthenga_table_exists('ride_sharing_trips');
 
 if (!$hasRideSharingTables) {
-    $msg = 'Mbanda ride-sharing tables are not installed yet.';
+    $msg = 'Quick Taxi tables are not installed yet.';
 } elseif (isset($_POST['cancel_trip_id'])) {
     if (!validateCsrf()) {
         $msg = 'Invalid security token.';
@@ -36,7 +36,7 @@ $trips = $hasRideSharingTables ? dbQuery("SELECT * FROM ride_sharing_trips WHERE
 
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
   <div style="margin-bottom: 2rem;">
-    <a href="index.php" class="text-muted" style="text-decoration: none;">➔ Back to Mbanda Rides</a>
+    <a href="index.php" class="text-muted" style="text-decoration: none;">➔ Back to Quick Taxi</a>
     <h1 class="page-title" style="margin-top: 0.5rem;">My Offered Rides</h1>
     <p class="text-muted">Manage trips you are driving.</p>
   </div>
@@ -49,7 +49,7 @@ $trips = $hasRideSharingTables ? dbQuery("SELECT * FROM ride_sharing_trips WHERE
 
   <?php if (empty($trips)): ?>
     <div class="card" style="padding: 3rem; text-align: center; background: var(--clr-surface); border: 1px solid var(--clr-border);-radius: var(--radius-lg);">
-      <h3><?= $hasRideSharingTables ? 'No Rides Offered Yet' : 'Mbanda Unavailable' ?></h3>
+      <h3><?= $hasRideSharingTables ? 'No Rides Offered Yet' : 'Quick Taxi Unavailable' ?></h3>
       <p class="text-muted" style="margin-top: 0.5rem;">
         <?= $hasRideSharingTables ? "You haven't posted any ride sharing offers yet." : 'Ride-sharing tables are not installed yet.' ?>
       </p>

@@ -24,6 +24,8 @@ $settleMessage = '';
 $settleErr = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('finance.manage');
+    requireRecentAdminReauthentication('finance');
     if (isset($_POST['save_settlement_account'])) {
         $accountType = trim((string) ($_POST['account_type'] ?? 'bank'));
         if (!in_array($accountType, ['bank', 'mobile_money'], true)) {

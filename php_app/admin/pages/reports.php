@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/auth_check.php';
 
-requireAdmin();
+requireAdminPermission('reports.view');
 
 if (!function_exists('uthenga_reports_listing_label')) {
     function uthenga_reports_listing_label(string $type): string {

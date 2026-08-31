@@ -87,6 +87,25 @@ $menuGroups = $isSuperAdmin ? [
         ],
     ],
 ];
+
+$itemPermissions = [
+    'super-dashboard' => 'overview.view', 'admin-dashboard' => 'overview.view', 'admin-users' => 'admins.view',
+    'admin-vendors' => 'vendors.view', 'admin-events' => 'events.view', 'admin-stays' => 'stays.view',
+    'admin-transport' => 'transport.view', 'admin-shop' => 'shop.view', 'admin-shop-global' => 'shop.view',
+    'admin-bookings' => 'bookings.view', 'admin-transactions' => 'payments.view', 'admin-payments' => 'payments.view',
+    'admin-reconciliation' => 'payments.view', 'admin-settlements' => 'settlements.review', 'admin-transaction-stats' => 'reports.view',
+    'admin-promotions' => 'marketing.view', 'admin-marketing' => 'marketing.view', 'admin-reports' => 'reports.view', 'event-analytics' => 'reports.view',
+    'admin-support' => 'support.view', 'admin-logs' => 'audit.view', 'admin-security' => 'security.view',
+    'admin-system-monitor' => 'platform_health.view', 'admin-settings' => 'settings.view', 'admin-profile' => null,
+];
+foreach ($menuGroups as $groupIndex => $group) {
+    $menuGroups[$groupIndex]['items'] = array_values(array_filter($group['items'], static function (array $item) use ($itemPermissions): bool {
+        if (($item['key'] ?? '') === 'admin-tours') return false;
+        $permission = $itemPermissions[$item['key'] ?? ''] ?? null;
+        return $permission === null || adminHasPermission($permission);
+    }));
+}
+$menuGroups = array_values(array_filter($menuGroups, static fn(array $group): bool => !empty($group['items'])));
 ?>
 <aside class="sidebar admin-sidebar" aria-label="Admin navigation">
   <div class="sidebar-hero">
@@ -115,10 +134,7 @@ $menuGroups = $isSuperAdmin ? [
       <span class="sidebar-link-icon" aria-hidden="true"><?= admin_icon_svg('link') ?></span>
       <span class="sidebar-link-copy">View Website</span>
     </a>
-    <a href="<?= BASE_URL ?>logout.php" class="sidebar-link" id="side-logout">
-      <span class="sidebar-link-icon" aria-hidden="true"><?= admin_icon_svg('logout') ?></span>
-      <span class="sidebar-link-copy">Sign Out</span>
-    </a>
+    <form method="post" action="<?= BASE_URL ?>logout.php"><input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>"><button type="submit" class="sidebar-link" id="side-logout"><span class="sidebar-link-icon" aria-hidden="true"><?= admin_icon_svg('logout') ?></span><span class="sidebar-link-copy">Sign Out</span></button></form>
   </div>
 </aside>
 <div class="admin-content">

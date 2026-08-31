@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Admin Management
  */
@@ -25,49 +25,15 @@ if (!function_exists('adminManagementStatusLabel')) {
 
 if (!function_exists('adminManagementEnsureSchema')) {
     function adminManagementEnsureSchema(): array {
-        $hasPhone = true;
-        try {
-            dbQueryOne('SELECT phone FROM users LIMIT 1');
-        } catch (Throwable $e) {
-            $hasPhone = false;
-            try {
-                dbExecute('ALTER TABLE users ADD COLUMN phone VARCHAR(30) NULL AFTER email');
-                $hasPhone = true;
-            } catch (Throwable $ignored) {
-                $hasPhone = false;
-            }
-        }
-
-        $permissionsReady = true;
-        try {
-            dbExecute('
-                CREATE TABLE IF NOT EXISTS admin_permissions (
-                    user_id VARCHAR(30) NOT NULL PRIMARY KEY,
-                    permissions JSON NOT NULL,
-                    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-                ) ENGINE=InnoDB
-            ');
-        } catch (Throwable $e) {
-            $permissionsReady = false;
-        }
-
-        return [$hasPhone, $permissionsReady];
+        return [uthenga_column_exists('users', 'phone'), uthenga_table_exists('admin_permissions')];
     }
 }
 
 if (!function_exists('adminManagementPermissionSet')) {
     function adminManagementPermissionSet(): array {
-        return [
-            'admin_users' => 'Admin Management',
-            'vendor_review' => 'Vendor Review',
-            'listings' => 'Listings',
-            'bookings' => 'Bookings',
-            'support' => 'Support',
-            'reports' => 'Reports',
-            'settings' => 'Settings',
-            'logs' => 'Audit Logs',
-        ];
+        $labels = [];
+        foreach (adminPermissionRegistry() as $key => $definition) $labels[$key] = $definition['label'];
+        return $labels;
     }
 }
 
@@ -79,7 +45,7 @@ if (!function_exists('adminManagementLoadPermissions')) {
                 return [];
             }
             $decoded = json_decode((string)$row['permissions'], true);
-            return is_array($decoded) ? array_values(array_unique(array_filter($decoded))) : [];
+            return is_array($decoded) ? adminNormalizePermissionList($decoded) : [];
         } catch (Throwable $e) {
             return [];
         }
@@ -88,7 +54,7 @@ if (!function_exists('adminManagementLoadPermissions')) {
 
 if (!function_exists('adminManagementSavePermissions')) {
     function adminManagementSavePermissions(string $userId, array $permissions): void {
-        $clean = array_values(array_intersect(array_keys(adminManagementPermissionSet()), $permissions));
+        $clean = array_values(array_intersect(array_keys(adminPermissionRegistry()), $permissions));
         dbExecute(
             'INSERT INTO admin_permissions (user_id, permissions) VALUES (?, ?) ON DUPLICATE KEY UPDATE permissions = VALUES(permissions), updated_at = CURRENT_TIMESTAMP',
             [$userId, json_encode($clean)]
@@ -116,6 +82,8 @@ $permissionKeys = array_keys(adminManagementPermissionSet());
 $permissionLabels = adminManagementPermissionSet();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireSuperAdmin();
+    requireRecentAdminReauthentication('admin_access');
     $action = $_POST['admin_action'] ?? '';
 
     if (!hasRole(ROLE_SUPER_ADMIN)) {

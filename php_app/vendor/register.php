@@ -21,7 +21,7 @@ if (isLoggedIn()) {
 
 $errors = [];
 $old = [];
-$categories = ['Hotel', 'Lodge', 'Tour Operator', 'Transport Provider', 'Event Organizer', 'Mbanda Seller', 'Other'];
+$categories = ['Hotel', 'Lodge', 'Tour Operator', 'Transport Provider', 'Event Organizer', 'Quick Taxi Provider', 'Other'];
 $socialLoginEnabled = (
     (defined('GOOGLE_CLIENT_ID') && GOOGLE_CLIENT_ID !== '' && defined('GOOGLE_CLIENT_SECRET') && GOOGLE_CLIENT_SECRET !== '') ||
     (defined('FACEBOOK_APP_ID') && FACEBOOK_APP_ID !== '' && defined('FACEBOOK_APP_SECRET') && FACEBOOK_APP_SECRET !== '') ||

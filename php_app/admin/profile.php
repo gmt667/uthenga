@@ -193,7 +193,7 @@ $roleLabel = $_SESSION['user_role'] ?? 'Administrator';
       <a class="btn btn-primary w-full" href="<?= BASE_URL ?>admin/dashboard.php"><?= admin_icon_svg('grid') ?> Dashboard</a>
       <a class="btn btn-secondary w-full" href="<?= BASE_URL ?>admin/reports.php"><?= admin_icon_svg('report') ?> Reports</a>
       <a class="btn btn-secondary w-full" href="<?= BASE_URL ?>admin/settings.php"><?= admin_icon_svg('settings') ?> Settings</a>
-      <a class="btn btn-secondary w-full" href="<?= BASE_URL ?>logout.php"><?= admin_icon_svg('logout') ?> Sign Out</a>
+      <form method="post" action="<?= BASE_URL ?>logout.php"><input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>"><button class="btn btn-secondary w-full" type="submit"><?= admin_icon_svg('logout') ?> Sign Out</button></form>
     </div>
   </aside>
 </div>

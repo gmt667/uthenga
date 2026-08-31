@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Forced Password Change
  * Shown after login when must_change_pw = 1.

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga — Customer Bookings List Page (Standalone)
  */

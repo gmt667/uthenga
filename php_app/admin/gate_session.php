@@ -8,7 +8,7 @@ $pageTitle = 'Gate Session';
 $activeNav = 'admin-gate';
 
 require_once __DIR__ . '/../includes/auth_check.php';
-requireAdmin();
+requireAdminPermission('events.view');
 require_once __DIR__ . '/includes/admin_header.php';
 require_once __DIR__ . '/../includes/functions.php';
 

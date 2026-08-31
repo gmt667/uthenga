@@ -26,6 +26,7 @@ if (!is_dir($uploadDir)) {
 
 // Handle Form Submission (Add or Edit)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_popup'])) {
+    requireAdminPermission('marketing.manage');
     if (!validateCsrf()) {
         $errorMsg = 'CSRF verification failed.';
     } elseif (!$hasPopupsTable) {

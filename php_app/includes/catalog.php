@@ -34,7 +34,7 @@ if (!function_exists('marketplace_type_label')) {
             case 'accommodation':return 'Stay';
             case 'tour':         return 'Tour';
             case 'transport':    return 'Transport';
-            case 'mbanda':       return 'Mbanda';
+            case 'mbanda':       return 'Quick Taxi';
             default:             return ucfirst((string) $type);
         }
     }

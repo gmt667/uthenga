@@ -10,18 +10,11 @@ require_once __DIR__ . '/includes/admin_header.php';
 $message = '';
 $err = '';
 
-// Ensure schema columns exist for vendor verification
-try {
-    if (!uthenga_column_exists('vendor_profiles', 'rejection_reason')) {
-        dbExecute("ALTER TABLE vendor_profiles ADD COLUMN rejection_reason TEXT NULL AFTER approval_status");
-    }
-    if (!uthenga_column_exists('vendor_profiles', 'business_reg_number')) {
-        dbExecute("ALTER TABLE vendor_profiles ADD COLUMN business_reg_number VARCHAR(80) NULL AFTER category");
-    }
-} catch (Throwable $e) {}
+// Vendor verification schema is provisioned by database migrations, never by page requests.
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     $action   = (string)($_POST['action'] ?? '');
+    requireAdminPermission(in_array($action, ['approve', 'reject', 'verify_payment_profile', 'reject_payment_profile'], true) ? 'vendors.review' : 'vendors.manage');
     $vendorId = (string)($_POST['vendor_id'] ?? '');
     $reason   = trim((string)($_POST['reason'] ?? ''));
 
@@ -59,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     }
 }
 
-$pendingPaymentProfiles = uthenga_table_exists('uthenga_vendor_payment_profiles') ? dbQuery("
+$pendingPaymentProfiles = adminHasPermission('vendors.review') && uthenga_table_exists('uthenga_vendor_payment_profiles') ? dbQuery("
     SELECT p.*, u.name AS vendor_name, u.email AS vendor_email
     FROM uthenga_vendor_payment_profiles p
     INNER JOIN users u ON u.id = p.vendor_id

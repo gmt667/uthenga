@@ -9,12 +9,13 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/auth_check.php';
 
-requireAdmin();
+requireAdminPermission('settings.view');
 
 $message = '';
 $err = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('settings.manage');
     $action = $_POST['action'] ?? '';
 
     if ($action === 'update_settings') {

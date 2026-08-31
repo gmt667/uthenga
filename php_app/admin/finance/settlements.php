@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/auth_check.php';
 
-requireAdmin();
+requireAdminPermission('settlements.review');
 
 $pageTitle = 'Vendor Settlements';
 $activeNav = 'admin-settlements';
@@ -19,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['settlement_action']))
     if (!validateCsrf()) {
         $flashError = 'Security check failed. Please refresh and try again.';
     } else {
+        requireAdminPermission('settlements.review');
+        requireRecentAdminReauthentication('settlements');
         $requestId = (int) ($_POST['request_id'] ?? 0);
         $decision = trim((string) ($_POST['settlement_action'] ?? 'approve'));
         $meta = [

@@ -14,6 +14,7 @@ $actionMsg = '';
 $actionErr = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('events.manage');
     $postAction = $_POST['post_action'] ?? '';
     $listingId = (int) ($_POST['listing_id'] ?? 0);
 

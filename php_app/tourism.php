@@ -349,7 +349,7 @@ $citySpotlights = uthenga_malawi_featured_cities();
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('bus') ?> Getting Around</h4>
-        <p>Minibuses (matola) are cheapest. Private taxis and Mbanda (ride-share) are available in cities. AXA and Shire buses cover long routes.</p>
+        <p>Minibuses (matola) are cheapest. Private taxis and Quick Taxi are available in cities. AXA and Shire buses cover long routes.</p>
       </div>
       <div class="tip-card">
         <h4><?= uthenga_public_icon_svg('globe') ?> Lake Safety</h4>

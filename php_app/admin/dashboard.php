@@ -8,7 +8,7 @@ require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/includes/control_center_data.php';
 
-requireLogin(ADMIN_ROLES);
+requireAdminPermission('overview.view');
 
 // Enterprise Operational Command Center for Platform Management & Shop Control Center
 

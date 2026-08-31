@@ -142,10 +142,9 @@ require_once __DIR__ . '/includes/public_icons.php';
 
 $appEnv = uthenga_env('UTHENGA_ENV', uthenga_env('APP_ENV', ''));
 if ($appEnv === '') {
-    $host = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
-    $appEnv = ($host === '' || in_array($host, ['localhost', '127.0.0.1', '::1'], true)) ? 'development' : 'production';
+    $appEnv = 'production';
 }
-define('APP_ENV', in_array($appEnv, ['development', 'production'], true) ? $appEnv : 'development');
+define('APP_ENV', in_array($appEnv, ['development', 'production'], true) ? $appEnv : 'production');
 
 // Application
 define('APP_NAME', 'Uthenga');
@@ -284,12 +283,15 @@ define('VENDOR_ROLES', [ROLE_VENDOR, ROLE_EVENT_ORG, ROLE_HOTEL_MGR, ROLE_TOUR_O
 define('ALL_ROLES', array_merge(ADMIN_ROLES, VENDOR_ROLES, [ROLE_CUSTOMER]));
 
 // Error reporting
+error_reporting(E_ALL);
+ini_set('log_errors', '1');
 if (APP_ENV === 'development') {
-    error_reporting(E_ALL);
     ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
 } else {
-    error_reporting(0);
     ini_set('display_errors', '0');
+    ini_set('display_startup_errors', '0');
+    ini_set('html_errors', '0');
 }
 
 // Session initialization

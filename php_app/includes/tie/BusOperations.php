@@ -27,8 +27,6 @@
 
 final class UthengaTieBusOperationsContracts
 {
-    private const TICKET_SIGNATURE_SECRET = 'uthenga-tie-bus-ticket-v1';
-
     public static function nonEmptyString($value, string $field, int $max = 200): string
     {
         $value = trim((string) $value);
@@ -67,7 +65,11 @@ final class UthengaTieBusOperationsContracts
 
     public static function ticketSignature(string $ticketId, string $token): string
     {
-        return hash_hmac('sha256', $ticketId . '.' . $token, self::TICKET_SIGNATURE_SECRET);
+        $secret = trim((string) uthenga_env('UTHENGA_TICKET_SIGNATURE_SECRET', ''));
+        if (strlen($secret) < 32) {
+            throw new RuntimeException('Ticket signing is not configured.');
+        }
+        return hash_hmac('sha256', $ticketId . '.' . $token, $secret);
     }
 }
 

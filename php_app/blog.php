@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga — Travel Guides & Blog
  */

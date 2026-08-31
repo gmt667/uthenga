@@ -572,7 +572,7 @@ $activeNav = 'shop';
 </style>
 
 <div class="container">
-  <section class="shop-hero">
+  <section class="shop-hero" data-navbar-theme="light">
     <div class="shop-hero-grid">
       <div class="shop-hero-card">
         <span class="shop-hero-kicker"><?= uthenga_public_icon_svg('shop') ?> <?= e($settings['shop_name']) ?></span>

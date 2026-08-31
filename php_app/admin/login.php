@@ -55,18 +55,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = (string) ($_POST['password'] ?? '');
 
         if ($email === '' || $password === '') {
-            $error = 'Please enter your email and password.';
+            $error = ADMIN_LOGIN_FAILURE_MESSAGE;
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid email address.';
+            $error = ADMIN_LOGIN_FAILURE_MESSAGE;
         } else {
             $result = authenticateAdmin($email, $password);
 
             if (!$result['success']) {
-                $error = $result['error'] ?? 'Invalid email or password. Please try again.';
+                $error = $result['error'] ?? ADMIN_LOGIN_FAILURE_MESSAGE;
             } else {
                 $user = $result['user'] ?? [];
 
                 if (($result['via'] ?? '') === 'database' && !empty($user['two_factor_enabled'])) {
+                    logAdminAuthAttempt($user, 'Admin 2FA Challenge', 'result=challenge_issued');
                     session_regenerate_id(true);
                     $_SESSION['2fa_pending']   = true;
                     $_SESSION['2fa_user_id']   = $user['id'];
@@ -79,11 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 require_once __DIR__ . '/../includes/security_helper.php';
                 registerDeviceSession((string) $user['id']);
 
-                // Only force a password change if the user is NOT the embedded super admin
-                // (embedded account always has must_change_pw=1 as a safety marker).
-                $isEmbedded = ($user['id'] ?? '') === 'u-super-admin'
-                    || ($result['via'] ?? '') === 'embedded';
-                if (!empty($user['must_change_pw']) && !$isEmbedded) {
+                if (!empty($user['must_change_pw'])) {
                     redirect(BASE_URL . 'change_password.php');
                 }
 

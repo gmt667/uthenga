@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga — Gate Session API
  * JSON endpoint for all gate session actions
@@ -9,18 +9,17 @@ require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-// Must be admin or event organiser
-requireAdmin();
+$action     = $_POST['action'] ?? $_GET['action'] ?? '';
+$readActions = ['session_stats', 'scan_activity'];
+requireAdminPermission(in_array($action, $readActions, true) ? 'events.view' : 'events.manage');
 
 header('Content-Type: application/json; charset=utf-8');
-
-$action     = $_POST['action'] ?? $_GET['action'] ?? '';
 $csrfToken  = $_POST['csrf_token'] ?? '';
 $userId     = $_SESSION['user_id'] ?? '';
 $userName   = $_SESSION['user_name'] ?? 'Admin';
 
 // CSRF check for all POST actions
-$safePosts  = ['session_stats', 'scan_activity'];
+$safePosts  = $readActions;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !in_array($action, $safePosts, true)) {
     if (!validateCsrf()) {
         http_response_code(403);

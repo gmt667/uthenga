@@ -27,6 +27,7 @@ function shop_clean_csv(string $value): array {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('shop.manage');
     $action = (string) ($_POST['action'] ?? '');
 
     try {

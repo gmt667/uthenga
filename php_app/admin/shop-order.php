@@ -7,7 +7,7 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/shop_helpers.php';
 require_once __DIR__ . '/../includes/auth_check.php';
 
-requireAdmin();
+requireAdminPermission('shop.view');
 
 $pageTitle = 'Shop Order';
 $activeNav = 'admin-shop';
@@ -41,6 +41,7 @@ if ($downloadMode === 'pdf') {
 require_once __DIR__ . '/includes/admin_header.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('shop.manage');
     try {
         $status = (string) ($_POST['order_status'] ?? $order['order_status']);
         $paymentStatus = (string) ($_POST['payment_status'] ?? $order['payment_status']);

@@ -29,6 +29,7 @@ $message = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('shop.manage');
     $action = (string) ($_POST['action'] ?? 'save');
     try {
         if ($action === 'save') {

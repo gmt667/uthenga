@@ -160,6 +160,7 @@ $migrations = [
     '077_uthenga_payment_audit_log.sql'               => $base . '077_uthenga_payment_audit_log.sql',
     '078_uthenga_vendor_payment_profiles.sql'         => $base . '078_uthenga_vendor_payment_profiles.sql',
     '079_uthenga_platform_settlement.sql'             => $base . '079_uthenga_platform_settlement.sql',
+    '080_admin_permissions_hardening.sql'             => $base . '080_admin_permissions_hardening.sql',
 ];
 
 out("", 'info');

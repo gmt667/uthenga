@@ -495,3 +495,11 @@
 .dqx-btn--icon { padding: 8px; }
 .dqx-btn--icon svg { margin: 0; }
 
+/* Mobile-first operational polish for location, fare and trip controls. */
+.dqx :where(button,a,input,select,textarea):focus-visible{outline:3px solid #67e8f9;outline-offset:3px}
+.dqx :where(button,a){min-height:40px}.dqx__main{width:100%;max-width:1500px;margin-inline:auto}
+.dqx-card,.dqx-kpi,.dqx-hero,.dqx-active{box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.dqx-modal-backdrop,.dqx-drawer-backdrop{overscroll-behavior:contain}.dqx-modal,.dqx-drawer{scrollbar-gutter:stable}
+@media(max-width:640px){.dqx__main{padding:16px 12px max(32px,env(safe-area-inset-bottom))}.dqx-heading{gap:12px}.dqx-heading__actions,.dqx-heading__actions .dqx-btn{width:100%;justify-content:center}.dqx-hero{padding:16px}.dqx-grid,.dqx-kpis{grid-template-columns:1fr}.dqx-toolbar>*{width:100%;min-width:0}.dqx-trip-row{grid-template-columns:1fr;padding:14px}.dqx-trip-row__field b{white-space:normal;overflow-wrap:anywhere}.dqx-active__meta{flex-wrap:wrap}.dqx-active__actions>*{flex:1;justify-content:center}.dqx-modal-backdrop{align-items:flex-end}.dqx-modal{width:100%;max-height:calc(100dvh - 1rem);border-radius:14px 14px 0 0;padding-bottom:env(safe-area-inset-bottom)}.dqx-drawer{width:100%}}
+@media(prefers-reduced-motion:reduce){.dqx *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+

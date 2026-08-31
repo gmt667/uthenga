@@ -12,6 +12,7 @@ $err = '';
 
 // Handle CRUD operations
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('marketing.manage');
     $action = $_POST['action'] ?? '';
     
     if ($action === 'create') {

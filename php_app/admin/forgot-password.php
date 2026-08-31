@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Admin Forgot Password
  * Sends a reset link after verifying the admin identity fields.

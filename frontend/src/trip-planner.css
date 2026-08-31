@@ -130,3 +130,11 @@
 .preferences__choices button,.preferences__chips button{border:1px solid #274762;border-radius:999px;padding:.45rem .9rem;background:#0b1b2f;color:#c5d8e4;font-size:.72rem;text-transform:capitalize}
 .preferences__choices button.is-selected,.preferences__chips button.is-selected{background:#e63946;border-color:#e63946;color:#fff}
 .preferences__toggle{flex-direction:row!important;align-items:center;gap:.6rem!important;color:#e2eef6!important;font-size:.8rem!important}
+
+/* Product refinement layer: calmer surfaces and stronger responsive behavior. */
+.planner-reference :where(button,a,input,select,textarea):focus-visible{outline:3px solid #5ed9ff;outline-offset:3px}
+.planner-reference :where(button,a){min-height:40px}
+.planner-reference__body{width:100%;max-width:1600px;margin-inline:auto}
+.planner-reference__prompt,.planner-reference__itinerary,.planner-reference__recommendations,.planner-reference__overview,.planner-reference__budget,.planner-reference__insights{border-radius:12px;background:#071829;box-shadow:0 10px 26px rgba(0,0,0,.14)}
+.planner-reference__prompt input{min-height:44px}.planner-reference__timeline{scrollbar-width:thin;overscroll-behavior-inline:contain}
+@media(max-width:560px){.planner-reference__body{padding-inline:.75rem}.planner-reference__top{align-items:center}.planner-reference__prompt{padding:1rem}.planner-reference__prompt footer{flex-wrap:wrap}.planner-reference__prompt footer button{min-height:44px}.planner-reference__actions{bottom:max(.6rem,env(safe-area-inset-bottom));padding:.35rem}.planner-reference__actions button{min-height:44px}.itineraries__item{grid-template-columns:1fr}.itineraries__item-actions{flex-wrap:wrap}.itineraries__item-actions>*{min-width:0;flex:1}}

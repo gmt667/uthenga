@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Security Center
  */
@@ -61,6 +61,7 @@ if (!function_exists('securityAlertTypeLabel')) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireAdminPermission('security.manage');
     if (!validateCsrf()) {
         $error = 'Security token mismatch. Please try again.';
     } elseif (isset($_POST['resolve_fraud'])) {

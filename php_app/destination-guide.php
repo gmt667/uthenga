@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Uthenga - Destination Guide Detail Page
  */
@@ -22,7 +22,7 @@ $staticGuides = [
         'best_time' => 'May to October (dry season)',
         'travel_tips' => ['Always carry small change for matola rides','Drink bottled or purified water','Mosquito repellent is essential','Negotiate taxi fares before boarding'],
         'content' => '<p>Blantyre is the commercial heart of Malawi and a vibrant city with colonial history, bustling markets, and easy access to some of the country\'s most spectacular natural attractions.</p>
-<h3>Getting Around</h3><p>Minibuses (matola) are the most common form of transport. Taxis are available but negotiate fares upfront. Ride-sharing through Mbanda is increasingly popular. The city is fairly compact - most central areas are walkable.</p>
+<h3>Getting Around</h3><p>Minibuses (matola) are the most common form of transport. Taxis are available but negotiate fares upfront. Ride-sharing through Quick Taxi is increasingly popular. The city is fairly compact - most central areas are walkable.</p>
 <h3>Attractions</h3><ul><li><strong>St. Michael and All Angels Church</strong> - A beautiful Victorian church built in 1891 with local materials.</li><li><strong>Blantyre Market</strong> - Vibrant central market with crafts, fabrics, and food.</li><li><strong>Mandala House</strong> - One of the oldest buildings in Malawi, now a restaurant.</li><li><strong>Limbe</strong> - Neighboring town with tobacco auction floors and a botanical garden.</li></ul>
 <h3>Day Trips</h3><p>Zomba Plateau (1 hour), Mount Mulanje (1.5 hours), Majete Wildlife Reserve (2 hours), and Cape Maclear on Lake Malawi (3 hours) are all excellent day trip or weekend destinations from Blantyre.</p>
 <h3>Where to Eat</h3><p>The city offers everything from nsima and chambo at local joints to pizza and sushi at modern restaurants. The Shoprite area, Mandala, and Livingstone Ave have good options for most budgets.</p>',
@@ -32,7 +32,7 @@ $staticGuides = [
         'cover_image' => 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=1400&fit=crop&q=80',
         'summary' => 'Political capital with vibrant Old Town and modern City Centre.',
         'best_time' => 'April to October',
-        'travel_tips' => ['Old Town and City Centre are very spread out - use taxis or Mbanda','Area 47 and Area 10 have good supermarkets','Book accommodation in advance during major events'],
+        'travel_tips' => ['Old Town and City Centre are very spread out - use taxis or Quick Taxi','Area 47 and Area 10 have good supermarkets','Book accommodation in advance during major events'],
         'content' => '<p>Lilongwe is Malawi\'s political capital and has a fascinating dual character - the bustling, chaotic Old Town market area contrasts with the planned, spacious City Centre with wide boulevards and government buildings.</p>
 <h3>Must Visit</h3><ul><li><strong>Lilongwe Wildlife Centre</strong> - Rehabilitates primates and other wildlife; excellent guided tours.</li><li><strong>Old Town Market</strong> - Vibrant and authentic, great for curios and fabrics.</li><li><strong>Area 10 Shopping Centre</strong> - Modern mall with restaurants, cinema, and shopping.</li><li><strong>Capital Hill</strong> - Impressive government complex in City Centre.</li></ul>
 <h3>Nature Escapes</h3><p>Dzalanyama Forest Reserve is just 45 minutes from the city centre and offers excellent hiking and birdwatching. The Lilongwe River Nature Sanctuary in the city itself is a peaceful green retreat.</p>',

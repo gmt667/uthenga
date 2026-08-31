@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/auth_check.php';
 require_once __DIR__ . '/admin_icons.php';
 
-requireAdmin();
+requireAdminPagePermission();
 
 $pageTitle = $pageTitle ?? 'Admin Control Panel';
 $activeNav = $activeNav ?? 'admin';
@@ -68,7 +68,7 @@ $themePreference = uthenga_theme_preference();
             <a href="<?= BASE_URL ?>admin/profile.php" role="menuitem">Profile</a>
             <a href="<?= BASE_URL ?>admin/settings.php" role="menuitem">Settings</a>
             <hr>
-            <a href="<?= BASE_URL ?>logout.php" class="logout-link" role="menuitem">Logout</a>
+            <form method="post" action="<?= BASE_URL ?>logout.php" role="none"><input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token'] ?? '') ?>"><button type="submit" class="logout-link" role="menuitem">Logout</button></form>
           </div>
         </div>
       </div>

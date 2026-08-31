@@ -189,7 +189,7 @@ function uthenga_ai_local_reply(
     }
 
     if (str_contains($msg, 'transport') || str_contains($msg, 'bus') || str_contains($msg, 'taxi') || str_contains($msg, 'car')) {
-        return "Transport options in Malawi include:\n\n- Express buses between Lilongwe, Blantyre, and Mzuzu\n- Car hire in major cities\n- Airport transfers through the platform\n- Mbanda ride-sharing for local trips\n\nWould you like help finding a route or booking transport?";
+        return "Transport options in Malawi include:\n\n- Express buses between Lilongwe, Blantyre, and Mzuzu\n- Car hire in major cities\n- Airport transfers through the platform\n- Quick Taxi ride-sharing for local trips\n\nWould you like help finding a route or booking transport?";
     }
 
     return "I can help with events, accommodation, tours, transport, budgeting, and trip planning anywhere in Malawi. Could you give me a bit more detail about what you are looking for?";

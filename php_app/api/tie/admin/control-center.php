@@ -8,6 +8,7 @@
  */
 require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../../db.php';
+require_once __DIR__ . '/../../../includes/auth_check.php';
 require_once __DIR__ . '/../../../includes/tie/bootstrap.php';
 require_once __DIR__ . '/../../../includes/tie/Api.php';
 require_once __DIR__ . '/../../../admin/includes/control_center_data.php';
@@ -20,9 +21,7 @@ try {
     }
 
     $user = UthengaTieApi::requireAuthenticatedUser();
-    if (!in_array($user['role'], ADMIN_ROLES, true)) {
-        throw UthengaTieErrors::authorization();
-    }
+    requireAdmin();
 
     $allSections = [
         'overview', 'operations', 'vendors', 'customers', 'marketplace',
@@ -30,31 +29,18 @@ try {
         'content', 'notifications', 'analytics', 'system', 'security',
         'settings', 'support',
     ];
-    $permissions = [];
-    if ($user['role'] === ROLE_SUPER_ADMIN) {
-        $permissions = $allSections;
-    } elseif (uthenga_table_exists('admin_permissions')) {
-        $row = acc_safe_row('SELECT permissions FROM admin_permissions WHERE user_id = ?', [$user['id']]);
-        $stored = json_decode((string) ($row['permissions'] ?? '[]'), true);
-        $stored = is_array($stored) ? $stored : [];
-        $mapping = [
-            'vendor_review' => ['vendors'],
-            'listings' => ['marketplace', 'events', 'content'],
-            'bookings' => ['bookings', 'payments', 'journeys'],
-            'support' => ['support', 'customers', 'notifications'],
-            'reports' => ['analytics', 'tie', 'operations', 'system'],
-            'settings' => ['settings'],
-            'logs' => ['security'],
-            'admin_users' => ['security'],
-        ];
-        $permissions = ['overview'];
-        foreach ($stored as $permission) {
-            $permissions = array_merge($permissions, $mapping[$permission] ?? []);
-        }
-        $permissions = array_values(array_unique($permissions));
-    } else {
-        $permissions = ['overview'];
-    }
+    $sectionPermissions = [
+        'overview' => ['overview.view'], 'operations' => ['overview.view'], 'vendors' => ['vendors.view'],
+        'customers' => ['support.view'], 'marketplace' => ['events.view', 'stays.view', 'transport.view', 'shop.view'],
+        'bookings' => ['bookings.view'], 'payments' => ['payments.view'], 'shop' => ['shop.view'], 'tie' => ['reports.view'],
+        'journeys' => ['quick_taxi.view'], 'events' => ['events.view'], 'content' => ['marketing.view'],
+        'notifications' => ['support.view'], 'analytics' => ['reports.view'], 'system' => ['platform_health.view'],
+        'security' => ['security.view'], 'settings' => ['settings.view'], 'support' => ['support.view'],
+    ];
+    $permissions = array_values(array_filter($allSections, static function (string $section) use ($sectionPermissions): bool {
+        foreach ($sectionPermissions[$section] ?? [] as $permission) if (adminHasPermission($permission)) return true;
+        return false;
+    }));
 
     $data = acc_control_center_data();
     $base = rtrim(BASE_URL, '/') . '/';
@@ -81,13 +67,13 @@ try {
         'settings' => $base . 'admin/settings.php',
         'support' => $base . 'admin/support.php',
         'profile' => $base . 'admin/profile.php',
-        'logout' => $base . 'logout.php',
+        'logout' => $base . 'admin/login.php?logout=1',
     ];
 
     if (!in_array('vendors', $permissions, true)) $data['vendors'] = [];
     if (!in_array('customers', $permissions, true)) $data['customers'] = [];
     if (!in_array('bookings', $permissions, true)) $data['bookings'] = [];
-    if (!in_array('payments', $permissions, true)) $data['payments']['recent'] = [];
+    if (!in_array('payments', $permissions, true)) $data['payments'] = [];
     if (!in_array('support', $permissions, true)) $data['support'] = [];
     if (!in_array('security', $permissions, true)) $data['audit'] = [];
 

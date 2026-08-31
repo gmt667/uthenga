@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config.php';
 
 if (!isLoggedIn()) {
@@ -10,7 +10,7 @@ $msg = '';
 $hasRideSharingTables = uthenga_table_exists('ride_sharing_trips') && uthenga_table_exists('ride_sharing_bookings');
 
 if (!$hasRideSharingTables) {
-    $msg = 'Mbanda ride-sharing tables are not installed yet.';
+    $msg = 'Quick Taxi tables are not installed yet.';
 } elseif (isset($_POST['cancel_booking_id'])) {
     if (!validateCsrf()) {
         $msg = 'Invalid security token.';
@@ -77,7 +77,7 @@ if ($hasRideSharingTables) {
 
   <?php if (empty($bookings)): ?>
     <div class="card" style="padding: 3rem; text-align: center; background: var(--clr-surface); border: 1px solid var(--clr-border); border-radius: var(--radius-lg);">
-      <h3><?= $hasRideSharingTables ? 'No Bookings Found' : 'Mbanda Unavailable' ?></h3>
+      <h3><?= $hasRideSharingTables ? 'No Bookings Found' : 'Quick Taxi Unavailable' ?></h3>
       <p class="text-muted" style="margin-top: 0.5rem;">
         <?= $hasRideSharingTables ? "You haven't booked any seats yet." : 'Ride-sharing tables are not installed yet.' ?>
       </p>

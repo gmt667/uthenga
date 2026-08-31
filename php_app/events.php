@@ -7,6 +7,7 @@ require_once __DIR__ . '/config.php';
 
 $pageTitle = 'Explore Events';
 $activeNav = 'events';
+$pageStyles = ['assets/css/events.css'];
 
 // Search & filter parameters
 $search      = trim($_GET['q'] ?? '');
@@ -20,6 +21,7 @@ $paid        = isset($_GET['paid'])     && $_GET['paid']     === '1';
 $upcoming    = isset($_GET['upcoming']) && $_GET['upcoming'] === '1';
 $featured    = isset($_GET['featured']) && $_GET['featured'] === '1';
 $viewMode    = ($_GET['view'] ?? 'grid') === 'map' ? 'map' : 'grid';
+$hasActiveFilters = $search !== '' || $location !== '' || $category !== '' || $datePreset !== '' || $minPrice !== null || $maxPrice !== null || $free || $paid || $upcoming || $featured;
 
 // Use AI-ranked events (falls back to latest when no analytics data exists)
 $listings = marketplace_fetch_ranked_events($search, 0, ($search === ''));
@@ -36,7 +38,69 @@ $categoriesList = [
 ];
 $sliderEvents = marketplace_fetch_events('', 5, true);
 
-if (
+// Facebook photo pages are not dependable image endpoints. Retain the supplied
+// posts as source links while using safe, consistently cropped visuals here.
+$eventHeroSlides = [
+    [
+        'eyebrow' => 'Community event spotlight',
+        'title' => 'See what is happening across Malawi',
+        'description' => 'Browse event moments shared by our community, then search the marketplace for an experience that suits your plans.',
+        'image' => 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1600&fit=crop&q=85',
+        'source_url' => 'https://web.facebook.com/photo/?fbid=1579998843711117&set=pcb.1580006740376994&cft[0]=AZY32UyZ0NSl0uRpZgn8mwx9TFUg_s9NYPN4o4Yhpqr6S56VWncvrqreEDVvRSBRxl5M9ch83nLp-E0RpWfVLf6ZizMOWuCzuCAQwu2HyLhfrtveniFDC6ZzAHFZGcVhblw4mWdflxo_K9G49UoxECutN0KCkL92shHDWU5gCyueqb0LstyXqdWeVlpnNl0GyLk&tn=*b0H-R',
+    ],
+    [
+        'eyebrow' => 'Live experiences',
+        'title' => 'Music, culture and unforgettable nights',
+        'description' => 'From intimate gatherings to major celebrations, discover the live experiences people are talking about.',
+        'image' => 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1600&fit=crop&q=85',
+        'source_url' => 'https://web.facebook.com/photo/?fbid=1735712078369867&set=pcb.1735713045036437&cft[0]=AZYriAEIC-YvgPeajqaMXIMw0R98x2OecGkc-pGOaEkUqMfOWDyHmCezoeoVzwdTiCeJq5YOArS-2dWgCVSnPVp0za1u5YOF8ybipvONpOC1lDoqaH5Ss7HtT5I7WfvV-IHKO6PQrb2YPopXN42XHeG-BMTNZn793lglnEgcbMUAistUTcXOqZIC1un8r87vNRA&tn=*b0H-R',
+    ],
+    [
+        'eyebrow' => 'Plan your weekend',
+        'title' => 'Find a reason to get out and explore',
+        'description' => 'Use one trusted catalogue to discover events, compare options and organise your next outing with confidence.',
+        'image' => 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1600&fit=crop&q=85',
+        'source_url' => 'https://web.facebook.com/photo/?fbid=1255987609862306&set=a.473524654775276&cft[0]=AZY_4c7mgSGVMJTaUL66v3KqLof32gzmjQcXgj4LaULuiard7luP8pOCJTibHLOGrab_QN_Ns6PpQBPGs6nhXcPV56rTCa0xpTed5-Jd-E85N5J7s1bUiHDERyBkKYrZC5Ixitqt-za75DV6BvvGWPqS3yuLD3X4JwBirs4gWyt7ZmmniNfNqDKt6MobaM8D1BY&tn=EH-R',
+    ],
+    [
+        'eyebrow' => 'More to discover',
+        'title' => 'Your next live experience starts here',
+        'description' => 'Search upcoming concerts, festivals, conferences, sports and community gatherings in Malawi.',
+        'image' => 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1600&fit=crop&q=85',
+        'source_url' => '',
+    ],
+];
+
+// Apply catalogue filters to the authoritative active event results.
+$today = new DateTimeImmutable('today');
+$listings = array_values(array_filter($listings, static function (array $event) use ($location, $category, $datePreset, $minPrice, $maxPrice, $free, $paid, $upcoming, $featured, $today): bool {
+    $meta = json_decode((string) ($event['meta'] ?? '{}'), true) ?: [];
+    $price = (float) ($event['price_amount'] ?? $meta['standardTicketPrice'] ?? 0);
+    $eventDate = !empty($meta['date']) ? DateTimeImmutable::createFromFormat('!Y-m-d', (string) $meta['date']) : false;
+
+    if ($location !== '' && strcasecmp(trim((string) ($event['location'] ?? '')), $location) !== 0) return false;
+    if ($category !== '' && strcasecmp(trim((string) ($meta['category'] ?? '')), $category) !== 0) return false;
+    if ($minPrice !== null && $price < $minPrice) return false;
+    if ($maxPrice !== null && $price > $maxPrice) return false;
+    if ($free && !$paid && $price > 0) return false;
+    if ($paid && !$free && $price <= 0) return false;
+    if ($featured && empty($event['featured'])) return false;
+    if ($upcoming && (!$eventDate || $eventDate < $today)) return false;
+
+    if ($datePreset !== '') {
+        if (!$eventDate) return false;
+        $rangeEnd = match ($datePreset) {
+            'today' => $today,
+            'this_week' => $today->modify('sunday this week'),
+            'this_month' => $today->modify('last day of this month'),
+            default => null,
+        };
+        if ($rangeEnd && ($eventDate < $today || $eventDate > $rangeEnd)) return false;
+    }
+    return true;
+}));
+
+if (false &&
     empty($listings) &&
     $search === '' &&
     $category === '' &&
@@ -116,7 +180,7 @@ if (
 if (empty($sliderEvents)) {
     $sliderEvents = array_slice($listings, 0, 3);
 }
-if (empty($allLocations)) {
+if (false && empty($allLocations)) {
     $allLocations = [
         ['location' => 'Mangochi Beach Resort, Lake Malawi'],
         ['location' => 'BICC, Lilongwe'],
@@ -171,7 +235,7 @@ if (!empty($activeAds)) {
 }
 
 // Fallback paid ads if database ads are empty
-if (count($tickerItems) < 2) {
+if (false && count($tickerItems) < 2) {
     $tickerItems[] = [
         'type'        => 'ad',
         'badge'       => 'PAID SPONSORED',
@@ -214,11 +278,10 @@ if (!empty($listings)) {
 }
 ?>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
+<script>document.body.classList.add('events-page');</script>
 <!-- Leaflet CSS for Map View -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 
-  <!-- Leaflet CSS for Map View -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <style>
     /* ─── Hero Slider ─── */
     .hero-slider-container {
@@ -605,7 +668,32 @@ if (!empty($listings)) {
   </style>
 
 <!-- ─── Hero Slider ─── -->
-<?php if (!empty($sliderEvents)): ?>
+<section class="events-hero" aria-labelledby="events-page-title">
+  <div class="events-hero__slides" aria-hidden="true">
+    <?php foreach ($eventHeroSlides as $index => $slide): ?>
+      <div class="events-hero__slide<?= $index === 0 ? ' is-active' : '' ?>" data-event-hero-slide="<?= $index ?>">
+        <img src="<?= e($slide['image']) ?>" alt=""<?= $index === 0 ? '' : ' loading="lazy"' ?>>
+      </div>
+    <?php endforeach; ?>
+  </div>
+  <div class="events-hero__shade"></div>
+  <div class="container events-hero__inner">
+    <p class="events-eyebrow" data-event-hero-eyebrow><?= e($eventHeroSlides[0]['eyebrow']) ?></p>
+    <h1 id="events-page-title" data-event-hero-title><?= e($eventHeroSlides[0]['title']) ?></h1>
+    <p data-event-hero-description><?= e($eventHeroSlides[0]['description']) ?></p>
+    <div class="events-hero__actions">
+      <a href="#event-filters" class="btn btn-primary">Search events</a>
+      <a class="events-hero__source-link" data-event-hero-source href="<?= e($eventHeroSlides[0]['source_url']) ?>" target="_blank" rel="noopener">View source post <span aria-hidden="true">↗</span></a>
+    </div>
+    <div class="events-hero__controls" aria-label="Event highlights">
+      <?php foreach ($eventHeroSlides as $index => $slide): ?>
+        <button type="button" class="events-hero__dot<?= $index === 0 ? ' is-active' : '' ?>" data-event-hero-dot="<?= $index ?>" aria-label="Show highlight <?= $index + 1 ?>" aria-current="<?= $index === 0 ? 'true' : 'false' ?>"></button>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+
+<?php if (false && !empty($sliderEvents)): ?>
 <section style="padding-top: 1.5rem;">
   <div class="container">
     <div class="hero-slider-container">
@@ -624,9 +712,9 @@ if (!empty($listings)) {
           <span class="slide-category"><?= e($sm['category'] ?? 'Event') ?></span>
           <h2 class="slide-title"><?= e($se['title']) ?></h2>
           <div class="slide-meta">
-            <span>📅 <?= e($sm['date'] ?? 'TBC') ?></span>
-            <span>📍 <?= e($se['location']) ?></span>
-            <?php if (!empty($sm['time'])): ?><span>⏰ <?= e($sm['time']) ?></span><?php endif; ?>
+            <span>Date: <?= e($sm['date'] ?? 'TBC') ?></span>
+            <span>Location: <?= e($se['location']) ?></span>
+            <?php if (!empty($sm['time'])): ?><span>Time: <?= e($sm['time']) ?></span><?php endif; ?>
           </div>
           <p class="slide-desc"><?= e($se['description']) ?></p>
           <div class="slide-price"><?= getEventPrice($se) ?></div>
@@ -653,7 +741,7 @@ if (!empty($listings)) {
 </section>
 <?php endif; ?>
 
-<?php if (!empty($tickerItems)): ?>
+<?php if (false && !empty($tickerItems)): ?>
 <!-- ─── Moving Popular Events & Paid Ads Ticker ─── -->
 <div class="ad-strip" role="complementary" aria-label="Popular events and paid event advertisements ticker">
   <div class="container" style="padding: 0; max-width: 100%;">
@@ -683,13 +771,13 @@ if (!empty($listings)) {
 <div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
 
   <!-- Redesigned Modern Filters Section -->
-  <div class="filters-wrapper">
-    <form method="GET" action="events.php" class="filter-form" id="events-filter-form">
+  <div class="filters-wrapper" id="event-filters">
+    <form method="GET" action="events.php" class="filter-form" id="events-filter-form" aria-label="Filter events">
       <input type="hidden" name="view" value="<?= e($viewMode) ?>">
       
       <div class="filter-header-title">
         <?= uthenga_public_icon_svg('search') ?>
-        <span>Filter Events & Tickets</span>
+        <span>Search and filter events</span>
       </div>
 
       <div class="filter-grid-primary">
@@ -740,24 +828,24 @@ if (!empty($listings)) {
       <div class="filter-pills-row">
         <label class="pill-toggle-label">
           <input type="checkbox" name="free" value="1" <?= $free ? 'checked' : '' ?>>
-          <span>🏷️ Free Events</span>
+          <span>Free events</span>
         </label>
         <label class="pill-toggle-label">
           <input type="checkbox" name="paid" value="1" <?= $paid ? 'checked' : '' ?>>
-          <span>🎟️ Paid Events</span>
+          <span>Paid events</span>
         </label>
         <label class="pill-toggle-label">
           <input type="checkbox" name="upcoming" value="1" <?= $upcoming ? 'checked' : '' ?>>
-          <span>⚡ Upcoming Only</span>
+          <span>Upcoming only</span>
         </label>
         <label class="pill-toggle-label">
           <input type="checkbox" name="featured" value="1" <?= $featured ? 'checked' : '' ?>>
-          <span>⭐ Featured Events</span>
+          <span>Featured events</span>
         </label>
       </div>
 
       <div class="filter-actions-row" style="margin-top: 1.5rem; display: flex; gap: 1rem;">
-        <a href="events.php" class="btn btn-secondary" id="events-reset-btn" style="border-radius: 12px; padding: 0.6rem 1.25rem;">Reset Filters</a>
+        <?php if ($hasActiveFilters): ?><a href="events.php" class="btn btn-secondary" id="events-reset-btn">Clear filters</a><?php endif; ?>
         <button type="submit" class="btn btn-primary" id="events-apply-btn" style="border-radius: 12px; padding: 0.6rem 1.5rem; background: linear-gradient(135deg, #ff6b35, #f72585); border: none;">Apply Filters</button>
       </div>
     </form>
@@ -766,17 +854,17 @@ if (!empty($listings)) {
   <!-- View Toggle Bar -->
   <div class="view-toggle-bar">
     <div>
-      <strong style="font-size: 0.95rem;"><?= count($listings) ?> event<?= count($listings) !== 1 ? 's' : '' ?> found</strong>
-      <?php if ($search || $category || $location || $datePreset): ?>
+      <strong role="status" aria-live="polite"><?= count($listings) ?> event<?= count($listings) !== 1 ? 's' : '' ?> found</strong>
+      <?php if ($hasActiveFilters): ?>
         <span class="text-muted" style="font-size: 0.82rem; margin-left: 0.5rem;">for your filters</span>
       <?php endif; ?>
     </div>
     <div class="view-toggle-btns" role="group" aria-label="View mode">
       <button class="view-toggle-btn <?= $viewMode === 'grid' ? 'active' : '' ?>" id="btn-grid-view" onclick="switchView('grid')" aria-label="Grid view">
-        ⊞ Grid
+        Grid
       </button>
       <button class="view-toggle-btn <?= $viewMode === 'map' ? 'active' : '' ?>" id="btn-map-view" onclick="switchView('map')" aria-label="Map view">
-        🗺️ Map
+        Map
       </button>
     </div>
   </div>
@@ -784,11 +872,11 @@ if (!empty($listings)) {
   <!-- Grid View -->
   <div id="events-grid-view" style="display: <?= $viewMode === 'grid' ? 'block' : 'none' ?>;">
     <?php if (empty($listings)): ?>
-      <div style="text-align: center; padding: 4rem 0;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">🔍 </div>
-        <h3>No events found</h3>
-        <p class="text-muted">Try adjusting your search criteria or clear the filters.</p>
-        <a href="events.php" class="btn btn-secondary" style="margin-top: 1rem;" id="events-no-results-reset">Reset Filters</a>
+      <div class="events-empty-state">
+        <span class="events-empty-state__icon" aria-hidden="true"><?= uthenga_public_icon_svg('calendar') ?></span>
+        <h2><?= $hasActiveFilters ? 'No events match these filters' : 'No events are listed yet' ?></h2>
+        <p class="text-muted"><?= $hasActiveFilters ? 'Try broadening your search or clearing a filter.' : 'New events will appear here as soon as organisers publish them.' ?></p>
+        <?php if ($hasActiveFilters): ?><a href="events.php" class="btn btn-secondary" id="events-no-results-reset">Clear filters</a><?php endif; ?>
       </div>
     <?php else: ?>
       <div class="grid grid-cols-4 gap-3">
@@ -879,11 +967,8 @@ foreach ($listings as $l) {
     $m = json_decode($l['meta'], true);
     $lat = (float) ($m['lat'] ?? 0);
     $lng = (float) ($m['lng'] ?? 0);
-    // If no coordinates stored, generate plausible Malawi coordinates
-    // Malawi is roughly -13 to -17 lat, 33 to 36 lng
     if ($lat == 0 && $lng == 0) {
-        $lat = -13.5 + (crc32($l['id']) % 4000) / 1000;
-        $lng =  33.8 + (crc32($l['title']) % 2200) / 1000;
+        continue;
     }
     $mapEvents[] = [
         'id'    => $l['id'],
@@ -909,6 +994,46 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
 
 <script>
 (function () {
+  // Keep the event highlights moving while allowing direct selection.
+  var eventHeroSlides = <?= json_encode($eventHeroSlides, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+  var eventHeroFrames = document.querySelectorAll('[data-event-hero-slide]');
+  var eventHeroDots = document.querySelectorAll('[data-event-hero-dot]');
+  var eventHeroEyebrow = document.querySelector('[data-event-hero-eyebrow]');
+  var eventHeroTitle = document.querySelector('[data-event-hero-title]');
+  var eventHeroDescription = document.querySelector('[data-event-hero-description]');
+  var eventHeroSource = document.querySelector('[data-event-hero-source]');
+  var eventHeroIndex = 0;
+
+  function showEventHeroSlide(index) {
+    if (!eventHeroSlides.length) return;
+    eventHeroIndex = (index + eventHeroSlides.length) % eventHeroSlides.length;
+    var activeSlide = eventHeroSlides[eventHeroIndex];
+    eventHeroFrames.forEach(function(frame, frameIndex) {
+      frame.classList.toggle('is-active', frameIndex === eventHeroIndex);
+    });
+    eventHeroDots.forEach(function(dot, dotIndex) {
+      var isActive = dotIndex === eventHeroIndex;
+      dot.classList.toggle('is-active', isActive);
+      dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+    });
+    if (eventHeroEyebrow) eventHeroEyebrow.textContent = activeSlide.eyebrow;
+    if (eventHeroTitle) eventHeroTitle.textContent = activeSlide.title;
+    if (eventHeroDescription) eventHeroDescription.textContent = activeSlide.description;
+    if (eventHeroSource) {
+      eventHeroSource.href = activeSlide.source_url || '#event-filters';
+      eventHeroSource.hidden = !activeSlide.source_url;
+    }
+  }
+
+  if (eventHeroFrames.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.setInterval(function() { showEventHeroSlide(eventHeroIndex + 1); }, 6200);
+  }
+  eventHeroDots.forEach(function(dot) {
+    dot.addEventListener('click', function() {
+      showEventHeroSlide(parseInt(dot.dataset.eventHeroDot, 10));
+    });
+  });
+
   // ─── Slider ───────────────────────────────────────────────────────────────
   var slides      = document.querySelectorAll('.slide');
   var dots        = document.querySelectorAll('.slider-dot');
@@ -997,7 +1122,7 @@ var IS_LOGGED_IN = <?= isLoggedIn() ? 'true' : 'false' ?>;
       var popupHtml = '<div style="min-width:200px;">' + imgTag +
         '<div class="map-popup-title">' + ev.title + '</div>' +
         '<div class="map-popup-venue">Location: ' + ev.venue + '</div>' +
-        '<div class="map-popup-venue">📅 ' + ev.date + '</div>' +
+        '<div class="map-popup-venue">Date: ' + ev.date + '</div>' +
         '<div class="map-popup-price">' + ev.price + '</div>' +
         '<div style="display:flex;gap:0.4rem;">' +
           '<a class="map-popup-btn" href="' + ev.url + '" style="flex:1;background:var(--clr-surface2,#1a1a28);color:var(--clr-text,#f0f0f5);border:1px solid rgba(255,255,255,0.1);">Details</a>' +

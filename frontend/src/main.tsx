@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { HashRouter, Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
-import { Activity, AlertTriangle, Bell, Bot, BriefcaseBusiness, BusFront, CalendarDays, Check, CircleX, CloudRain, FileText, Footprints, Headphones, Hotel, Layers, LayoutDashboard, LockKeyhole, MapPin, MessageSquare, Mic, MoreHorizontal, MoreVertical, Navigation, Paperclip, Phone, PhoneIncoming, PhoneOff, PhoneOutgoing, Plane, Send, Settings, Share2, Sparkles, Star, Ticket, UserPlus, Users } from 'lucide-react';
+import { HashRouter, Link, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Activity, AlertTriangle, Bell, Bot, BriefcaseBusiness, BusFront, CalendarDays, Check, CircleX, CloudRain, FileText, Footprints, Headphones, Hotel, Layers, LayoutDashboard, LockKeyhole, MapPin, Menu, MessageSquare, Mic, MoreHorizontal, MoreVertical, Navigation, Paperclip, Phone, PhoneIncoming, PhoneOff, PhoneOutgoing, Plane, Send, Settings, Share2, Sparkles, Star, Ticket, UserPlus, Users, X } from 'lucide-react';
 import './styles.css';
 import './vendor-workspace.css';
 import './location-fallback.css';
@@ -74,14 +74,25 @@ function UthengaLogoImg({ size = 'sm', className }: { size?: 'sm' | 'md' | 'lg';
   );
 }
 async function api<T>(path: string, method = 'GET', body?: unknown, csrf?: string): Promise<T> {
-  const response = await fetch(apiRoot + path, {
-    method,
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}) },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok || !data.success) throw new Error(data?.error?.message || 'Uthenga could not complete that request.');
+  let response: Response;
+  try {
+    response = await fetch(apiRoot + path, {
+      method,
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', ...(csrf ? { 'X-CSRF-Token': csrf } : {}) },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    throw new Error('The Uthenga service could not be reached. Check your connection and try again.');
+  }
+  const raw = await response.text();
+  const data = (() => { try { return JSON.parse(raw); } catch { return null; } })();
+  if (!response.ok || !data?.success) {
+    const message = data?.error?.message || data?.message;
+    if (message) throw new Error(message);
+    if (response.status === 401) throw new Error('Your session has ended. Please sign in again.');
+    throw new Error(`The Uthenga service returned an unexpected response (${response.status}). Please try again.`);
+  }
   return data as T;
 }
 
@@ -136,10 +147,11 @@ function App() {
   const [boot, setBoot] = useState<Boot | null>(null);
   const [bootError, setBootError] = useState('');
   useEffect(() => { api<Boot>('frontend/bootstrap.php').then(setBoot).catch(error => setBootError(error.message)); }, []);
-  if (bootError) return <SystemState title="Uthenga is unavailable" message={bootError} />;
+  if (bootError) return <SystemState title="Unable to connect to Uthenga" message={bootError} retry />;
   if (!boot) return <SystemState title="Connecting to Uthenga" message="Restoring your secure workspace…" busy />;
   if (!boot.authenticated) return <SystemState title="Sign in required" message="Your Uthenga session has ended. Sign in to continue." href={boot.legacy_fallbacks?.login} />;
   return <>
+    <WorkspacePublicNav boot={boot} />
     <Routes>
       <Route path="/vendor" element={<VendorWorkspace boot={boot} />} />
       <Route path="/driver" element={<DriverQuickTaxi boot={boot} />} />
@@ -158,8 +170,65 @@ function App() {
   </>;
 }
 
-function SystemState({ title, message, href, busy }: { title: string; message: string; href?: string; busy?: boolean }) {
-  return <main className="system-state"><div className={busy ? 'orb orb--active' : 'orb'} aria-hidden="true" /><p className="eyebrow">UTHENGA INTELLIGENCE</p><h1>{title}</h1><p>{message}</p>{href && <a className="button button--primary" href={href}>Open secure sign in</a>}</main>;
+function WorkspacePublicNav({ boot }: { boot: Boot }) {
+  const location = useLocation();
+  const supported = location.pathname.startsWith('/driver') || location.pathname === '/planner';
+  const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const trigger = useRef<HTMLButtonElement | null>(null);
+  const panel = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!supported) return;
+    const update = () => setScrolled(window.scrollY > 12);
+    update(); window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, [supported]);
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    panel.current?.querySelector<HTMLElement>('a,button')?.focus();
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setOpen(false); trigger.current?.focus(); return; }
+      if (event.key !== 'Tab' || !panel.current) return;
+      const items = Array.from(panel.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled])'));
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', keydown);
+    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener('keydown', keydown); };
+  }, [open]);
+  useEffect(() => { setOpen(false); }, [location.pathname]);
+  if (!supported) return null;
+  const base = runtimeBase;
+  const links = [
+    ['Home', `${base}index.php`], ['Events', `${base}events.php`], ['Stays', `${base}hotels.php`],
+    ['Transport', `${base}transport.php`], ['Shop', `${base}shop.php`],
+  ];
+  return <header className={`workspace-public-nav ${scrolled ? 'is-scrolled' : 'is-top'} ${open ? 'is-open' : ''}`}>
+    <div className="workspace-public-nav__inner">
+      <a className="workspace-public-nav__brand" href={`${base}index.php`} aria-label="Uthenga home"><UthengaLogoImg size="md" /></a>
+      <nav aria-label="Main navigation" className="workspace-public-nav__desktop">
+        {links.map(([label, href]) => <a key={label} href={href}>{label}</a>)}
+        <Link to="/driver" aria-current={location.pathname.startsWith('/driver') ? 'page' : undefined}>Quick Taxi</Link>
+        <Link to="/planner" aria-current={location.pathname === '/planner' ? 'page' : undefined}>Trip Planner</Link>
+      </nav>
+      <div className="workspace-public-nav__actions"><a href={boot.legacy_fallbacks?.main_dashboard || `${base}dashboard.php`}><LayoutDashboard /> Dashboard</a></div>
+      <button ref={trigger} className="workspace-public-nav__menu" type="button" aria-label={open ? 'Close navigation menu' : 'Open navigation menu'} aria-expanded={open} aria-controls="workspace-mobile-nav" onClick={() => setOpen(value => !value)}>{open ? <X /> : <Menu />}</button>
+    </div>
+    <div ref={panel} id="workspace-mobile-nav" className="workspace-public-nav__mobile" aria-hidden={!open}>
+      {links.map(([label, href]) => <a key={label} href={href} onClick={() => setOpen(false)}>{label}</a>)}
+      <Link to="/driver" aria-current={location.pathname.startsWith('/driver') ? 'page' : undefined} onClick={() => setOpen(false)}>Quick Taxi</Link>
+      <Link to="/planner" aria-current={location.pathname === '/planner' ? 'page' : undefined} onClick={() => setOpen(false)}>Trip Planner</Link>
+      <a className="workspace-public-nav__primary" href={boot.legacy_fallbacks?.main_dashboard || `${base}dashboard.php`}><LayoutDashboard /> Dashboard</a>
+    </div>
+  </header>;
+}
+
+function SystemState({ title, message, href, busy, retry }: { title: string; message: string; href?: string; busy?: boolean; retry?: boolean }) {
+  return <main className="system-state"><div className={busy ? 'orb orb--active' : 'orb'} aria-hidden="true" /><p className="eyebrow">UTHENGA</p><h1>{title}</h1><p>{message}</p>{retry && <button className="button button--primary" type="button" onClick={() => window.location.reload()}>Try again</button>}{href && <a className="button button--primary" href={href}>Open secure sign in</a>}</main>;
 }
 
 function AssistantDock({ boot }: { boot: Boot }) {
@@ -1265,7 +1334,7 @@ function TripPlanningWorkspace({ boot }: { boot: Boot }) {
     {tab === 'documents' && <DocumentsWorkspace boot={boot} />}
     {tab === 'preferences' && <PreferencesWorkspace boot={boot} onSaved={preferences => { const defaults = preferences?.trip_defaults; if (defaults) setTripDefaults({ purpose: defaults.purpose, travellers: defaults.travellers ? String(defaults.travellers) : undefined, budget: defaults.budget ? String(defaults.budget) : undefined }); }} />}
     {tab === 'planner' && <section className="planner-reference__body">
-      <header className="planner-reference__top"><div><h1>Hello {boot.user?.name?.split(' ')[0] || 'Traveller'}! <span>👋</span></h1><p>I’ll help you plan the perfect trip. Let’s start.</p></div><div><a className="planner-reference__dashboard-link" href={boot.legacy_fallbacks?.main_dashboard || '/uthenga/dashboard.php'}><LayoutDashboard size={15} /> Dashboard</a><span>🌤 &nbsp;26°C<small>Lilongwe, Malawi</small></span><Bell /><button onClick={() => setTab('invite')}><UserPlus /> Invite</button></div></header>
+      <header className="planner-reference__top"><div><h1>Hello {boot.user?.name?.split(' ')[0] || 'Traveller'}!</h1><p>I’ll help you plan the perfect trip. Let’s start.</p></div><div><a className="planner-reference__dashboard-link" href={boot.legacy_fallbacks?.main_dashboard || '/uthenga/dashboard.php'}><LayoutDashboard size={15} /> Dashboard</a><span><CloudRain aria-hidden="true" /> 26°C<small>Lilongwe, Malawi</small></span><Bell aria-label="Notifications" /><button onClick={() => setTab('invite')}><UserPlus /> Invite</button></div></header>
       <div className="planner-reference__grid">
         <section className="planner-reference__main">
           <article className="planner-reference__prompt"><div className="planner-reference__star"><Sparkles /></div><div><h2>{plan ? 'Your verified trip plan is ready.' : `${step > 0 ? 'Great. ' : ''}${current?.[0] || 'What would you like to adjust?'}`}</h2>{!plan && current && <>{step === 3 ? <div className="planner-reference__purpose">{['Vacation','Business','Family','Church','Education','Other'].map(option => <button key={option} className={answer === option ? 'is-selected' : ''} onClick={() => { setAnswer(option); intelligentFeedback(); }}>{option}</button>)}</div> : <input autoFocus value={answer} placeholder="|" onChange={event => setAnswer(event.target.value)} onKeyDown={event => event.key === 'Enter' && advance()} />}{step === 0 && <><p>You can type naturally, for example:</p><div className="planner-reference__examples"><button onClick={() => setAnswer('I want to visit Mzuzu')}>I want to visit Mzuzu</button><button onClick={() => setAnswer('A business trip to Blantyre')}>A business trip to Blantyre</button><button onClick={() => setAnswer('Weekend in Cape Maclear')}>Weekend in Cape Maclear</button></div></>}<footer><Paperclip /><button disabled={busy} onClick={advance}>{busy ? 'Building…' : step === questions.length - 1 ? 'Build trip' : 'Continue'} <Send /></button></footer></>}{plan && <><p className="planner-reference__consultant"><Bot /> {plan.explanation?.summary || 'Your itinerary is composed from validated Uthenga recommendations.'}</p><footer><button onClick={() => void planAction('plans/validate.php')} disabled={busy}>Validate plan <Check /></button></footer></>}{error && <small className="planner-reference__error">{error}</small>}</div></article>

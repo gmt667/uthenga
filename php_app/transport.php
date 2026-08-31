@@ -58,14 +58,14 @@ $popularRoutes = [
         'to' => 'Lilongwe',
         'price' => 'MK 25,000',
         'buses' => 14,
-        'image' => 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&fit=crop&q=80',
+        'image' => 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600&fit=crop&q=80',
     ],
     [
         'from' => 'Mzuzu',
         'to' => 'Lilongwe',
         'price' => 'MK 22,000',
         'buses' => 9,
-        'image' => 'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?w=600&fit=crop&q=80',
+        'image' => 'https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?w=600&fit=crop&q=80',
     ],
 ];
 
@@ -138,11 +138,12 @@ const TP_ICON_BRIDGE = '<path d="M2 20h20"/><path d="M5 20V10c0-3 3-6 7-6s7 3 7 
     /* TOP 3 PRIMARY ACTION CARDS GRID */
     .tp-action-cards-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 1.5rem;
       margin-bottom: 2.5rem;
     }
-    @media (max-width: 992px) { .tp-action-cards-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 1180px) { .tp-action-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 700px) { .tp-action-cards-grid { grid-template-columns: 1fr; } }
 
     .tp-action-card {
       background: var(--clr-surface, #fff);
@@ -152,6 +153,7 @@ const TP_ICON_BRIDGE = '<path d="M2 20h20"/><path d="M5 20V10c0-3 3-6 7-6s7 3 7 
       display: flex;
       justify-content: space-between;
       align-items: center;
+      min-height: 255px;
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 20px rgba(0,0,0,0.03);
@@ -162,7 +164,7 @@ const TP_ICON_BRIDGE = '<path d="M2 20h20"/><path d="M5 20V10c0-3 3-6 7-6s7 3 7 
       box-shadow: 0 12px 28px rgba(0,0,0,0.08);
       border-color: rgba(59, 130, 246, 0.3);
     }
-    .tp-action-card-content { flex: 1; z-index: 2; }
+    .tp-action-card-content { min-width: 0; flex: 1 1 auto; z-index: 2; }
     .tp-card-badge-title {
       display: flex; align-items: center; gap: 0.5rem; font-size: 1.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #0f172a;
     }
@@ -185,9 +187,13 @@ const TP_ICON_BRIDGE = '<path d="M2 20h20"/><path d="M5 20V10c0-3 3-6 7-6s7 3 7 
     .btn-planner:hover { background: #2563eb; }
 
     .tp-card-graphic {
-      width: 140px; height: 110px; flex-shrink: 0; position: relative; z-index: 1; opacity: 0.9;
+      width: clamp(92px, 28%, 132px); height: 110px; flex: 0 0 auto; position: relative; z-index: 1; opacity: 0.9;
     }
-    .tp-card-graphic img { width: 100%; height: 100%; object-fit: contain; }
+    .tp-card-graphic img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+    @media (max-width: 700px) {
+      .tp-action-card { min-height: 0; padding: 1.35rem; }
+      .tp-card-graphic { width: 112px; height: 92px; }
+    }
 
     /* MIDDLE SECTION: SEARCH BUSES WIDGET & SIDE PROMO */
     .tp-mid-grid {
@@ -325,7 +331,7 @@ const TP_ICON_BRIDGE = '<path d="M2 20h20"/><path d="M5 20V10c0-3 3-6 7-6s7 3 7 
 <body>
 <?php require_once __DIR__ . '/includes/header.php'; ?>
 
-<div class="container" style="padding: 2.5rem 0 5rem;">
+<div class="container transport-hero" data-navbar-theme="light" style="padding: 2.5rem 0 5rem;">
 
   <!-- PAGE HEADER -->
   <div class="tp-hub-header">
@@ -437,7 +443,7 @@ const TP_ICON_BRIDGE = '<path d="M2 20h20"/><path d="M5 20V10c0-3 3-6 7-6s7 3 7 
 
           <div class="tp-form-field">
             <label class="tp-form-label">Departure Date</label>
-            <input type="date" name="date" class="tp-form-input" value="2026-08-18">
+            <input type="date" name="date" class="tp-form-input" value="<?= date('Y-m-d') ?>" min="<?= date('Y-m-d') ?>">
           </div>
 
           <div class="tp-form-field">

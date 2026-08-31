@@ -11,6 +11,7 @@ $flashSuccess = '';
 $flashError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
+    requireAdminPermission('marketing.manage');
     if (!hasRole(ROLE_SUPER_ADMIN)) {
         $flashError = 'Only the Super Administrator can send announcements.';
     } else {

@@ -1,123 +1,110 @@
 <?php require_once __DIR__ . '/../config.php'; ?>
 </main>
 
-<footer class="footer">
-  <div class="container">
-    <div class="footer-bottom" style="align-items:center;flex-wrap:wrap;">
-      <span><?= APP_NAME ?> &copy; <?= date('Y') ?>. Version <?= e(APP_VERSION) ?>.</span>
-      <span>
-        <a href="<?= BASE_URL ?>support.php">Support</a> &middot;
-        <a href="mailto:<?= e(SUPPORT_CONTACT['email']) ?>"><?= e(SUPPORT_CONTACT['email']) ?></a> ·
-        <a href="tel:<?= e(SUPPORT_CONTACT['phone']) ?>"><?= e(SUPPORT_CONTACT['phone']) ?></a>
-      </span>
+<footer class="footer uthenga-footer">
+  <div class="container uthenga-footer__inner">
+    <div class="uthenga-footer__grid">
+      <section class="uthenga-footer__brand" aria-label="About Uthenga">
+        <a href="<?= BASE_URL ?>index.php" class="uthenga-footer__wordmark" aria-label="Uthenga home">UTHENGA</a>
+        <p>One trusted local marketplace for discovering Malawi: events, stays, transport, shopping, and complete travel plans.</p>
+        <a class="uthenga-footer__facebook" href="https://web.facebook.com/profile.php?id=61592102205321" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.75l.5-3h-3.25V8.05c0-.87.29-1.55 1.58-1.55H17V3.82c-.38-.05-1.16-.16-2.1-.16-2.08 0-3.5 1.24-3.5 3.54V10H9v3h2.48v8h2.02Z" fill="currentColor"/></svg>
+          Follow Uthenga on Facebook
+        </a>
+      </section>
+      <nav class="uthenga-footer__column" aria-label="Explore Uthenga">
+        <h2>Explore</h2><a href="<?= BASE_URL ?>events.php">Events</a><a href="<?= BASE_URL ?>hotels.php">Stays</a><a href="<?= BASE_URL ?>transport.php">Transport</a><a href="<?= BASE_URL ?>ai.php#/driver">Quick Taxi</a><a href="<?= BASE_URL ?>shop.php">Shop</a>
+      </nav>
+      <nav class="uthenga-footer__column" aria-label="Uthenga company links">
+        <h2>Uthenga</h2><a href="<?= BASE_URL ?>about.php">About us</a><a href="<?= BASE_URL ?>tourism.php">Discover Malawi</a><a href="<?= BASE_URL ?>vendor/register.php">Become a vendor</a><a href="<?= BASE_URL ?>support.php">Help centre</a>
+      </nav>
+      <section class="uthenga-footer__column uthenga-footer__contact" aria-label="Contact Uthenga">
+        <h2>Get in touch</h2><p>Need help planning or booking? Our team is here for you.</p><a href="mailto:<?= e(SUPPORT_CONTACT['email']) ?>"><?= e(SUPPORT_CONTACT['email']) ?></a><a href="tel:<?= e(SUPPORT_CONTACT['phone']) ?>"><?= e(SUPPORT_CONTACT['phone']) ?></a>
+      </section>
     </div>
+    <div class="uthenga-footer__bottom"><span>&copy; <?= date('Y') ?> <?= APP_NAME ?>. Built for exploring Malawi.</span><span>Version <?= e(APP_VERSION) ?></span></div>
   </div>
 </footer>
 
 <script src="<?= BASE_URL ?>assets/js/main.js?v=<?= rawurlencode(APP_VERSION) ?>"></script>
 
-<!-- Floating AI Chat Widget (Amai) -->
+<!-- Floating WhatsApp Button -->
 <?php if (!defined('SKIP_AI_WIDGET')): ?>
 <style>
-  .amai-fab { position:fixed; bottom:1.5rem; right:1.5rem; z-index:1000; width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,#06b6d4,#a855f7); border:none; color:#fff; font-size:0.82rem; font-weight:700; cursor:pointer; box-shadow:0 8px 24px rgba(6,182,212,.45); transition:transform .25s,box-shadow .25s; display:flex; align-items:center; justify-content:center; }
-  .amai-fab:hover { transform:scale(1.08); box-shadow:0 12px 32px rgba(6,182,212,.6); }
-  .amai-fab-label { position:fixed; bottom:4.2rem; right:1.5rem; z-index:999; background:var(--clr-surface,#1c1c2e); border:1px solid rgba(6,182,212,.3); color:#fff; font-size:.78rem; font-weight:600; padding:.3rem .7rem; border-radius:100px; pointer-events:none; opacity:0; transform:translateY(6px); transition:all .25s; white-space:nowrap; }
-  .amai-fab:hover ~ .amai-fab-label,
-  .amai-fab-label.show { opacity:1; transform:translateY(0); }
-  .amai-popover { position:fixed; bottom:4.5rem; right:1.5rem; z-index:999; width:340px; max-height:480px; background:var(--clr-surface,#1c1c2e); border:1px solid rgba(6,182,212,.25); border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.5); display:flex; flex-direction:column; overflow:hidden; transition:all .3s cubic-bezier(.175,.885,.32,1.275); transform-origin:bottom right; }
-  .amai-popover.hidden { opacity:0; transform:scale(.85); pointer-events:none; }
-  .amai-pop-header { padding:.85rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); display:flex; align-items:center; gap:.6rem; background:linear-gradient(135deg,rgba(6,182,212,.15),rgba(168,85,247,.1)); }
-  .amai-pop-header span { font-weight:700; font-size:.9rem; }
-  .amai-pop-msgs { flex:1; overflow-y:auto; padding:.75rem; display:flex; flex-direction:column; gap:.6rem; }
-  .amai-bubble { padding:.55rem .8rem; border-radius:12px; font-size:.82rem; line-height:1.5; max-width:90%; }
-  .amai-bubble.ai   { background:rgba(255,255,255,.07); align-self:flex-start; border-radius:0 12px 12px 12px; }
-  .amai-bubble.user { background:var(--clr-primary,#06b6d4); color:#fff; align-self:flex-end; border-radius:12px 0 12px 12px; }
-  .amai-pop-input { padding:.6rem .75rem; border-top:1px solid rgba(255,255,255,.08); display:flex; gap:.4rem; }
-  .amai-pop-input input { flex:1; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); border-radius:8px; padding:.45rem .65rem; color:#fff; font-size:.82rem; outline:none; }
-  .amai-pop-input input:focus { border-color:var(--clr-primary,#06b6d4); }
-  .amai-pop-input button { width:64px; height:34px; border-radius:8px; background:var(--clr-primary,#06b6d4); border:none; color:#fff; cursor:pointer; font-size:.82rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
-  .amai-pop-footer { padding:.5rem .75rem; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; }
-  .amai-pop-footer a { font-size:.73rem; color:var(--clr-primary,#06b6d4); text-decoration:none; }
-  @media(max-width:480px){ .amai-popover{ width:calc(100vw - 2rem); right:1rem; bottom:4.5rem; } }
+  .wa-fab {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #25D366;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(37,211,102,.45);
+    transition: transform .25s, box-shadow .25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    animation: wa-pulse 2.5s ease-in-out infinite;
+  }
+  .wa-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 14px 36px rgba(37,211,102,.65);
+    animation: none;
+    background: #20ba59;
+  }
+  .wa-fab svg {
+    width: 32px;
+    height: 32px;
+    fill: #fff;
+    display: block;
+  }
+  .wa-fab-label {
+    position: fixed;
+    bottom: 4.4rem;
+    right: 1.5rem;
+    z-index: 999;
+    background: #1a1a2e;
+    border: 1px solid rgba(37,211,102,.4);
+    color: #fff;
+    font-size: .78rem;
+    font-weight: 600;
+    padding: .3rem .75rem;
+    border-radius: 100px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all .25s;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .wa-fab:hover ~ .wa-fab-label { opacity: 1; transform: translateY(0); }
+  @keyframes wa-pulse {
+    0%, 100% { box-shadow: 0 8px 24px rgba(37,211,102,.45); }
+    50%       { box-shadow: 0 8px 32px rgba(37,211,102,.75), 0 0 0 8px rgba(37,211,102,.12); }
+  }
+  @media (max-width: 480px) {
+    .wa-fab { bottom: 1rem; right: 1rem; }
+    .wa-fab-label { right: 1rem; bottom: 4rem; }
+  }
 </style>
 
-<div class="amai-popover hidden" id="amai-popover" role="dialog" aria-label="Amai AI Assistant">
-  <div class="amai-pop-header">
-    <span>Amai</span>
-    <span>AI Assistant</span>
-    <button onclick="toggleAmai()" style="margin-left:auto;background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:1rem;">Close</button>
-  </div>
-  <div class="amai-pop-msgs" id="amai-pop-msgs">
-    <div class="amai-bubble ai">Hello! I'm Amai. Ask me anything about travel in Malawi - hotels, events, tours, or trip planning!</div>
-  </div>
-  <div class="amai-pop-input">
-    <input type="text" id="amai-pop-input" placeholder="Ask about Malawi travel..."
-           onkeydown="if(event.key==='Enter')amaiSend()">
-    <button onclick="amaiSend()">Send</button>
-  </div>
-  <div class="amai-pop-footer">
-    <span class="text-xs" style="color:rgba(255,255,255,.4);">AI may make errors</span>
-    <a href="<?= BASE_URL ?>ai/chat.php">Full Chat &rarr;</a>
-  </div>
-</div>
-
-<button class="amai-fab" id="amai-fab" onclick="toggleAmai()" aria-label="Open AI assistant" title="Chat with Amai">Amai</button>
-<div class="amai-fab-label" id="amai-fab-label">Ask Amai</div>
-
-<script>
-(function() {
-  let amaiOpen = false;
-  let amaiHistory = [];
-
-  window.toggleAmai = function() {
-    amaiOpen = !amaiOpen;
-    const pop = document.getElementById('amai-popover');
-    const fab = document.getElementById('amai-fab');
-    if (pop) pop.classList.toggle('hidden', !amaiOpen);
-    if (fab) fab.textContent = amaiOpen ? 'Close' : 'Amai';
-    if (amaiOpen) setTimeout(() => document.getElementById('amai-pop-input')?.focus(), 100);
-  };
-
-  window.amaiSend = async function() {
-    const input = document.getElementById('amai-pop-input');
-    const msgs  = document.getElementById('amai-pop-msgs');
-    const text  = input?.value?.trim();
-    if (!text) return;
-
-    const addBubble = (cls, html) => {
-      const el = document.createElement('div');
-      el.className = 'amai-bubble ' + cls;
-      el.innerHTML = html;
-      msgs.appendChild(el);
-      msgs.scrollTop = msgs.scrollHeight;
-      return el;
-    };
-
-    addBubble('user', text.replace(/</g,'&lt;'));
-    amaiHistory.push({ role:'user', content: text });
-    input.value = '';
-
-    const typingEl = addBubble('ai', 'Loading...');
-
-    try {
-      const BASE = document.querySelector('meta[name="base-url"]')?.content || '';
-      const res  = await fetch(BASE + 'api/ai/chat.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, history: amaiHistory.slice(-6) })
-      });
-      const data = await res.json();
-      typingEl.remove();
-      const reply = data.reply || 'Sorry, I had an issue. Try the full chat page.';
-      amaiHistory.push({ role: 'ai', content: reply });
-      const replyEl = addBubble('ai', reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>'));
-      replyEl.innerHTML += `<div style="margin-top:.4rem;"><a href="${BASE}ai/chat.php" style="font-size:.7rem;color:var(--clr-primary);">Open full chat &rarr;</a></div>`;
-    } catch {
-      typingEl.textContent = 'Network error. Try the full chat page.';
-    }
-  };
-})();
-</script>
+<a class="wa-fab"
+   id="wa-fab"
+   href="https://wa.me/265885362150"
+   target="_blank"
+   rel="noopener noreferrer"
+   aria-label="Chat with us on WhatsApp"
+   title="Chat on WhatsApp">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+<div class="wa-fab-label">WhatsApp us</div>
 <?php endif; ?>
 <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/uthenga-payment.css?v=<?= rawurlencode(APP_VERSION) ?>">
 <?php require_once __DIR__ . '/payment_modal.php'; ?>

@@ -16,6 +16,8 @@ $err = '';
 $feeRuleCategories = ['accommodation' => 'Accommodation', 'event' => 'Events', 'tour' => 'Tours', 'transport' => 'Transport', 'shop' => 'Shop'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_fee_rule']) && validateCsrf()) {
+    requireAdminPermission('finance.manage');
+    requireRecentAdminReauthentication('finance');
     $category = trim((string) ($_POST['service_category'] ?? ''));
     $rate = (float) ($_POST['commission_rate'] ?? -1);
     $fee = (float) ($_POST['service_fee'] ?? -1);

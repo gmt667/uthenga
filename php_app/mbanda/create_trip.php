@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once __DIR__ . '/../config.php';
 
 if (!isLoggedIn()) {
@@ -11,7 +11,7 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$hasRideSharingTables) {
-    $error = 'Mbanda ride-sharing tables are not installed yet.';
+    $error = 'Quick Taxi tables are not installed yet.';
 } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validateCsrf()) {
         $error = 'Invalid security token. Please try again.';
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$hasRideSharingTables) {
 
   <?php if (!$hasRideSharingTables): ?>
     <div class="card" style="padding:1rem 1.25rem;margin-bottom:1.5rem;border:1px solid rgba(245,158,11,.35);background:rgba(245,158,11,.08);">
-      Mbanda ride-sharing tables are not installed yet. Run the base installer or the ride-sharing migration to enable ride offers.
+      Quick Taxi tables are not installed yet. Run the base installer or the ride-sharing migration to enable ride offers.
     </div>
   <?php endif; ?>
 

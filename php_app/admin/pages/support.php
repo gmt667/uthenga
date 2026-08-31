@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/auth_check.php';
 
-requireAdmin();
+requireAdminPermission('support.view');
 
 $filterStatus = $_GET['status'] ?? 'all';
 $search = trim($_GET['q'] ?? '');
@@ -45,6 +45,7 @@ if (!function_exists('supportTicketStatusHint')) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reply_ticket']) && validateCsrf()) {
+    requireAdminPermission('support.manage');
     $ticketId = trim($_POST['ticket_id'] ?? '');
     $message = trim($_POST['reply_message'] ?? '');
 
