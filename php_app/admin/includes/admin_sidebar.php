@@ -11,7 +11,7 @@ $menuGroups = $isSuperAdmin ? [
     [
         'label' => 'Core',
         'items' => [
-            ['key' => 'super-dashboard', 'label' => 'System Dashboard', 'href' => 'admin/super-dashboard.php', 'icon' => 'grid'],
+            ['key' => 'admin-dashboard', 'label' => 'Overview', 'href' => 'admin/dashboard.php', 'icon' => 'grid'],
             ['key' => 'admin-users', 'label' => 'Admin Management', 'href' => 'admin/users.php', 'icon' => 'users'],
             ['key' => 'admin-security', 'label' => 'System Health', 'href' => 'admin/security.php', 'icon' => 'shield'],
             ['key' => 'admin-system-monitor', 'label' => 'System Monitor', 'href' => 'admin/system-monitor.php', 'icon' => 'activity'],
@@ -21,7 +21,7 @@ $menuGroups = $isSuperAdmin ? [
     [
         'label' => 'Platform',
         'items' => [
-            ['key' => 'admin-dashboard', 'label' => 'Dashboard', 'href' => 'admin/dashboard.php', 'icon' => 'grid'],
+            ['key' => 'admin-dashboard', 'label' => 'Overview', 'href' => 'admin/dashboard.php', 'icon' => 'grid'],
             ['key' => 'admin-vendors', 'label' => 'Vendor Management', 'href' => 'admin/vendors.php', 'icon' => 'store'],
             ['key' => 'admin-bookings', 'label' => 'Bookings', 'href' => 'admin/bookings.php', 'icon' => 'file'],
             ['key' => 'admin-transactions', 'label' => 'Transactions', 'href' => 'admin/transactions.php', 'icon' => 'credit-card'],
@@ -46,7 +46,7 @@ $menuGroups = $isSuperAdmin ? [
     [
         'label' => 'Core',
         'items' => [
-            ['key' => 'admin-dashboard', 'label' => 'Dashboard',       'href' => 'admin/dashboard.php',  'icon' => 'grid'],
+            ['key' => 'admin-dashboard', 'label' => 'Overview',        'href' => 'admin/dashboard.php',  'icon' => 'grid'],
             ['key' => 'admin-users',     'label' => 'Users',            'href' => 'admin/users.php',      'icon' => 'users'],
             ['key' => 'admin-vendors',   'label' => 'Vendors',          'href' => 'admin/vendors.php',    'icon' => 'store'],
             ['key' => 'admin-bookings',  'label' => 'Bookings',         'href' => 'admin/bookings.php',   'icon' => 'file'],

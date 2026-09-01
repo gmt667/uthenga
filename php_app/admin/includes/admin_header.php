@@ -45,10 +45,10 @@ $themePreference = uthenga_theme_preference();
         <?= admin_icon_svg('menu') ?>
       </button>
 
-      <form class="dashboard-search" action="<?= BASE_URL ?>index.php" method="get" role="search">
+      <div class="dashboard-search" role="search" aria-label="Admin search unavailable">
         <?= admin_icon_svg('search') ?>
-        <input type="search" name="q" placeholder="Search admin records..." aria-label="Search admin">
-      </form>
+        <span>Admin search is not available</span>
+      </div>
 
       <div class="dashboard-topbar-actions">
         <button type="button" class="btn btn-sm btn-secondary btn-icon theme-toggle" data-theme-toggle aria-label="Toggle light and dark mode" aria-pressed="false">

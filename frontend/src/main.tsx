@@ -10,7 +10,6 @@ import './customer-reference-overrides.css';
 import './coordination-live.css';
 import './trip-planner.css';
 import './planning-map.css';
-import { AdminControlCenter } from './admin-control-center';
 import { EnterpriseAccommodationDashboard } from './accommodation-enterprise';
 import { DriverQuickTaxi } from './driver-quick-taxi';
 
@@ -55,6 +54,11 @@ declare global {
 
 const runtimeBase = String((window as any).UTHENGA_BASE_URL || '/').replace(/\/?$/, '/');
 const apiRoot = import.meta.env.VITE_API_ROOT || `${runtimeBase}api/tie/`;
+
+function AdminOverviewRedirect() {
+  useEffect(() => { window.location.replace(runtimeBase + 'admin/dashboard.php'); }, []);
+  return <main className="app-loading" aria-live="polite">Opening Admin Overview…</main>;
+}
 
 function UthengaLogoImg({ size = 'sm', className }: { size?: 'sm' | 'md' | 'lg'; className?: string }) {
   const baseUrl = (window as any).UTHENGA_BASE_URL || '/uthenga/';
@@ -161,7 +165,7 @@ function App() {
       <Route path="/assistant" element={<AssistantWorkspace boot={boot} />} />
       <Route path="/planner" element={<TripPlanningWorkspace boot={boot} />} />
       <Route path="/accommodation" element={<EnterpriseAccommodationDashboard boot={boot} />} />
-      <Route path="/admin" element={<AdminControlCenter boot={boot} />} />
+      <Route path="/admin" element={<AdminOverviewRedirect />} />
       <Route path="/admin/service-reviews" element={<ServiceReviewDesk boot={boot} />} />
       <Route path="/service/:kind" element={<ServiceWorkspaceShell boot={boot} />} />
       <Route path="*" element={<CustomerDashboardV3 boot={boot} />} />

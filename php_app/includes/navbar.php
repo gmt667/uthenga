@@ -77,7 +77,7 @@ $themePreference = uthenga_theme_preference();
               <a href="<?= BASE_URL ?>vendor/payment-settings.php" role="menuitem">Payment Settlement</a>
               <a href="<?= BASE_URL ?>profile.php" role="menuitem">Profile</a>
             <?php elseif (in_array($userRole, ADMIN_ROLES, true)): ?>
-              <a href="<?= BASE_URL . ($userRole === ROLE_SUPER_ADMIN ? 'admin/super-dashboard.php' : 'admin/dashboard.php') ?>" role="menuitem">Admin Dashboard</a>
+              <a href="<?= BASE_URL ?>admin/dashboard.php" role="menuitem">Admin Overview</a>
               <a href="<?= BASE_URL ?>profile.php" role="menuitem">Profile</a>
             <?php endif; ?>
             <hr>
