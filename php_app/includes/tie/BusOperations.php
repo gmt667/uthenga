@@ -484,6 +484,7 @@ final class UthengaTieBusOperationsService
      */
     public function reconcilePayment(string $bookingId, ?array $webhookPayload = null): array
     {
+        if (!uthenga_financial_callback_commit_allowed()) { uthenga_financial_callback_block('bus_payment_reconciliation'); throw UthengaTieErrors::providerUnavailable('financial_callback_controls'); }
         $db = $this->db(); $db->beginTransaction();
         try {
             $stmt = $db->prepare('SELECT * FROM bookings WHERE id=? LIMIT 1 FOR UPDATE'); $stmt->execute([$bookingId]);
@@ -559,6 +560,7 @@ final class UthengaTieBusOperationsService
     public function receiveWebhook(string $payload, string $signature): array
     {
         if (!$this->gateway->verifyWebhookSignature($payload, $signature)) throw UthengaTieErrors::authorization();
+        if (!uthenga_financial_callback_commit_allowed()) { uthenga_financial_callback_block('bus_ticket_payment_webhook_service'); throw UthengaTieErrors::providerUnavailable('financial_callback_controls'); }
         $data = json_decode($payload, true); $data = is_array($data) ? $data : [];
         // Hosted checkout keys its webhook by tx_ref; direct-charge (mobile
         // money / bank transfer) events key by a top-level charge_id instead.

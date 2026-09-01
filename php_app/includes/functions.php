@@ -240,6 +240,7 @@ if (!function_exists('uthenga_finance_save_fee_rule')) {
     // Never overwrites a rate in place — closes whatever is currently active
     // (or scheduled in the future) for this category, then inserts a fresh row.
     function uthenga_finance_save_fee_rule(string $listingType, float $rate, float $serviceFee, ?string $updatedBy = null, ?string $effectiveFrom = null): array {
+        throw new RuntimeException('Fee-rule activation is unavailable until the Phase D financial-control workflow is deployed.');
         global $pdo;
         $category = uthenga_finance_normalize_listing_type($listingType);
         $effectiveFrom = $effectiveFrom !== null && $effectiveFrom !== '' ? $effectiveFrom : date('Y-m-d H:i:s');
@@ -701,6 +702,8 @@ if (!function_exists('uthenga_finance_generate_reference')) {
 
 if (!function_exists('uthenga_finance_request_withdrawal')) {
     function uthenga_finance_request_withdrawal(array $data): array {
+        error_log('[Financial controls] Blocked legacy withdrawal submission.');
+        return ['success' => false, 'message' => 'Withdrawals are temporarily unavailable while the financial-control workflow is deployed.'];
         if (!uthenga_table_exists('vendor_wallets') || !uthenga_table_exists('withdrawal_requests')) {
             return [
                 'success' => false,
@@ -802,6 +805,8 @@ if (!function_exists('uthenga_finance_request_withdrawal')) {
 
 if (!function_exists('uthenga_finance_review_withdrawal_request')) {
     function uthenga_finance_review_withdrawal_request(int $requestId, int $reviewerId, string $decision = 'approve', array $meta = []): array {
+        error_log('[Financial controls] Blocked legacy withdrawal review.');
+        return ['success' => false, 'message' => 'Withdrawal approval and payout execution require the financial-control workflow.'];
         if ($requestId <= 0 || $reviewerId <= 0) {
             return ['success' => false, 'message' => 'Missing review context.'];
         }

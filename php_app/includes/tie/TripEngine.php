@@ -215,8 +215,12 @@ final class UthengaTieTripEngineService
         try {
             $trip = $this->lockedTrip($tripId, $driverUserId); $current = (string) $trip['status'];
             if ($current !== 'IN_PROGRESS') throw UthengaTieErrors::validation(['status' => "A trip cannot be completed from {$current}."]);
-            $this->db->prepare("UPDATE tie_trips SET status='COMPLETED', completed_at=UTC_TIMESTAMP(), final_fare=?, payment_method=?, payment_status='paid', distance_km=?, duration_seconds=?, version=version+1 WHERE id=?")
-                ->execute([$request['final_fare'], $request['payment_method'], $request['distance_km'], $request['duration_seconds'], $tripId]);
+            // A driver completing a ride is not proof of a successful payment.
+            // Cash remains explicitly manually collected; online payments stay
+            // pending until a verified provider callback settles them.
+            $paymentState = strtolower((string) $request['payment_method']) === 'cash' ? 'manual_collected' : 'pending';
+            $this->db->prepare("UPDATE tie_trips SET status='COMPLETED', completed_at=UTC_TIMESTAMP(), final_fare=?, payment_method=?, payment_status=?, distance_km=?, duration_seconds=?, version=version+1 WHERE id=?")
+                ->execute([$request['final_fare'], $request['payment_method'], $paymentState, $request['distance_km'], $request['duration_seconds'], $tripId]);
             $this->event($tripId, 'TRIP_COMPLETED', 'driver', $driverUserId, $current, 'COMPLETED', null, ['final_fare' => $request['final_fare'], 'payment_method' => $request['payment_method']]);
             $this->db->commit(); return $this->detail($tripId, $driverUserId);
         } catch (Throwable $error) { if ($this->db->inTransaction()) $this->db->rollBack(); throw $error; }

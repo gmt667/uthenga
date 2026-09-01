@@ -318,6 +318,7 @@ final class UthengaTiePaymentService implements UthengaTiePaymentModule
     public function receiveWebhook(string $payload, string $signature): array
     {
         if (strlen($payload) > 65536 || !$this->gateway->verifyWebhookSignature($payload, $signature)) throw UthengaTieErrors::authorization();
+        if (!uthenga_financial_callback_commit_allowed()) { uthenga_financial_callback_block('tie_payment_webhook_service'); throw UthengaTieErrors::providerUnavailable('financial_callback_controls'); }
         $decoded = json_decode($payload, true); if (!is_array($decoded)) throw UthengaTieErrors::validation(['payload' => 'A JSON webhook payload is required.']); $data = is_array($decoded['data'] ?? null) ? $decoded['data'] : $decoded;
         $reference = trim((string) ($data['tx_ref'] ?? $decoded['tx_ref'] ?? $data['reference'] ?? '')); if ($reference === '') throw UthengaTieErrors::validation(['payload' => 'PayChangu transaction reference is required.']);
         // PayChangu's dashboard test events do not correspond to a local payment
@@ -329,6 +330,7 @@ final class UthengaTiePaymentService implements UthengaTiePaymentModule
     }
     public function reconcilePending(int $limit = 25): array
     {
+        if (!uthenga_financial_callback_commit_allowed()) { uthenga_financial_callback_block('tie_payment_poller'); throw UthengaTieErrors::providerUnavailable('financial_callback_controls'); }
         $summary = ['checked'=>0,'booked'=>0,'pending'=>0,'manual_review'=>0,'refund_required'=>0,'errors'=>0,'results'=>[]];
         foreach ($this->repo()->reconciliationCandidates($limit) as $candidate) {
             $summary['checked']++;

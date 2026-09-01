@@ -7,8 +7,16 @@
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/payment_engine.php';
+require_once __DIR__ . '/../../includes/financial_controls.php';
 
 header('Content-Type: application/json');
+
+if (!uthenga_financial_callback_commit_allowed()) {
+    uthenga_financial_callback_block('legacy_paychangu_webhook');
+    http_response_code(503);
+    echo json_encode(['status' => 'pending', 'message' => 'Payment confirmation is temporarily unavailable.']);
+    exit;
+}
 
 $rawBody = file_get_contents('php://input');
 $paychanguSecret = uthenga_env('TIE_PAYCHANGU_SECRET_KEY', uthenga_env('PAYCHANGU_SECRET_KEY', ''));

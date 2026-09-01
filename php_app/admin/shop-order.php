@@ -46,6 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
         $status = (string) ($_POST['order_status'] ?? $order['order_status']);
         $paymentStatus = (string) ($_POST['payment_status'] ?? $order['payment_status']);
         $riderId = (int) ($_POST['assigned_rider_id'] ?? 0) ?: null;
+        if (strtolower($paymentStatus) !== strtolower((string) $order['payment_status'])) {
+            throw new RuntimeException('Payment status is provider-controlled and cannot be changed from this screen.');
+        }
+        if (in_array($status, ['confirmed', 'preparing', 'assigned_to_rider', 'out_for_delivery', 'delivered'], true) && strtolower((string) $order['payment_status']) !== 'paid') {
+            throw new RuntimeException('An unpaid order cannot be fulfilled. Verify payment through the authorised payment workflow.');
+        }
 
         dbExecute(
             'UPDATE shop_orders SET order_status = ?, payment_status = ?, assigned_rider_id = ?, updated_at = NOW(), confirmed_at = CASE WHEN ? = "confirmed" AND confirmed_at IS NULL THEN NOW() ELSE confirmed_at END, prepared_at = CASE WHEN ? = "preparing" AND prepared_at IS NULL THEN NOW() ELSE prepared_at END, dispatched_at = CASE WHEN ? IN ("assigned_to_rider","out_for_delivery","delivered") AND dispatched_at IS NULL THEN NOW() ELSE dispatched_at END, delivered_at = CASE WHEN ? = "delivered" AND delivered_at IS NULL THEN NOW() ELSE delivered_at END, cancelled_at = CASE WHEN ? = "cancelled" AND cancelled_at IS NULL THEN NOW() ELSE cancelled_at END WHERE id = ?',

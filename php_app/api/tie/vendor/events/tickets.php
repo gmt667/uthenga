@@ -40,6 +40,9 @@ try {
     $action = strtolower((string) ($input['action'] ?? ''));
     $listingId = trim((string) ($input['listing_id'] ?? $listingId));
     if ($listingId === '') throw UthengaTieErrors::validation(['listing_id' => 'An event must be selected.']);
+    if (in_array($action, ['create_refund', 'decide_refund'], true)) {
+        throw UthengaTieErrors::validation(['refund' => 'Event refund mutations are temporarily unavailable while the financial-control workflow is deployed.']);
+    }
 
     $result = match ($action) {
         'create_type' => ['listing_id' => $listingId, 'types' => $tickets->createType($listingId, $user['id'], $user, $input)],

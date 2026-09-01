@@ -7,6 +7,7 @@
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../../includes/payment_engine.php';
+require_once __DIR__ . '/../../includes/financial_controls.php';
 
 header('Content-Type: application/json');
 
@@ -139,6 +140,12 @@ try {
             exit;
         }
 
+        if (!uthenga_financial_callback_commit_allowed()) {
+            uthenga_financial_callback_block('legacy_payment_status_reconciliation');
+            http_response_code(503);
+            echo json_encode(['success' => false, 'status' => 'pending', 'error' => 'Payment confirmation is temporarily unavailable.']);
+            exit;
+        }
         // Try double-check verification
         $result = UthengaPaymentEngine::verifyAndPostLedgers($intentRef);
         echo json_encode($result);
@@ -152,6 +159,12 @@ try {
             exit;
         }
 
+        if (!uthenga_financial_callback_commit_allowed()) {
+            uthenga_financial_callback_block('legacy_payment_demo_simulation');
+            http_response_code(503);
+            echo json_encode(['success' => false, 'error' => 'Payment confirmation is temporarily unavailable.']);
+            exit;
+        }
         $input = json_decode(file_get_contents('php://input'), true) ?: $_POST;
 
         if (!uthenga_payment_csrf_ok($input)) {

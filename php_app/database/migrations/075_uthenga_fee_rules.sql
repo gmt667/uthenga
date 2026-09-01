@@ -10,7 +10,10 @@ CREATE TABLE IF NOT EXISTS uthenga_fee_rules (
     service_fee       DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     effective_from    DATETIME NOT NULL,
     effective_to      DATETIME NULL,
-    created_by        VARCHAR(30) NULL,
+    -- Corrected for clean installations: production_schema.sql uses
+    -- users.id BIGINT UNSIGNED. Existing VARCHAR deployments are handled by
+    -- 084_fee_rule_actor_compatibility.sql without losing legacy text.
+    created_by        BIGINT UNSIGNED NULL,
     created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_fee_rules_lookup (service_category, effective_from, effective_to),
     CONSTRAINT fk_fee_rules_created_by FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL

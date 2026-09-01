@@ -23,6 +23,7 @@ require_once __DIR__ . '/payment_schema.php';
 require_once __DIR__ . '/payment_provider.php';
 require_once __DIR__ . '/tie/bootstrap.php';
 require_once __DIR__ . '/shop_helpers.php';
+require_once __DIR__ . '/financial_controls.php';
 
 class UthengaPaymentEngine {
 
@@ -313,6 +314,8 @@ class UthengaPaymentEngine {
      * mirroring verifyAndPostLedgers() -> confirmUnderlyingBooking()'s split.
      */
     public static function refundIntent(string $intentRef, float $amount, string $reason, string $actorId, string $sourceType, ?string $sourceRequestId = null): array {
+        error_log('[Financial controls] Blocked legacy refund execution for intent ' . $intentRef);
+        return ['success' => false, 'error' => 'Refund execution is temporarily unavailable while the financial-control workflow is deployed.'];
         $intent = dbQueryOne('SELECT * FROM uthenga_payment_intents WHERE intent_ref = ?', [$intentRef]);
         if (!$intent) {
             return ['success' => false, 'error' => 'Payment intent not found.'];
@@ -407,6 +410,10 @@ class UthengaPaymentEngine {
      * Mandatory Double-Check Verification & Posting to the 3 Ledgers
      */
     public static function verifyAndPostLedgers(string $intentRef, array $providerPayload = []): array {
+        if (!uthenga_financial_callback_commit_allowed()) {
+            uthenga_financial_callback_block('legacy_payment_engine');
+            return ['success' => false, 'error' => 'Payment confirmation is temporarily unavailable. Your payment remains pending.'];
+        }
         $intent = dbQueryOne('SELECT * FROM uthenga_payment_intents WHERE intent_ref = ? OR provider_tx_ref = ?', [$intentRef, $intentRef]);
         if (!$intent) {
             return ['success' => false, 'error' => 'Payment intent not found for verification.'];

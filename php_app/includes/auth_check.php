@@ -115,6 +115,7 @@ function adminPermissionRegistry(): array {
         'shop.manage' => ['label' => 'Manage shop operations', 'group' => 'Marketplace operations'],
         'bookings.view' => ['label' => 'View bookings', 'group' => 'Bookings and orders'],
         'payments.view' => ['label' => 'View payments and transactions', 'group' => 'Payments and finance'],
+        'refunds.manage' => ['label' => 'Manage controlled refunds', 'group' => 'Payments and finance'],
         'finance.manage' => ['label' => 'Manage finance controls', 'group' => 'Payments and finance'],
         'settlements.review' => ['label' => 'Review vendor settlements', 'group' => 'Payments and finance'],
         'marketing.view' => ['label' => 'View marketing content', 'group' => 'Content and marketing'],

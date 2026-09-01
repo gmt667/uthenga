@@ -150,6 +150,7 @@ final class UthengaTieTransportPaymentService
     public function receiveWebhook(string $payload, string $signature): array
     {
         if (!$this->gateway->verifyWebhookSignature($payload, $signature)) throw UthengaTieErrors::authorization();
+        if (!uthenga_financial_callback_commit_allowed()) { uthenga_financial_callback_block('transport_payment_webhook_service'); throw UthengaTieErrors::providerUnavailable('financial_callback_controls'); }
         $data = json_decode($payload, true); $data = is_array($data) ? $data : [];
         $reference = (string) ($data['tx_ref'] ?? ($data['data']['tx_ref'] ?? ''));
         if ($reference === '') throw UthengaTieErrors::validation(['tx_ref' => 'A transaction reference is required.']);
@@ -163,6 +164,7 @@ final class UthengaTieTransportPaymentService
 
     public function reconcile(string $paymentId): array
     {
+        if (!uthenga_financial_callback_commit_allowed()) { uthenga_financial_callback_block('transport_payment_reconciliation'); throw UthengaTieErrors::providerUnavailable('financial_callback_controls'); }
         $db = $this->db(); $repo = new UthengaTieTransportPaymentRepository($db);
         $before = $repo->lockById($paymentId);
         if (!is_array($before)) throw UthengaTieErrors::validation(['payment_id' => 'Payment not found.']);

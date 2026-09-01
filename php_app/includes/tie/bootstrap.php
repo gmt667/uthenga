@@ -22,6 +22,7 @@ require_once __DIR__ . '/CustomerPreferences.php';
 require_once __DIR__ . '/Booking.php';
 require_once __DIR__ . '/Inventory.php';
 require_once __DIR__ . '/BookingCommit.php';
+require_once __DIR__ . '/../financial_controls.php';
 require_once __DIR__ . '/Payment.php';
 require_once __DIR__ . '/Journey.php';
 require_once __DIR__ . '/Notifications.php';

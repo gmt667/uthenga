@@ -127,6 +127,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
             if (!$order) {
                 throw new RuntimeException('Order not found.');
             }
+            if (strtolower($paymentStatus) !== strtolower((string) $order['payment_status'])) {
+                throw new RuntimeException('Payment status is provider-controlled and cannot be changed from Admin order management.');
+            }
+            if (in_array($status, ['confirmed', 'preparing', 'assigned_to_rider', 'out_for_delivery', 'delivered'], true) && strtolower((string) $order['payment_status']) !== 'paid') {
+                throw new RuntimeException('An unpaid order cannot be fulfilled. Verify payment through the authorised payment workflow.');
+            }
 
             $updates = [
                 'order_status = ?',

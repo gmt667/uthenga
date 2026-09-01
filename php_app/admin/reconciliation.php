@@ -13,6 +13,7 @@ $activeNav = 'admin-reconciliation';
 
 require_once __DIR__ . '/includes/admin_header.php';
 require_once __DIR__ . '/../includes/payment_engine.php';
+require_once __DIR__ . '/../includes/financial_controls.php';
 
 // ─── Platform settlement account + settlement records ──────────────────────
 // Uthenga's own bank/mobile-money destination for its commission revenue —
@@ -52,23 +53,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && validateCsrf()) {
     } elseif (isset($_POST['record_settlement'])) {
         $periodStart = trim((string) ($_POST['period_start'] ?? ''));
         $periodEnd = trim((string) ($_POST['period_end'] ?? ''));
-        $amount = (float) ($_POST['amount'] ?? 0);
+        $amount = trim((string) ($_POST['amount'] ?? ''));
         $note = trim((string) ($_POST['reference_note'] ?? ''));
         $account = dbQueryOne('SELECT * FROM uthenga_platform_settlement_accounts ORDER BY id DESC LIMIT 1');
 
         if ($periodStart === '' || $periodEnd === '' || strtotime($periodStart) === false || strtotime($periodEnd) === false) {
             $settleErr = 'Enter a valid settlement period.';
-        } elseif ($amount <= 0) {
-            $settleErr = 'Enter a settlement amount greater than zero.';
         } elseif (!$account) {
             $settleErr = 'Configure a settlement account before recording a settlement.';
         } else {
-            dbExecute(
-                'INSERT INTO uthenga_platform_settlements (id, period_start, period_end, amount, destination_snapshot, reference_note, actor_id) VALUES (?,?,?,?,?,?,?)',
-                ['pst_' . bin2hex(random_bytes(12)), $periodStart, $periodEnd, $amount, json_encode($account), $note ?: null, $_SESSION['user_id'] ?? 'admin']
-            );
-            logAction('Recorded Platform Settlement', "Admin recorded a settlement of MWK " . number_format($amount, 2) . " for {$periodStart} to {$periodEnd}.");
-            $settleMessage = 'Settlement recorded.';
+            try {
+                $review = UthengaFinancialReview::submitManualSettlement([
+                    'period_start' => $periodStart, 'period_end' => $periodEnd, 'amount_mwk' => $amount,
+                    'supporting_note' => $note, 'provider_or_channel' => $_POST['provider_or_channel'] ?? '',
+                    'external_reference' => $_POST['external_reference'] ?? '', 'idempotency_key' => $_POST['idempotency_key'] ?? '',
+                    'evidence_reference' => $_POST['evidence_reference'] ?? '',
+                ], (string) ($_SESSION['user_id'] ?? ''));
+                logAction('Submitted Platform Settlement Review', 'Manual settlement submitted for independent approval: ' . $review['id']);
+                $settleMessage = $review['idempotent'] ? 'Existing settlement review returned.' : 'Settlement submitted for independent approval. It has not been executed.';
+            } catch (Throwable $error) {
+                $settleErr = $error instanceof InvalidArgumentException ? $error->getMessage() : 'Settlement review could not be submitted safely.';
+            }
         }
     }
 }
@@ -216,9 +221,14 @@ function reconBadge(string $status): string {
         <input type="hidden" name="record_settlement" value="1">
         <div class="form-group"><label class="form-label">Period Start</label><input type="date" name="period_start" class="form-control" required></div>
         <div class="form-group"><label class="form-label">Period End</label><input type="date" name="period_end" class="form-control" required></div>
-        <div class="form-group"><label class="form-label">Amount Settled (MWK)</label><input type="number" step="0.01" name="amount" class="form-control" required></div>
-        <div class="form-group"><label class="form-label">Reference Note</label><input type="text" name="reference_note" class="form-control" placeholder="e.g. Bank transfer ref #..."></div>
-        <button type="submit" class="btn btn-primary">Record Settlement</button>
+        <div class="form-group"><label class="form-label">Amount (MWK)</label><input type="text" inputmode="decimal" name="amount" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Provider or channel</label><input type="text" name="provider_or_channel" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">External reference</label><input type="text" name="external_reference" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Evidence reference</label><input type="text" name="evidence_reference" class="form-control"></div>
+        <div class="form-group"><label class="form-label">Supporting note</label><input type="text" name="reference_note" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Idempotency key</label><input type="text" name="idempotency_key" class="form-control" minlength="16" required></div>
+        <p class="text-muted text-sm">Submitting records manually attested evidence for independent approval. It does not execute a transfer or claim provider verification.</p>
+        <button type="submit" class="btn btn-primary">Submit for approval</button>
       </form>
     </div>
   </div>
