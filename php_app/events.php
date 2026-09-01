@@ -42,17 +42,19 @@ $sliderEvents = marketplace_fetch_events('', 5, true);
 // posts as source links while using safe, consistently cropped visuals here.
 $eventHeroSlides = [
     [
-        'eyebrow' => 'Community event spotlight',
-        'title' => 'See what is happening across Malawi',
-        'description' => 'Browse event moments shared by our community, then search the marketplace for an experience that suits your plans.',
-        'image' => 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=1600&fit=crop&q=85',
+        'eyebrow' => 'Featured event · 26 September 2026',
+        'title' => 'Warm Heart Jam',
+        'description' => 'A live music experience at M1 Center Point, Lilongwe. Advance tickets from MK7,000.',
+        'image' => BASE_URL . 'assets/images/events/warm-heart-jam-2026.jpg',
+        'is_poster' => true,
         'source_url' => 'https://web.facebook.com/photo/?fbid=1579998843711117&set=pcb.1580006740376994&cft[0]=AZY32UyZ0NSl0uRpZgn8mwx9TFUg_s9NYPN4o4Yhpqr6S56VWncvrqreEDVvRSBRxl5M9ch83nLp-E0RpWfVLf6ZizMOWuCzuCAQwu2HyLhfrtveniFDC6ZzAHFZGcVhblw4mWdflxo_K9G49UoxECutN0KCkL92shHDWU5gCyueqb0LstyXqdWeVlpnNl0GyLk&tn=*b0H-R',
     ],
     [
-        'eyebrow' => 'Live experiences',
-        'title' => 'Music, culture and unforgettable nights',
-        'description' => 'From intimate gatherings to major celebrations, discover the live experiences people are talking about.',
-        'image' => 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1600&fit=crop&q=85',
+        'eyebrow' => 'Featured event · 01 August 2026',
+        'title' => 'Landlord Pakwao Concert',
+        'description' => 'A major live concert at Bingu Stadium, featuring artists from Malawi and across the region.',
+        'image' => BASE_URL . 'assets/images/events/landlord-pakwao-2026.jpg',
+        'is_poster' => true,
         'source_url' => 'https://web.facebook.com/photo/?fbid=1735712078369867&set=pcb.1735713045036437&cft[0]=AZYriAEIC-YvgPeajqaMXIMw0R98x2OecGkc-pGOaEkUqMfOWDyHmCezoeoVzwdTiCeJq5YOArS-2dWgCVSnPVp0za1u5YOF8ybipvONpOC1lDoqaH5Ss7HtT5I7WfvV-IHKO6PQrb2YPopXN42XHeG-BMTNZn793lglnEgcbMUAistUTcXOqZIC1un8r87vNRA&tn=*b0H-R',
     ],
     [
@@ -671,13 +673,17 @@ if (!empty($listings)) {
 <section class="events-hero" aria-labelledby="events-page-title">
   <div class="events-hero__slides" aria-hidden="true">
     <?php foreach ($eventHeroSlides as $index => $slide): ?>
-      <div class="events-hero__slide<?= $index === 0 ? ' is-active' : '' ?>" data-event-hero-slide="<?= $index ?>">
+      <div class="events-hero__slide<?= $index === 0 ? ' is-active' : '' ?><?= !empty($slide['is_poster']) ? ' events-hero__slide--poster' : '' ?>" data-event-hero-slide="<?= $index ?>">
         <img src="<?= e($slide['image']) ?>" alt=""<?= $index === 0 ? '' : ' loading="lazy"' ?>>
       </div>
     <?php endforeach; ?>
   </div>
   <div class="events-hero__shade"></div>
   <div class="container events-hero__inner">
+    <a href="<?= BASE_URL ?>" class="events-hero__brand" aria-label="Uthenga home">
+      <img src="<?= BASE_URL ?>assets/images/logo-light.png" alt="Uthenga">
+      <span>Events</span>
+    </a>
     <p class="events-eyebrow" data-event-hero-eyebrow><?= e($eventHeroSlides[0]['eyebrow']) ?></p>
     <h1 id="events-page-title" data-event-hero-title><?= e($eventHeroSlides[0]['title']) ?></h1>
     <p data-event-hero-description><?= e($eventHeroSlides[0]['description']) ?></p>

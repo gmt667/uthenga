@@ -36,6 +36,13 @@
   object-fit: cover;
   object-position: center;
 }
+.events-page .events-hero__slide--poster {
+  background: #08182a;
+}
+.events-page .events-hero__slide--poster img {
+  object-fit: contain;
+  object-position: 77% center;
+}
 .events-page .events-hero__shade {
   z-index: 1;
   background:
@@ -46,6 +53,27 @@
   position: relative;
   z-index: 2;
   max-width: 760px;
+}
+.events-page .events-hero__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, .78);
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.events-page .events-hero__brand img {
+  width: auto;
+  height: 30px;
+  object-fit: contain;
+}
+.events-page .events-hero__brand span {
+  padding-left: .75rem;
+  border-left: 1px solid rgba(255, 255, 255, .4);
 }
 .events-page .events-eyebrow {
   margin: 0 0 .75rem;
@@ -196,6 +224,7 @@
   .events-page .events-hero__shade {
     background: linear-gradient(90deg, rgba(9, 17, 30, .91), rgba(9, 17, 30, .62));
   }
+  .events-page .events-hero__slide--poster img { object-position: center; }
   .events-page .grid.grid-cols-4 { grid-template-columns: 1fr; }
   .events-page .filter-actions-row > * { flex: 1 1 100%; justify-content: center; }
   .events-page .view-toggle-bar { align-items: stretch; }
